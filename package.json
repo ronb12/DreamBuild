@@ -1,0 +1,12 @@
+{
+  "name": "dreambuild",
+  "version": "1.0.0",
+  "description": "DreamBuild project with Firebase Hosting",
+  "scripts": {
+    "firebase:init": "node ./firebase-bootstrap.js"
+  },
+  "dependencies": {
+    "zx": "^7.2.0"
+  },
+  "type": "module"
+}

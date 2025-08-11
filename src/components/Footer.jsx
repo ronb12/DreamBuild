@@ -31,10 +31,10 @@ const Footer = () => {
   }
 
   const social = [
-    { name: 'GitHub', href: 'https://github.com/dreambuild', icon: Github },
+    { name: 'GitHub', href: 'https://github.com/ronb12/DreamBuild', icon: Github },
     { name: 'Twitter', href: 'https://twitter.com/dreambuild', icon: Twitter },
     { name: 'LinkedIn', href: 'https://linkedin.com/company/dreambuild', icon: Linkedin },
-    { name: 'Email', href: 'mailto:hello@dreambuild.app', icon: Mail },
+    { name: 'Email', href: 'mailto:ronellbradley@bradleyvs.com', icon: Mail },
   ]
 
   return (

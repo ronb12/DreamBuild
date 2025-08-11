@@ -50,15 +50,15 @@ const Contact = () => {
       icon: Mail,
       title: 'Email',
       description: 'Send us an email and we\'ll get back to you within 24 hours.',
-      contact: 'hello@dreambuild.com',
-      link: 'mailto:hello@dreambuild.com'
+      contact: 'ronellbradley@bradleyvs.com',
+      link: 'mailto:ronellbradley@bradleyvs.com'
     },
     {
       icon: Phone,
       title: 'Phone',
       description: 'Call us during business hours for immediate assistance.',
-      contact: '+1 (555) 123-4567',
-      link: 'tel:+15551234567'
+      contact: '803-609-7009',
+      link: 'tel:+18036097009'
     },
     {
       icon: MessageSquare,
@@ -330,12 +330,16 @@ const Contact = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center space-x-3 mb-4">
                 <MapPin className="w-6 h-6 text-primary-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Office Location</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
               </div>
               <div className="text-sm text-gray-600">
                 <p className="font-medium text-gray-900">Bradley Virtual Solutions, LLC</p>
-                <p>123 Innovation Drive</p>
-                <p>San Francisco, CA 94105</p>
+                <p className="mt-2">
+                  <span className="font-medium">Email:</span> ronellbradley@bradleyvs.com
+                </p>
+                <p>
+                  <span className="font-medium">Phone:</span> 803-609-7009
+                </p>
                 <p className="mt-2">United States</p>
               </div>
             </div>

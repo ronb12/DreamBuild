@@ -244,7 +244,8 @@ const Security = () => {
             </button>
           </div>
           <div className="mt-6 text-sm text-gray-500">
-            <p>For urgent security matters, contact: <strong>security@dreambuild.com</strong></p>
+            <p>For urgent security matters, contact: <strong>ronellbradley@bradleyvs.com</strong></p>
+            <p>Phone: <strong>803-609-7009</strong></p>
             <p>PGP Key: <code className="bg-gray-100 px-2 py-1 rounded">0x1234567890ABCDEF</code></p>
           </div>
         </div>

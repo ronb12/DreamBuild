@@ -291,14 +291,14 @@ const Privacy = () => {
               <Mail className="w-5 h-5 text-primary-600" />
               <div>
                 <div className="font-medium text-gray-900">Email</div>
-                <div className="text-gray-600">privacy@dreambuild.com</div>
+                <div className="text-gray-600">ronellbradley@bradleyvs.com</div>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <Phone className="w-5 h-5 text-primary-600" />
               <div>
                 <div className="font-medium text-gray-900">Phone</div>
-                <div className="text-gray-600">+1 (555) 123-4567</div>
+                <div className="text-gray-600">803-609-7009</div>
               </div>
             </div>
             <div className="flex items-center space-x-3">

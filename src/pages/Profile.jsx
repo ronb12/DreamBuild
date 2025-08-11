@@ -22,7 +22,7 @@ const Profile = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input type="email" defaultValue="john@dreambuild.app" className="input-field" />
+                  <input type="email" defaultValue="ronellbradley@bradleyvs.com" className="input-field" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>

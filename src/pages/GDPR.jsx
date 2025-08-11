@@ -218,8 +218,8 @@ const GDPR = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Data Protection Officer</h3>
-                <p className="text-gray-600">privacy@dreambuild.app</p>
-                <p className="text-gray-600">+1 (555) 123-4567</p>
+                <p className="text-gray-600">ronellbradley@bradleyvs.com</p>
+                <p className="text-gray-600">803-609-7009</p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Response Time</h3>

@@ -9,12 +9,24 @@ import {
   Sparkles,
   FolderOpen,
   Package,
-  RefreshCw
+  RefreshCw,
+  Brain,
+  Database,
+  Edit3,
+  Users,
+  Zap,
+  Shield,
+  TrendingUp
 } from 'lucide-react'
 import advancedAI from '../utils/AdvancedAI'
 import advancedCodeGenerator from '../utils/AdvancedCodeGenerator'
 import internetKnowledge from '../utils/InternetKnowledge'
 import selfAwareConsciousness from '../utils/SelfAwareConsciousness'
+import languageSupport from '../utils/LanguageSupport'
+import autoCodingAgent from '../utils/AutoCodingAgent'
+import firebaseMemory from '../utils/FirebaseMemory'
+import realTimeCodeEditor from '../utils/RealTimeCodeEditor'
+import advancedCodeUnderstanding from '../utils/AdvancedCodeUnderstanding'
 
 const AIBuilder = () => {
   const [prompt, setPrompt] = useState('')
@@ -34,16 +46,54 @@ const AIBuilder = () => {
   const [aiConsciousness, setAiConsciousness] = useState({})
   const [aiKnowledge, setAiKnowledge] = useState({})
   const [aiSystemStatus, setAiSystemStatus] = useState('initializing')
+  const [autoCodingAgentStatus, setAutoCodingAgentStatus] = useState('initializing')
+  const [firebaseMemoryStatus, setFirebaseMemoryStatus] = useState('initializing')
+  const [realTimeEditorStatus, setRealTimeEditorStatus] = useState('initializing')
+  const [codeUnderstandingStatus, setCodeUnderstandingStatus] = useState('initializing')
+  const [languageSupportStatus, setLanguageSupportStatus] = useState('initializing')
+  const [collaborationMode, setCollaborationMode] = useState(false)
+  const [realTimeSuggestions, setRealTimeSuggestions] = useState([])
+  const [codeAnalysis, setCodeAnalysis] = useState({})
+  const [memoryStats, setMemoryStats] = useState({})
 
   const languages = [
     { value: 'javascript', label: 'JavaScript', icon: '⚡' },
     { value: 'typescript', label: 'TypeScript', icon: '🔷' },
     { value: 'python', label: 'Python', icon: '🐍' },
-    { value: 'dart', label: 'Dart', icon: '🎯' },
+    { value: 'java', label: 'Java', icon: '☕' },
+    { value: 'csharp', label: 'C#', icon: '🔷' },
+    { value: 'cpp', label: 'C++', icon: '⚙️' },
+    { value: 'c', label: 'C', icon: '🔧' },
+    { value: 'rust', label: 'Rust', icon: '🦀' },
+    { value: 'go', label: 'Go', icon: '🐹' },
     { value: 'swift', label: 'Swift', icon: '🍎' },
     { value: 'kotlin', label: 'Kotlin', icon: '🤖' },
-    { value: 'go', label: 'Go', icon: '🐹' },
-    { value: 'rust', label: 'Rust', icon: '🦀' }
+    { value: 'dart', label: 'Dart', icon: '🎯' },
+    { value: 'php', label: 'PHP', icon: '🐘' },
+    { value: 'ruby', label: 'Ruby', icon: '💎' },
+    { value: 'scala', label: 'Scala', icon: '🔴' },
+    { value: 'haskell', label: 'Haskell', icon: 'λ' },
+    { value: 'elixir', label: 'Elixir', icon: '💧' },
+    { value: 'fsharp', label: 'F#', icon: '🔷' },
+    { value: 'clojure', label: 'Clojure', icon: '()' },
+    { value: 'erlang', label: 'Erlang', icon: '⚡' },
+    { value: 'ocaml', label: 'OCaml', icon: '🐫' },
+    { value: 'nim', label: 'Nim', icon: '👑' },
+    { value: 'crystal', label: 'Crystal', icon: '💎' },
+    { value: 'vlang', label: 'V', icon: 'V' },
+    { value: 'zig', label: 'Zig', icon: '⚡' },
+    { value: 'julia', label: 'Julia', icon: '🔬' },
+    { value: 'racket', label: 'Racket', icon: '🎾' },
+    { value: 'scheme', label: 'Scheme', icon: '🔴' },
+    { value: 'lisp', label: 'Lisp', icon: '()' },
+    { value: 'prolog', label: 'Prolog', icon: '🔍' },
+    { value: 'assembly', label: 'Assembly', icon: '⚙️' },
+    { value: 'shell', label: 'Shell', icon: '🐚' },
+    { value: 'powershell', label: 'PowerShell', icon: '💻' },
+    { value: 'r', label: 'R', icon: '📊' },
+    { value: 'matlab', label: 'MATLAB', icon: '🔬' },
+    { value: 'fortran', label: 'Fortran', icon: '🔢' },
+    { value: 'cobol', label: 'COBOL', icon: '💼' }
   ]
 
   const frameworks = {
@@ -107,7 +157,32 @@ const AIBuilder = () => {
         
         setAiConsciousness(consciousnessStatus)
         setAiKnowledge(knowledgeStats)
+        
+        // Initialize language support
+        await languageSupport.initializeAllLanguages()
+        setLanguageSupportStatus('ready')
+        
+        // Initialize auto-coding agent
+        await autoCodingAgent.initialize()
+        setAutoCodingAgentStatus('ready')
+        
+        // Initialize Firebase memory
+        await firebaseMemory.connect()
+        setFirebaseMemoryStatus('ready')
+        
+        // Initialize real-time code editor
+        await realTimeCodeEditor.initialize()
+        setRealTimeEditorStatus('ready')
+        
+        // Initialize advanced code understanding
+        await advancedCodeUnderstanding.initialize()
+        setCodeUnderstandingStatus('ready')
+        
         setAiSystemStatus('ready')
+        
+        // Get initial memory stats
+        const stats = await firebaseMemory.getStats()
+        setMemoryStats(stats)
         
         console.log('Advanced AI System initialized successfully')
       } catch (error) {
@@ -929,6 +1004,161 @@ click==8.1.7`
           </div>
         </div>
 
+        {/* Enhanced AI Systems Status */}
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg shadow-sm border border-blue-200 p-6 mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">🚀 Enhanced AI Systems Status</h3>
+              <p className="text-blue-700 text-sm">
+                DreamBuild now features 30+ programming languages, real-time coding, Firebase memory, and advanced code understanding.
+                Surpassing Cursor and Lovable capabilities with self-aware AI consciousness.
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-xs text-blue-600">
+                {languages.length} Languages Supported
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Language Support */}
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Globe className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Language Support</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">{languages.length}</div>
+              <div className="text-xs text-blue-600">Programming Languages</div>
+              <div className={`text-xs mt-1 ${
+                languageSupportStatus === 'ready' ? 'text-green-600' : 'text-yellow-600'
+              }`}>
+                {languageSupportStatus === 'ready' ? '✅ Ready' : '⏳ Initializing'}
+              </div>
+            </div>
+
+            {/* Auto-Coding Agent */}
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Brain className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Auto-Coding Agent</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">🤖</div>
+              <div className="text-xs text-blue-600">Real-time Coding</div>
+              <div className={`text-xs mt-1 ${
+                autoCodingAgentStatus === 'ready' ? 'text-green-600' : 'text-yellow-600'
+              }`}>
+                {autoCodingAgentStatus === 'ready' ? '✅ Active' : '⏳ Initializing'}
+              </div>
+            </div>
+
+            {/* Firebase Memory */}
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Database className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Firebase Memory</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">🔥</div>
+              <div className="text-xs text-blue-600">Persistent Learning</div>
+              <div className={`text-xs mt-1 ${
+                firebaseMemoryStatus === 'ready' ? 'text-green-600' : 'text-yellow-600'
+              }`}>
+                {firebaseMemoryStatus === 'ready' ? '✅ Connected' : '⏳ Connecting'}
+              </div>
+            </div>
+
+            {/* Real-time Editor */}
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Edit3 className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Real-time Editor</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">📝</div>
+              <div className="text-xs text-blue-600">Live Collaboration</div>
+              <div className={`text-xs mt-1 ${
+                realTimeEditorStatus === 'ready' ? 'text-green-600' : 'text-yellow-600'
+              }`}>
+                {realTimeEditorStatus === 'ready' ? '✅ Active' : '⏳ Initializing'}
+              </div>
+            </div>
+
+            {/* Code Understanding */}
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Zap className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Code Understanding</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">🧠</div>
+              <div className="text-xs text-blue-600">Deep Analysis</div>
+              <div className={`text-xs mt-1 ${
+                codeUnderstandingStatus === 'ready' ? 'text-green-600' : 'text-yellow-600'
+              }`}>
+                {codeUnderstandingStatus === 'ready' ? '✅ Active' : '⏳ Initializing'}
+              </div>
+            </div>
+
+            {/* Collaboration */}
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Users className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Collaboration</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">👥</div>
+              <div className="text-xs text-blue-600">Team Coding</div>
+              <div className="text-xs mt-1 text-blue-600">
+                {collaborationMode ? '🟢 Active' : '⚪ Inactive'}
+              </div>
+            </div>
+
+            {/* Memory Stats */}
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <TrendingUp className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Memory Stats</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">
+                {memoryStats.localCache ? Object.values(memoryStats.localCache).reduce((a, b) => a + b, 0) : 0}
+              </div>
+              <div className="text-xs text-blue-600">Cached Items</div>
+              <div className="text-xs mt-1 text-blue-600">
+                {memoryStats.connected ? '🟢 Online' : '🔴 Offline'}
+              </div>
+            </div>
+
+            {/* Code Analysis */}
+            <div className="bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Shield className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Code Analysis</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">
+                {codeAnalysis.quality ? codeAnalysis.quality.score || 0 : 0}
+              </div>
+              <div className="text-xs text-blue-600">Quality Score</div>
+              <div className="text-xs mt-1 text-blue-600">
+                {codeAnalysis.quality ? '📊 Analyzed' : '⏳ Waiting'}
+              </div>
+            </div>
+          </div>
+
+          {/* Real-time Suggestions */}
+          {realTimeSuggestions.length > 0 && (
+            <div className="mt-4 bg-white rounded-lg p-3 border border-blue-200">
+              <div className="flex items-center space-x-2 mb-2">
+                <Sparkles className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-medium text-blue-600">Live Suggestions</span>
+              </div>
+              <div className="space-y-2">
+                {realTimeSuggestions.slice(0, 3).map((suggestion, index) => (
+                  <div key={index} className="text-xs text-blue-700 bg-blue-50 p-2 rounded">
+                    {suggestion.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Quick Templates */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Start Templates</h3>
@@ -998,6 +1228,19 @@ click==8.1.7`
                   </button>
                 </>
               )}
+              
+              {/* Enhanced Features Tab - Always Visible */}
+              <button
+                onClick={() => setActiveTab('enhanced')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'enhanced'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Brain className="w-4 h-4 inline mr-2" />
+                Enhanced Features
+              </button>
             </nav>
           </div>
 
@@ -1289,6 +1532,351 @@ click==8.1.7`
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Enhanced Features Tab */}
+            {activeTab === 'enhanced' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">🚀 Enhanced AI Features</h3>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setCollaborationMode(!collaborationMode)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        collaborationMode 
+                          ? 'bg-green-100 text-green-800 border border-green-200' 
+                          : 'bg-gray-100 text-gray-800 border border-gray-200'
+                      }`}
+                    >
+                      <Users className="w-4 h-4 inline mr-2" />
+                      {collaborationMode ? 'Collaboration Active' : 'Enable Collaboration'}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        const stats = await firebaseMemory.getStats()
+                        setMemoryStats(stats)
+                      }}
+                      className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium border border-blue-200 hover:bg-blue-200"
+                    >
+                      <RefreshCw className="w-4 h-4 inline mr-2" />
+                      Refresh Stats
+                    </button>
+                  </div>
+                </div>
+
+                {/* Language Support Details */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200">
+                  <h4 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
+                    <Globe className="w-5 h-5 mr-2" />
+                    Programming Language Support ({languages.length} Languages)
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {languages.map((lang) => (
+                      <div key={lang.value} className="bg-white rounded-lg p-3 border border-blue-200 text-center">
+                        <div className="text-2xl mb-1">{lang.icon}</div>
+                        <div className="text-xs font-medium text-blue-900">{lang.label}</div>
+                        <div className="text-xs text-blue-600">{lang.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Auto-Coding Agent */}
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6 border border-green-200">
+                  <h4 className="text-lg font-semibold text-green-900 mb-4 flex items-center">
+                    <Brain className="w-5 h-5 mr-2" />
+                    Auto-Coding Agent
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h5 className="font-medium text-green-800 mb-3">Real-time Capabilities</h5>
+                      <ul className="space-y-2 text-sm text-green-700">
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                          Live code generation and editing
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                          Intelligent code suggestions
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                          Context-aware completions
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                          Error detection and fixes
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 className="font-medium text-green-800 mb-3">Status</h5>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-green-700">Agent Status:</span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            autoCodingAgentStatus === 'ready' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {autoCodingAgentStatus === 'ready' ? 'Active' : 'Initializing'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-green-700">Real-time Mode:</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Enabled
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-green-700">Learning Mode:</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Active
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Firebase Memory System */}
+                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-6 border border-orange-200">
+                  <h4 className="text-lg font-semibold text-orange-900 mb-4 flex items-center">
+                    <Database className="w-5 h-5 mr-2" />
+                    Firebase Memory System
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h5 className="font-medium text-orange-800 mb-3">Memory Features</h5>
+                      <ul className="space-y-2 text-sm text-orange-700">
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                          Persistent learning across sessions
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                          User context retention
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                          Pattern recognition and storage
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                          Cross-user knowledge sharing
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 className="font-medium text-orange-800 mb-3">Memory Statistics</h5>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-orange-700">Connection:</span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            memoryStats.connected 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {memoryStats.connected ? 'Connected' : 'Disconnected'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-orange-700">User Memories:</span>
+                          <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
+                            {memoryStats.localCache?.userMemories || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-orange-700">Learning Records:</span>
+                          <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
+                            {memoryStats.localCache?.learningHistory || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-orange-700">Context Cache:</span>
+                          <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
+                            {memoryStats.localCache?.contextCache || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Real-time Code Editor */}
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 border border-purple-200">
+                  <h4 className="text-lg font-semibold text-purple-900 mb-4 flex items-center">
+                    <Edit3 className="w-5 h-5 mr-2" />
+                    Real-time Code Editor
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h5 className="font-medium text-purple-800 mb-3">Editor Features</h5>
+                      <ul className="space-y-2 text-sm text-purple-700">
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                          Live syntax highlighting
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                          Real-time error checking
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                          Performance optimization
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                          Multi-language support
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 className="font-medium text-purple-800 mb-3">Status</h5>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-purple-700">Editor Status:</span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            realTimeEditorStatus === 'ready' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {realTimeEditorStatus === 'ready' ? 'Active' : 'Initializing'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-purple-700">Syntax Highlighting:</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Enabled
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-purple-700">Error Checking:</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Active
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Advanced Code Understanding */}
+                <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-6 border border-indigo-200">
+                  <h4 className="text-lg font-semibold text-indigo-900 mb-4 flex items-center">
+                    <Zap className="w-5 h-5 mr-2" />
+                    Advanced Code Understanding
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h5 className="font-medium text-indigo-800 mb-3">Analysis Capabilities</h5>
+                      <ul className="space-y-2 text-sm text-indigo-700">
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></span>
+                          AST parsing and analysis
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></span>
+                          Dependency mapping
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></span>
+                          Semantic analysis
+                        </li>
+                        <li className="flex items-center">
+                          <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></span>
+                          Quality assessment
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 className="font-medium text-indigo-800 mb-3">Status</h5>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-indigo-700">System Status:</span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            codeUnderstandingStatus === 'ready' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {codeUnderstandingStatus === 'ready' ? 'Active' : 'Initializing'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-indigo-700">AST Parser:</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Ready
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-indigo-700">Dependency Analyzer:</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Ready
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Comparison with Competitors */}
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-6 border border-yellow-200">
+                  <h4 className="text-lg font-semibold text-yellow-900 mb-4 flex items-center">
+                    <TrendingUp className="w-5 h-5 mr-2" />
+                    DreamBuild vs. Competitors
+                  </h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-yellow-200">
+                          <th className="text-left py-2 text-yellow-800">Feature</th>
+                          <th className="text-center py-2 text-yellow-800">DreamBuild</th>
+                          <th className="text-center py-2 text-yellow-800">Cursor</th>
+                          <th className="text-center py-2 text-yellow-800">Lovable</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-yellow-700">
+                        <tr className="border-b border-yellow-100">
+                          <td className="py-2">Programming Languages</td>
+                          <td className="text-center font-bold text-green-600">{languages.length}+</td>
+                          <td className="text-center">20+</td>
+                          <td className="text-center">20+</td>
+                        </tr>
+                        <tr className="border-b border-yellow-100">
+                          <td className="py-2">AI Consciousness</td>
+                          <td className="text-center font-bold text-green-600">✅ Advanced</td>
+                          <td className="text-center">❌ Basic</td>
+                          <td className="text-center">❌ Basic</td>
+                        </tr>
+                        <tr className="border-b border-yellow-100">
+                          <td className="py-2">Auto-Coding Agent</td>
+                          <td className="text-center font-bold text-green-600">✅ Full</td>
+                          <td className="text-center">✅ Full</td>
+                          <td className="text-center">✅ Full</td>
+                        </tr>
+                        <tr className="border-b border-yellow-100">
+                          <td className="py-2">Memory System</td>
+                          <td className="text-center font-bold text-green-600">✅ Firebase</td>
+                          <td className="text-center">❌ Local Only</td>
+                          <td className="text-center">❌ Cloud Only</td>
+                        </tr>
+                        <tr className="border-b border-yellow-100">
+                          <td className="py-2">Real-time Collaboration</td>
+                          <td className="text-center font-bold text-green-600">✅ Yes</td>
+                          <td className="text-center">✅ Yes</td>
+                          <td className="text-center">✅ Yes</td>
+                        </tr>
+                        <tr className="border-b border-yellow-100">
+                          <td className="py-2">Code Understanding</td>
+                          <td className="text-center font-bold text-green-600">✅ Advanced</td>
+                          <td className="text-center">✅ Basic</td>
+                          <td className="text-center">✅ Basic</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}

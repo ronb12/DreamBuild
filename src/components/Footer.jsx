@@ -52,6 +52,9 @@ const Footer = () => {
             <p className="text-gray-500 text-base">
               Transform your ideas into powerful applications with our cutting-edge development platform.
             </p>
+            <p className="text-sm text-gray-400">
+              A product of <span className="font-medium text-gray-600">Bradley Virtual Solutions, LLC</span>
+            </p>
             <div className="flex space-x-6">
               {social.map((item) => {
                 const Icon = item.icon
@@ -131,9 +134,14 @@ const Footer = () => {
         {/* Bottom */}
         <div className="mt-12 border-t border-gray-200 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-base text-gray-400">
-              © 2024 DreamBuild. All rights reserved.
-            </p>
+            <div className="text-center md:text-left">
+              <p className="text-base text-gray-400">
+                © 2024 DreamBuild. All rights reserved.
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                A product of <span className="font-medium text-gray-700">Bradley Virtual Solutions, LLC</span>
+              </p>
+            </div>
             <div className="mt-4 md:mt-0">
               <p className="text-sm text-gray-400">
                 Built with ❤️ for developers

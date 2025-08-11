@@ -170,6 +170,28 @@ const Home = () => {
           </Link>
         </div>
       </section>
+
+      {/* Company Branding Section */}
+      <section className="py-16 bg-gray-50 border-t border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+            <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+              Powered by Bradley Virtual Solutions, LLC
+            </h3>
+            <p className="text-gray-600 mb-6">
+              DreamBuild is a cutting-edge AI development platform created by Bradley Virtual Solutions, LLC, 
+              dedicated to revolutionizing how developers build applications through intelligent automation.
+            </p>
+            <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
+              <span>Enterprise-Grade AI</span>
+              <span>•</span>
+              <span>Professional Support</span>
+              <span>•</span>
+              <span>Trusted by Developers</span>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

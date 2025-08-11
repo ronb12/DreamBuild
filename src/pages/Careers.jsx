@@ -1,7 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { 
-  Briefcase, 
-  MapPin, 
   Clock, 
   Users, 
   Heart, 
@@ -15,102 +13,8 @@ import {
 } from 'lucide-react'
 
 const Careers = () => {
-  const [selectedDepartment, setSelectedDepartment] = useState('all')
 
-  const departments = [
-    { id: 'all', name: 'All Departments', count: 12 },
-    { id: 'engineering', name: 'Engineering', count: 6 },
-    { id: 'product', name: 'Product', count: 3 },
-    { id: 'design', name: 'Design', count: 2 },
-    { id: 'marketing', name: 'Marketing', count: 1 }
-  ]
 
-  const openPositions = [
-    {
-      id: 1,
-      title: 'Senior Full-Stack Engineer',
-      department: 'engineering',
-      location: 'Remote',
-      type: 'Full-time',
-      experience: '5+ years',
-      description: 'Join our core engineering team to build the next generation of AI-powered development tools.',
-      requirements: [
-        'Expert in React, Node.js, and TypeScript',
-        'Experience with AI/ML integration',
-        'Strong understanding of cloud infrastructure',
-        'Passion for developer productivity tools'
-      ],
-      benefits: [
-        'Competitive salary and equity',
-        'Flexible remote work options',
-        'Health, dental, and vision insurance',
-        'Professional development budget'
-      ]
-    },
-    {
-      id: 2,
-      title: 'AI/ML Engineer',
-      department: 'engineering',
-      location: 'Remote',
-      type: 'Full-time',
-      experience: '3+ years',
-      description: 'Help us build intelligent code generation and analysis systems that revolutionize development.',
-      requirements: [
-        'Strong background in machine learning',
-        'Experience with NLP and code analysis',
-        'Proficiency in Python and PyTorch',
-        'Understanding of software development workflows'
-      ],
-      benefits: [
-        'Competitive salary and equity',
-        'Remote-first culture',
-        'Latest AI/ML tools and infrastructure',
-        'Conference and training opportunities'
-      ]
-    },
-    {
-      id: 3,
-      title: 'Product Manager',
-      department: 'product',
-      location: 'Remote',
-      type: 'Full-time',
-      experience: '4+ years',
-      description: 'Drive product strategy and execution for our AI-powered development platform.',
-      requirements: [
-        'Experience in developer tools or SaaS products',
-        'Strong analytical and strategic thinking',
-        'Excellent communication and collaboration skills',
-        'Understanding of software development lifecycle'
-      ],
-      benefits: [
-        'Competitive salary and equity',
-        'Hybrid work environment',
-        'Comprehensive benefits package',
-        'Career growth opportunities'
-      ]
-    },
-    {
-      id: 4,
-      title: 'Senior UX Designer',
-      department: 'design',
-      location: 'Remote',
-      type: 'Full-time',
-      experience: '5+ years',
-      description: 'Create intuitive and powerful user experiences for developers using our platform.',
-      requirements: [
-        'Strong portfolio of complex web applications',
-        'Experience with developer tools or technical products',
-        'Proficiency in Figma and design systems',
-        'User research and testing experience'
-      ],
-      benefits: [
-        'Competitive salary and equity',
-        'Remote work flexibility',
-        'Design tools and resources',
-        'Creative freedom and ownership'
-      ]
-    }
-  ]
 
   const companyValues = [
     {
@@ -158,9 +62,7 @@ const Careers = () => {
     }
   ]
 
-  const filteredPositions = openPositions.filter(position =>
-    selectedDepartment === 'all' || position.department === selectedDepartment
-  )
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -224,104 +126,49 @@ const Careers = () => {
           </div>
         </div>
 
-        {/* Open Positions */}
+        {/* Future Opportunities */}
         <div className="mb-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">Open Positions</h2>
-            <div className="flex items-center space-x-4">
-              <select
-                value={selectedDepartment}
-                onChange={(e) => setSelectedDepartment(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                {departments.map((dept) => (
-                  <option key={dept.id} value={dept.id}>
-                    {dept.name} ({dept.count})
-                  </option>
-                ))}
-              </select>
+          <div className="text-center">
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Clock className="w-10 h-10 text-blue-600" />
             </div>
-          </div>
-
-          <div className="space-y-6">
-            {filteredPositions.map((position) => (
-              <div key={position.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{position.title}</h3>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                      <div className="flex items-center space-x-1">
-                        <Briefcase className="w-4 h-4" />
-                        <span>{position.department.charAt(0).toUpperCase() + position.department.slice(1)}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{position.location}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{position.type}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Users className="w-4 h-4" />
-                        <span>{position.experience}</span>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 mb-4">{position.description}</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Requirements</h4>
-                    <ul className="space-y-2">
-                      {position.requirements.map((req, index) => (
-                        <li key={index} className="flex items-start space-x-2 text-sm text-gray-600">
-                          <div className="w-1.5 h-1.5 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span>{req}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Benefits</h4>
-                    <ul className="space-y-2">
-                      {position.benefits.map((benefit, index) => (
-                        <li key={index} className="flex items-start space-x-2 text-sm text-gray-600">
-                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                          <span>{benefit}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
-                    Posted recently • {Math.floor(Math.random() * 7) + 1} days ago
-                  </div>
-                  <button className="btn-primary">
-                    Apply Now
-                  </button>
-                </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Future Opportunities</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+              We're currently focused on building and launching our AI-powered development platform. 
+              While we're not actively hiring at the moment, we're always interested in connecting with 
+              talented individuals who share our vision for the future of software development.
+            </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto">
+              <h3 className="text-lg font-semibold text-blue-900 mb-3">Stay Connected</h3>
+              <p className="text-blue-800 mb-4">
+                When we do start hiring, we'll be looking for passionate engineers, designers, and product 
+                professionals who want to revolutionize how developers build applications.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button className="btn-primary">
+                  Join Talent Network
+                </button>
+                <button className="btn-secondary">
+                  Follow Our Journey
+                </button>
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
         {/* Contact */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Don't See the Right Role?</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Interested in Future Opportunities?</h2>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            We're always looking for talented individuals to join our team. 
-            Send us your resume and let's discuss how you can contribute to our mission.
+            While we're not actively hiring right now, we'd love to stay connected with talented professionals 
+            who are passionate about AI-powered development tools. Let's keep in touch!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="btn-primary">
-              Send Resume
+              Join Talent Network
             </button>
             <button className="btn-secondary">
-              Contact Recruiting
+              Contact Us
             </button>
           </div>
         </div>

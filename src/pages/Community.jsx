@@ -88,12 +88,12 @@ const Community = () => {
 
   const upcomingEvents = [
     {
-      title: 'DreamBuild Community Meetup - San Francisco',
+      title: 'DreamBuild Community Meetup - Virtual',
       date: '2024-02-15',
       time: '6:00 PM PST',
-      location: 'San Francisco, CA',
+      location: 'Virtual Event',
       attendees: 45,
-      type: 'In-Person'
+      type: 'Online'
     },
     {
       title: 'AI Builder Workshop - Online',

@@ -8,7 +8,6 @@ import {
   Globe,
   Mail,
   Phone,
-  MapPin,
   Building
 } from 'lucide-react'
 
@@ -311,17 +310,7 @@ const Terms = () => {
                 <div className="text-gray-600">803-609-7009</div>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <MapPin className="w-5 h-5 text-primary-600" />
-              <div>
-                <div className="font-medium text-gray-900">Address</div>
-                <div className="text-gray-600">
-                  Bradley Virtual Solutions, LLC<br />
-                  123 Innovation Drive<br />
-                  San Francisco, CA 94105
-                </div>
-              </div>
-            </div>
+
             <div className="flex items-center space-x-3">
               <Building className="w-5 h-5 text-primary-600" />
               <div>

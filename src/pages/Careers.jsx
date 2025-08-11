@@ -30,7 +30,7 @@ const Careers = () => {
       id: 1,
       title: 'Senior Full-Stack Engineer',
       department: 'engineering',
-      location: 'San Francisco, CA',
+      location: 'Remote',
       type: 'Full-time',
       experience: '5+ years',
       description: 'Join our core engineering team to build the next generation of AI-powered development tools.',
@@ -72,7 +72,7 @@ const Careers = () => {
       id: 3,
       title: 'Product Manager',
       department: 'product',
-      location: 'San Francisco, CA',
+      location: 'Remote',
       type: 'Full-time',
       experience: '4+ years',
       description: 'Drive product strategy and execution for our AI-powered development platform.',
@@ -138,8 +138,8 @@ const Careers = () => {
   const benefits = [
     {
       icon: Building,
-      title: 'Modern Office',
-      description: 'Beautiful workspace in the heart of San Francisco with stunning city views.'
+      title: 'Remote-First Culture',
+      description: 'Work from anywhere with flexible schedules and modern collaboration tools.'
     },
     {
       icon: Rocket,

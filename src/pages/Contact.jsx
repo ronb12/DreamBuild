@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { 
   Mail, 
   Phone, 
-  MapPin, 
   Clock, 
   MessageSquare, 
   Send,
@@ -326,10 +325,10 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Office Location */}
+            {/* Contact Information */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <MapPin className="w-6 h-6 text-primary-600" />
+                <Mail className="w-6 h-6 text-primary-600" />
                 <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
               </div>
               <div className="text-sm text-gray-600">

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamBuild - Universal AI Development Platform</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Build applications in 100+ programming languages using AI-powered code generation">
+    <meta name="theme-color" content="#764ba2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="DreamBuild">
+    <meta name="msapplication-TileColor" content="#764ba2">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/content.json" as="fetch" crossorigin>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .hero {
+            margin-top: 100px;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        .cta-button {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        .cta-button:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        .features {
+            margin-top: 100px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 100px;
+        }
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .feature h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .feature p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            z-index: 1000;
+        }
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            transition: opacity 0.3s ease;
+        }
+        .nav-links a:hover {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">🧠 DreamBuild</div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/ai-builder">AI Builder</a>
+                <a href="/login">Login</a>
+                <a href="/about">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero">
+            <h1>🚀 DreamBuild</h1>
+            <p>Universal AI Development Platform supporting 100+ programming languages</p>
+            <div>
+                <a href="/ai-builder" class="cta-button">Start Building with AI</a>
+                <a href="/about" class="cta-button">Learn More</a>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>🤖 Template-Based AI</h3>
+                <p>Advanced template system with intelligent code generation patterns and smart customization.</p>
+            </div>
+            <div class="feature">
+                <h3>🌍 Universal Language Support</h3>
+                <p>Build in any programming language you prefer - JavaScript, Python, Java, C++, Go, Rust, and 100+ more.</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ Real-time Generation</h3>
+                <p>Live coding assistance with instant code generation and auto-completion.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Installation Prompt -->
+    <div id="install-prompt" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: rgba(255,255,255,0.95); color: #333; padding: 15px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); z-index: 1000;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <strong>Install DreamBuild</strong><br>
+                <small>Get the full app experience</small>
+            </div>
+            <div>
+                <button onclick="installPWA()" style="background: #764ba2; color: white; border: none; padding: 8px 16px; border-radius: 5px; margin-right: 10px; cursor: pointer;">Install</button>
+                <button onclick="dismissInstallPrompt()" style="background: #ccc; color: #333; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Later</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PWA Installation
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-prompt').style.display = 'block';
+        });
+        
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted PWA installation');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+            dismissInstallPrompt();
+        }
+        
+        function dismissInstallPrompt() {
+            document.getElementById('install-prompt').style.display = 'none';
+        }
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('DreamBuild SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('DreamBuild SW registration failed: ', registrationError);
+                    });
+            });
+        }
+        
+        // Load content.json
+        fetch('/content.json')
+            .then(response => response.json())
+            .then(data => {
+                console.log('DreamBuild content loaded:', data);
+                // Use content data for dynamic features
+            })
+            .catch(error => {
+                console.log('Error loading content:', error);
+            });
+    </script>
+</body>
+</html>

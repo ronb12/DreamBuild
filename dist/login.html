@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DreamBuild</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            z-index: 1000;
+        }
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+            transition: opacity 0.3s ease;
+        }
+        .nav-links a:hover {
+            opacity: 0.7;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 100px auto;
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            text-align: left;
+        }
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        .login-button {
+            width: 100%;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .login-button:hover {
+            background: #45a049;
+        }
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .signup-link a {
+            color: white;
+            text-decoration: underline;
+        }
+        .signup-link a:hover {
+            opacity: 0.7;
+        }
+        .demo-login {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
+        .demo-login:hover {
+            background: white;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">🧠 DreamBuild</div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/ai-builder">AI Builder</a>
+                <a href="/login">Login</a>
+                <a href="/about">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="login-form">
+        <h2>🔐 Login to DreamBuild</h2>
+        <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="login-button">Login</button>
+            <button type="button" onclick="demoLogin()" class="demo-login">Try Demo Account</button>
+        </form>
+        <div class="signup-link">
+            <p>Don't have an account? <a href="#" onclick="showSignup()">Sign up here</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Authentication state
+        let currentUser = null;
+
+        // Login functionality
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Mock authentication
+            if (email && password) {
+                currentUser = {
+                    name: email.split('@')[0],
+                    email: email
+                };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                alert('Login successful! Welcome to DreamBuild!');
+                window.location.href = '/dashboard';
+            } else {
+                alert('Please fill in all fields');
+            }
+        }
+
+        // Demo login
+        function demoLogin() {
+            currentUser = {
+                name: 'Demo User',
+                email: 'demo@dreambuild.com'
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('Demo login successful! Welcome to DreamBuild!');
+            window.location.href = '/dashboard';
+        }
+
+        // Show signup page
+        function showSignup() {
+            window.location.href = '/signup';
+        }
+    </script>
+</body>
+</html>

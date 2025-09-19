@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create PNG Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .icon-canvas {
+            margin: 20px;
+            border: 1px solid #ddd;
+            background: white;
+            display: inline-block;
+        }
+        .download-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>DreamBuild Icon Generator</h1>
+    <p>Click the buttons below to download the PNG icons:</p>
+
+    <div style="text-align: center;">
+        <canvas id="icon32" class="icon-canvas" width="32" height="32"></canvas>
+        <br>
+        <button class="download-btn" onclick="downloadIcon('icon32', 'icon-32x32.png')">Download 32x32</button>
+    </div>
+
+    <div style="text-align: center;">
+        <canvas id="icon144" class="icon-canvas" width="144" height="144"></canvas>
+        <br>
+        <button class="download-btn" onclick="downloadIcon('icon144', 'icon-144x144.png')">Download 144x144</button>
+    </div>
+
+    <div style="text-align: center;">
+        <canvas id="icon192" class="icon-canvas" width="192" height="192"></canvas>
+        <br>
+        <button class="download-btn" onclick="downloadIcon('icon192', 'icon-192x192.png')">Download 192x192</button>
+    </div>
+
+    <div style="text-align: center;">
+        <canvas id="icon512" class="icon-canvas" width="512" height="512"></canvas>
+        <br>
+        <button class="download-btn" onclick="downloadIcon('icon512', 'icon-512x512.png')">Download 512x512</button>
+    </div>
+
+    <script>
+        function drawIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Create gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            // Draw background circle
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 - 2, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Draw brain emoji
+            ctx.fillStyle = 'white';
+            ctx.font = `${size * 0.5}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🧠', size/2, size/2);
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Generate all icons
+        drawIcon('icon32', 32);
+        drawIcon('icon144', 144);
+        drawIcon('icon192', 192);
+        drawIcon('icon512', 512);
+        
+        // Auto-download all icons after 1 second
+        setTimeout(() => {
+            downloadIcon('icon32', 'icon-32x32.png');
+            setTimeout(() => downloadIcon('icon144', 'icon-144x144.png'), 100);
+            setTimeout(() => downloadIcon('icon192', 'icon-192x192.png'), 200);
+            setTimeout(() => downloadIcon('icon512', 'icon-512x512.png'), 300);
+        }, 1000);
+    </script>
+</body>
+</html>

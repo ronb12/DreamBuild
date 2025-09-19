@@ -93,10 +93,10 @@
         <div class="navbar-content">
             <div class="logo">🧠 DreamBuild</div>
             <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/ai-builder">AI Builder</a>
-                <a href="/login">Login</a>
-                <a href="/about">About</a>
+                <a href="index.html">Home</a>
+                <a href="ai-builder.html">AI Builder</a>
+                <a href="login.html">Login</a>
+                <a href="about.html">About</a>
             </div>
         </div>
     </nav>
@@ -109,12 +109,12 @@
                 <div class="feature">
                     <h4>📊 Your Projects</h4>
                     <p>5 active projects</p>
-                    <a href="/ai-builder" class="cta-button">Start New Project</a>
+                    <a href="ai-builder.html" class="cta-button">Start New Project</a>
                 </div>
                 <div class="feature">
                     <h4>🤖 AI Usage</h4>
                     <p>127 code generations this month</p>
-                    <a href="/ai-builder" class="cta-button">Generate Code</a>
+                    <a href="ai-builder.html" class="cta-button">Generate Code</a>
                 </div>
                 <div class="feature">
                     <h4>⚡ Recent Activity</h4>
@@ -134,14 +134,14 @@
                 document.getElementById('user-name').textContent = user.name;
             } else {
                 // Redirect to login if no user
-                window.location.href = '/login';
+                window.location.href = 'login.html';
             }
         });
 
         // Logout functionality
         function logout() {
             localStorage.removeItem('currentUser');
-            window.location.href = '/';
+            window.location.href = 'index.html';
         }
     </script>
 </body>

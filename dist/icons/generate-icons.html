@@ -80,6 +80,14 @@
             ctx.fillText('<>', size/2, size/2 + size * 0.25);
         }
         
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
         // Generate all icons
         drawIcon('icon72', 72);
         drawIcon('icon96', 96);
@@ -89,6 +97,12 @@
         drawIcon('icon192', 192);
         drawIcon('icon384', 384);
         drawIcon('icon512', 512);
+        
+        // Auto-download essential icons
+        setTimeout(() => {
+            downloadIcon('icon192', 'icon-192x192.png');
+            downloadIcon('icon512', 'icon-512x512.png');
+        }, 1000);
     </script>
 </body>
 </html>

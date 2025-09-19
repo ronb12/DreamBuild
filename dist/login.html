@@ -132,10 +132,10 @@
         <div class="navbar-content">
             <div class="logo">🧠 DreamBuild</div>
             <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/ai-builder">AI Builder</a>
-                <a href="/login">Login</a>
-                <a href="/about">About</a>
+                <a href="index.html">Home</a>
+                <a href="ai-builder.html">AI Builder</a>
+                <a href="login.html">Login</a>
+                <a href="about.html">About</a>
             </div>
         </div>
     </nav>
@@ -177,7 +177,7 @@
                 };
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 alert('Login successful! Welcome to DreamBuild!');
-                window.location.href = '/dashboard';
+                window.location.href = 'dashboard.html';
             } else {
                 alert('Please fill in all fields');
             }
@@ -191,12 +191,12 @@
             };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             alert('Demo login successful! Welcome to DreamBuild!');
-            window.location.href = '/dashboard';
+            window.location.href = 'dashboard.html';
         }
 
         // Show signup page
         function showSignup() {
-            window.location.href = '/signup';
+            window.location.href = 'signup.html';
         }
     </script>
 </body>

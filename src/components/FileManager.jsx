@@ -201,34 +201,34 @@ const FileManager = () => {
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden"
+      className="h-full flex flex-col bg-gray-800 overflow-hidden"
     >
       {/* Cursor-Style File Manager Header */}
-      <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+      <div className="p-3 border-b border-gray-700 bg-gray-800">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded flex items-center justify-center">
-              <Folder className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <div className="w-6 h-6 bg-blue-900/30 rounded flex items-center justify-center">
+              <Folder className="h-4 w-4 text-blue-400" />
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Explorer</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Files</p>
+              <h3 className="text-sm font-medium text-gray-100">Explorer</h3>
+              <p className="text-xs text-gray-400">Files</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowNewFileDialog(true)}
-              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+              className="p-1.5 hover:bg-gray-700 rounded transition-colors"
               title="New File"
             >
-              <Plus className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+              <Plus className="h-4 w-4 text-gray-400" />
             </button>
             <button
               onClick={() => setShowProjectDialog(true)}
-              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+              className="p-1.5 hover:bg-gray-700 rounded transition-colors"
               title="Project Settings"
             >
-              <Settings className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+              <Settings className="h-4 w-4 text-gray-400" />
             </button>
           </div>
         </div>
@@ -349,10 +349,10 @@ const FileManager = () => {
       </div>
 
       {/* Cursor-Style Upload Area */}
-      <div className="p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
-        <label className="flex items-center justify-center gap-2 p-2 border border-dashed border-gray-300 dark:border-gray-600 rounded hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
-          <Upload className="h-3 w-3 text-gray-500 dark:text-gray-400" />
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+      <div className="p-2 border-t border-gray-700 bg-gray-800">
+        <label className="flex items-center justify-center gap-2 p-2 border border-dashed border-gray-600 rounded hover:border-blue-500 hover:bg-blue-900/20 transition-colors cursor-pointer">
+          <Upload className="h-3 w-3 text-gray-400" />
+          <span className="text-xs text-gray-400">
             Upload
           </span>
           <input

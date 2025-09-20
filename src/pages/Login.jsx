@@ -46,22 +46,22 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-md">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-card/90 backdrop-blur-md border border-border/50 rounded-3xl p-10 shadow-2xl"
+          className="bg-card/90 backdrop-blur-md border border-border/50 rounded-2xl p-8 shadow-xl"
         >
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <Sparkles className="h-12 w-12 text-primary" />
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <Sparkles className="h-8 w-8 text-primary" />
             </div>
-            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
               Welcome to DreamBuild
             </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed">
               The universal AI development platform that brings your ideas to life
             </p>
           </div>
@@ -69,11 +69,11 @@ const Login = () => {
           {/* Authentication Options */}
           <div className="space-y-4 mb-8">
             <motion.button 
-              whileHover={{ scale: isSigningIn ? 1 : 1.02, y: -2 }}
+              whileHover={{ scale: isSigningIn ? 1 : 1.02 }}
               whileTap={{ scale: isSigningIn ? 1 : 0.98 }}
               onClick={handleGoogleSignIn}
               disabled={isSigningIn}
-              className="w-full flex items-center justify-center gap-4 p-5 border border-border/50 rounded-2xl hover:bg-muted/30 transition-all duration-300 font-semibold text-lg bg-background/60 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full flex items-center justify-center gap-3 p-4 border border-border/50 rounded-xl hover:bg-muted/30 transition-all duration-200 font-semibold bg-background/60 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
             >
               {isSigningIn ? (
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -89,10 +89,10 @@ const Login = () => {
             </motion.button>
 
             <motion.button 
-              whileHover={{ scale: 1.02, y: -2 }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleGitHubSignIn}
-              className="w-full flex items-center justify-center gap-4 p-5 border border-border/50 rounded-2xl hover:bg-muted/30 transition-all duration-300 font-semibold text-lg bg-background/60 backdrop-blur-sm shadow-lg hover:shadow-xl"
+              className="w-full flex items-center justify-center gap-3 p-4 border border-border/50 rounded-xl hover:bg-muted/30 transition-all duration-200 font-semibold bg-background/60 backdrop-blur-sm shadow-sm hover:shadow-md"
             >
               <Github className="h-6 w-6" />
               Continue with GitHub
@@ -126,31 +126,25 @@ const Login = () => {
           </div>
 
           {/* Features Preview */}
-          <div className="mt-10 pt-8 border-t border-border/30">
-            <h3 className="text-center text-lg font-semibold mb-6 text-foreground">
+          <div className="mt-6 pt-6 border-t border-border/30">
+            <h3 className="text-center text-sm font-semibold mb-4 text-foreground">
               What you'll get with DreamBuild:
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-              <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                </div>
-                <h4 className="font-semibold text-sm mb-1">AI-Powered Development</h4>
-                <p className="text-xs text-muted-foreground">Generate code with AI assistance</p>
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                <Sparkles className="h-4 w-4 text-primary mx-auto mb-2" />
+                <h4 className="font-semibold text-xs mb-1">AI Development</h4>
+                <p className="text-xs text-muted-foreground">Generate code</p>
               </div>
-              <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <User className="h-4 w-4 text-primary" />
-                </div>
-                <h4 className="font-semibold text-sm mb-1">Project Management</h4>
-                <p className="text-xs text-muted-foreground">Save and organize your projects</p>
+              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                <User className="h-4 w-4 text-primary mx-auto mb-2" />
+                <h4 className="font-semibold text-xs mb-1">Projects</h4>
+                <p className="text-xs text-muted-foreground">Save & organize</p>
               </div>
-              <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Github className="h-4 w-4 text-primary" />
-                </div>
-                <h4 className="font-semibold text-sm mb-1">Easy Deployment</h4>
-                <p className="text-xs text-muted-foreground">Deploy to Firebase & GitHub</p>
+              <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                <Github className="h-4 w-4 text-primary mx-auto mb-2" />
+                <h4 className="font-semibold text-xs mb-1">Deploy</h4>
+                <p className="text-xs text-muted-foreground">Firebase & GitHub</p>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { useTheme } from '../contexts/ThemeContext'
 import { useProject } from '../contexts/ProjectContext'
 import { motion } from 'framer-motion'
 import { Copy, Download, RefreshCw } from 'lucide-react'
-import toast from 'react-hot-toast'
+// import toast from 'react-hot-toast' // Removed toast import
 
 const CodeEditor = () => {
   const { theme } = useTheme()
@@ -137,13 +137,13 @@ const CodeEditor = () => {
   const handleCopy = () => {
     const content = currentProject.files[currentProject.activeFile] || ''
     navigator.clipboard.writeText(content)
-    toast.success('Code copied to clipboard!')
+    console.log('Code copied to clipboard!')
   }
 
   const handleCopyAll = () => {
     const content = currentProject.files[currentProject.activeFile] || ''
     navigator.clipboard.writeText(content)
-    toast.success('All code copied to clipboard!')
+    console.log('All code copied to clipboard!')
   }
 
   const handleDownload = () => {
@@ -157,17 +157,17 @@ const CodeEditor = () => {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    toast.success(`Downloaded ${currentProject.activeFile}`)
+    console.log(`Downloaded ${currentProject.activeFile}`)
   }
 
   const handleSave = () => {
-    toast.success('Code saved!')
+    console.log('Code saved!')
   }
 
   const handleFormat = () => {
     if (editorRef.current) {
       editorRef.current.getAction('editor.action.formatDocument').run()
-      toast.success('Code formatted!')
+      console.log('Code formatted!')
     }
   }
 

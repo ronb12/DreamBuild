@@ -17,7 +17,7 @@ import {
 import simpleAIService from '../services/simpleAIService'
 import AIServiceStatus from './AIServiceStatus'
 import TemplateBrowser from './TemplateBrowser'
-import toast from 'react-hot-toast'
+// import toast from 'react-hot-toast' // Removed toast import
 
 const AIPrompt = () => {
   const { currentProject, updateFile, updateConfig } = useProject()
@@ -259,17 +259,25 @@ const AIPrompt = () => {
         </div>
 
         {/* AI Service Status */}
-        <div className="flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                   <span className="text-muted-foreground">
-                     {serviceStatus[simpleAIService?.currentService || 'local-ai']?.isHealthy ? 'AI Ready' : 'Demo Mode'}
-                   </span>
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-muted-foreground">
+                {serviceStatus[simpleAIService?.currentService || 'local-ai']?.isHealthy ? 'AI Ready' : 'Demo Mode'}
+              </span>
+            </div>
+            <span>•</span>
+            <span className="text-muted-foreground">
+              {simpleAIService?.isFallbackEnabled ? (simpleAIService.isFallbackEnabled() ? 'Fallback Enabled' : 'Single Service') : 'Local AI Only'}
+            </span>
           </div>
-          <span>•</span>
-          <span className="text-muted-foreground">
-            {simpleAIService?.isFallbackEnabled ? (simpleAIService.isFallbackEnabled() ? 'Fallback Enabled' : 'Single Service') : 'Local AI Only'}
-          </span>
+          <button
+            onClick={() => setShowServiceStatus(true)}
+            className="text-xs text-primary hover:underline"
+          >
+            Details
+          </button>
         </div>
       </div>
 

@@ -34,6 +34,20 @@ function ConditionalFooter() {
   return <Footer />
 }
 
+// Component to conditionally apply main padding
+function ConditionalMain({ children }) {
+  const location = useLocation()
+  
+  // Don't apply pt-16 on AI Builder page as it handles its own spacing
+  const noPaddingRoutes = ['/ai-builder']
+  
+  if (noPaddingRoutes.includes(location.pathname)) {
+    return <main>{children}</main>
+  }
+  
+  return <main className="pt-16">{children}</main>
+}
+
 function App() {
   return (
     <ThemeProvider>
@@ -42,7 +56,7 @@ function App() {
           <Router>
             <div className="min-h-screen bg-background">
               <Navbar />
-              <main className="pt-16">
+              <ConditionalMain>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/ai-builder" element={<AIBuilder />} />
@@ -58,7 +72,7 @@ function App() {
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/contact" element={<Contact />} />
                 </Routes>
-              </main>
+              </ConditionalMain>
               <ConditionalFooter />
               <Toaster 
                 position="top-right"

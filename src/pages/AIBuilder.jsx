@@ -17,7 +17,7 @@ const AIBuilder = () => {
   ]
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col -mt-16 pt-16">
       {/* Back to Home Button */}
       <div className="absolute top-4 left-4 z-30">
         <motion.a
@@ -58,7 +58,7 @@ const AIBuilder = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 pt-24">
+      <div className="flex-1 p-4 pt-20">
         <ResizablePanelGroup direction="horizontal" className="h-full gap-2">
           
           {/* Left Panel - File Manager */}

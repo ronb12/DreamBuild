@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useProject } from '../contexts/ProjectContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -14,7 +14,10 @@ import {
   Rocket,
   Github,
   ExternalLink,
-  Loader2
+  Loader2,
+  MoreVertical,
+  Edit,
+  Copy
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import deploymentService from '../services/deploymentService'
@@ -28,6 +31,8 @@ const FileManager = () => {
   const [isDeploying, setIsDeploying] = useState(false)
   const [deploymentPlatform, setDeploymentPlatform] = useState('firebase')
   const [projectName, setProjectName] = useState('')
+  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, filename: '' })
+  const contextMenuRef = useRef(null)
 
   const fileIcons = {
     'index.html': '🌐',
@@ -54,6 +59,61 @@ const FileManager = () => {
   const handleFileClick = (filename) => {
     switchFile(filename)
   }
+
+  const handleContextMenu = (e, filename) => {
+    e.preventDefault()
+    setContextMenu({
+      show: true,
+      x: e.clientX,
+      y: e.clientY,
+      filename: filename
+    })
+  }
+
+  const handleContextAction = (action) => {
+    const { filename } = contextMenu
+    setContextMenu({ show: false, x: 0, y: 0, filename: '' })
+    
+    switch (action) {
+      case 'download':
+        handleDownloadFile(filename)
+        break
+      case 'delete':
+        handleDeleteFile(filename)
+        break
+      case 'rename':
+        // TODO: Implement rename functionality
+        toast.info('Rename functionality coming soon!')
+        break
+      case 'copy':
+        // TODO: Implement copy functionality
+        toast.info('Copy functionality coming soon!')
+        break
+      default:
+        break
+    }
+  }
+
+  const closeContextMenu = () => {
+    setContextMenu({ show: false, x: 0, y: 0, filename: '' })
+  }
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(event.target)) {
+        closeContextMenu()
+      }
+    }
+
+    if (contextMenu.show) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [contextMenu.show])
 
   const handleNewFile = () => {
     if (newFileName.trim()) {
@@ -301,6 +361,7 @@ const FileManager = () => {
                     : 'hover:bg-gray-100 dark:hover:bg-gray-800/50 text-gray-700 dark:text-gray-300'
                 }`}
                 onClick={() => handleFileClick(filename)}
+                onContextMenu={(e) => handleContextMenu(e, filename)}
               >
                 {/* Tree Indentation */}
                 <div className="w-4 flex items-center justify-center">
@@ -317,31 +378,7 @@ const FileManager = () => {
                   <span className="text-sm font-normal truncate">{filename}</span>
                 </div>
                 
-                {/* Action Buttons - Hidden by default, shown on hover */}
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDownloadFile(filename)
-                    }}
-                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                    title="Download"
-                  >
-                    <Download className="h-3 w-3" />
-                  </button>
-                  {Object.keys(currentProject.files).length > 1 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDeleteFile(filename)
-                      }}
-                      className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-3 w-3 text-red-600 dark:text-red-400" />
-                    </button>
-                  )}
-                </div>
+                {/* Clean design - no action buttons */}
               </motion.div>
             ))}
           </div>
@@ -615,6 +652,58 @@ const FileManager = () => {
                 </div>
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Context Menu */}
+      <AnimatePresence>
+        {contextMenu.show && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            ref={contextMenuRef}
+            className="fixed z-50 bg-card border border-border rounded-lg shadow-lg py-1 min-w-[160px]"
+            style={{
+              left: contextMenu.x,
+              top: contextMenu.y,
+            }}
+            onClick={closeContextMenu}
+          >
+            <button
+              onClick={() => handleContextAction('download')}
+              className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2 transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              Download
+            </button>
+            <button
+              onClick={() => handleContextAction('copy')}
+              className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2 transition-colors"
+            >
+              <Copy className="h-4 w-4" />
+              Copy
+            </button>
+            <button
+              onClick={() => handleContextAction('rename')}
+              className="w-full px-3 py-2 text-left text-sm hover:bg-muted flex items-center gap-2 transition-colors"
+            >
+              <Edit className="h-4 w-4" />
+              Rename
+            </button>
+            {Object.keys(currentProject.files).length > 1 && (
+              <>
+                <div className="border-t border-border my-1"></div>
+                <button
+                  onClick={() => handleContextAction('delete')}
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center gap-2 transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </button>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

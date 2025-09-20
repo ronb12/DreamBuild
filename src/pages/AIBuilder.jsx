@@ -4,100 +4,143 @@ import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
 import AIPrompt from '../components/AIPrompt'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
-import { Terminal as TerminalIcon } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles } from 'lucide-react'
 
 const AIBuilder = () => {
+  const [activeTab, setActiveTab] = useState('editor')
+
+  const tabs = [
+    { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
+    { id: 'preview', label: 'Live Preview', icon: Eye, description: 'View your application in real-time' },
+    { id: 'terminal', label: 'Terminal', icon: TerminalIcon, description: 'Command line interface' }
+  ]
+
   return (
-    <div className="h-[calc(100vh-80px)] flex bg-gray-900 text-gray-100">
-      {/* Cursor-Style Three-Panel Layout */}
-      <ResizablePanelGroup direction="horizontal" className="h-full">
-        
-        {/* Left Panel - File Explorer (Cursor Style) */}
-        <ResizablePanel defaultSize={280} minSize={200} maxSize={400}>
-          <div className="h-full bg-gray-800 border-r border-gray-700">
-            <FileManager />
-          </div>
-        </ResizablePanel>
-        
-        <ResizableHandle className="w-0.5 bg-gray-700 hover:bg-gray-600 transition-colors" />
-        
-        {/* Middle Panel - Editor & Terminal (Cursor Style) */}
-        <ResizablePanel defaultSize={60} minSize={40}>
-          <ResizablePanelGroup direction="vertical" className="h-full">
-            
-            {/* Top Panel - Code Editor */}
-            <ResizablePanel defaultSize={70} minSize={30}>
-              <div className="h-full bg-gray-900 border-b border-gray-700">
-                {/* Editor Tabs - Cursor Style */}
-                <div className="flex items-center bg-gray-800 border-b border-gray-700">
-                  <div className="flex items-center px-4 py-2 bg-gray-900 border-r border-gray-700">
-                    <span className="text-sm text-gray-300">index.html</span>
-                  </div>
-                  <div className="flex items-center px-4 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors cursor-pointer">
-                    <span className="text-sm">style.css</span>
-                  </div>
-                  <div className="flex items-center px-4 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors cursor-pointer">
-                    <span className="text-sm">script.js</span>
-                  </div>
-                  <div className="flex items-center px-4 py-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors cursor-pointer">
-                    <span className="text-sm">+</span>
-                  </div>
-                </div>
-                
-                {/* Code Editor Content */}
-                <div className="h-[calc(100%-40px)]">
-                  <CodeEditor />
-                </div>
+    <div className="h-screen bg-background flex flex-col -mt-16 pt-16">
+      {/* Header */}
+      <div className="bg-card border-b border-border">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Brain className="h-6 w-6 text-primary" />
               </div>
-            </ResizablePanel>
-            
-            <ResizableHandle className="h-0.5 bg-gray-700 hover:bg-gray-600 transition-colors" />
-            
-            {/* Bottom Panel - Terminal */}
-            <ResizablePanel defaultSize={30} minSize={20}>
-              <div className="h-full bg-gray-900">
-                {/* Terminal Header */}
-                <div className="flex items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
-                  <TerminalIcon className="h-4 w-4 text-gray-400 mr-2" />
-                  <span className="text-sm text-gray-300">Terminal</span>
-                  <div className="ml-auto flex items-center gap-2">
-                    <span className="text-xs text-gray-500">main</span>
-                    <span className="text-xs text-gray-500">∞</span>
-                  </div>
-                </div>
-                
-                {/* Terminal Content */}
-                <div className="h-[calc(100%-40px)] p-4 font-mono text-sm bg-gray-900">
-                  <div className="text-green-400">ronellbradley@DreamBuild %</div>
-                  <div className="text-gray-300 mt-2">
-                    <div>✓ Deploy complete!</div>
-                    <div className="text-blue-400">Project Console: https://console.firebase.google.com/project/dreambuild-2024-app/overview</div>
-                    <div className="text-blue-400">Hosting URL: https://dreambuild-2024-app.web.app</div>
-                  </div>
-                  <div className="text-green-400 mt-2">ronellbradley@DreamBuild %</div>
-                  <div className="mt-4">
-                    <div className="text-gray-400"># Available commands:</div>
-                    <div className="text-gray-400"># npm run dev - Start development server</div>
-                    <div className="text-gray-400"># npm run build - Build for production</div>
-                    <div className="text-gray-400"># firebase deploy - Deploy to Firebase</div>
-                  </div>
-                </div>
+              <div>
+                <h1 className="text-xl font-bold text-foreground">AI Builder</h1>
+                <p className="text-sm text-muted-foreground">
+                  {activeTab === 'editor' && 'Code Editor with Live Preview'}
+                  {activeTab === 'preview' && 'Live Preview Mode'}
+                  {activeTab === 'terminal' && 'Terminal & AI Assistant'}
+                </p>
               </div>
-            </ResizablePanel>
+            </div>
             
-          </ResizablePanelGroup>
-        </ResizablePanel>
-        
-        <ResizableHandle className="w-0.5 bg-gray-700 hover:bg-gray-600 transition-colors" />
-        
-        {/* Right Panel - AI Assistant (Cursor Style) */}
-        <ResizablePanel defaultSize={25} minSize={20} maxSize={35}>
-          <div className="h-full bg-gray-800 border-l border-gray-700">
-            <AIPrompt />
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border border-border/50">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <motion.button
+                    key={tab.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex flex-col items-center gap-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      activeTab === tab.id
+                        ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                    }`}
+                    title={tab.description}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4" />
+                      <span>{tab.label}</span>
+                    </div>
+                    <div className={`text-xs ${
+                      activeTab === tab.id 
+                        ? 'text-primary-foreground/70' 
+                        : 'text-muted-foreground/60'
+                    }`}>
+                      {tab.description}
+                    </div>
+                  </motion.button>
+                )
+              })}
+            </div>
           </div>
-        </ResizablePanel>
-        
-      </ResizablePanelGroup>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-4">
+        <ResizablePanelGroup direction="horizontal" className="h-full gap-2">
+          
+          {/* Left Panel - File Manager */}
+          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+            <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+              <FileManager />
+            </div>
+          </ResizablePanel>
+          
+          <ResizableHandle className="w-1 bg-border/30 hover:bg-primary/30 transition-colors rounded-full" />
+          
+          {/* Center Panel - Code Editor */}
+          <ResizablePanel defaultSize={55} minSize={40}>
+            <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+              {activeTab === 'editor' && <CodeEditor />}
+              {activeTab === 'preview' && <Preview />}
+              {activeTab === 'terminal' && (
+                <div className="h-full flex flex-col bg-gradient-to-br from-card via-card/80 to-card rounded-lg border border-border/50 shadow-sm overflow-hidden">
+                  {/* Terminal Header */}
+                  <div className="p-4 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                        <TerminalIcon className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <span className="font-semibold text-foreground">Terminal</span>
+                        <p className="text-xs text-muted-foreground">Command line interface</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Terminal Content */}
+                  <div className="flex-grow p-6 bg-gray-900 text-green-400 font-mono text-sm overflow-y-auto">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-400">ronellbradley@DreamBuild</span>
+                        <span className="text-gray-500">%</span>
+                        <span className="text-gray-300">npm run dev</span>
+                      </div>
+                      <div className="text-gray-400">Starting development server...</div>
+                      <div className="text-green-400">✓ Server running on http://localhost:3000</div>
+                      <div className="text-blue-400">✓ Ready in 2.3s</div>
+                      <div className="mt-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-400">ronellbradley@DreamBuild</span>
+                          <span className="text-gray-500">%</span>
+                          <span className="text-gray-300 animate-pulse">_</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </ResizablePanel>
+          
+          <ResizableHandle className="w-1 bg-border/30 hover:bg-primary/30 transition-colors rounded-full" />
+          
+          {/* Right Panel - AI Assistant */}
+          <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
+            <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+              <AIPrompt />
+            </div>
+          </ResizablePanel>
+          
+        </ResizablePanelGroup>
+      </div>
     </div>
   )
 }

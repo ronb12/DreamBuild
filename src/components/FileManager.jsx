@@ -10,15 +10,24 @@ import {
   Upload,
   Settings,
   Save,
-  FolderOpen
+  FolderOpen,
+  Rocket,
+  Github,
+  ExternalLink,
+  Loader2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import deploymentService from '../services/deploymentService'
 
 const FileManager = () => {
   const { currentProject, switchFile, updateFile, saveProject, createNewProject } = useProject()
   const [showNewFileDialog, setShowNewFileDialog] = useState(false)
   const [newFileName, setNewFileName] = useState('')
   const [showProjectDialog, setShowProjectDialog] = useState(false)
+  const [showDeployDialog, setShowDeployDialog] = useState(false)
+  const [isDeploying, setIsDeploying] = useState(false)
+  const [deploymentPlatform, setDeploymentPlatform] = useState('firebase')
+  const [projectName, setProjectName] = useState('')
 
   const fileIcons = {
     'index.html': '🌐',
@@ -132,6 +141,52 @@ const FileManager = () => {
     }
   }
 
+  const handleDeploy = async () => {
+    if (!projectName.trim()) {
+      toast.error('Please enter a project name')
+      return
+    }
+
+    if (Object.keys(currentProject.files).length === 0) {
+      toast.error('Please generate some code first')
+      return
+    }
+
+    setIsDeploying(true)
+    
+    try {
+      let result
+      
+      if (deploymentPlatform === 'firebase') {
+        result = await deploymentService.deployToFirebase(currentProject, projectName)
+      } else {
+        result = await deploymentService.deployToGitHub(currentProject, projectName)
+      }
+
+      if (result.success) {
+        toast.success(`Successfully deployed to ${result.platform}!`)
+        
+        // Open the deployed URL
+        if (result.url) {
+          window.open(result.url, '_blank')
+        }
+
+        // Show GitHub instructions if needed
+        if (result.instructions) {
+          console.log('GitHub deployment instructions:', result.instructions)
+          toast.success('Check console for GitHub Pages setup instructions')
+        }
+
+        setShowDeployDialog(false)
+        setProjectName('')
+      }
+    } catch (error) {
+      toast.error(`Deployment failed: ${error.message}`)
+    } finally {
+      setIsDeploying(false)
+    }
+  }
+
   const fileTypes = [
     { name: 'HTML File', extension: '.html', icon: '🌐' },
     { name: 'CSS File', extension: '.css', icon: '🎨' },
@@ -174,7 +229,7 @@ const FileManager = () => {
         </div>
 
         {/* Project Actions */}
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           <button
             onClick={() => saveProject()}
             className="flex items-center gap-1 px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
@@ -182,6 +237,15 @@ const FileManager = () => {
           >
             <Save className="h-3 w-3" />
             Save
+          </button>
+          <button
+            onClick={() => setShowDeployDialog(true)}
+            className="flex items-center gap-1 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            title="Deploy Project"
+            disabled={Object.keys(currentProject.files).length === 0}
+          >
+            <Rocket className="h-3 w-3" />
+            Deploy
           </button>
           <button
             onClick={handleDownloadProject}
@@ -395,6 +459,127 @@ const FileManager = () => {
                     className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors"
                   >
                     Close
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Deployment Dialog */}
+      <AnimatePresence>
+        {showDeployDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
+            onClick={() => setShowDeployDialog(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-card border border-border rounded-lg p-6 w-96 max-w-[90vw]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Rocket className="h-5 w-5" />
+                Deploy Your App
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Project Name</label>
+                  <input
+                    type="text"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    placeholder="my-awesome-app"
+                    className="w-full p-2 border border-border rounded-md bg-background"
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Deployment Platform</label>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 p-2 border border-border rounded-md hover:bg-muted cursor-pointer">
+                      <input
+                        type="radio"
+                        value="firebase"
+                        checked={deploymentPlatform === 'firebase'}
+                        onChange={(e) => setDeploymentPlatform(e.target.value)}
+                        className="text-primary"
+                      />
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-orange-500 rounded flex items-center justify-center">
+                          <span className="text-white text-xs">F</span>
+                        </div>
+                        <span>Firebase Hosting</span>
+                      </div>
+                    </label>
+                    
+                    <label className="flex items-center gap-2 p-2 border border-border rounded-md hover:bg-muted cursor-pointer">
+                      <input
+                        type="radio"
+                        value="github"
+                        checked={deploymentPlatform === 'github'}
+                        onChange={(e) => setDeploymentPlatform(e.target.value)}
+                        className="text-primary"
+                      />
+                      <div className="flex items-center gap-2">
+                        <Github className="h-4 w-4" />
+                        <span>GitHub Pages</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-muted rounded-md">
+                  <h4 className="text-sm font-medium mb-2">Platform Info</h4>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    {deploymentPlatform === 'firebase' ? (
+                      <>
+                        <p><strong>Firebase Hosting:</strong> Instant deployment with custom domain support</p>
+                        <p><strong>Features:</strong> CDN, SSL, automatic HTTPS</p>
+                        <p><strong>Cost:</strong> Free tier available</p>
+                      </>
+                    ) : (
+                      <>
+                        <p><strong>GitHub Pages:</strong> Host static sites directly from GitHub repositories</p>
+                        <p><strong>Features:</strong> Custom domains, Jekyll support</p>
+                        <p><strong>Cost:</strong> Free for public repositories</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => setShowDeployDialog(false)}
+                    className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors"
+                    disabled={isDeploying}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeploy}
+                    disabled={isDeploying || !projectName.trim()}
+                    className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                  >
+                    {isDeploying ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Deploying...
+                      </>
+                    ) : (
+                      <>
+                        <Rocket className="h-4 w-4" />
+                        Deploy Now
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

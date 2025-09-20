@@ -1,98 +1,11 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Users, Target, Heart, Code, Zap, Globe, Award, TrendingUp,
-  Github, Twitter, Mail, Linkedin, ArrowRight, Star, CheckCircle
-} from 'lucide-react'
+import { Code, ArrowRight } from 'lucide-react'
 
 const About = () => {
-  const team = [
-    {
-      name: 'Ronell Bradley',
-      role: 'Founder & CEO',
-      bio: 'Full-stack developer with 10+ years of experience building scalable applications and AI-powered solutions.',
-      avatar: 'https://via.placeholder.com/150x150/2563eb/ffffff?text=RB',
-      social: {
-        github: 'https://github.com/ronb12',
-        twitter: '#',
-        linkedin: '#'
-      }
-    },
-    {
-      name: 'Sarah Chen',
-      role: 'Lead AI Engineer',
-      bio: 'Machine learning expert specializing in natural language processing and code generation models.',
-      avatar: 'https://via.placeholder.com/150x150/10b981/ffffff?text=SC',
-      social: {
-        github: '#',
-        twitter: '#',
-        linkedin: '#'
-      }
-    },
-    {
-      name: 'Marcus Rodriguez',
-      role: 'Frontend Architect',
-      bio: 'React specialist with a passion for creating beautiful, performant user interfaces and developer tools.',
-      avatar: 'https://via.placeholder.com/150x150/f59e0b/ffffff?text=MR',
-      social: {
-        github: '#',
-        twitter: '#',
-        linkedin: '#'
-      }
-    }
-  ]
-
-  const values = [
-    {
-      icon: Code,
-      title: 'Developer-First',
-      description: 'Everything we build is designed with developers in mind, prioritizing productivity and ease of use.'
-    },
-    {
-      icon: Zap,
-      title: 'Innovation',
-      description: 'We embrace cutting-edge technology and constantly push the boundaries of what\'s possible with AI.'
-    },
-    {
-      icon: Globe,
-      title: 'Accessibility',
-      description: 'We believe AI development tools should be accessible to everyone, regardless of experience level.'
-    },
-    {
-      icon: Heart,
-      title: 'Community',
-      description: 'Our community is at the heart of everything we do. We listen, learn, and grow together.'
-    }
-  ]
-
-  const milestones = [
-    {
-      year: '2024',
-      title: 'DreamBuild Launch',
-      description: 'Launched the first version of DreamBuild with local AI integration and template system.'
-    },
-    {
-      year: '2023',
-      title: 'Company Founded',
-      description: 'Bradley Virtual Solutions, LLC was founded with a vision to democratize AI development.'
-    },
-    {
-      year: '2022',
-      title: 'Research Phase',
-      description: 'Extensive research into AI development tools and developer pain points.'
-    }
-  ]
-
-  const stats = [
-    { label: 'Active Users', value: '10,000+', icon: Users },
-    { label: 'Projects Created', value: '50,000+', icon: Code },
-    { label: 'Languages Supported', value: '170+', icon: Globe },
-    { label: 'Community Members', value: '2,500+', icon: Heart }
-  ]
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <motion.div
@@ -100,241 +13,136 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              About <span className="text-primary">DreamBuild</span>
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span className="text-white font-bold text-3xl">D</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-white mb-6">
+              About <span className="text-blue-600">DreamBuild</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              We're on a mission to democratize AI development and make it accessible to developers of all skill levels. 
-              DreamBuild is more than just a tool—it's a platform that empowers creativity and innovation.
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+              DreamBuild is an AI-powered development platform that makes coding accessible to everyone. 
+              Build applications in 170+ programming languages using natural language prompts.
             </p>
           </motion.div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon
-            return (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-card border border-border rounded-xl p-6 text-center"
-              >
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Icon className="h-6 w-6 text-primary" />
-                </div>
-                <div className="text-3xl font-bold text-foreground mb-2">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </motion.div>
-            )
-          })}
-        </div>
-
-        {/* Mission & Vision */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+        {/* What We Do */}
+        <div className="mb-16">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="bg-card border border-border rounded-xl p-8"
+            className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl"
           >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Target className="h-6 w-6 text-primary" />
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">
+              What We Do
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-3">
+                  AI-Powered Development
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Transform your ideas into code using advanced AI models. Simply describe what you want to build, 
+                  and DreamBuild generates the complete application for you.
+                </p>
               </div>
-              <h2 className="text-2xl font-bold text-foreground">Our Mission</h2>
-            </div>
-            <p className="text-muted-foreground leading-relaxed">
-              To revolutionize how developers create software by making AI-powered development tools 
-              accessible, intuitive, and powerful. We believe that every developer should have the 
-              ability to leverage AI to build amazing applications, regardless of their experience level.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="bg-card border border-border rounded-xl p-8"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-primary" />
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-3">
+                  Multi-Language Support
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Build applications in 170+ programming languages including React, Vue, Python, Java, 
+                  Swift, and many more. Choose your preferred technology stack.
+                </p>
               </div>
-              <h2 className="text-2xl font-bold text-foreground">Our Vision</h2>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-3">
+                  Instant Deployment
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Deploy your applications instantly to Firebase Hosting and GitHub Pages. 
+                  No complex setup required - just click and deploy.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-3">
+                  Local AI Integration
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Use local AI models for complete privacy and control. No API keys required - 
+                  run everything on your own machine.
+                </p>
+              </div>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
-              A world where AI and human creativity work together seamlessly to build the next 
-              generation of applications. We envision a future where development barriers are 
-              eliminated and innovation is accelerated through intelligent automation.
-            </p>
           </motion.div>
         </div>
 
-        {/* Values */}
+        {/* Mission */}
         <div className="mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-4">Our Values</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              These core values guide everything we do and shape how we build DreamBuild.
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">
+              Our Mission
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400 text-center leading-relaxed">
+              To democratize software development by making AI-powered coding tools accessible to everyone. 
+              Whether you're a seasoned developer or just starting out, DreamBuild empowers you to turn 
+              your ideas into reality with the power of artificial intelligence.
             </p>
           </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value, index) => {
-              const Icon = value.icon
-              return (
-                <motion.div
-                  key={value.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-card border border-border rounded-xl p-6 text-center"
-                >
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <Icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-3">{value.title}</h3>
-                  <p className="text-sm text-muted-foreground">{value.description}</p>
-                </motion.div>
-              )
-            })}
-          </div>
         </div>
 
-        {/* Team */}
+        {/* Company Info */}
         <div className="mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-4">Meet Our Team</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              The passionate individuals behind DreamBuild, dedicated to making AI development accessible to everyone.
-            </p>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6 text-center">
+              About Bradley Virtual Solutions
+            </h2>
+            <div className="text-center">
+              <p className="text-slate-600 dark:text-slate-400 mb-4">
+                DreamBuild is developed by <strong className="text-slate-800 dark:text-white">Bradley Virtual Solutions, LLC</strong>, 
+                a company dedicated to creating innovative AI-powered development tools.
+              </p>
+              <p className="text-slate-600 dark:text-slate-400">
+                Founded by Ronell Bradley, a full-stack developer with extensive experience in AI and web development, 
+                we're committed to making advanced development tools accessible to everyone.
+              </p>
+            </div>
           </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-card border border-border rounded-xl p-6 text-center"
-              >
-                <img
-                  src={member.avatar}
-                  alt={member.name}
-                  className="w-24 h-24 rounded-full mx-auto mb-4"
-                />
-                <h3 className="text-xl font-semibold text-foreground mb-2">{member.name}</h3>
-                <p className="text-primary font-medium mb-3">{member.role}</p>
-                <p className="text-sm text-muted-foreground mb-4">{member.bio}</p>
-                <div className="flex justify-center gap-3">
-                  <a
-                    href={member.social.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 hover:bg-muted rounded-lg transition-colors"
-                  >
-                    <Github className="h-4 w-4" />
-                  </a>
-                  <a
-                    href={member.social.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 hover:bg-muted rounded-lg transition-colors"
-                  >
-                    <Twitter className="h-4 w-4" />
-                  </a>
-                  <a
-                    href={member.social.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 hover:bg-muted rounded-lg transition-colors"
-                  >
-                    <Linkedin className="h-4 w-4" />
-                  </a>
-                </div>
-              </motion.div>
-            ))}
-          </div>
         </div>
 
-        {/* Timeline */}
-        <div className="mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl font-bold text-foreground mb-4">Our Journey</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Key milestones in our mission to revolutionize AI development.
-            </p>
-          </motion.div>
-
-          <div className="space-y-8">
-            {milestones.map((milestone, index) => (
-              <motion.div
-                key={milestone.year}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="flex items-center gap-6"
-              >
-                <div className="flex-shrink-0">
-                  <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center">
-                    <Award className="h-8 w-8 text-primary" />
-                  </div>
-                </div>
-                <div className="flex-grow">
-                  <div className="flex items-center gap-4 mb-2">
-                    <h3 className="text-xl font-semibold text-foreground">{milestone.title}</h3>
-                    <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                      {milestone.year}
-                    </span>
-                  </div>
-                  <p className="text-muted-foreground">{milestone.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA Section */}
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="bg-primary/5 border border-primary/20 rounded-xl p-8 text-center"
+          className="text-center"
         >
-          <h2 className="text-2xl font-bold text-foreground mb-4">Join Our Mission</h2>
-          <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Ready to be part of the future of AI development? Join thousands of developers 
-            who are already building amazing applications with DreamBuild.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 shadow-xl">
+            <h2 className="text-2xl font-bold text-white mb-4">Ready to Start Building?</h2>
+            <p className="text-blue-100 mb-6 max-w-xl mx-auto">
+              Join thousands of developers who are already creating amazing applications with DreamBuild.
+            </p>
+            <motion.a
+              href="/ai-builder"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-colors shadow-lg"
+            >
               <Code className="h-5 w-5" />
-              Start Building
+              Start Building Now
               <ArrowRight className="h-4 w-4" />
-            </button>
-            <button className="flex items-center gap-2 px-6 py-3 border border-border rounded-lg hover:bg-muted transition-colors">
-              <Users className="h-5 w-5" />
-              Join Community
-            </button>
+            </motion.a>
           </div>
         </motion.div>
       </div>

@@ -82,17 +82,17 @@ const Navbar = () => {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-lg hover:bg-muted/50 transition-all duration-200 border border-border/50 hover:border-primary/30 group"
+              className="p-2 rounded-lg hover:bg-muted/50 transition-all duration-200 border border-border/50 hover:border-primary/30 group"
               title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
               {theme === 'light' ? (
-                <Moon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <Moon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
               ) : (
-                <Sun className="h-5 w-5 text-warning group-hover:text-primary transition-colors" />
+                <Sun className="h-4 w-4 text-warning group-hover:text-primary transition-colors" />
               )}
             </button>
 
@@ -101,17 +101,17 @@ const Navbar = () => {
               <div className="relative user-menu">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors border border-border/50 hover:border-primary/30"
                 >
                   {user.photoURL ? (
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'User'}
-                      className="w-3 h-3 rounded-full border border-border"
+                      className="w-4 h-4 rounded-full border border-border"
                     />
                   ) : (
-                    <div className="w-3 h-3 bg-primary/10 rounded-full flex items-center justify-center">
-                      <User className="h-1.5 w-1.5 text-primary" />
+                    <div className="w-4 h-4 bg-primary/10 rounded-full flex items-center justify-center">
+                      <User className="h-2 w-2 text-primary" />
                     </div>
                   )}
                   <span className="hidden sm:block text-sm font-medium text-foreground">
@@ -174,12 +174,12 @@ const Navbar = () => {
             {!isDesktop && (
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                className="p-2 rounded-lg hover:bg-muted/50 transition-colors border border-border/50 hover:border-primary/30"
               >
                 {isMobileMenuOpen ? (
-                  <X className="h-6 w-6" />
+                  <X className="h-4 w-4" />
                 ) : (
-                  <Menu className="h-6 w-6" />
+                  <Menu className="h-4 w-4" />
                 )}
               </button>
             )}

@@ -107,11 +107,11 @@ const Navbar = () => {
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'User'}
-                      className="w-4 h-4 rounded-full border border-border"
+                      className="w-3 h-3 rounded-full border border-border"
                     />
                   ) : (
-                    <div className="w-4 h-4 bg-primary/10 rounded-full flex items-center justify-center">
-                      <User className="h-2 w-2 text-primary" />
+                    <div className="w-3 h-3 bg-primary/10 rounded-full flex items-center justify-center">
+                      <User className="h-1.5 w-1.5 text-primary" />
                     </div>
                   )}
                   <span className="hidden sm:block text-sm font-medium text-foreground">

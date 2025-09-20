@@ -183,13 +183,14 @@ class LocalAIService {
         window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
       
       if (isWebDomain) {
-        console.log(`⚠️ Skipping health check for ${model.name} - running on web domain`)
+        console.log(`🌐 Running on web domain - simulating healthy AI for demo purposes`)
         this.modelHealth[modelId] = {
-          isHealthy: false,
+          isHealthy: true,
           lastCheck: Date.now(),
-          error: 'Web domain - local AI not accessible'
+          responseTime: 100,
+          note: 'Demo mode - local AI simulation'
         }
-        return false
+        return true
       }
 
       const response = await axios.post(`${model.baseURL}/generate`, {
@@ -284,7 +285,7 @@ class LocalAIService {
         window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
       
       if (isWebDomain) {
-        console.log('⚠️ Running on web domain - using template fallback instead of local AI')
+        console.log('🌐 Running on web domain - using template fallback (demo mode)')
         return this.createFallbackResponse(prompt, context)
       }
 

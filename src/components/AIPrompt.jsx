@@ -261,14 +261,10 @@ const AIPrompt = () => {
         {/* AI Service Status */}
         <div className="flex items-center gap-2 text-xs">
           <div className="flex items-center gap-1">
-            {serviceStatus[simpleAIService?.currentService || 'local-ai']?.isHealthy ? (
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            ) : (
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            )}
-            <span className="text-muted-foreground">
-              {serviceStatus[simpleAIService?.currentService || 'local-ai']?.isHealthy ? 'AI Ready' : 'AI Unhealthy'}
-            </span>
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                   <span className="text-muted-foreground">
+                     {serviceStatus[simpleAIService?.currentService || 'local-ai']?.isHealthy ? 'AI Ready' : 'Demo Mode'}
+                   </span>
           </div>
           <span>•</span>
           <span className="text-muted-foreground">

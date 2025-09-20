@@ -48,41 +48,44 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg">
-              <Sparkles className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold text-high-contrast">DreamBuild</span>
-              <span className="text-xs text-muted-foreground -mt-1">AI Development Platform</span>
-            </div>
-          </Link>
+        <div className="flex items-center justify-center h-20 relative">
+          {/* Left Side - Logo and Navigation */}
+          <div className="absolute left-0 flex items-center gap-8">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg">
+                <Sparkles className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-high-contrast">DreamBuild</span>
+                <span className="text-xs text-muted-foreground -mt-1">AI Development Platform</span>
+              </div>
+            </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
-            {navigation.map((item) => {
-              const Icon = item.icon
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${
-                    isActive(item.href)
-                      ? 'bg-primary text-primary-foreground border-primary shadow-md'
-                      : 'bg-card text-foreground border-border hover:bg-muted hover:border-primary/30 shadow-sm hover:shadow-md'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.name}
-                </Link>
-              )
-            })}
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-1">
+              {navigation.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                      isActive(item.href)
+                        ? 'bg-primary text-primary-foreground border-primary shadow-md'
+                        : 'bg-card text-foreground border-border hover:bg-muted hover:border-primary/30 shadow-sm hover:shadow-md'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.name}
+                  </Link>
+                )
+              })}
+            </div>
           </div>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center justify-center gap-2">
+          {/* Center - Right Side Actions */}
+          <div className="flex items-center gap-2">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}

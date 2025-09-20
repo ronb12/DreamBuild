@@ -76,20 +76,20 @@ const Login = () => {
 
       {/* Main content */}
       <div className="flex items-center justify-center p-4 -mt-16">
-        <div className="w-full max-w-xs">
+        <div className="w-full max-w-sm">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="bg-card border border-border rounded-xl p-6 shadow-sm"
+            className="bg-card border border-border rounded-lg p-4 shadow-sm"
           >
           {/* Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-xl font-bold mb-1 text-foreground">
-              Welcome to DreamBuild
+          <div className="text-center mb-4">
+            <h1 className="text-lg font-semibold mb-1 text-foreground">
+              Sign in to DreamBuild
             </h1>
             <p className="text-muted-foreground text-xs">
-              Sign in to continue
+              Choose your preferred sign-in method
             </p>
           </div>
 
@@ -112,7 +112,7 @@ const Login = () => {
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
               )}
-              {isSigningIn ? 'Signing in...' : 'Continue with Google'}
+              {isSigningIn ? 'Signing in...' : 'Sign in with Google'}
             </motion.button>
 
             <motion.button 
@@ -122,7 +122,7 @@ const Login = () => {
               className="w-full flex items-center justify-center gap-2 p-2.5 border border-border rounded-md hover:bg-muted/30 transition-colors text-sm font-medium bg-background"
             >
               <Github className="h-4 w-4" />
-              Continue with GitHub
+              Sign in with GitHub
             </motion.button>
           </div>
 

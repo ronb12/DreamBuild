@@ -35,7 +35,7 @@ const Projects = () => {
     {
       id: '1',
       name: 'E-commerce Store',
-      type: 'web',
+      type: 'ecommerce',
       description: 'Modern e-commerce platform with React and Node.js',
       status: 'active',
       lastModified: '2024-01-15',
@@ -79,6 +79,54 @@ const Projects = () => {
       size: '4.2 MB',
       tags: ['Vue.js', 'D3.js', 'Charts'],
       preview: 'https://via.placeholder.com/300x200/6f42c1/ffffff?text=Analytics+Dashboard'
+    },
+    {
+      id: '5',
+      name: 'REST API Service',
+      type: 'api',
+      description: 'Node.js REST API with authentication and database',
+      status: 'active',
+      lastModified: '2024-01-16',
+      files: 25,
+      size: '1.8 MB',
+      tags: ['Node.js', 'Express', 'MongoDB'],
+      preview: 'https://via.placeholder.com/300x200/17a2b8/ffffff?text=REST+API'
+    },
+    {
+      id: '6',
+      name: 'Space Adventure Game',
+      type: 'game',
+      description: '2D space shooter game built with JavaScript',
+      status: 'development',
+      lastModified: '2024-01-13',
+      files: 18,
+      size: '2.9 MB',
+      tags: ['JavaScript', 'Canvas', 'Game'],
+      preview: 'https://via.placeholder.com/300x200/e83e8c/ffffff?text=Space+Game'
+    },
+    {
+      id: '7',
+      name: 'Social Media App',
+      type: 'mobile',
+      description: 'Social networking app with real-time chat',
+      status: 'active',
+      lastModified: '2024-01-17',
+      files: 22,
+      size: '4.1 MB',
+      tags: ['Flutter', 'Firebase', 'Chat'],
+      preview: 'https://via.placeholder.com/300x200/20c997/ffffff?text=Social+App'
+    },
+    {
+      id: '8',
+      name: 'Admin Dashboard',
+      type: 'dashboard',
+      description: 'Administrative interface for managing users and content',
+      status: 'completed',
+      lastModified: '2024-01-11',
+      files: 16,
+      size: '3.3 MB',
+      tags: ['React', 'Material-UI', 'Admin'],
+      preview: 'https://via.placeholder.com/300x200/6c757d/ffffff?text=Admin+Dashboard'
     }
   ])
 
@@ -87,6 +135,9 @@ const Projects = () => {
     { id: 'web', name: 'Web Apps', icon: Globe, count: allProjects.filter(p => p.type === 'web').length },
     { id: 'mobile', name: 'Mobile', icon: Code, count: allProjects.filter(p => p.type === 'mobile').length },
     { id: 'dashboard', name: 'Dashboards', icon: Settings, count: allProjects.filter(p => p.type === 'dashboard').length },
+    { id: 'api', name: 'APIs', icon: Settings, count: allProjects.filter(p => p.type === 'api').length },
+    { id: 'game', name: 'Games', icon: Star, count: allProjects.filter(p => p.type === 'game').length },
+    { id: 'ecommerce', name: 'E-commerce', icon: Settings, count: allProjects.filter(p => p.type === 'ecommerce').length },
     { id: 'completed', name: 'Completed', icon: Star, count: allProjects.filter(p => p.status === 'completed').length }
   ]
 

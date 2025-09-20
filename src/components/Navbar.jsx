@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Sparkles, Sun, Moon, Menu, X, Rocket, Code, Database, Users } from 'lucide-react'
+import { Sparkles, Sun, Moon, Menu, X, Rocket, Code, Database, Users, LogOut, User } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
+import { useAuth } from '../contexts/AuthContext'
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme()
+  const { user, logout } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const location = useLocation()
 
   // Check if we're on desktop
@@ -20,6 +23,18 @@ const Navbar = () => {
     
     return () => window.removeEventListener('resize', checkScreenSize)
   }, [])
+
+  // Close user menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showUserMenu && !event.target.closest('.user-menu')) {
+        setShowUserMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showUserMenu])
 
   const navigation = [
     { name: 'Home', href: '/', icon: Rocket },
@@ -81,14 +96,79 @@ const Navbar = () => {
               )}
             </button>
 
-            {/* Sign In Button */}
-            <Link
-              to="/login"
-              className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-lg hover:from-primary-dark hover:to-primary transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-            >
-              <Rocket className="h-4 w-4" />
-              Sign In
-            </Link>
+            {/* User Menu or Sign In Button */}
+            {user ? (
+              <div className="relative user-menu">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  {user.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || 'User'}
+                      className="w-8 h-8 rounded-full border border-border"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                  )}
+                  <span className="hidden sm:block text-sm font-medium text-foreground">
+                    {user.displayName || user.email}
+                  </span>
+                </button>
+
+                {/* User Dropdown Menu */}
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-50">
+                    <div className="p-3 border-b border-border">
+                      <p className="text-sm font-medium text-foreground">
+                        {user.displayName || 'User'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                    <div className="p-1">
+                      <Link
+                        to="/dashboard"
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md transition-colors"
+                      >
+                        <Database className="h-4 w-4" />
+                        Dashboard
+                      </Link>
+                      <Link
+                        to="/settings"
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md transition-colors"
+                      >
+                        <User className="h-4 w-4" />
+                        Settings
+                      </Link>
+                      <hr className="my-1" />
+                      <button
+                        onClick={() => {
+                          logout()
+                          setShowUserMenu(false)
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-lg hover:from-primary-dark hover:to-primary transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              >
+                <Rocket className="h-4 w-4" />
+                Sign In
+              </Link>
+            )}
 
             {/* Mobile Menu Button - Only show on mobile */}
             {!isDesktop && (
@@ -128,14 +208,51 @@ const Navbar = () => {
                   </Link>
                 )
               })}
-              <Link
-                to="/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 mt-4 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-lg text-base font-semibold"
-              >
-                <Rocket className="h-5 w-5" />
-                Sign In
-              </Link>
+              {user ? (
+                <div className="mt-4 space-y-2">
+                  <div className="px-4 py-2 border-b border-border">
+                    <p className="text-sm font-medium text-foreground">
+                      {user.displayName || 'User'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-base font-medium hover:bg-muted rounded-lg"
+                  >
+                    <Database className="h-5 w-5" />
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/settings"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-base font-medium hover:bg-muted rounded-lg"
+                  >
+                    <User className="h-5 w-5" />
+                    Settings
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout()
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 mt-4 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-lg text-base font-semibold"
+                >
+                  <Rocket className="h-5 w-5" />
+                  Sign In
+                </Link>
+              )}
             </div>
           </div>
         )}

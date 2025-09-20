@@ -15,26 +15,50 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Get user data from Firestore
-        const userDoc = await getDoc(doc(db, 'users', user.uid))
-        const userData = userDoc.exists() ? userDoc.data() : null
-        
-        setUser({
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          ...userData
-        })
-      } else {
-        setUser(null)
-      }
-      setLoading(false)
-    })
+    let unsubscribe
+    let timeoutId
 
-    return unsubscribe
+    try {
+      unsubscribe = onAuthStateChanged(auth, async (user) => {
+        try {
+          if (user) {
+            // Get user data from Firestore
+            const userDoc = await getDoc(doc(db, 'users', user.uid))
+            const userData = userDoc.exists() ? userDoc.data() : null
+            
+            setUser({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              ...userData
+            })
+          } else {
+            setUser(null)
+          }
+        } catch (error) {
+          console.error('Error in auth state change:', error)
+          setUser(null)
+        } finally {
+          setLoading(false)
+        }
+      })
+
+      // Fallback timeout to ensure loading state resolves
+      timeoutId = setTimeout(() => {
+        console.warn('Firebase auth timeout - setting loading to false')
+        setLoading(false)
+      }, 5000)
+
+    } catch (error) {
+      console.error('Error setting up auth listener:', error)
+      setLoading(false)
+    }
+
+    return () => {
+      if (unsubscribe) unsubscribe()
+      if (timeoutId) clearTimeout(timeoutId)
+    }
   }, [])
 
   const signInWithGoogle = async () => {
@@ -78,7 +102,16 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading DreamBuild...</p>
+          </div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   )
 }

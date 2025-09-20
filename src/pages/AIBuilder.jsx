@@ -6,10 +6,9 @@ import AIPrompt from '../components/AIPrompt'
 // import Terminal from '../components/Terminal' // Temporarily disabled
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, FileText, Brain } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain } from 'lucide-react'
 
 const AIBuilder = () => {
-  const [showTerminal, setShowTerminal] = useState(false)
   const [activeTab, setActiveTab] = useState('code') // 'code', 'preview', 'terminal'
 
   return (

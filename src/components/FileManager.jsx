@@ -20,7 +20,7 @@ import toast from 'react-hot-toast'
 import deploymentService from '../services/deploymentService'
 
 const FileManager = () => {
-  const { currentProject, switchFile, updateFile, saveProject, createNewProject } = useProject()
+  const { currentProject, switchFile, updateFile, saveProject, createNewProject, updateConfig } = useProject()
   const [showNewFileDialog, setShowNewFileDialog] = useState(false)
   const [newFileName, setNewFileName] = useState('')
   const [showProjectDialog, setShowProjectDialog] = useState(false)

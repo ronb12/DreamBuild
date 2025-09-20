@@ -3,7 +3,7 @@ import FileManager from '../components/FileManager'
 import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
 import AIPrompt from '../components/AIPrompt'
-import Terminal from '../components/Terminal'
+// import Terminal from '../components/Terminal' // Temporarily disabled
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
 import { Terminal as TerminalIcon, Code, Eye, FileText, Brain } from 'lucide-react'
@@ -70,7 +70,15 @@ const AIBuilder = () => {
             <ResizablePanel defaultSize={60} minSize={30}>
               {activeTab === 'code' && <CodeEditor />}
               {activeTab === 'preview' && <Preview />}
-              {activeTab === 'terminal' && <Terminal />}
+              {activeTab === 'terminal' && (
+                <div className="h-full flex items-center justify-center bg-gray-900 text-gray-300 rounded-lg">
+                  <div className="text-center">
+                    <TerminalIcon className="h-12 w-12 mx-auto mb-4 text-gray-500" />
+                    <h3 className="text-lg font-semibold mb-2">Terminal Component</h3>
+                    <p className="text-gray-400">Terminal functionality is temporarily disabled</p>
+                  </div>
+                </div>
+              )}
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={40} minSize={20}>

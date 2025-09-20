@@ -10,6 +10,7 @@ import Home from './pages/Home'
 import AIBuilder from './pages/AIBuilder'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
+import Signup from './pages/Signup'
 import Projects from './pages/Projects'
 import Settings from './pages/Settings'
 import Documentation from './pages/Documentation'
@@ -47,6 +48,7 @@ function App() {
                   <Route path="/ai-builder" element={<AIBuilder />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
                   <Route path="/projects" element={<Projects />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/documentation" element={<Documentation />} />

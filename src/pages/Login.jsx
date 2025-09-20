@@ -45,14 +45,44 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-xs">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="bg-card border border-border rounded-xl p-6 shadow-sm"
-        >
+    <div className="min-h-screen bg-background">
+      {/* Header with Sign In/Sign Up buttons */}
+      <div className="flex justify-between items-center p-4">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-sm">D</span>
+          </div>
+          <span className="font-semibold text-foreground">DreamBuild</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/login'}
+            className="px-4 py-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
+          >
+            Sign in
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/signup'}
+            className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary-dark transition-colors"
+          >
+            Sign up
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex items-center justify-center p-4 -mt-16">
+        <div className="w-full max-w-xs">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="bg-card border border-border rounded-xl p-6 shadow-sm"
+          >
           {/* Header */}
           <div className="text-center mb-6">
             <h1 className="text-xl font-bold mb-1 text-foreground">
@@ -118,7 +148,8 @@ const Login = () => {
               <ArrowRight className="h-3 w-3" />
             </motion.a>
           </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </div>
   )

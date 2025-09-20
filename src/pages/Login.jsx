@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Github, ArrowRight, Loader2 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
-import toast from 'react-hot-toast'
 
 const Login = () => {
   const { user, signInWithGoogle, loading } = useAuth()
@@ -20,17 +19,17 @@ const Login = () => {
     try {
       setIsSigningIn(true)
       await signInWithGoogle()
-      toast.success('Welcome to DreamBuild!')
+      // Success toast will be handled by AuthContext
     } catch (error) {
       console.error('Sign in error:', error)
-      toast.error('Failed to sign in. Please try again.')
+      // Error toast will be handled by AuthContext
     } finally {
       setIsSigningIn(false)
     }
   }
 
   const handleGitHubSignIn = () => {
-    toast.info('GitHub authentication coming soon!')
+    console.log('GitHub authentication coming soon!')
   }
 
   if (loading) {

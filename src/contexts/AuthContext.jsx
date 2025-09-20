@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../config/firebase'
-import toast from 'react-hot-toast'
 
 const AuthContext = createContext()
 
@@ -20,28 +19,39 @@ export function AuthProvider({ children }) {
 
     try {
       unsubscribe = onAuthStateChanged(auth, async (user) => {
-        try {
-          if (user) {
-            // Get user data from Firestore
-            const userDoc = await getDoc(doc(db, 'users', user.uid))
-            const userData = userDoc.exists() ? userDoc.data() : null
-            
-            setUser({
-              uid: user.uid,
-              email: user.email,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-              ...userData
-            })
-          } else {
-            setUser(null)
-          }
-        } catch (error) {
-          console.error('Error in auth state change:', error)
-          setUser(null)
-        } finally {
-          setLoading(false)
-        }
+               try {
+                 if (user) {
+                   // Get user data from Firestore with error handling
+                   try {
+                     const userDoc = await getDoc(doc(db, 'users', user.uid))
+                     const userData = userDoc.exists() ? userDoc.data() : null
+                     
+                     setUser({
+                       uid: user.uid,
+                       email: user.email,
+                       displayName: user.displayName,
+                       photoURL: user.photoURL,
+                       ...userData
+                     })
+                   } catch (firestoreError) {
+                     console.warn('Failed to fetch user data from Firestore:', firestoreError)
+                     // Set user without Firestore data
+                     setUser({
+                       uid: user.uid,
+                       email: user.email,
+                       displayName: user.displayName,
+                       photoURL: user.photoURL
+                     })
+                   }
+                 } else {
+                   setUser(null)
+                 }
+               } catch (error) {
+                 console.error('Error in auth state change:', error)
+                 setUser(null)
+               } finally {
+                 setLoading(false)
+               }
       })
 
       // Fallback timeout to ensure loading state resolves
@@ -64,30 +74,40 @@ export function AuthProvider({ children }) {
   const signInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider()
+      // Add custom parameters to avoid CORS issues
+      provider.addScope('email')
+      provider.addScope('profile')
+      
       const result = await signInWithPopup(auth, provider)
       
-      // Save user data to Firestore
-      await setDoc(doc(db, 'users', result.user.uid), {
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-        photoURL: result.user.photoURL,
-        createdAt: new Date(),
-        lastLogin: new Date()
-      }, { merge: true })
+      // Save user data to Firestore with error handling
+      try {
+        await setDoc(doc(db, 'users', result.user.uid), {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+          createdAt: new Date(),
+          lastLogin: new Date()
+        }, { merge: true })
+      } catch (firestoreError) {
+        console.warn('Failed to save user data to Firestore:', firestoreError)
+        // Continue with authentication even if Firestore fails
+      }
       
-      toast.success('Successfully signed in!')
+      console.log('Successfully signed in!')
     } catch (error) {
-      toast.error('Failed to sign in: ' + error.message)
+      console.error('Failed to sign in:', error.message)
+      throw error // Re-throw to let the component handle it
     }
   }
 
   const logout = async () => {
     try {
       await signOut(auth)
-      toast.success('Successfully signed out!')
+      console.log('Successfully signed out!')
     } catch (error) {
-      toast.error('Failed to sign out: ' + error.message)
+      console.error('Failed to sign out:', error.message)
     }
   }
 

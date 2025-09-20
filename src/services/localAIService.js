@@ -2,6 +2,7 @@
 // No API keys required - everything runs locally
 
 import axios from 'axios'
+import mobileAppService from './mobileAppService.js'
 
 // Local AI Models Configuration
 const LOCAL_AI_MODELS = {
@@ -272,6 +273,12 @@ class LocalAIService {
   // Generate code using local AI
   async generateCode(prompt, context = {}) {
     try {
+      // Check if this is a mobile app request
+      if (this.isMobileAppRequest(prompt)) {
+        console.log('📱 Mobile app request detected - using mobile app service')
+        return await mobileAppService.generateMobileApp(prompt, context)
+      }
+
       // Check if we're running on a web domain (CORS issues)
       const isWebDomain = typeof window !== 'undefined' && 
         window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
@@ -322,9 +329,23 @@ class LocalAIService {
       return 'documentation'
     } else if (lowerPrompt.includes('complex') || lowerPrompt.includes('advanced')) {
       return 'instruction-following'
+    } else if (this.isMobileAppRequest(prompt)) {
+      return 'mobile-app-generation'
     } else {
       return 'code-generation'
     }
+  }
+
+  // Check if prompt is requesting a mobile app
+  isMobileAppRequest(prompt) {
+    const lowerPrompt = prompt.toLowerCase()
+    const mobileKeywords = [
+      'mobile app', 'ios app', 'android app', 'iphone app', 'android app',
+      'react native', 'flutter', 'ionic', 'pwa', 'progressive web app',
+      'capacitor', 'phone app', 'tablet app', 'app store', 'google play'
+    ]
+    
+    return mobileKeywords.some(keyword => lowerPrompt.includes(keyword))
   }
 
   // Build system prompt for the model

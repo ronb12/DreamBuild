@@ -30,6 +30,7 @@ const FileManager = () => {
   const [showDeployDialog, setShowDeployDialog] = useState(false)
   const [isDeploying, setIsDeploying] = useState(false)
   const [deploymentPlatform, setDeploymentPlatform] = useState('firebase')
+  const [deployToBoth, setDeployToBoth] = useState(false)
   const [projectName, setProjectName] = useState('')
   const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, filename: '' })
   const contextMenuRef = useRef(null)
@@ -215,36 +216,266 @@ const FileManager = () => {
     setIsDeploying(true)
     
     try {
-      let result
+      // Ensure project is properly built with all necessary features
+      const enhancedProject = await ensureProjectIsBuilt(currentProject, projectName)
       
-      if (deploymentPlatform === 'firebase') {
-        result = await deploymentService.deployToFirebase(currentProject, projectName)
+      const results = []
+      
+      if (deployToBoth) {
+        // Deploy to both platforms simultaneously
+        toast.info('Deploying to both Firebase and GitHub...')
+        
+        const [firebaseResult, githubResult] = await Promise.allSettled([
+          deploymentService.deployToFirebase(enhancedProject, projectName),
+          deploymentService.deployToGitHub(enhancedProject, projectName)
+        ])
+        
+        if (firebaseResult.status === 'fulfilled' && firebaseResult.value.success) {
+          results.push({ platform: 'Firebase', ...firebaseResult.value })
+        }
+        
+        if (githubResult.status === 'fulfilled' && githubResult.value.success) {
+          results.push({ platform: 'GitHub', ...githubResult.value })
+        }
+        
+        if (results.length === 2) {
+          toast.success('Successfully deployed to both Firebase and GitHub!')
+        } else if (results.length === 1) {
+          toast.success(`Deployed to ${results[0].platform} (${results.length === 1 ? 'one' : 'both'} platform${results.length === 1 ? '' : 's'} failed)`)
+        } else {
+          throw new Error('Both deployments failed')
+        }
+        
       } else {
-        result = await deploymentService.deployToGitHub(currentProject, projectName)
+        // Deploy to single platform
+        let result
+        
+        if (deploymentPlatform === 'firebase') {
+          result = await deploymentService.deployToFirebase(enhancedProject, projectName)
+        } else {
+          result = await deploymentService.deployToGitHub(enhancedProject, projectName)
+        }
+
+        if (result.success) {
+          results.push({ platform: deploymentPlatform, ...result })
+          toast.success(`Successfully deployed to ${result.platform}!`)
+        }
       }
 
-      if (result.success) {
-        toast.success(`Successfully deployed to ${result.platform}!`)
-        
-        // Open the deployed URL
+      // Open deployed URLs
+      results.forEach(result => {
         if (result.url) {
           window.open(result.url, '_blank')
         }
-
+        
         // Show GitHub instructions if needed
         if (result.instructions) {
-          console.log('GitHub deployment instructions:', result.instructions)
-          toast.success('Check console for GitHub Pages setup instructions')
+          console.log(`${result.platform} deployment instructions:`, result.instructions)
+          toast.success(`Check console for ${result.platform} Pages setup instructions`)
         }
+      })
 
-        setShowDeployDialog(false)
-        setProjectName('')
-      }
+      setShowDeployDialog(false)
+      setProjectName('')
+      setDeployToBoth(false)
+      
     } catch (error) {
       toast.error(`Deployment failed: ${error.message}`)
     } finally {
       setIsDeploying(false)
     }
+  }
+
+  // Ensure project is properly built with all necessary features
+  const ensureProjectIsBuilt = async (project, projectName) => {
+    const enhancedProject = { ...project }
+    
+    // Ensure we have at least basic files
+    if (!enhancedProject.files['index.html']) {
+      enhancedProject.files['index.html'] = generateDefaultHTML(projectName)
+    }
+    
+    // Add package.json for better deployment
+    if (!enhancedProject.files['package.json']) {
+      enhancedProject.files['package.json'] = generatePackageJSON(projectName, enhancedProject.config)
+    }
+    
+    // Add README.md for GitHub deployments
+    if (!enhancedProject.files['README.md']) {
+      enhancedProject.files['README.md'] = generateREADME(projectName, enhancedProject.config)
+    }
+    
+    // Ensure proper HTML structure
+    enhancedProject.files['index.html'] = enhanceHTML(enhancedProject.files['index.html'], projectName)
+    
+    // Add manifest.json for PWA features
+    if (!enhancedProject.files['manifest.json']) {
+      enhancedProject.files['manifest.json'] = generateManifest(projectName)
+    }
+    
+    return enhancedProject
+  }
+
+  // Generate default HTML if missing
+  const generateDefaultHTML = (projectName) => {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${projectName}</title>
+    <meta name="description" content="Built with DreamBuild - Universal AI Development Platform">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+</head>
+<body>
+    <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+            <h1 style="font-size: 2.5rem; margin-bottom: 20px;">🚀 ${projectName}</h1>
+            <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 10px;">Your app is ready!</p>
+            <p style="font-size: 0.9rem; opacity: 0.7;">Built with <strong>DreamBuild</strong> - Universal AI Development Platform</p>
+            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 20px;">Generated: ${new Date().toLocaleDateString()}</p>
+        </div>
+    </div>
+</body>
+</html>`
+  }
+
+  // Generate package.json
+  const generatePackageJSON = (projectName, config) => {
+    return JSON.stringify({
+      "name": projectName.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+      "version": "1.0.0",
+      "description": `Built with DreamBuild - ${projectName}`,
+      "main": "index.html",
+      "scripts": {
+        "start": "npx serve .",
+        "build": "echo 'Static site - no build required'",
+        "deploy": "echo 'Deploy using DreamBuild deployment system'"
+      },
+      "keywords": ["dreambuild", "ai-generated", "web-app", config.appType || "frontend"],
+      "author": "DreamBuild AI",
+      "license": "MIT",
+      "engines": {
+        "node": ">=14.0.0"
+      },
+      "dependencies": {},
+      "devDependencies": {
+        "serve": "^14.0.0"
+      }
+    }, null, 2)
+  }
+
+  // Generate README.md
+  const generateREADME = (projectName, config) => {
+    return `# ${projectName}
+
+Built with [DreamBuild](https://dreambuild-2024-app.web.app) - Universal AI Development Platform
+
+## 🚀 Features
+
+- **App Type**: ${config.appType || 'Frontend'}
+- **Language**: ${config.language || 'JavaScript'}
+- **Styling**: ${config.styling || 'Custom CSS'}
+- **Features**: ${config.features?.join(', ') || 'Basic functionality'}
+
+## 📁 Project Structure
+
+\`\`\`
+${Object.keys(currentProject.files).join('\n')}
+\`\`\`
+
+## 🌐 Deployment
+
+This project was deployed using DreamBuild's deployment system:
+
+- **Firebase Hosting**: Instant deployment with CDN and SSL
+- **GitHub Pages**: Free hosting for public repositories
+
+## 🛠️ Local Development
+
+1. Clone this repository
+2. Open \`index.html\` in your browser
+3. Or use a local server: \`npx serve .\`
+
+## 📱 PWA Features
+
+This app includes Progressive Web App features:
+- Installable on mobile devices
+- Offline-capable
+- Responsive design
+- Fast loading
+
+## 🤖 Built with DreamBuild
+
+Created using DreamBuild's AI-powered development platform. Visit [dreambuild-2024-app.web.app](https://dreambuild-2024-app.web.app) to build your own apps!
+
+---
+
+*Generated on ${new Date().toLocaleDateString()} by DreamBuild AI*
+`
+  }
+
+  // Generate manifest.json for PWA
+  const generateManifest = (projectName) => {
+    return JSON.stringify({
+      "name": projectName,
+      "short_name": projectName.split(' ')[0],
+      "description": `Built with DreamBuild - ${projectName}`,
+      "start_url": "/",
+      "display": "standalone",
+      "background_color": "#ffffff",
+      "theme_color": "#2563eb",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxwYXRoIGQ9Ik05NiA0OEw0OCA3MlYxMjBMOTYgMTQ0TDE0NCAxMjBWNzJMOTYgNDhaIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDBfbGluZWFyXzFfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMTkyIiB5Mj0iMTkyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM2NjdlZWEiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNzY0YmEyIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2Zz4K",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    }, null, 2)
+  }
+
+  // Enhance HTML with proper structure
+  const enhanceHTML = (htmlContent, projectName) => {
+    let enhancedHTML = htmlContent
+    
+    // Ensure proper DOCTYPE
+    if (!enhancedHTML.includes('<!DOCTYPE html>')) {
+      enhancedHTML = `<!DOCTYPE html>\n${enhancedHTML}`
+    }
+    
+    // Add meta tags if missing
+    if (!enhancedHTML.includes('<meta name="viewport"')) {
+      enhancedHTML = enhancedHTML.replace(
+        '<head>',
+        '<head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">'
+      )
+    }
+    
+    if (!enhancedHTML.includes('<meta name="description"')) {
+      enhancedHTML = enhancedHTML.replace(
+        '<head>',
+        `<head>\n    <meta name="description" content="Built with DreamBuild - ${projectName}">`
+      )
+    }
+    
+    if (!enhancedHTML.includes('<meta name="theme-color"')) {
+      enhancedHTML = enhancedHTML.replace(
+        '<head>',
+        '<head>\n    <meta name="theme-color" content="#2563eb">'
+      )
+    }
+    
+    // Add manifest link if missing
+    if (!enhancedHTML.includes('manifest.json')) {
+      enhancedHTML = enhancedHTML.replace(
+        '<head>',
+        '<head>\n    <link rel="manifest" href="manifest.json">'
+      )
+    }
+    
+    return enhancedHTML
   }
 
   const fileTypes = [

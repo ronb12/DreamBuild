@@ -19,20 +19,20 @@ const AIBuilder = () => {
   return (
     <div className="h-screen bg-background flex flex-col">
       {/* Back to Home Button */}
-      <div className="absolute top-4 left-4 z-20">
+      <div className="absolute top-4 left-4 z-30">
         <motion.a
           href="/"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 px-4 py-2 bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card transition-colors shadow-lg"
+          className="flex items-center gap-2 px-3 py-2 bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card transition-colors shadow-lg"
         >
           <Home className="h-4 w-4" />
-          <span className="text-sm font-medium">Back to Home</span>
+          <span className="text-sm font-medium hidden sm:inline">Back to Home</span>
         </motion.a>
       </div>
 
       {/* Tab Navigation */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-4 right-4 z-30">
         <div className="flex items-center gap-1 bg-card/95 backdrop-blur-sm p-1 rounded-xl border border-border/50 shadow-lg">
           {tabs.map((tab) => {
             const Icon = tab.icon
@@ -58,7 +58,7 @@ const AIBuilder = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 pt-20">
+      <div className="flex-1 p-4 pt-24">
         <ResizablePanelGroup direction="horizontal" className="h-full gap-2">
           
           {/* Left Panel - File Manager */}
@@ -68,7 +68,7 @@ const AIBuilder = () => {
             </div>
           </ResizablePanel>
           
-          <ResizableHandle className="w-2 bg-border/30 hover:bg-primary/30 transition-colors rounded-full cursor-col-resize" />
+          <ResizableHandle className="w-3 bg-border/40 hover:bg-primary/40 transition-colors rounded-full cursor-col-resize hover:w-4" />
           
           {/* Center Panel - Code Editor */}
           <ResizablePanel defaultSize={50} minSize={25} maxSize={70}>
@@ -115,7 +115,7 @@ const AIBuilder = () => {
             </div>
           </ResizablePanel>
           
-          <ResizableHandle className="w-2 bg-border/30 hover:bg-primary/30 transition-colors rounded-full cursor-col-resize" />
+          <ResizableHandle className="w-3 bg-border/40 hover:bg-primary/40 transition-colors rounded-full cursor-col-resize hover:w-4" />
           
           {/* Right Panel - AI Assistant */}
           <ResizablePanel defaultSize={30} minSize={15} maxSize={60}>

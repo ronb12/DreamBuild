@@ -20,8 +20,8 @@ const About = () => {
               About <span className="text-blue-600">DreamBuild</span>
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-              DreamBuild is an AI-powered development platform that makes coding accessible to everyone. 
-              Build applications in 170+ programming languages using natural language prompts.
+              DreamBuild is a revolutionary AI-powered development platform that transforms your ideas into code. 
+              Simply describe what you want to build, and watch as DreamBuild generates complete applications for you.
             </p>
           </motion.div>
         </div>
@@ -43,8 +43,8 @@ const About = () => {
                   AI-Powered Development
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400">
-                  Transform your ideas into code using advanced AI models. Simply describe what you want to build, 
-                  and DreamBuild generates the complete application for you.
+                  Transform your ideas into code using cutting-edge AI models. Simply describe what you want to build, 
+                  and DreamBuild generates complete, working applications for you.
                 </p>
               </div>
               <div>
@@ -52,8 +52,8 @@ const About = () => {
                   Multi-Language Support
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400">
-                  Build applications in 170+ programming languages including React, Vue, Python, Java, 
-                  Swift, and many more. Choose your preferred technology stack.
+                  Build applications in popular programming languages including React, Vue, Python, JavaScript, 
+                  HTML/CSS, and many more. Choose your preferred technology stack.
                 </p>
               </div>
               <div>
@@ -62,7 +62,7 @@ const About = () => {
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400">
                   Deploy your applications instantly to Firebase Hosting and GitHub Pages. 
-                  No complex setup required - just click and deploy.
+                  No complex configuration required - just click and deploy.
                 </p>
               </div>
               <div>
@@ -70,8 +70,8 @@ const About = () => {
                   Local AI Integration
                 </h3>
                 <p className="text-slate-600 dark:text-slate-400">
-                  Use local AI models for complete privacy and control. No API keys required - 
-                  run everything on your own machine.
+                  Use local AI models for complete privacy and control. No external API keys required - 
+                  run everything on your own machine for maximum security.
                 </p>
               </div>
             </div>
@@ -91,7 +91,7 @@ const About = () => {
             </h2>
             <p className="text-lg text-slate-600 dark:text-slate-400 text-center leading-relaxed">
               To democratize software development by making AI-powered coding tools accessible to everyone. 
-              Whether you're a seasoned developer or just starting out, DreamBuild empowers you to turn 
+              Whether you're an experienced developer or just getting started, DreamBuild empowers you to turn 
               your ideas into reality with the power of artificial intelligence.
             </p>
           </motion.div>
@@ -114,7 +114,7 @@ const About = () => {
                 a company dedicated to creating innovative AI-powered development tools.
               </p>
               <p className="text-slate-600 dark:text-slate-400">
-                Founded by Ronell Bradley, a full-stack developer with extensive experience in AI and web development, 
+                Founded by Ronell Bradley, a full-stack developer passionate about AI and web development, 
                 we're committed to making advanced development tools accessible to everyone.
               </p>
             </div>
@@ -131,7 +131,7 @@ const About = () => {
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 shadow-xl">
             <h2 className="text-2xl font-bold text-white mb-4">Ready to Start Building?</h2>
             <p className="text-blue-100 mb-6 max-w-xl mx-auto">
-              Join thousands of developers who are already creating amazing applications with DreamBuild.
+              Start your journey with DreamBuild today and experience the future of AI-powered development.
             </p>
             <motion.a
               href="/ai-builder"

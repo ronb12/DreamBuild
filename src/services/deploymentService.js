@@ -1,21 +1,6 @@
-import { initializeApp } from 'firebase/app'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { getFirestore, collection, addDoc, doc, setDoc } from 'firebase/firestore'
-
-// Firebase config
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-key",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "dreambuild-2024-app.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "dreambuild-2024-app",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "dreambuild-2024-app.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789:web:abcdef123456789"
-}
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig)
-const storage = getStorage(app)
-const db = getFirestore(app)
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore'
+import { storage, db } from '../config/firebase'
 
 class DeploymentService {
   constructor() {

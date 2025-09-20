@@ -8,27 +8,27 @@
   --primary-light: #34d399;
   
   /* Secondary Colors */
-  --secondary: #f1f5f9;
-  --secondary-foreground: #1e293b;
-  --secondary-hover: #e2e8f0;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #1f2937;
+  --secondary-hover: #e5e7eb;
   
-  /* Neutral Colors - Light Mode */
-  --background: #ffffff;
-  --foreground: #1e293b;
+  /* Neutral Colors - Light Mode - Warm Professional */
+  --background: #f8f9fa;
+  --foreground: #1f2937;
   --card: #ffffff;
-  --card-foreground: #1e293b;
+  --card-foreground: #1f2937;
   --popover: #ffffff;
-  --popover-foreground: #1e293b;
+  --popover-foreground: #1f2937;
   
   /* Muted Colors - Light Mode */
-  --muted: #f8fafc;
-  --muted-foreground: #64748b;
-  --muted-hover: #f1f5f9;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --muted-hover: #e5e7eb;
   
   /* Accent Colors */
-  --accent: #f1f5f9;
-  --accent-foreground: #1e293b;
-  --accent-hover: #e2e8f0;
+  --accent: #f3f4f6;
+  --accent-foreground: #1f2937;
+  --accent-hover: #e5e7eb;
   
   /* Status Colors */
   --destructive: #ef4444;
@@ -39,8 +39,8 @@
   --success-foreground: #ffffff;
   
   /* Border & Input */
-  --border: #e2e8f0;
-  --input: #f8fafc;
+  --border: #e5e7eb;
+  --input: #f3f4f6;
   --input-border: #d1d5db;
   --ring: #10b981;
   

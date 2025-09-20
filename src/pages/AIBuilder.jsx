@@ -17,7 +17,7 @@ const AIBuilder = () => {
   ]
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col pt-16">
       {/* Header Bar */}
       <div className="flex items-center justify-between px-6 py-4 bg-card/80 backdrop-blur-sm border-b border-border/50 shadow-sm">
         {/* Left Side - Navigation */}

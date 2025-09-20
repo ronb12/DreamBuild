@@ -172,7 +172,7 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         onClick={onClose}
       >
         <motion.div
@@ -186,8 +186,8 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
           <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-primary" />
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold">Template Library</h2>
@@ -211,7 +211,7 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
                   placeholder="Search templates..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-black focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               
@@ -219,7 +219,7 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 border border-border rounded-lg bg-background"
+                  className="px-3 py-2 border border-border rounded-lg bg-black"
                 >
                   <option value="all">All Categories</option>
                   {Object.entries(categories).map(([key, category]) => (
@@ -232,7 +232,7 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border border-border rounded-lg bg-background"
+                  className="px-3 py-2 border border-border rounded-lg bg-black"
                 >
                   <option value="popular">Popular</option>
                   <option value="alphabetical">A-Z</option>
@@ -242,13 +242,13 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
                 <div className="flex border border-border rounded-lg">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
+                    className={`p-2 ${viewMode === 'grid' ? 'bg-gray-700 text-white' : 'hover:bg-muted'}`}
                   >
                     <Grid className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
+                    className={`p-2 ${viewMode === 'list' ? 'bg-gray-700 text-white' : 'hover:bg-muted'}`}
                   >
                     <List className="h-4 w-4" />
                   </button>
@@ -340,7 +340,7 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
                           className="bg-card border border-border rounded-lg p-4 hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer group"
                         >
                           <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
                               <span className="text-lg">{template.icon}</span>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -359,7 +359,7 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
                               <span>HTML/CSS/JS</span>
                             </div>
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Zap className="h-4 w-4 text-primary" />
+                              <Zap className="h-4 w-4 text-white" />
                             </div>
                           </div>
                         </motion.div>
@@ -376,7 +376,7 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
                           onClick={() => handleTemplateSelect(template.id)}
                           className="flex items-center gap-4 p-4 bg-card border border-border rounded-lg hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
                         >
-                          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
                             <span className="text-xl">{template.icon}</span>
                           </div>
                           
@@ -393,7 +393,7 @@ const TemplateBrowser = ({ isOpen, onClose, onTemplateSelect }) => {
                           </div>
                           
                           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Zap className="h-5 w-5 text-primary" />
+                            <Zap className="h-5 w-5 text-white" />
                           </div>
                         </motion.div>
                       ))}

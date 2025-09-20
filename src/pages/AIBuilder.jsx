@@ -12,7 +12,7 @@ const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('code') // 'code', 'preview', 'terminal'
 
   return (
-    <div className="h-[calc(100vh-120px)] flex flex-col bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="h-[calc(100vh-120px)] flex flex-col bg-background">
       {/* Enhanced Header with Better Visual Hierarchy */}
       <div className="flex items-center justify-between p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
         <div className="flex items-center gap-4">
@@ -35,8 +35,8 @@ const AIBuilder = () => {
             onClick={() => setActiveTab('code')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
               activeTab === 'code' 
-                ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20' 
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30 border border-blue-500/20' 
+                : 'text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20'
             }`}
           >
             <Code className="h-4 w-4" />
@@ -49,8 +49,8 @@ const AIBuilder = () => {
             onClick={() => setActiveTab('preview')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
               activeTab === 'preview' 
-                ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20' 
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                ? 'bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg shadow-green-500/30 border border-green-500/20' 
+                : 'text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
             }`}
           >
             <Eye className="h-4 w-4" />
@@ -63,8 +63,8 @@ const AIBuilder = () => {
             onClick={() => setActiveTab('terminal')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
               activeTab === 'terminal' 
-                ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20' 
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30 border border-purple-500/20' 
+                : 'text-muted-foreground hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20'
             }`}
           >
             <TerminalIcon className="h-4 w-4" />
@@ -83,7 +83,7 @@ const AIBuilder = () => {
             </div>
           </ResizablePanel>
           
-          <ResizableHandle className="w-1 bg-border/30 hover:bg-primary/30 transition-colors rounded-full" />
+          <ResizableHandle className="w-1 bg-border/30 hover:bg-white/30 transition-colors rounded-full" />
           
           {/* Code Editor & Preview Panel */}
           <ResizablePanel defaultSize={52} minSize={35}>
@@ -97,8 +97,8 @@ const AIBuilder = () => {
                     {activeTab === 'terminal' && (
                       <div className="h-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-300 rounded-lg border border-gray-700/50">
                         <div className="text-center p-8">
-                          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                            <TerminalIcon className="h-8 w-8 text-primary" />
+                          <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <TerminalIcon className="h-8 w-8 text-white" />
                           </div>
                           <h3 className="text-xl font-semibold mb-3 text-foreground">Terminal Component</h3>
                           <p className="text-muted-foreground max-w-sm">
@@ -115,7 +115,7 @@ const AIBuilder = () => {
                   </div>
                 </ResizablePanel>
                 
-                <ResizableHandle className="h-1 bg-border/30 hover:bg-primary/30 transition-colors rounded-full" />
+                <ResizableHandle className="h-1 bg-border/30 hover:bg-white/30 transition-colors rounded-full" />
                 
                 {/* Bottom Panel (Preview or Code Editor) */}
                 <ResizablePanel defaultSize={40} minSize={20}>
@@ -124,10 +124,10 @@ const AIBuilder = () => {
                     {activeTab === 'preview' && <CodeEditor />}
                     {activeTab === 'terminal' && (
                       <div className="flex flex-col h-full bg-gradient-to-br from-card via-card/80 to-card rounded-lg border border-border/50 shadow-sm overflow-hidden">
-                        <div className="p-4 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 flex items-center justify-between">
+                        <div className="p-4 border-b border-border/50 bg-gradient-to-r from-white/5 via-white/10 to-white/5 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                              <Brain className="h-5 w-5 text-primary" />
+                            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                              <Brain className="h-5 w-5 text-white" />
                             </div>
                             <div>
                               <span className="font-semibold text-foreground">AI Assistant</span>
@@ -137,8 +137,8 @@ const AIBuilder = () => {
                         </div>
                         <div className="flex-grow p-6 flex items-center justify-center text-muted-foreground">
                           <div className="text-center">
-                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                              <TerminalIcon className="h-8 w-8 text-primary" />
+                            <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                              <TerminalIcon className="h-8 w-8 text-white" />
                             </div>
                             <p className="text-lg mb-2 text-foreground">Terminal Active</p>
                             <p className="text-sm max-w-xs">
@@ -154,7 +154,7 @@ const AIBuilder = () => {
             </div>
           </ResizablePanel>
           
-          <ResizableHandle className="w-1 bg-border/30 hover:bg-primary/30 transition-colors rounded-full" />
+          <ResizableHandle className="w-1 bg-border/30 hover:bg-white/30 transition-colors rounded-full" />
           
           {/* AI Assistant Panel */}
           <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>

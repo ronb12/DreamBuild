@@ -53,7 +53,7 @@ const Dashboard = () => {
       action: 'Generated React component',
       time: '2 minutes ago',
       icon: Brain,
-      color: 'text-blue-600'
+      color: 'text-white'
     },
     {
       id: 2,
@@ -94,7 +94,7 @@ const Dashboard = () => {
   const languageUsage = [
     { language: 'JavaScript', percentage: 45, files: 70, color: 'bg-yellow-500' },
     { language: 'HTML', percentage: 25, files: 39, color: 'bg-orange-500' },
-    { language: 'CSS', percentage: 20, files: 31, color: 'bg-blue-500' },
+    { language: 'CSS', percentage: 20, files: 31, color: 'bg-white' },
     { language: 'Python', percentage: 10, files: 16, color: 'bg-green-500' }
   ]
 
@@ -105,8 +105,8 @@ const Dashboard = () => {
       className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 hover:shadow-md transition-all duration-200"
     >
       <div className="flex items-center justify-between mb-4">
-        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-          <Icon className="h-6 w-6 text-primary" />
+        <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
+          <Icon className="h-6 w-6 text-white" />
         </div>
         {change && (
           <div className={`flex items-center gap-1 text-sm ${
@@ -131,7 +131,7 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
@@ -151,7 +151,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -217,10 +217,10 @@ const Dashboard = () => {
           <div className="lg:col-span-2 bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                <Activity className="h-5 w-5 text-primary" />
+                <Activity className="h-5 w-5 text-white" />
                 Recent Activity
               </h2>
-              <button className="text-sm text-primary hover:text-primary/80 transition-colors">
+              <button className="text-sm text-white hover:text-gray-300 transition-colors">
                 View all
               </button>
             </div>
@@ -252,7 +252,7 @@ const Dashboard = () => {
           {/* Top Projects */}
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
             <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-primary" />
+              <BarChart3 className="h-5 w-5 text-white" />
               Top Projects
             </h2>
             <div className="space-y-4">
@@ -271,7 +271,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex-1 bg-muted rounded-full h-2 mr-3">
                       <div 
-                        className="bg-primary h-2 rounded-full transition-all duration-300"
+                        className="bg-white h-2 rounded-full transition-all duration-300"
                         style={{ width: `${project.progress}%` }}
                       ></div>
                     </div>
@@ -289,7 +289,7 @@ const Dashboard = () => {
           {/* Language Usage */}
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
             <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
-              <Code className="h-5 w-5 text-primary" />
+              <Code className="h-5 w-5 text-white" />
               Language Usage
             </h2>
             <div className="space-y-4">
@@ -325,12 +325,12 @@ const Dashboard = () => {
           {/* Quick Actions */}
           <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
             <h2 className="text-xl font-semibold text-foreground mb-6 flex items-center gap-2">
-              <Zap className="h-5 w-5 text-primary" />
+              <Zap className="h-5 w-5 text-white" />
               Quick Actions
             </h2>
             <div className="grid grid-cols-2 gap-3">
               {[
-                { name: 'New Project', icon: Folder, color: 'bg-blue-500', href: '/ai-builder' },
+                { name: 'New Project', icon: Folder, color: 'bg-white', href: '/ai-builder' },
                 { name: 'AI Builder', icon: Brain, color: 'bg-purple-500', href: '/ai-builder' },
                 { name: 'View Projects', icon: Globe, color: 'bg-green-500', href: '/projects' },
                 { name: 'Settings', icon: Settings, color: 'bg-orange-500', href: '/settings' }

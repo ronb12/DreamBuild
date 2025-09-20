@@ -38,7 +38,7 @@ const Home = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-32 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -59,7 +59,7 @@ const Home = () => {
             className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
           >
             Build with{' '}
-            <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
               AI Power
             </span>
           </motion.h1>
@@ -82,7 +82,7 @@ const Home = () => {
           >
             <Link
               to="/ai-builder"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-lg font-semibold"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors text-lg font-semibold"
             >
               <Rocket className="h-5 w-5" />
               Start Building
@@ -165,7 +165,7 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/ai-builder"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-lg font-semibold"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors text-lg font-semibold"
             >
               Get Started Free
               <ArrowRight className="h-5 w-5" />

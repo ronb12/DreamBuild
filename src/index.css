@@ -1,48 +1,48 @@
-/* DreamBuild Styles - Cursor-Inspired Color Scheme */
+/* DreamBuild Styles - Modern Developer Theme */
 
 :root {
-  /* Primary Colors - Cursor Blue */
-  --primary: #007acc;
+  /* Primary Colors - Modern Blue */
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --primary-dark: #005a9e;
-  --primary-light: #4dabf7;
+  --primary-dark: #1d4ed8;
+  --primary-light: #3b82f6;
   
   /* Secondary Colors */
-  --secondary: #f3f3f3;
-  --secondary-foreground: #1e1e1e;
-  --secondary-hover: #e1e4e8;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --secondary-hover: #e2e8f0;
   
-  /* Neutral Colors - Light Mode - Cursor Style */
-  --background: #f0f8ff;
-  --foreground: #1e1e1e;
+  /* Neutral Colors - Light Mode */
+  --background: #ffffff;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #1e1e1e;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #1e1e1e;
+  --popover-foreground: #0f172a;
   
   /* Muted Colors - Light Mode */
-  --muted: #f3f3f3;
-  --muted-foreground: #6a6a6a;
-  --muted-hover: #e1e4e8;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --muted-hover: #f1f5f9;
   
   /* Accent Colors */
-  --accent: #e3f2fd;
-  --accent-foreground: #007acc;
-  --accent-hover: #bbdefb;
+  --accent: #f1f5f9;
+  --accent-foreground: #2563eb;
+  --accent-hover: #e2e8f0;
   
   /* Status Colors */
-  --destructive: #f85149;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --warning: #d97706;
+  --warning: #f59e0b;
   --warning-foreground: #ffffff;
-  --success: #22c55e;
+  --success: #10b981;
   --success-foreground: #ffffff;
   
   /* Border & Input */
-  --border: #e1e4e8;
-  --input: #f6f8fa;
-  --input-border: #d0d7de;
-  --ring: #007acc;
+  --border: #e2e8f0;
+  --input: #ffffff;
+  --input-border: #d1d5db;
+  --ring: #2563eb;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -54,48 +54,48 @@
 }
 
 .dark {
-  /* Background Colors - Dark Mode - Cursor Style */
-  --background: #1e1e1e;
-  --foreground: #cccccc;
-  --card: #252526;
-  --card-foreground: #cccccc;
-  --popover: #252526;
-  --popover-foreground: #cccccc;
+  /* Background Colors - Dark Mode */
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
   
   /* Secondary Colors - Dark Mode */
-  --secondary: #2d2d30;
-  --secondary-foreground: #cccccc;
-  --secondary-hover: #3e3e42;
+  --secondary: #334155;
+  --secondary-foreground: #f8fafc;
+  --secondary-hover: #475569;
   
   /* Muted Colors - Dark Mode */
-  --muted: #2d2d30;
-  --muted-foreground: #969696;
-  --muted-hover: #3e3e42;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --muted-hover: #334155;
   
   /* Accent Colors - Dark Mode */
-  --accent: #094771;
-  --accent-foreground: #ffffff;
-  --accent-hover: #0d4a6b;
+  --accent: #1e293b;
+  --accent-foreground: #3b82f6;
+  --accent-hover: #334155;
   
-  /* Primary Colors - Dark Mode - Cursor Blue */
-  --primary: #007acc;
+  /* Primary Colors - Dark Mode */
+  --primary: #3b82f6;
   --primary-foreground: #ffffff;
-  --primary-dark: #005a9e;
-  --primary-light: #4dabf7;
+  --primary-dark: #2563eb;
+  --primary-light: #60a5fa;
   
   /* Status Colors - Dark Mode */
-  --destructive: #f85149;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --warning: #d97706;
+  --warning: #f59e0b;
   --warning-foreground: #ffffff;
-  --success: #22c55e;
+  --success: #10b981;
   --success-foreground: #ffffff;
   
   /* Border & Input - Dark Mode */
-  --border: #3e3e42;
-  --input: #2d2d30;
-  --input-border: #3e3e42;
-  --ring: #007acc;
+  --border: #334155;
+  --input: #1e293b;
+  --input-border: #475569;
+  --ring: #3b82f6;
   
   /* Shadows - Dark Mode */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);

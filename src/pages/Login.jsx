@@ -7,8 +7,8 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="bg-card border border-border rounded-lg p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-              <User className="h-8 w-8 text-primary-foreground" />
+            <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <User className="h-8 w-8 text-black" />
             </div>
             <h1 className="text-2xl font-bold mb-2">Welcome to DreamBuild</h1>
             <p className="text-muted-foreground">
@@ -48,7 +48,7 @@ const Login = () => {
             </p>
             <a
               href="/ai-builder"
-              className="inline-flex items-center gap-2 px-4 py-2 text-primary hover:text-primary/80 transition-colors font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 text-white hover:text-gray-300 transition-colors font-medium"
             >
               Continue as Guest
             </a>

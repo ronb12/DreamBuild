@@ -133,6 +133,14 @@ const AIPrompt = () => {
       // Update generation history
       setGenerationHistory(prev => [prompt, ...prev.slice(0, 4)])
 
+      // Debug: Check if aiService and generateCode method exist
+      console.log('AI Service object:', aiService)
+      console.log('AI Service generateCode method:', typeof aiService?.generateCode)
+      
+      if (!aiService || typeof aiService.generateCode !== 'function') {
+        throw new Error('AI Service not properly initialized. generateCode method not found.')
+      }
+
       // Generate code using AI service
       const generatedFiles = await aiService.generateCode(prompt, currentProject.config)
       
@@ -228,21 +236,21 @@ const AIPrompt = () => {
             </span>
             <button
               onClick={() => setShowTemplateBrowser(true)}
-              className="p-1 hover:bg-muted rounded transition-colors"
+              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
               title="Browse Templates (1000+)"
             >
               <Code className="h-4 w-4" />
             </button>
             <button
               onClick={() => setShowServiceStatus(true)}
-              className="p-1 hover:bg-muted rounded transition-colors"
+              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
               title="AI Service Status"
             >
               <BarChart3 className="h-4 w-4" />
             </button>
             <button
               onClick={() => setShowAISettings(true)}
-              className="p-1 hover:bg-muted rounded transition-colors"
+              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
               title="AI Settings"
             >
               <Settings className="h-4 w-4" />
@@ -280,7 +288,7 @@ const AIPrompt = () => {
               onChange={(e) => setPrompt(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Create a healthy food tips website with nutrition advice and meal planning features..."
-              className="w-full p-3 border border-border rounded-md bg-background resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               disabled={isGenerating}
             />
             <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
@@ -308,7 +316,7 @@ const AIPrompt = () => {
                     onClick={() => handleSuggestionClick(suggestion)}
                     className={`flex items-center gap-1 px-2 py-1 text-xs rounded-md border transition-colors ${
                       suggestion.type === 'feature'
-                        ? 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                        ? 'border-white/20 bg-white/10 text-white hover:bg-white/20'
                         : 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
                     }`}
                   >
@@ -346,7 +354,7 @@ const AIPrompt = () => {
         <button
           onClick={handleGenerate}
           disabled={!prompt.trim() || isGenerating}
-          className="w-full flex items-center justify-center gap-2 p-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-md hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-purple-500/30 border border-purple-500/20"
         >
           {isGenerating ? (
             <>
@@ -387,7 +395,7 @@ const AIPrompt = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
             onClick={() => setShowAISettings(false)}
           >
             <motion.div
@@ -411,7 +419,7 @@ const AIPrompt = () => {
                       setAIService(e.target.value)
                       aiService?.setService ? aiService.setService(e.target.value) : null
                     }}
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-md bg-black"
                   >
                     {Object.entries(aiServices).map(([key, service]) => (
                       <option key={key} value={key}>
@@ -429,7 +437,7 @@ const AIPrompt = () => {
                       setAIModel(e.target.value)
                       aiService?.setService ? aiService.setService(e.target.value) : null
                     }}
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-md bg-black"
                   >
                     {Object.entries(aiServices[aiService]?.models || {}).map(([key, name]) => (
                       <option key={key} value={key}>

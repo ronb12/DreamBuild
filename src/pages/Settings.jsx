@@ -206,7 +206,7 @@ const Settings = () => {
       onClick={() => onChange(!checked)}
       disabled={disabled}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-        checked ? 'bg-primary' : 'bg-muted'
+        checked ? 'bg-gray-700' : 'bg-muted'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <span
@@ -554,7 +554,7 @@ const Settings = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
@@ -583,7 +583,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -600,7 +600,7 @@ const Settings = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   onClick={saveSettings}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all duration-200"
                 >
                   <Save className="h-4 w-4" />
                   Save Changes
@@ -623,7 +623,7 @@ const Settings = () => {
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                         activeTab === tab.id
-                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          ? 'bg-gray-700 text-white shadow-sm'
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }`}
                     >
@@ -672,7 +672,7 @@ const Settings = () => {
             <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl overflow-hidden">
               <div className="p-6 border-b border-border/50">
                 <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-                  {React.createElement(tabs.find(t => t.id === activeTab)?.icon, { className: "h-5 w-5 text-primary" })}
+                  {React.createElement(tabs.find(t => t.id === activeTab)?.icon, { className: "h-5 w-5 text-white" })}
                   {tabs.find(t => t.id === activeTab)?.name}
                 </h2>
               </div>

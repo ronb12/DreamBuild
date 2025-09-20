@@ -73,7 +73,7 @@ const AIServiceStatus = ({ isOpen, onClose }) => {
   }
 
   const getStatusColor = (service) => {
-    if (service.isCurrent) return 'bg-primary text-primary-foreground'
+    if (service.isCurrent) return 'bg-gray-700 text-white'
     if (service.isPreferred) return 'bg-secondary text-secondary-foreground'
     if (service.isHealthy) return 'bg-green-50 text-green-700 border-green-200'
     return 'bg-red-50 text-red-700 border-red-200'
@@ -107,7 +107,7 @@ const AIServiceStatus = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-background border border-border rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+      <div className="bg-black border border-border rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
@@ -154,7 +154,7 @@ const AIServiceStatus = ({ isOpen, onClose }) => {
                     </div>
                     <div className="flex items-center gap-2">
                       {service.isCurrent && (
-                        <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
+                        <span className="text-xs bg-gray-700 text-white px-2 py-1 rounded">
                           Current
                         </span>
                       )}
@@ -213,7 +213,7 @@ const AIServiceStatus = ({ isOpen, onClose }) => {
                     className="flex items-center gap-2"
                   >
                     {userPreferences.fallbackEnabled ? (
-                      <ToggleRight className="h-6 w-6 text-primary" />
+                      <ToggleRight className="h-6 w-6 text-white" />
                     ) : (
                       <ToggleLeft className="h-6 w-6 text-muted-foreground" />
                     )}
@@ -232,7 +232,7 @@ const AIServiceStatus = ({ isOpen, onClose }) => {
                     className="flex items-center gap-2"
                   >
                     {userPreferences.showNotifications ? (
-                      <ToggleRight className="h-6 w-6 text-primary" />
+                      <ToggleRight className="h-6 w-6 text-white" />
                     ) : (
                       <ToggleLeft className="h-6 w-6 text-muted-foreground" />
                     )}
@@ -280,7 +280,7 @@ const AIServiceStatus = ({ isOpen, onClose }) => {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 bg-muted rounded-lg">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-2xl font-bold text-white">
                     {usageStats.totalRequests || 0}
                   </div>
                   <div className="text-sm text-muted-foreground">Total Requests</div>
@@ -316,7 +316,7 @@ const AIServiceStatus = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                  className="px-4 py-2 text-sm bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
                 >
                   Close
                 </button>

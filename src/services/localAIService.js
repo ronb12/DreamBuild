@@ -131,7 +131,6 @@ class LocalAIService {
   constructor() {
     this.currentModel = 'codellama-7b'
     this.baseURL = 'http://localhost:11434/api'
-    this.isHealthy = false
     this.modelHealth = {}
     
     // Initialize health monitoring
@@ -1291,6 +1290,76 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });`
+  }
+
+  // Template management methods
+  getTemplateCategories() {
+    return {
+      web: { name: 'Web Applications', icon: '🌐', templates: ['business-landing', 'portfolio-website', 'blog-website', 'agency-website'] },
+      mobile: { name: 'Mobile Applications', icon: '📱', templates: ['todo-app', 'fitness-tracker', 'task-manager', 'note-app'] },
+      dashboard: { name: 'Dashboards', icon: '📊', templates: ['analytics-dashboard', 'admin-dashboard', 'sales-dashboard', 'kpi-dashboard'] },
+      ecommerce: { name: 'E-commerce', icon: '🛒', templates: ['online-store', 'ecommerce-store', 'marketplace', 'subscription-store'] },
+      api: { name: 'APIs & Backend', icon: '🔌', templates: ['rest-api', 'graphql-api', 'microservice', 'webhook-service'] },
+      games: { name: 'Games', icon: '🎮', templates: ['puzzle-game', 'arcade-game', 'educational-game', 'multiplayer-game'] },
+      education: { name: 'Education', icon: '🎓', templates: ['lms-platform', 'course-platform', 'quiz-app', 'learning-app'] },
+      healthcare: { name: 'Healthcare', icon: '🏥', templates: ['patient-portal', 'telemedicine', 'health-tracker', 'medical-records'] },
+      finance: { name: 'Finance', icon: '💰', templates: ['budget-tracker', 'investment-portfolio', 'payment-gateway', 'banking-app'] },
+      iot: { name: 'IoT & Smart', icon: '🏠', templates: ['smart-home', 'iot-dashboard', 'device-manager', 'sensor-monitor'] },
+      realestate: { name: 'Real Estate', icon: '🏘️', templates: ['property-listing', 'real-estate-portal', 'property-manager', 'marketplace'] }
+    }
+  }
+
+  getTemplatesByCategory(category) {
+    const categories = this.getTemplateCategories()
+    return categories[category]?.templates || []
+  }
+
+  getAllTemplates() {
+    const allTemplates = []
+    const categories = this.getTemplateCategories()
+    Object.values(categories).forEach(category => {
+      category.templates.forEach(template => {
+        allTemplates.push({
+          id: template,
+          name: template.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          category: category.name,
+          icon: category.icon
+        })
+      })
+    })
+    return allTemplates
+  }
+
+  generateTemplateById(templateId, customizations = {}) {
+    return this.createFallbackResponse(templateId, customizations)
+  }
+
+  searchTemplates(query) {
+    const allTemplates = this.getAllTemplates()
+    return allTemplates.filter(template =>
+      template.name.toLowerCase().includes(query.toLowerCase()) ||
+      template.id.toLowerCase().includes(query.toLowerCase())
+    )
+  }
+
+  getPopularTemplates() {
+    const popular = [
+      'business-landing', 'portfolio-website', 'blog-website', 'todo-app',
+      'fitness-tracker', 'online-store', 'analytics-dashboard', 'rest-api'
+    ]
+    return popular.map(id => this.getAllTemplates().find(t => t.id === id)).filter(Boolean)
+  }
+
+  getAvailableModels() {
+    return Object.keys(LOCAL_AI_MODELS)
+  }
+
+  getHealthyModels() {
+    return Object.keys(this.modelHealth).filter(modelId => this.modelHealth[modelId].isHealthy)
+  }
+
+  get isHealthy() {
+    return Object.values(this.modelHealth).some(model => model.isHealthy)
   }
 }
 

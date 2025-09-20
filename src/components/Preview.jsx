@@ -84,13 +84,11 @@ const Preview = () => {
         fullHTML = `<!DOCTYPE html>\n${fullHTML}`
       }
 
-      // Update iframe content
+      // Update iframe content using srcdoc (CORS-safe)
       const iframe = iframeRef.current
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document
       
-      iframeDoc.open()
-      iframeDoc.write(fullHTML)
-      iframeDoc.close()
+      // Use srcdoc to avoid CORS issues
+      iframe.srcdoc = fullHTML
 
       // Handle iframe load events
       iframe.onload = () => {
@@ -169,11 +167,9 @@ const Preview = () => {
     `
 
     const iframe = iframeRef.current
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document
     
-    iframeDoc.open()
-    iframeDoc.write(placeholderHTML)
-    iframeDoc.close()
+    // Use srcdoc to avoid CORS issues
+    iframe.srcdoc = placeholderHTML
 
     setIsLoading(false)
   }
@@ -187,13 +183,15 @@ const Preview = () => {
     if (!iframeRef.current) return
 
     const iframe = iframeRef.current
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document
     
-    if (iframeDoc) {
+    // Get the current HTML content from srcdoc
+    if (iframe.srcdoc) {
       const newWindow = window.open('', '_blank')
-      newWindow.document.write(iframeDoc.documentElement.outerHTML)
+      newWindow.document.write(iframe.srcdoc)
       newWindow.document.close()
       toast.success('Opened in new tab!')
+    } else {
+      toast.error('No content to open')
     }
   }
 
@@ -279,7 +277,7 @@ const Preview = () => {
       </div>
 
       {/* Preview Content */}
-      <div className="flex-1 relative bg-background">
+      <div className="flex-1 relative bg-black">
         {previewError ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center p-6">
@@ -288,7 +286,7 @@ const Preview = () => {
               <p className="text-muted-foreground mb-4">{previewError}</p>
               <button
                 onClick={handleRefresh}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
               >
                 Try Again
               </button>
@@ -299,9 +297,9 @@ const Preview = () => {
             ref={iframeRef}
             className="w-full h-full border-0"
             title="Preview"
-            // Note: allow-same-origin is required for preview functionality to work properly
-            // This is safe in our controlled environment where we generate the content
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+            // Using srcdoc with sandbox for secure preview rendering
+            // allow-same-origin removed to prevent sandbox escape warnings
+            sandbox="allow-scripts allow-forms allow-popups"
             onLoad={() => setIsLoading(false)}
             onError={() => {
               setIsLoading(false)

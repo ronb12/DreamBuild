@@ -8,8 +8,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold">D</span>
+              <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                <span className="text-black font-bold">D</span>
               </div>
               <span className="text-xl font-bold">DreamBuild</span>
             </div>
@@ -41,18 +41,18 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold">Resources</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Examples</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Community</a></li>
+              <li><a href="/documentation" className="hover:text-foreground transition-colors">Documentation</a></li>
+              <li><a href="/examples" className="hover:text-foreground transition-colors">Examples</a></li>
+              <li><a href="/community" className="hover:text-foreground transition-colors">Community</a></li>
             </ul>
           </div>
 
           <div className="space-y-4">
             <h3 className="text-sm font-semibold">Company</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
+              <li><a href="/about" className="hover:text-foreground transition-colors">About</a></li>
+              <li><a href="/blog" className="hover:text-foreground transition-colors">Blog</a></li>
+              <li><a href="/contact" className="hover:text-foreground transition-colors">Contact</a></li>
             </ul>
           </div>
         </div>

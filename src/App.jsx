@@ -12,6 +12,12 @@ import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Projects from './pages/Projects'
 import Settings from './pages/Settings'
+import Documentation from './pages/Documentation'
+import Examples from './pages/Examples'
+import Community from './pages/Community'
+import About from './pages/About'
+import Blog from './pages/Blog'
+import Contact from './pages/Contact'
 
 function App() {
   return (
@@ -29,6 +35,12 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/projects" element={<Projects />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/documentation" element={<Documentation />} />
+                  <Route path="/examples" element={<Examples />} />
+                  <Route path="/community" element={<Community />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/contact" element={<Contact />} />
                 </Routes>
               </main>
               <Footer />

@@ -204,11 +204,11 @@ const FileManager = () => {
       className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden"
     >
       {/* Enhanced File Manager Header */}
-      <div className="p-4 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
+      <div className="p-4 border-b border-border/50 bg-gradient-to-r from-white/5 via-white/10 to-white/5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-              <Folder className="h-5 w-5 text-primary" />
+            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+              <Folder className="h-5 w-5 text-white" />
             </div>
             <div>
               <h3 className="font-semibold text-foreground">Project Files</h3>
@@ -220,19 +220,19 @@ const FileManager = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowNewFileDialog(true)}
-              className="p-2 hover:bg-primary/10 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/20"
+              className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 border border-transparent hover:border-white/20"
               title="New File"
             >
-              <Plus className="h-4 w-4 text-primary" />
+              <Plus className="h-4 w-4 text-white" />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowProjectDialog(true)}
-              className="p-2 hover:bg-primary/10 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/20"
+              className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 border border-transparent hover:border-white/20"
               title="Project Settings"
             >
-              <Settings className="h-4 w-4 text-primary" />
+              <Settings className="h-4 w-4 text-white" />
             </motion.button>
           </div>
         </div>
@@ -243,7 +243,7 @@ const FileManager = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => saveProject()}
-            className="flex items-center gap-2 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-sm shadow-primary/20"
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20"
             title="Save Project"
           >
             <Save className="h-4 w-4" />
@@ -253,7 +253,7 @@ const FileManager = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowDeployDialog(true)}
-            className="flex items-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-sm shadow-green-600/20"
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 shadow-lg shadow-emerald-500/30 border border-emerald-500/20"
             title="Deploy Project"
             disabled={Object.keys(currentProject.files).length === 0}
           >
@@ -262,7 +262,7 @@ const FileManager = () => {
           </motion.button>
           <button
             onClick={handleDownloadProject}
-            className="flex items-center gap-1 px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded hover:bg-secondary/90 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded hover:from-amber-600 hover:to-amber-700 transition-all duration-200 shadow-md shadow-amber-500/20 border border-amber-400/20"
             title="Download Project"
           >
             <Download className="h-3 w-3" />
@@ -270,7 +270,7 @@ const FileManager = () => {
           </button>
           <button
             onClick={createNewProject}
-            className="flex items-center gap-1 px-2 py-1 text-xs bg-accent text-accent-foreground rounded hover:bg-accent/90 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-violet-500 to-violet-600 text-white rounded hover:from-violet-600 hover:to-violet-700 transition-all duration-200 shadow-md shadow-violet-500/20 border border-violet-400/20"
             title="New Project"
           >
             <FolderOpen className="h-3 w-3" />
@@ -288,7 +288,7 @@ const FileManager = () => {
             animate={{ opacity: 1, x: 0 }}
             className={`group flex items-center gap-2 p-2 rounded-md cursor-pointer transition-all ${
               currentProject.activeFile === filename
-                ? 'bg-primary text-primary-foreground'
+                ? 'bg-gray-700 text-white'
                 : 'hover:bg-muted'
             }`}
             onClick={() => handleFileClick(filename)}
@@ -298,7 +298,7 @@ const FileManager = () => {
               <div className="text-sm font-medium truncate">{filename}</div>
               <div className={`text-xs ${
                 currentProject.activeFile === filename
-                  ? 'text-primary-foreground/70'
+                  ? 'text-black/70'
                   : 'text-muted-foreground'
               }`}>
                 {getFileStatus(filename)}
@@ -310,7 +310,7 @@ const FileManager = () => {
                   e.stopPropagation()
                   handleDownloadFile(filename)
                 }}
-                className="p-1 hover:bg-background/20 rounded transition-colors"
+                className="p-1 hover:bg-black/20 rounded transition-colors"
                 title="Download File"
               >
                 <Download className="h-3 w-3" />
@@ -353,7 +353,7 @@ const FileManager = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
             onClick={() => setShowNewFileDialog(false)}
           >
             <motion.div
@@ -372,7 +372,7 @@ const FileManager = () => {
                     value={newFileName}
                     onChange={(e) => setNewFileName(e.target.value)}
                     placeholder="my-file.js"
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-md bg-black"
                     autoFocus
                   />
                 </div>
@@ -400,7 +400,7 @@ const FileManager = () => {
                   </button>
                   <button
                     onClick={handleNewFile}
-                    className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                    className="px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md shadow-blue-500/20 border border-blue-500/20"
                   >
                     Create
                   </button>
@@ -418,7 +418,7 @@ const FileManager = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
             onClick={() => setShowProjectDialog(false)}
           >
             <motion.div
@@ -436,7 +436,7 @@ const FileManager = () => {
                     type="text"
                     value={currentProject.name}
                     onChange={(e) => updateConfig({ name: e.target.value })}
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-md bg-black"
                   />
                 </div>
                 <div>
@@ -444,7 +444,7 @@ const FileManager = () => {
                   <select
                     value={currentProject.config.appType}
                     onChange={(e) => updateConfig({ appType: e.target.value })}
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-md bg-black"
                   >
                     <option value="frontend">Frontend</option>
                     <option value="backend">Backend</option>
@@ -457,7 +457,7 @@ const FileManager = () => {
                   <select
                     value={currentProject.config.language}
                     onChange={(e) => updateConfig({ language: e.target.value })}
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-md bg-black"
                   >
                     <option value="javascript">JavaScript</option>
                     <option value="typescript">TypeScript</option>
@@ -487,7 +487,7 @@ const FileManager = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
             onClick={() => setShowDeployDialog(false)}
           >
             <motion.div
@@ -510,7 +510,7 @@ const FileManager = () => {
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                     placeholder="my-awesome-app"
-                    className="w-full p-2 border border-border rounded-md bg-background"
+                    className="w-full p-2 border border-border rounded-md bg-black"
                     autoFocus
                   />
                 </div>
@@ -524,7 +524,7 @@ const FileManager = () => {
                         value="firebase"
                         checked={deploymentPlatform === 'firebase'}
                         onChange={(e) => setDeploymentPlatform(e.target.value)}
-                        className="text-primary"
+                        className="text-white"
                       />
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 bg-orange-500 rounded flex items-center justify-center">
@@ -540,7 +540,7 @@ const FileManager = () => {
                         value="github"
                         checked={deploymentPlatform === 'github'}
                         onChange={(e) => setDeploymentPlatform(e.target.value)}
-                        className="text-primary"
+                        className="text-white"
                       />
                       <div className="flex items-center gap-2">
                         <Github className="h-4 w-4" />
@@ -580,7 +580,7 @@ const FileManager = () => {
                   <button
                     onClick={handleDeploy}
                     disabled={isDeploying || !projectName.trim()}
-                    className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                    className="px-4 py-2 text-sm bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-md hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md shadow-emerald-500/20 border border-emerald-500/20 flex items-center gap-2"
                   >
                     {isDeploying ? (
                       <>

@@ -145,7 +145,7 @@ const Projects = () => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800 border-green-200'
       case 'development': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 'completed': return 'bg-blue-100 text-blue-800 border-blue-200'
+      case 'completed': return 'bg-white/10 text-white border-white/20'
       default: return 'bg-gray-100 text-gray-800 border-gray-200'
     }
   }
@@ -160,7 +160,7 @@ const Projects = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-8">
@@ -175,7 +175,7 @@ const Projects = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowCreateDialog(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-sm shadow-primary/20"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all duration-200 shadow-sm shadow-primary/20"
             >
               <Plus className="h-4 w-4" />
               New Project
@@ -195,8 +195,8 @@ const Projects = () => {
                   className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-4 hover:shadow-md transition-all duration-200"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <IconComponent className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                      <IconComponent className="h-5 w-5 text-white" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-foreground">{type.count}</p>
@@ -247,7 +247,7 @@ const Projects = () => {
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-md transition-colors ${
-                  viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                  viewMode === 'grid' ? 'bg-gray-700 text-white' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <Grid3X3 className="h-4 w-4" />
@@ -255,7 +255,7 @@ const Projects = () => {
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-md transition-colors ${
-                  viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                  viewMode === 'list' ? 'bg-gray-700 text-white' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <List className="h-4 w-4" />
@@ -296,12 +296,12 @@ const Projects = () => {
                           {project.status}
                         </span>
                       </div>
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <div className="absolute inset-0 bg-background/0 group-hover:bg-background/20 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
                         <div className="flex gap-2">
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-2 bg-primary text-primary-foreground rounded-lg shadow-lg"
+                            className="p-2 bg-gray-700 text-white rounded-lg shadow-lg"
                             onClick={() => switchProject(project.id)}
                           >
                             <Eye className="h-4 w-4" />
@@ -321,8 +321,8 @@ const Projects = () => {
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                            <TypeIcon className="h-4 w-4 text-primary" />
+                          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                            <TypeIcon className="h-4 w-4 text-white" />
                           </div>
                           <div>
                             <h3 className="font-semibold text-foreground">{project.name}</h3>
@@ -427,8 +427,8 @@ const Projects = () => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <TypeIcon className="h-6 w-6 text-primary" />
+                        <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
+                          <TypeIcon className="h-6 w-6 text-white" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-1">
@@ -520,7 +520,7 @@ const Projects = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowCreateDialog(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all duration-200"
             >
               <Plus className="h-4 w-4" />
               Create Project
@@ -588,7 +588,7 @@ const Projects = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleCreateProject}
-                  className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                  className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
                 >
                   Create
                 </motion.button>

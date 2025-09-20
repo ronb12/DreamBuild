@@ -6,7 +6,20 @@ import { useTheme } from '../contexts/ThemeContext'
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
   const location = useLocation()
+
+  // Check if we're on desktop
+  React.useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 768)
+    }
+    
+    checkScreenSize()
+    window.addEventListener('resize', checkScreenSize)
+    
+    return () => window.removeEventListener('resize', checkScreenSize)
+  }, [])
 
   const navigation = [
     { name: 'Home', href: '/', icon: Rocket },
@@ -23,7 +36,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200 shadow-lg">
               <Sparkles className="h-6 w-6 text-primary-foreground" />
             </div>
             <div className="flex flex-col">
@@ -33,7 +46,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1">
             {navigation.map((item) => {
               const Icon = item.icon
               return (
@@ -77,23 +90,25 @@ const Navbar = () => {
               Sign In
             </Link>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
+            {/* Mobile Menu Button - Only show on mobile */}
+            {!isDesktop && (
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            )}
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-border/50 bg-background/95 backdrop-blur-lg">
+        {!isDesktop && isMobileMenuOpen && (
+          <div className="border-t border-border/50 bg-background/95 backdrop-blur-lg">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon

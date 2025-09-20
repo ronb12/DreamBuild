@@ -12,7 +12,7 @@ const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('code') // 'code', 'preview', 'terminal'
 
   return (
-    <div className="h-[calc(100vh-120px)] flex flex-col bg-background">
+    <div className="h-[calc(100vh-80px)] flex flex-col bg-background">
       {/* Enhanced Header with Better Visual Hierarchy */}
       <div className="flex items-center justify-between p-6 border-b border-border/50 bg-card/50 backdrop-blur-sm">
         <div className="flex items-center gap-4">

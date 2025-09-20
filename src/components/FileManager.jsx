@@ -203,140 +203,158 @@ const FileManager = () => {
       animate={{ opacity: 1, x: 0 }}
       className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden"
     >
-      {/* Enhanced File Manager Header */}
-      <div className="p-4 border-b border-border/50 bg-gradient-to-r from-white/5 via-white/10 to-white/5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-              <Folder className="h-5 w-5 text-white" />
+      {/* Cursor-Style File Manager Header */}
+      <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded flex items-center justify-center">
+              <Folder className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground">Project Files</h3>
-              <p className="text-xs text-muted-foreground">Manage your project</p>
+              <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Explorer</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Files</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => setShowNewFileDialog(true)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 border border-transparent hover:border-white/20"
+              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
               title="New File"
             >
-              <Plus className="h-4 w-4 text-white" />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              <Plus className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+            </button>
+            <button
               onClick={() => setShowProjectDialog(true)}
-              className="p-2 hover:bg-white/10 rounded-lg transition-all duration-200 border border-transparent hover:border-white/20"
+              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
               title="Project Settings"
             >
-              <Settings className="h-4 w-4 text-white" />
-            </motion.button>
+              <Settings className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+            </button>
           </div>
         </div>
 
-        {/* Enhanced Project Actions */}
-        <div className="flex gap-2 flex-wrap">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+        {/* Cursor-Style Project Actions */}
+        <div className="flex gap-1 flex-wrap">
+          <button
             onClick={() => saveProject()}
-            className="flex items-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20"
-            title="Save Project"
+            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            title="Save"
           >
-            <Save className="h-4 w-4" />
+            <Save className="h-3 w-3" />
             Save
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          </button>
+          <button
             onClick={() => setShowDeployDialog(true)}
-            className="flex items-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20"
-            title="Deploy Project"
+            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            title="Deploy"
             disabled={Object.keys(currentProject.files).length === 0}
           >
-            <Rocket className="h-4 w-4" />
+            <Rocket className="h-3 w-3" />
             Deploy
-          </motion.button>
+          </button>
           <button
             onClick={handleDownloadProject}
-            className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md shadow-blue-500/20 border border-blue-400/20"
-            title="Download Project"
+            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+            title="Export"
           >
             <Download className="h-3 w-3" />
             Export
           </button>
-          <button
-            onClick={createNewProject}
-            className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md shadow-blue-500/20 border border-blue-400/20"
-            title="New Project"
-          >
-            <FolderOpen className="h-3 w-3" />
-            New
-          </button>
         </div>
       </div>
 
-      {/* File List */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
-        {Object.keys(currentProject.files).map((filename) => (
-          <motion.div
-            key={filename}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className={`group flex items-center gap-2 p-2 rounded-md cursor-pointer transition-all ${
-              currentProject.activeFile === filename
-                ? 'bg-gray-700 text-white'
-                : 'hover:bg-muted'
-            }`}
-            onClick={() => handleFileClick(filename)}
-          >
-            <span className="text-sm">{getFileIcon(filename)}</span>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate">{filename}</div>
-              <div className={`text-xs ${
-                currentProject.activeFile === filename
-                  ? 'text-black/70'
-                  : 'text-muted-foreground'
-              }`}>
-                {getFileStatus(filename)}
-              </div>
+      {/* Cursor-Style File Tree */}
+      <div className="flex-1 overflow-y-auto">
+        {Object.keys(currentProject.files).length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center px-4">
+            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center mb-3">
+              <FileText className="h-6 w-6 text-gray-400 dark:text-gray-500" />
             </div>
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleDownloadFile(filename)
-                }}
-                className="p-1 hover:bg-black/20 rounded transition-colors"
-                title="Download File"
+            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">No files</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 text-center">
+              Generate code with AI to get started
+            </p>
+            <button
+              onClick={() => setShowNewFileDialog(true)}
+              className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              New File
+            </button>
+          </div>
+        ) : (
+          <div className="py-1">
+            {/* Project Root */}
+            <div className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 mb-1">
+              <Folder className="h-3 w-3" />
+              <span>{currentProject.name || 'Project'}</span>
+            </div>
+            
+            {/* File Tree */}
+            {Object.keys(currentProject.files).map((filename) => (
+              <motion.div
+                key={filename}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className={`group relative flex items-center gap-1 px-2 py-1 cursor-pointer transition-colors ${
+                  currentProject.activeFile === filename
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100'
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800/50 text-gray-700 dark:text-gray-300'
+                }`}
+                onClick={() => handleFileClick(filename)}
               >
-                <Download className="h-3 w-3" />
-              </button>
-              {Object.keys(currentProject.files).length > 1 && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleDeleteFile(filename)
-                  }}
-                  className="p-1 hover:bg-destructive/20 rounded transition-colors"
-                  title="Delete File"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
-              )}
-            </div>
-          </motion.div>
-        ))}
+                {/* Tree Indentation */}
+                <div className="w-4 flex items-center justify-center">
+                  <div className="w-px h-3 bg-gray-300 dark:bg-gray-600"></div>
+                </div>
+                
+                {/* File Icon */}
+                <div className="flex items-center justify-center w-4 h-4 mr-1">
+                  <span className="text-sm">{getFileIcon(filename)}</span>
+                </div>
+                
+                {/* File Name */}
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-normal truncate">{filename}</span>
+                </div>
+                
+                {/* Action Buttons - Hidden by default, shown on hover */}
+                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDownloadFile(filename)
+                    }}
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                    title="Download"
+                  >
+                    <Download className="h-3 w-3" />
+                  </button>
+                  {Object.keys(currentProject.files).length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteFile(filename)
+                      }}
+                      className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="h-3 w-3 text-red-600 dark:text-red-400" />
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Upload Area */}
-      <div className="p-2 border-t border-border">
-        <label className="flex items-center justify-center gap-2 p-2 border-2 border-dashed border-border rounded-md hover:border-primary transition-colors cursor-pointer">
-          <Upload className="h-4 w-4" />
-          <span className="text-xs text-muted-foreground">Upload File</span>
+      {/* Cursor-Style Upload Area */}
+      <div className="p-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
+        <label className="flex items-center justify-center gap-2 p-2 border border-dashed border-gray-300 dark:border-gray-600 rounded hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer">
+          <Upload className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Upload
+          </span>
           <input
             type="file"
             className="hidden"

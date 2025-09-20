@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -18,6 +18,20 @@ import Community from './pages/Community'
 import About from './pages/About'
 import Blog from './pages/Blog'
 import Contact from './pages/Contact'
+
+// Component to conditionally render footer
+function ConditionalFooter() {
+  const location = useLocation()
+  
+  // Don't show footer on AI Builder page to maximize workspace
+  const noFooterRoutes = ['/ai-builder']
+  
+  if (noFooterRoutes.includes(location.pathname)) {
+    return null
+  }
+  
+  return <Footer />
+}
 
 function App() {
   return (
@@ -43,7 +57,7 @@ function App() {
                   <Route path="/contact" element={<Contact />} />
                 </Routes>
               </main>
-              <Footer />
+              <ConditionalFooter />
               <Toaster 
                 position="top-right"
                 toastOptions={{

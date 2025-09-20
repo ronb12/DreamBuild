@@ -15,7 +15,7 @@ import {
   Palette,
   Zap
 } from 'lucide-react'
-import aiService from '../services/aiService'
+import aiService from '../services/simpleAIService'
 import { useProject } from '../contexts/ProjectContext'
 import toast from 'react-hot-toast'
 

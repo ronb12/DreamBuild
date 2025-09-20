@@ -13,7 +13,7 @@ import {
   Info,
   AlertTriangle
 } from 'lucide-react'
-import aiService from '../services/aiService'
+import aiService from '../services/simpleAIService'
 
 const AIServiceStatus = ({ isOpen, onClose }) => {
   const [serviceStatus, setServiceStatus] = useState({})

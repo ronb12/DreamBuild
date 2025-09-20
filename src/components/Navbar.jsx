@@ -1,15 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Sparkles, Sun, Moon } from 'lucide-react'
+import { useTheme } from '../contexts/ThemeContext'
 
 const Navbar = () => {
-  const [theme, setTheme] = React.useState('light')
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
-  }
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -19,7 +14,7 @@ const Navbar = () => {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold">DreamBuild</span>
+            <span className="text-xl font-bold text-high-contrast">DreamBuild</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -40,12 +35,13 @@ const Navbar = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-md hover:bg-muted transition-colors"
+              className="p-2 rounded-md hover:bg-muted transition-colors border border-border"
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
               {theme === 'light' ? (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-5 w-5 text-muted-foreground" />
               ) : (
-                <Sun className="h-5 w-5" />
+                <Sun className="h-5 w-5 text-warning" />
               )}
             </button>
             <Link

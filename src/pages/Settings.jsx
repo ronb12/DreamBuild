@@ -25,7 +25,7 @@ import {
   Info
 } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
-import toast from 'react-hot-toast'
+// import toast from 'react-hot-toast' // Removed toast import
 
 const Settings = () => {
   const { theme, setTheme } = useTheme()
@@ -88,7 +88,7 @@ const Settings = () => {
   const saveSettings = () => {
     localStorage.setItem('dreambuild-settings', JSON.stringify(settings))
     setHasChanges(false)
-    toast.success('Settings saved successfully!')
+    console.log('Settings saved successfully!')
   }
 
   const resetSettings = () => {
@@ -131,7 +131,7 @@ const Settings = () => {
       }
     }
     setSettings(defaultSettings)
-    toast.success('Settings reset to defaults!')
+    console.log('Settings reset to defaults!')
   }
 
   const exportSettings = () => {
@@ -143,7 +143,7 @@ const Settings = () => {
     link.download = 'dreambuild-settings.json'
     link.click()
     URL.revokeObjectURL(url)
-    toast.success('Settings exported!')
+    console.log('Settings exported!')
   }
 
   const importSettings = (event) => {
@@ -154,9 +154,9 @@ const Settings = () => {
         try {
           const imported = JSON.parse(e.target.result)
           setSettings(imported)
-          toast.success('Settings imported successfully!')
+          console.log('Settings imported successfully!')
         } catch (error) {
-          toast.error('Invalid settings file!')
+          console.error('Invalid settings file!')
         }
       }
       reader.readAsText(file)
@@ -231,9 +231,18 @@ const Settings = () => {
                 onChange={(e) => updateSetting('appearance', 'theme', e.target.value)}
                 className="px-3 py-2 border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               >
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-                <option value="system">System</option>
+                <option value="light">Light Theme</option>
+                <option value="dark">Dark Theme</option>
+                <option value="system">System Theme</option>
+                <option value="blue">Blue Theme</option>
+                <option value="purple">Purple Theme</option>
+                <option value="green">Green Theme</option>
+                <option value="orange">Orange Theme</option>
+                <option value="red">Red Theme</option>
+                <option value="pink">Pink Theme</option>
+                <option value="cyan">Cyan Theme</option>
+                <option value="amber">Amber Theme</option>
+                <option value="emerald">Emerald Theme</option>
               </select>
             </SettingItem>
 

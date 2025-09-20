@@ -103,18 +103,12 @@ const Navbar = () => {
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors border border-border/50 hover:border-primary/30"
                 >
-                  {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      alt={user.displayName || 'User'}
-                      className="w-5 h-5 rounded-full border border-border"
-                    />
-                  ) : (
-                    <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center">
-                      <User className="h-3 w-3 text-primary" />
-                    </div>
-                  )}
-                  <span className="hidden sm:block text-sm font-medium text-foreground">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-primary">
+                      {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-foreground">
                     {user.displayName || user.email}
                   </span>
                 </button>

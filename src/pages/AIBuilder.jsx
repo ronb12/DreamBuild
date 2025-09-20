@@ -98,7 +98,7 @@ const AIBuilder = () => {
               </div>
               
               {/* Panel Content */}
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-hidden min-h-[500px]">
                 {activeTab === 'editor' && <CodeEditor />}
                 {activeTab === 'preview' && <Preview />}
                 {activeTab === 'terminal' && (

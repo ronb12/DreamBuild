@@ -145,7 +145,9 @@ const AIPrompt = () => {
       const generatedFiles = await simpleAIService.generateCode(prompt, currentProject.config)
       
       // Update project files
+      console.log('Generated files:', Object.keys(generatedFiles))
       Object.entries(generatedFiles).forEach(([filename, content]) => {
+        console.log(`Updating file ${filename} with ${content.length} characters`)
         updateFile(filename, content)
       })
 

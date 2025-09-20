@@ -12,8 +12,27 @@ const CodeEditor = () => {
   const [isLoading, setIsLoading] = useState(false)
   const editorRef = useRef(null)
 
+  // Update editor content when active file or content changes
+  useEffect(() => {
+    if (editorRef.current) {
+      const content = currentProject.files[currentProject.activeFile] || ''
+      const currentContent = editorRef.current.getValue()
+      
+      // Only update if content has actually changed
+      if (content !== currentContent) {
+        editorRef.current.setValue(content)
+      }
+    }
+  }, [currentProject.activeFile, currentProject.files[currentProject.activeFile]])
+
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor
+    
+    // Set initial content if available
+    const content = currentProject.files[currentProject.activeFile] || ''
+    if (content) {
+      editor.setValue(content)
+    }
     
     // Configure Monaco Editor
     monaco.editor.defineTheme('custom-dark', {
@@ -226,8 +245,9 @@ const CodeEditor = () => {
       </div>
 
       {/* Editor Content */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative min-h-[400px]">
         <Editor
+          key={`${currentProject.activeFile}-${currentProject.files[currentProject.activeFile]?.length || 0}`}
           height="100%"
           language={getLanguage()}
           value={currentProject.files[currentProject.activeFile] || ''}

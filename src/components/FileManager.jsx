@@ -253,7 +253,7 @@ const FileManager = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowDeployDialog(true)}
-            className="flex items-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 shadow-lg shadow-emerald-500/30 border border-emerald-500/20"
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20"
             title="Deploy Project"
             disabled={Object.keys(currentProject.files).length === 0}
           >
@@ -262,7 +262,7 @@ const FileManager = () => {
           </motion.button>
           <button
             onClick={handleDownloadProject}
-            className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded hover:from-amber-600 hover:to-amber-700 transition-all duration-200 shadow-md shadow-amber-500/20 border border-amber-400/20"
+            className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md shadow-blue-500/20 border border-blue-400/20"
             title="Download Project"
           >
             <Download className="h-3 w-3" />
@@ -270,7 +270,7 @@ const FileManager = () => {
           </button>
           <button
             onClick={createNewProject}
-            className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-violet-500 to-violet-600 text-white rounded hover:from-violet-600 hover:to-violet-700 transition-all duration-200 shadow-md shadow-violet-500/20 border border-violet-400/20"
+            className="flex items-center gap-1 px-2 py-1 text-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md shadow-blue-500/20 border border-blue-400/20"
             title="New Project"
           >
             <FolderOpen className="h-3 w-3" />
@@ -580,7 +580,7 @@ const FileManager = () => {
                   <button
                     onClick={handleDeploy}
                     disabled={isDeploying || !projectName.trim()}
-                    className="px-4 py-2 text-sm bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-md hover:from-emerald-700 hover:to-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md shadow-emerald-500/20 border border-emerald-500/20 flex items-center gap-2"
+                    className="px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md shadow-blue-500/20 border border-blue-500/20 flex items-center gap-2"
                   >
                     {isDeploying ? (
                       <>

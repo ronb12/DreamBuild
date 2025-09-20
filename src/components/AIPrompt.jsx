@@ -215,7 +215,7 @@ const AIPrompt = () => {
     }
   }
 
-  const aiServices = aiService?.getServices ? aiService.getServices() : {}
+  const aiServices = simpleAIService?.getServices ? simpleAIService.getServices() : {}
 
   return (
     <motion.div
@@ -232,7 +232,7 @@ const AIPrompt = () => {
           </h3>
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-              {aiService?.currentService || 'local-ai'}
+              {simpleAIService?.currentService || 'local-ai'}
             </span>
             <button
               onClick={() => setShowTemplateBrowser(true)}
@@ -261,18 +261,18 @@ const AIPrompt = () => {
         {/* AI Service Status */}
         <div className="flex items-center gap-2 text-xs">
           <div className="flex items-center gap-1">
-            {serviceStatus[aiService?.currentService || 'local-ai']?.isHealthy ? (
+            {serviceStatus[simpleAIService?.currentService || 'local-ai']?.isHealthy ? (
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             ) : (
               <div className="w-2 h-2 bg-red-500 rounded-full"></div>
             )}
             <span className="text-muted-foreground">
-              {serviceStatus[aiService?.currentService || 'local-ai']?.isHealthy ? 'AI Ready' : 'AI Unhealthy'}
+              {serviceStatus[simpleAIService?.currentService || 'local-ai']?.isHealthy ? 'AI Ready' : 'AI Unhealthy'}
             </span>
           </div>
           <span>•</span>
           <span className="text-muted-foreground">
-            {aiService?.isFallbackEnabled ? (aiService.isFallbackEnabled() ? 'Fallback Enabled' : 'Single Service') : 'Local AI Only'}
+            {simpleAIService?.isFallbackEnabled ? (simpleAIService.isFallbackEnabled() ? 'Fallback Enabled' : 'Single Service') : 'Local AI Only'}
           </span>
         </div>
       </div>
@@ -414,10 +414,10 @@ const AIPrompt = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2">AI Service</label>
                   <select
-                    value={aiService}
+                    value={selectedService}
                     onChange={(e) => {
-                      setAIService(e.target.value)
-                      aiService?.setService ? aiService.setService(e.target.value) : null
+                      setSelectedService(e.target.value)
+                      simpleAIService?.setService ? simpleAIService.setService(e.target.value) : null
                     }}
                     className="w-full p-2 border border-border rounded-md bg-black"
                   >
@@ -435,11 +435,11 @@ const AIPrompt = () => {
                     value={aiModel}
                     onChange={(e) => {
                       setAIModel(e.target.value)
-                      aiService?.setService ? aiService.setService(e.target.value) : null
+                      simpleAIService?.setService ? simpleAIService.setService(e.target.value) : null
                     }}
                     className="w-full p-2 border border-border rounded-md bg-black"
                   >
-                    {Object.entries(aiServices[aiService]?.models || {}).map(([key, name]) => (
+                    {Object.entries(aiServices[selectedService]?.models || {}).map(([key, name]) => (
                       <option key={key} value={key}>
                         {name}
                       </option>
@@ -450,7 +450,7 @@ const AIPrompt = () => {
                 <div className="p-3 bg-muted rounded-md">
                   <h4 className="text-sm font-medium mb-2">Service Info</h4>
                   <div className="text-xs text-muted-foreground space-y-1">
-                    <p><strong>Type:</strong> {aiServices[aiService]?.type}</p>
+                    <p><strong>Type:</strong> {aiServices[selectedService]?.type}</p>
                     <p><strong>Cost:</strong> Free tier available</p>
                     <p><strong>Features:</strong> Fast inference, modern models</p>
                   </div>

@@ -5,7 +5,7 @@ import Preview from '../components/Preview'
 import AIPrompt from '../components/AIPrompt'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home } from 'lucide-react'
 
 const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('editor')
@@ -17,63 +17,48 @@ const AIBuilder = () => {
   ]
 
   return (
-    <div className="h-screen bg-background flex flex-col -mt-16 pt-16">
-      {/* Header */}
-      <div className="bg-card border-b border-border">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Brain className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">AI Builder</h1>
-                <p className="text-sm text-muted-foreground">
-                  {activeTab === 'editor' && 'Code Editor with Live Preview'}
-                  {activeTab === 'preview' && 'Live Preview Mode'}
-                  {activeTab === 'terminal' && 'Terminal & AI Assistant'}
-                </p>
-              </div>
-            </div>
-            
-            {/* Tab Navigation */}
-            <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border border-border/50">
-              {tabs.map((tab) => {
-                const Icon = tab.icon
-                return (
-                  <motion.button
-                    key={tab.id}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-col items-center gap-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      activeTab === tab.id
-                        ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
-                    }`}
-                    title={tab.description}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4" />
-                      <span>{tab.label}</span>
-                    </div>
-                    <div className={`text-xs ${
-                      activeTab === tab.id 
-                        ? 'text-primary-foreground/70' 
-                        : 'text-muted-foreground/60'
-                    }`}>
-                      {tab.description}
-                    </div>
-                  </motion.button>
-                )
-              })}
-            </div>
-          </div>
+    <div className="h-screen bg-background flex flex-col">
+      {/* Back to Home Button */}
+      <div className="absolute top-4 left-4 z-10">
+        <motion.a
+          href="/"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 px-4 py-2 bg-card/90 backdrop-blur-sm border border-border/50 rounded-lg hover:bg-card transition-colors shadow-sm"
+        >
+          <Home className="h-4 w-4" />
+          <span className="text-sm font-medium">Back to Home</span>
+        </motion.a>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="absolute top-4 right-4 z-10">
+        <div className="flex items-center gap-1 bg-card/90 backdrop-blur-sm p-1 rounded-xl border border-border/50 shadow-sm">
+          {tabs.map((tab) => {
+            const Icon = tab.icon
+            return (
+              <motion.button
+                key={tab.id}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                }`}
+                title={tab.description}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </motion.button>
+            )
+          })}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-4 pt-16">
         <ResizablePanelGroup direction="horizontal" className="h-full gap-2">
           
           {/* Left Panel - File Manager */}

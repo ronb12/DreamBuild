@@ -14,7 +14,7 @@ import {
   BarChart3,
   Code
 } from 'lucide-react'
-import aiService from '../services/simpleAIService'
+import simpleAIService from '../services/simpleAIService'
 import AIServiceStatus from './AIServiceStatus'
 import TemplateBrowser from './TemplateBrowser'
 import toast from 'react-hot-toast'
@@ -26,7 +26,7 @@ const AIPrompt = () => {
   const [showAISettings, setShowAISettings] = useState(false)
   const [showServiceStatus, setShowServiceStatus] = useState(false)
   const [showTemplateBrowser, setShowTemplateBrowser] = useState(false)
-  const [aiService, setAIService] = useState('groq')
+  const [selectedService, setSelectedService] = useState('local-ai')
   const [aiModel, setAIModel] = useState('llama3-8b-8192')
   const [suggestions, setSuggestions] = useState([])
   const [generationHistory, setGenerationHistory] = useState([])
@@ -43,9 +43,9 @@ const AIPrompt = () => {
 
   // Load service status
   useEffect(() => {
-    setServiceStatus(aiService?.getServiceStatus ? aiService.getServiceStatus() : {})
+    setServiceStatus(simpleAIService?.getServiceStatus ? simpleAIService.getServiceStatus() : {})
     const interval = setInterval(() => {
-      setServiceStatus(aiService?.getServiceStatus ? aiService.getServiceStatus() : {})
+      setServiceStatus(simpleAIService?.getServiceStatus ? simpleAIService.getServiceStatus() : {})
     }, 30000) // Update every 30 seconds
 
     return () => clearInterval(interval)
@@ -133,16 +133,16 @@ const AIPrompt = () => {
       // Update generation history
       setGenerationHistory(prev => [prompt, ...prev.slice(0, 4)])
 
-      // Debug: Check if aiService and generateCode method exist
-      console.log('AI Service object:', aiService)
-      console.log('AI Service generateCode method:', typeof aiService?.generateCode)
+      // Debug: Check if simpleAIService and generateCode method exist
+      console.log('AI Service object:', simpleAIService)
+      console.log('AI Service generateCode method:', typeof simpleAIService?.generateCode)
       
-      if (!aiService || typeof aiService.generateCode !== 'function') {
+      if (!simpleAIService || typeof simpleAIService.generateCode !== 'function') {
         throw new Error('AI Service not properly initialized. generateCode method not found.')
       }
 
       // Generate code using AI service
-      const generatedFiles = await aiService.generateCode(prompt, currentProject.config)
+      const generatedFiles = await simpleAIService.generateCode(prompt, currentProject.config)
       
       // Update project files
       Object.entries(generatedFiles).forEach(([filename, content]) => {

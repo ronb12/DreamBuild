@@ -17,7 +17,7 @@ const AIBuilder = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pt-16">
+    <div className="min-h-screen bg-background flex flex-col pt-24">
       {/* Back to Home Button */}
       <div className="absolute top-20 left-4 z-30">
         <motion.a

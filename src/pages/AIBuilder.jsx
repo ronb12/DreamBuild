@@ -17,9 +17,9 @@ const AIBuilder = () => {
   ]
 
   return (
-    <div className="h-screen bg-background flex flex-col -mt-16 pt-16">
+    <div className="h-screen bg-background flex flex-col">
       {/* Back to Home Button */}
-      <div className="absolute top-4 left-4 z-30">
+      <div className="absolute top-20 left-4 z-30">
         <motion.a
           href="/"
           whileHover={{ scale: 1.05 }}
@@ -32,7 +32,7 @@ const AIBuilder = () => {
       </div>
 
       {/* Tab Navigation */}
-      <div className="absolute top-4 right-4 z-30">
+      <div className="absolute top-20 right-4 z-30">
         <div className="flex items-center gap-1 bg-card/95 backdrop-blur-sm p-1 rounded-xl border border-border/50 shadow-lg">
           {tabs.map((tab) => {
             const Icon = tab.icon
@@ -58,7 +58,7 @@ const AIBuilder = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4 pt-20">
+      <div className="flex-1 p-4 pt-24">
         <ResizablePanelGroup direction="horizontal" className="h-full gap-2">
           
           {/* Left Panel - File Manager */}

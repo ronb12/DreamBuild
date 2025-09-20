@@ -67,15 +67,18 @@
             display: flex;
             height: calc(100vh - 80px);
             margin-top: 80px;
+            gap: 15px;
+            padding: 15px;
         }
         
         .ai-sidebar {
             width: 300px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
             padding: 20px;
             overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .ai-main {
@@ -83,16 +86,32 @@
             display: flex;
             flex-direction: column;
             background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .ai-right-panel {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            max-height: calc(100vh - 110px);
         }
         
         .ai-prompt-section {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 30px;
+            background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
         
         .ai-workspace {
             flex: 1;
             display: flex;
+            background: rgba(255,255,255,0.02);
         }
         
         .ai-code-section {
@@ -121,11 +140,38 @@
             margin-bottom: 15px;
         }
         
-        .advanced-options {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
+        .sidebar-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .sidebar-section h3::after {
+            content: '▼';
+            font-size: 12px;
+            transition: transform 0.3s ease;
+            margin-left: auto;
+        }
+        
+        .sidebar-section.collapsed h3::after {
+            transform: rotate(-90deg);
+        }
+        
+        .sidebar-section.collapsed .section-content {
+            display: none;
         }
         
         .option-group {
@@ -134,19 +180,27 @@
         
         .option-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 13px;
+            color: rgba(255,255,255,0.9);
         }
         
         .option-group select, .option-group input {
             width: 100%;
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            background: rgba(255,255,255,0.2);
+            padding: 10px 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
             color: white;
             font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .option-group select:focus, .option-group input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.15);
         }
         
         .option-group select option {
@@ -241,6 +295,78 @@
         .deploy-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        /* File Tabs Styles */
+        .file-tab {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .file-tab:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .file-tab.active {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-color: #4CAF50;
+            color: white;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+        
+        .file-tab.active:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+        
+        /* File Status Styles */
+        .file-status {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 500;
+            margin-left: auto;
+        }
+        
+        .file-status.empty {
+            background: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+        }
+        
+        .file-status.generating {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
         }
         
         .prompt-input::placeholder {
@@ -444,282 +570,278 @@
     </nav>
 
     <div class="ai-builder-container">
-        <!-- Left Sidebar -->
+        <!-- Left Sidebar: File Management -->
         <div class="ai-sidebar">
-            <div class="file-tree">
-                <h3>📁 Project Files</h3>
-                <div id="file-list">
-                    <div class="file-item active" data-file="index.html">📄 index.html</div>
-                    <div class="file-item" data-file="style.css">🎨 style.css</div>
-                    <div class="file-item" data-file="script.js">⚡ script.js</div>
-                    <div class="file-item" data-file="components.jsx">🧩 components.jsx</div>
+            <!-- Project Files Section -->
+            <div class="sidebar-section">
+                <h3 onclick="toggleSection(this)">📁 Project Files</h3>
+                <div class="section-content">
+                    <div id="file-list">
+                        <div class="file-item active" data-file="index.html" onclick="switchFile('index.html')">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 18px;">📄</span>
+                                <div>
+                                    <div style="font-weight: bold;">index.html</div>
+                                    <div style="font-size: 11px; opacity: 0.7;">Main page</div>
+                                </div>
+                                <span id="html-status" class="file-status">Ready</span>
+                            </div>
+                        </div>
+                        <div class="file-item" data-file="style.css" onclick="switchFile('style.css')">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 18px;">🎨</span>
+                                <div>
+                                    <div style="font-weight: bold;">style.css</div>
+                                    <div style="font-size: 11px; opacity: 0.7;">Styling</div>
+                                </div>
+                                <span id="css-status" class="file-status">Ready</span>
+                            </div>
+                        </div>
+                        <div class="file-item" data-file="script.js" onclick="switchFile('script.js')">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 18px;">⚡</span>
+                                <div>
+                                    <div style="font-weight: bold;">script.js</div>
+                                    <div style="font-size: 11px; opacity: 0.7;">Functionality</div>
+                                </div>
+                                <span id="js-status" class="file-status">Ready</span>
+                            </div>
+                        </div>
+                        <div class="file-item" data-file="components.jsx" onclick="switchFile('components.jsx')">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 18px;">🧩</span>
+                                <div>
+                                    <div style="font-weight: bold;">components.jsx</div>
+                                    <div style="font-size: 11px; opacity: 0.7;">React components</div>
+                                </div>
+                                <span id="react-status" class="file-status">Ready</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="project-templates">
-                <h3>🤖 AI Configuration</h3>
-                <div style="margin-bottom: 15px;">
-                    <select id="ai-service" style="width: 100%; padding: 8px; border: none; border-radius: 5px; background: rgba(255,255,255,0.2); color: white;">
-                        <option value="template">Template Mode (No AI)</option>
-                        <option value="groq">Groq (Free API)</option>
-                        <option value="together">Together AI (Free)</option>
-                        <option value="ollama">Ollama (Local)</option>
-                        <option value="huggingface">Hugging Face (Free)</option>
-                    </select>
+            <!-- Project Actions -->
+            <div class="sidebar-section">
+                <h3 onclick="toggleSection(this)">🚀 Actions</h3>
+                <div class="section-content">
+                    <button onclick="downloadProject()" style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(45deg, #4CAF50, #45a049); color: white; cursor: pointer; font-weight: 500; margin-bottom: 10px;">
+                        📦 Download Project
+                    </button>
+                    <button onclick="deployToFirebase()" style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(45deg, #FF9800, #F57C00); color: white; cursor: pointer; font-weight: 500; margin-bottom: 10px;">
+                        🔥 Deploy to Firebase
+                    </button>
+                    <button onclick="runSecurityReview()" style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(45deg, #2196F3, #1976D2); color: white; cursor: pointer; font-weight: 500;">
+                        ✅ Security Review (Auto)
+                    </button>
                 </div>
-                <div id="ai-config" style="display: none;">
-                    <input type="text" id="ai-api-key" placeholder="API Key (optional)" style="width: 100%; padding: 8px; border: none; border-radius: 5px; background: rgba(255,255,255,0.2); color: white; margin-bottom: 10px;">
-                    <button onclick="saveAIConfig()" style="width: 100%; padding: 8px; border: none; border-radius: 5px; background: rgba(76, 175, 80, 0.7); color: white; cursor: pointer;">Save Config</button>
-                </div>
-                <button onclick="toggleAIConfig()" style="width: 100%; padding: 8px; border: none; border-radius: 5px; background: rgba(255,255,255,0.1); color: white; cursor: pointer; margin-bottom: 15px;">⚙️ Configure AI</button>
             </div>
 
-            <div class="project-templates">
-                <h3>🚀 Quick Templates</h3>
-                <div class="template-grid">
-                    <div class="template-item" onclick="loadTemplate('todo-app')">
-                        <div class="template-icon">✅</div>
-                        <div class="template-name">Todo App</div>
+            <!-- Advanced Controls (Hidden by Default) -->
+            <div class="sidebar-section collapsed">
+                <h3 onclick="toggleSection(this)">⚙️ Advanced</h3>
+                <div class="section-content">
+                    <div class="option-group">
+                        <label>AI Service</label>
+                        <select id="ai-service">
+                            <option value="auto">🤖 Auto (Recommended)</option>
+                            <option value="groq">Groq (Free API)</option>
+                            <option value="together">Together AI (Free)</option>
+                            <option value="ollama">Ollama (Local)</option>
+                            <option value="template">Template Mode Only</option>
+                        </select>
                     </div>
-                    <div class="template-item" onclick="loadTemplate('weather')">
-                        <div class="template-icon">🌤️</div>
-                        <div class="template-name">Weather App</div>
+                    <div id="ai-config" style="display: none;">
+                        <div class="option-group">
+                            <label>API Key (Optional)</label>
+                            <input type="text" id="ai-api-key" placeholder="Enter your API key">
+                        </div>
+                        <button onclick="saveAIConfig()" style="width: 100%; padding: 10px; border: none; border-radius: 8px; background: linear-gradient(45deg, #4CAF50, #45a049); color: white; cursor: pointer; font-weight: 500;">Save Config</button>
                     </div>
-                    <div class="template-item" onclick="loadTemplate('calculator')">
-                        <div class="template-icon">🧮</div>
-                        <div class="template-name">Calculator</div>
+                    <button onclick="toggleAIConfig()" style="width: 100%; padding: 10px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: rgba(255,255,255,0.1); color: white; cursor: pointer; margin-top: 10px;">🔧 Manual Setup</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Middle: Code Generation Area -->
+        <div class="ai-main">
+            <!-- Code Editor Section -->
+            <div style="flex: 1; display: flex; flex-direction: column; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <!-- Code Editor Header -->
+                <div style="background: rgba(0,0,0,0.3); padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="current-file-icon" style="font-size: 18px;">📄</span>
+                        <span style="color: white; font-weight: bold; font-size: 16px;" id="current-file-name">index.html</span>
+                        <span id="file-status" style="background: rgba(76, 175, 80, 0.2); color: #4CAF50; padding: 4px 12px; border-radius: 12px; font-size: 12px;">Ready</span>
                     </div>
-                    <div class="template-item" onclick="loadTemplate('portfolio')">
-                        <div class="template-icon">💼</div>
-                        <div class="template-name">Portfolio</div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="copyCode()" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 12px;">📋 Copy</button>
+                    <button onclick="formatCode()" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 12px;">✨ Format</button>
+                    <button onclick="testCodeEditing()" style="background: rgba(33, 150, 243, 0.8); border: none; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 12px;">🧪 Test Edit</button>
+                    <button onclick="showLanguageSupport()" style="background: rgba(156, 39, 176, 0.8); border: none; color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 12px;">🌍 Languages</button>
+                </div>
+                </div>
+                
+                <!-- Code Editor -->
+                <textarea id="code-editor" class="code-editor" placeholder="Generated code will appear here... Use the prompt on the right to generate your app." style="flex: 1; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 14px; line-height: 1.5;"></textarea>
+            </div>
+            
+            <!-- Live Preview Section -->
+            <div style="height: 300px; display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.1);">
+                <!-- Preview Header -->
+                <div style="background: rgba(0,0,0,0.2); padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 16px;">🖥️</span>
+                        <span style="color: white; font-weight: bold; font-size: 14px;">Live Preview</span>
+                        <span id="preview-status" style="background: rgba(33, 150, 243, 0.2); color: #2196F3; padding: 2px 8px; border-radius: 10px; font-size: 11px;">Auto-update</span>
                     </div>
-                    <div class="template-item" onclick="loadTemplate('ecommerce')">
-                        <div class="template-icon">🛒</div>
-                        <div class="template-name">E-commerce</div>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="togglePreview()" style="background: rgba(33, 150, 243, 0.8); border: none; color: white; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 11px;">🔄 Refresh</button>
+                        <button onclick="openInNewTab()" style="background: rgba(255,255,255,0.1); border: none; color: white; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 11px;">🔗 Open</button>
                     </div>
-                    <div class="template-item" onclick="loadTemplate('dashboard')">
-                        <div class="template-icon">📊</div>
-                        <div class="template-name">Dashboard</div>
+                </div>
+                
+                <!-- Preview Content -->
+                <div class="app-preview" style="flex: 1; background: white; overflow: auto; position: relative;">
+                    <iframe id="app-preview" style="width: 100%; height: 100%; border: none; background: white;"></iframe>
+                    <div id="preview-placeholder" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; padding: 20px; text-align: center; color: #666; display: flex; flex-direction: column; justify-content: center; background: white;">
+                        <div style="font-size: 32px; margin-bottom: 15px;">🚀</div>
+                        <h3 style="margin: 0 0 10px 0; color: #333; font-size: 16px;">Ready to Build Your App</h3>
+                        <p style="margin: 0; opacity: 0.7; font-size: 13px;">Generate code to see your application preview here!</p>
+                        <div style="margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                            <p style="margin: 0; font-size: 11px; color: #6c757d;">
+                                💡 <strong>Tip:</strong> Your app preview will update automatically as you generate and edit code
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Main Workspace -->
-        <div class="ai-main">
+        <!-- Right: Prompt Area -->
+        <div class="ai-right-panel">
             <!-- Prompt Section -->
-            <div class="ai-prompt-section">
-                <textarea id="prompt" class="prompt-input" placeholder="Describe the full-stack application you want to build... (e.g., 'Create a modern e-commerce platform with user authentication, payment processing, admin dashboard, and real-time notifications')"></textarea>
+            <div style="padding: 25px; overflow-y: auto; height: 100%;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.8rem; color: white;">🚀 AI Code Builder</h3>
+                    <p style="margin: 0; opacity: 0.8; font-size: 15px;">Describe your app idea</p>
+                </div>
                 
-                <!-- Advanced Options -->
-                <div class="advanced-options">
-                    <h4 style="margin-bottom: 15px; color: white;">⚙️ Advanced Configuration</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <textarea id="prompt" class="prompt-input" placeholder="Describe your app idea in simple terms... (e.g., 'I want to build a todo app where users can create, edit, and delete tasks with a modern dark theme')" style="min-height: 150px; font-size: 15px; line-height: 1.6; margin-bottom: 20px;"></textarea>
+                
+                <!-- Smart Suggestions -->
+                <div id="smart-suggestions" style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 4px solid #4CAF50;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <span style="font-size: 18px;">🧠</span>
+                        <strong style="color: #4CAF50; font-size: 14px;">AI Suggestions:</strong>
+                    </div>
+                    <div id="suggestion-content" style="font-size: 13px; opacity: 0.9;">
+                        Based on your description, I'll automatically configure:
+                        <ul style="margin: 12px 0 0 20px; padding: 0;">
+                            <li>✅ Modern responsive design with Tailwind CSS</li>
+                            <li>✅ User authentication system</li>
+                            <li>✅ Real-time database with Firebase</li>
+                            <li>✅ Mobile-friendly interface</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <div style="text-align: center; margin-top: 30px;">
+                    <button onclick="generateFullApp()" class="generate-button" id="generate-btn" style="background: linear-gradient(45deg, #4CAF50, #45a049); padding: 18px 35px; font-size: 17px; font-weight: bold; border-radius: 30px; box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3); width: 100%;">
+                        <span id="generate-text">🚀 Generate My App</span>
+                        <div id="generate-spinner" class="loading-spinner" style="display: none; margin-left: 10px;"></div>
+                    </button>
+                </div>
+                
+                <!-- Advanced Options Toggle -->
+                <div style="margin-top: 25px; text-align: center;">
+                    <button onclick="toggleAdvancedOptions()" style="background: none; border: 1px solid rgba(255,255,255,0.3); color: white; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-size: 14px;">
+                        <span id="advanced-toggle-text">⚙️ Advanced Options</span>
+                    </button>
+                </div>
+
+                <!-- Collapsible Advanced Options -->
+                <div id="advanced-options" style="display: none; margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
+                    <h4 style="margin: 0 0 15px 0; color: white; font-size: 16px;">Advanced Configuration</h4>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
                         <div class="option-group">
-                            <label>Application Type</label>
-                            <select id="app-type">
+                            <label style="color: white; font-size: 13px; margin-bottom: 5px; display: block;">App Type</label>
+                            <select id="app-type" style="width: 100%; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
                                 <option value="fullstack">Full-Stack Web App</option>
                                 <option value="frontend">Frontend Only</option>
                                 <option value="backend">Backend API</option>
                                 <option value="mobile">Mobile App</option>
-                                <option value="desktop">Desktop App</option>
                             </select>
                         </div>
                         <div class="option-group">
-                            <label>Database</label>
-                            <select id="database-type">
-                                <option value="firebase">Firebase Firestore</option>
-                                <option value="mongodb">MongoDB</option>
-                                <option value="postgresql">PostgreSQL</option>
-                                <option value="mysql">MySQL</option>
-                                <option value="sqlite">SQLite</option>
-                            </select>
-                        </div>
-                        <div class="option-group">
-                            <label>Authentication</label>
-                            <select id="auth-type">
-                                <option value="firebase">Firebase Auth</option>
-                                <option value="jwt">JWT Tokens</option>
-                                <option value="oauth">OAuth 2.0</option>
-                                <option value="session">Session Based</option>
-                                <option value="none">No Authentication</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
-                        <div class="option-group">
-                            <label>Styling Framework</label>
-                            <select id="styling-framework">
-                                <option value="tailwind">Tailwind CSS</option>
+                            <label style="color: white; font-size: 13px; margin-bottom: 5px; display: block;">Styling</label>
+                            <select id="styling-framework" style="width: 100%; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+                                <option value="tailwind">Tailwind CSS (Recommended)</option>
                                 <option value="bootstrap">Bootstrap</option>
                                 <option value="material">Material UI</option>
                                 <option value="chakra">Chakra UI</option>
-                                <option value="styled">Styled Components</option>
                             </select>
                         </div>
-                        <div class="option-group">
-                            <label>API Integrations</label>
-                            <input type="text" id="api-integrations" placeholder="Stripe, SendGrid, Twilio, etc.">
-                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Generation Progress (Modal) -->
+    <div id="generation-progress" class="generation-progress" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 400px; max-height: 500px; overflow-y: auto;">
+        <h3>🤖 AI Generation Progress</h3>
+        <div id="progress-steps">
+            <div class="progress-step" id="step-1">
+                <div class="step-icon">🧠</div>
+                <span>Analyzing requirements...</span>
+            </div>
+            <div class="progress-step" id="step-2">
+                <div class="step-icon">🏗️</div>
+                <span>Creating project structure...</span>
+            </div>
+            <div class="progress-step" id="step-3">
+                <div class="step-icon">⚡</div>
+                <span>Generating components...</span>
+            </div>
+            <div class="progress-step" id="step-4">
+                <div class="step-icon">🎨</div>
+                <span>Styling and theming...</span>
+            </div>
+            <div class="progress-step" id="step-5">
+                <div class="step-icon">🔗</div>
+                <span>Adding functionality...</span>
+            </div>
+            <div class="progress-step" id="step-6">
+                <div class="step-icon">🗄️</div>
+                <span>Setting up database...</span>
+            </div>
+            <div class="progress-step" id="step-7">
+                <div class="step-icon">🔐</div>
+                <span>Configuring authentication...</span>
+            </div>
+            <div class="progress-step" id="step-8">
+                <div class="step-icon">🔌</div>
+                <span>Integrating APIs...</span>
+            </div>
+            <div class="progress-step" id="step-9">
+                <div class="step-icon">✨</div>
+                <span>Finalizing and optimizing...</span>
+            </div>
+        </div>
+    </div>
 
-                <!-- Visual Editor -->
-                <div class="visual-editor">
-                    <h4 style="margin-bottom: 15px; color: white;">🎨 Visual Component Library</h4>
-                    <div class="component-library">
-                        <div class="component-item" onclick="addComponent('header')">
-                            <div class="component-icon">📱</div>
-                            <div class="component-name">Header</div>
-                        </div>
-                        <div class="component-item" onclick="addComponent('navigation')">
-                            <div class="component-icon">🧭</div>
-                            <div class="component-name">Navigation</div>
-                        </div>
-                        <div class="component-item" onclick="addComponent('hero')">
-                            <div class="component-icon">🎯</div>
-                            <div class="component-name">Hero Section</div>
-                        </div>
-                        <div class="component-item" onclick="addComponent('form')">
-                            <div class="component-icon">📝</div>
-                            <div class="component-name">Forms</div>
-                        </div>
-                        <div class="component-item" onclick="addComponent('card')">
-                            <div class="component-icon">🃏</div>
-                            <div class="component-name">Cards</div>
-                        </div>
-                        <div class="component-item" onclick="addComponent('table')">
-                            <div class="component-icon">📊</div>
-                            <div class="component-name">Data Tables</div>
-                        </div>
-                        <div class="component-item" onclick="addComponent('chart')">
-                            <div class="component-icon">📈</div>
-                            <div class="component-name">Charts</div>
-                        </div>
-                        <div class="component-item" onclick="addComponent('modal')">
-                            <div class="component-icon">🪟</div>
-                            <div class="component-name">Modals</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <button onclick="generateFullApp()" class="generate-button" id="generate-btn">
-                        <span id="generate-text">🚀 Generate Full-Stack App</span>
-                        <div id="generate-spinner" class="loading-spinner" style="display: none;"></div>
-                    </button>
-                    <button onclick="generateCode()" class="generate-button" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
-                        💻 Generate Code Only
-                    </button>
-                    <button onclick="runSecurityReview()" class="generate-button" style="background: linear-gradient(45deg, #FF9800, #F57C00);">
-                        🔒 Security Review
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Generation Progress -->
-            <div id="generation-progress" class="generation-progress" style="display: none;">
-                <h3>🤖 AI Generation Progress</h3>
-                <div id="progress-steps">
-                    <div class="progress-step" id="step-1">
-                        <div class="step-icon">🧠</div>
-                        <span>Analyzing requirements...</span>
-                    </div>
-                    <div class="progress-step" id="step-2">
-                        <div class="step-icon">🏗️</div>
-                        <span>Creating project structure...</span>
-                    </div>
-                    <div class="progress-step" id="step-3">
-                        <div class="step-icon">⚡</div>
-                        <span>Generating components...</span>
-                    </div>
-                    <div class="progress-step" id="step-4">
-                        <div class="step-icon">🎨</div>
-                        <span>Styling and theming...</span>
-                    </div>
-                    <div class="progress-step" id="step-5">
-                        <div class="step-icon">🔗</div>
-                        <span>Adding functionality...</span>
-                    </div>
-                    <div class="progress-step" id="step-6">
-                        <div class="step-icon">🗄️</div>
-                        <span>Setting up database...</span>
-                    </div>
-                    <div class="progress-step" id="step-7">
-                        <div class="step-icon">🔐</div>
-                        <span>Configuring authentication...</span>
-                    </div>
-                    <div class="progress-step" id="step-8">
-                        <div class="step-icon">🔌</div>
-                        <span>Integrating APIs...</span>
-                    </div>
-                    <div class="progress-step" id="step-9">
-                        <div class="step-icon">✨</div>
-                        <span>Finalizing and optimizing...</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Security Review Section -->
-            <div id="security-review" class="security-review" style="display: none;">
-                <h3>🔒 AI Security Review</h3>
-                <div id="security-issues">
-                    <!-- Security issues will be populated here -->
-                </div>
-                <button onclick="hideSecurityReview()" class="generate-button" style="background: linear-gradient(45deg, #6c757d, #495057);">
-                    Close Review
-                </button>
-            </div>
-
-            <!-- Deployment Section -->
-            <div class="deployment-section">
-                <h4 style="margin-bottom: 15px; color: white;">🚀 One-Click Deployment</h4>
-                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                    <button onclick="deployToFirebase()" class="deploy-button">
-                        🔥 Deploy to Firebase
-                    </button>
-                    <button onclick="deployToVercel()" class="deploy-button">
-                        ▲ Deploy to Vercel
-                    </button>
-                    <button onclick="deployToNetlify()" class="deploy-button">
-                        🌐 Deploy to Netlify
-                    </button>
-                    <button onclick="exportToGitHub()" class="deploy-button" style="background: linear-gradient(45deg, #24292e, #0366d6);">
-                        📁 Export to GitHub
-                    </button>
-                    <button onclick="downloadProject()" class="deploy-button" style="background: linear-gradient(45deg, #6f42c1, #5a2d91);">
-                        📦 Download Project
-                    </button>
-                </div>
-                <div id="deployment-status" style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; display: none;">
-                    <!-- Deployment status will be shown here -->
-                </div>
-            </div>
-            
-            <!-- Workspace -->
-            <div class="ai-workspace">
-                <!-- Code Section -->
-                <div class="ai-code-section">
-                    <div style="background: rgba(0,0,0,0.2); padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
-                        <span style="color: white; font-weight: bold;" id="current-file-name">📄 index.html</span>
-                    </div>
-                    <textarea id="code-editor" class="code-editor" placeholder="Generated code will appear here..."></textarea>
-                </div>
-                
-                <!-- Preview Section -->
-                <div class="ai-preview-section">
-                    <div style="background: rgba(0,0,0,0.2); padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">
-                        <span style="color: white; font-weight: bold;">🖥️ Live Preview</span>
-                        <button onclick="togglePreview()" style="float: right; background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Refresh</button>
-                    </div>
-                    <div id="app-preview" class="app-preview">
-                        <div style="padding: 20px; text-align: center; color: #666;">
-                            <h3>🚀 Preview Your App</h3>
-                            <p>Generate code to see your application preview here!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Security Review (Modal) -->
+    <div id="security-review" class="security-review" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 500px; max-height: 600px; overflow-y: auto;">
+        <h3>🔒 AI Security Review</h3>
+        <div id="security-issues">
+            <!-- Security issues will be populated here -->
+        </div>
+        <button onclick="hideSecurityReview()" class="generate-button" style="background: linear-gradient(45deg, #6c757d, #495057);">
+            Close Review
+        </button>
+    </div>
             
             <!-- Status Bar -->
             <div class="status-bar">

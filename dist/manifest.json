@@ -23,13 +23,13 @@
       "name": "AI Builder",
       "short_name": "Builder",
       "description": "Open the AI code builder",
-      "url": "/ai-builder.html",
+      "url": "/ai-builder.html"
     },
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "View your projects dashboard",
-      "url": "/dashboard.html",
+      "url": "/dashboard.html"
     }
   ],
   "related_applications": [

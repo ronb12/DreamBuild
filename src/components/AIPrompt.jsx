@@ -10,9 +10,13 @@ import {
   Loader2,
   CheckCircle,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  BarChart3,
+  Code
 } from 'lucide-react'
-import aiService from '../services/aiService'
+import aiService from '../services/simpleAIService'
+import AIServiceStatus from './AIServiceStatus'
+import TemplateBrowser from './TemplateBrowser'
 import toast from 'react-hot-toast'
 
 const AIPrompt = () => {
@@ -20,10 +24,13 @@ const AIPrompt = () => {
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [showAISettings, setShowAISettings] = useState(false)
+  const [showServiceStatus, setShowServiceStatus] = useState(false)
+  const [showTemplateBrowser, setShowTemplateBrowser] = useState(false)
   const [aiService, setAIService] = useState('groq')
   const [aiModel, setAIModel] = useState('llama3-8b-8192')
   const [suggestions, setSuggestions] = useState([])
   const [generationHistory, setGenerationHistory] = useState([])
+  const [serviceStatus, setServiceStatus] = useState({})
   const textareaRef = useRef(null)
 
   // Auto-resize textarea
@@ -33,6 +40,16 @@ const AIPrompt = () => {
       textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px'
     }
   }, [prompt])
+
+  // Load service status
+  useEffect(() => {
+    setServiceStatus(aiService?.getServiceStatus ? aiService.getServiceStatus() : {})
+    const interval = setInterval(() => {
+      setServiceStatus(aiService?.getServiceStatus ? aiService.getServiceStatus() : {})
+    }, 30000) // Update every 30 seconds
+
+    return () => clearInterval(interval)
+  }, [])
 
   // Smart suggestions based on prompt
   useEffect(() => {
@@ -190,7 +207,7 @@ const AIPrompt = () => {
     }
   }
 
-  const aiServices = aiService.getServices()
+  const aiServices = aiService?.getServices ? aiService.getServices() : {}
 
   return (
     <motion.div
@@ -207,8 +224,22 @@ const AIPrompt = () => {
           </h3>
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-              {aiService.currentService}
+              {aiService?.currentService || 'local-ai'}
             </span>
+            <button
+              onClick={() => setShowTemplateBrowser(true)}
+              className="p-1 hover:bg-muted rounded transition-colors"
+              title="Browse Templates (1000+)"
+            >
+              <Code className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setShowServiceStatus(true)}
+              className="p-1 hover:bg-muted rounded transition-colors"
+              title="AI Service Status"
+            >
+              <BarChart3 className="h-4 w-4" />
+            </button>
             <button
               onClick={() => setShowAISettings(true)}
               className="p-1 hover:bg-muted rounded transition-colors"
@@ -222,11 +253,19 @@ const AIPrompt = () => {
         {/* AI Service Status */}
         <div className="flex items-center gap-2 text-xs">
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-muted-foreground">AI Ready</span>
+            {serviceStatus[aiService?.currentService || 'local-ai']?.isHealthy ? (
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            ) : (
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            )}
+            <span className="text-muted-foreground">
+              {serviceStatus[aiService?.currentService || 'local-ai']?.isHealthy ? 'AI Ready' : 'AI Unhealthy'}
+            </span>
           </div>
           <span>•</span>
-          <span className="text-muted-foreground">Free Tier Available</span>
+          <span className="text-muted-foreground">
+            {aiService?.isFallbackEnabled ? (aiService.isFallbackEnabled() ? 'Fallback Enabled' : 'Single Service') : 'Local AI Only'}
+          </span>
         </div>
       </div>
 
@@ -326,6 +365,21 @@ const AIPrompt = () => {
         </p>
       </div>
 
+      {/* Template Browser */}
+      <TemplateBrowser 
+        isOpen={showTemplateBrowser} 
+        onClose={() => setShowTemplateBrowser(false)}
+        onTemplateSelect={(template) => {
+          console.log('Template selected:', template)
+        }}
+      />
+
+      {/* AI Service Status Dialog */}
+      <AIServiceStatus 
+        isOpen={showServiceStatus} 
+        onClose={() => setShowServiceStatus(false)} 
+      />
+
       {/* AI Settings Dialog */}
       <AnimatePresence>
         {showAISettings && (
@@ -355,7 +409,7 @@ const AIPrompt = () => {
                     value={aiService}
                     onChange={(e) => {
                       setAIService(e.target.value)
-                      aiService.setService(e.target.value)
+                      aiService?.setService ? aiService.setService(e.target.value) : null
                     }}
                     className="w-full p-2 border border-border rounded-md bg-background"
                   >
@@ -373,7 +427,7 @@ const AIPrompt = () => {
                     value={aiModel}
                     onChange={(e) => {
                       setAIModel(e.target.value)
-                      aiService.setService(aiService, e.target.value)
+                      aiService?.setService ? aiService.setService(e.target.value) : null
                     }}
                     className="w-full p-2 border border-border rounded-md bg-background"
                   >

@@ -299,7 +299,9 @@ const Preview = () => {
             ref={iframeRef}
             className="w-full h-full border-0"
             title="Preview"
-            sandbox="allow-scripts allow-same-origin"
+            // Note: allow-same-origin is required for preview functionality to work properly
+            // This is safe in our controlled environment where we generate the content
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
             onLoad={() => setIsLoading(false)}
             onError={() => {
               setIsLoading(false)

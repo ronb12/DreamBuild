@@ -203,50 +203,63 @@ const FileManager = () => {
       animate={{ opacity: 1, x: 0 }}
       className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden"
     >
-      {/* File Manager Header */}
-      <div className="p-3 border-b border-border bg-muted/50">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-sm flex items-center gap-2">
-            <Folder className="h-4 w-4" />
-            Project Files
-          </h3>
+      {/* Enhanced File Manager Header */}
+      <div className="p-4 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+              <Folder className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground">Project Files</h3>
+              <p className="text-xs text-muted-foreground">Manage your project</p>
+            </div>
+          </div>
           <div className="flex items-center gap-1">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setShowNewFileDialog(true)}
-              className="p-1 hover:bg-muted rounded transition-colors"
+              className="p-2 hover:bg-primary/10 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/20"
               title="New File"
             >
-              <Plus className="h-4 w-4" />
-            </button>
-            <button
+              <Plus className="h-4 w-4 text-primary" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setShowProjectDialog(true)}
-              className="p-1 hover:bg-muted rounded transition-colors"
+              className="p-2 hover:bg-primary/10 rounded-lg transition-all duration-200 border border-transparent hover:border-primary/20"
               title="Project Settings"
             >
-              <Settings className="h-4 w-4" />
-            </button>
+              <Settings className="h-4 w-4 text-primary" />
+            </motion.button>
           </div>
         </div>
 
-        {/* Project Actions */}
-        <div className="flex gap-1 flex-wrap">
-          <button
+        {/* Enhanced Project Actions */}
+        <div className="flex gap-2 flex-wrap">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => saveProject()}
-            className="flex items-center gap-1 px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-sm shadow-primary/20"
             title="Save Project"
           >
-            <Save className="h-3 w-3" />
+            <Save className="h-4 w-4" />
             Save
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setShowDeployDialog(true)}
-            className="flex items-center gap-1 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-sm shadow-green-600/20"
             title="Deploy Project"
             disabled={Object.keys(currentProject.files).length === 0}
           >
-            <Rocket className="h-3 w-3" />
+            <Rocket className="h-4 w-4" />
             Deploy
-          </button>
+          </motion.button>
           <button
             onClick={handleDownloadProject}
             className="flex items-center gap-1 px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded hover:bg-secondary/90 transition-colors"

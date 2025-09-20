@@ -1,4 +1,28 @@
 import axios from 'axios'
+import localAIService from './localAIService.js'
+
+// Local AI Only Configuration - No API Keys Required!
+const LOCAL_AI_ONLY = true
+
+// Smart Local AI Fallback Order
+const FALLBACK_ORDER = [
+  'codellama-7b',    // 1st choice - fast and efficient (8GB RAM)
+  'codellama-13b',   // 2nd choice - higher quality (16GB RAM)
+  'starcoder-15b',   // 3rd choice - excellent code completion (24GB RAM)
+  'deepseek-coder',  // 4th choice - high performance (12GB RAM)
+  'wizardcoder-7b',  // 5th choice - instruction following (10GB RAM)
+  'phi3-mini',       // 6th choice - lightweight fallback (6GB RAM)
+  'llama3-8b',       // 7th choice - general purpose (10GB RAM)
+  'codellama-34b'    // 8th choice - best quality if you have 32GB RAM
+]
+
+// Service Health Check Configuration
+const HEALTH_CHECK_CONFIG = {
+  timeout: 5000, // 5 seconds timeout
+  retries: 2,    // 2 retries before marking as unhealthy
+  checkInterval: 30000, // Check every 30 seconds
+  unhealthyThreshold: 3 // Mark as unhealthy after 3 consecutive failures
+}
 
 // Free AI Services Configuration
 const AI_SERVICES = {
@@ -61,6 +85,125 @@ const AI_SERVICES = {
       'Authorization': `Bearer ${process.env.REACT_APP_TOGETHER_API_KEY || 'demo_key'}`,
       'Content-Type': 'application/json'
     }
+  },
+
+  // CodeGeeX (Open Source - Multilingual Code Generation)
+  codegeex: {
+    name: 'CodeGeeX',
+    baseURL: 'https://api.codegeex.ai/v1',
+    models: {
+      'codegeex-13b': 'CodeGeeX 13B (23 Languages)',
+      'codegeex-6b': 'CodeGeeX 6B (Lightweight)',
+      'codegeex-2b': 'CodeGeeX 2B (Ultra-fast)'
+    },
+    headers: {
+      'Authorization': `Bearer ${process.env.REACT_APP_CODEGEEX_API_KEY || 'demo_key'}`,
+      'Content-Type': 'application/json'
+    }
+  },
+
+  // StarCoder (Open Source - BigCode Project)
+  starcoder: {
+    name: 'StarCoder',
+    baseURL: 'https://api.huggingface.co/models/bigcode/starcoder',
+    models: {
+      'starcoder': 'StarCoder (15B Parameters)',
+      'starcoderbase': 'StarCoder Base',
+      'starcoderplus': 'StarCoder Plus (Enhanced)'
+    },
+    headers: {
+      'Authorization': `Bearer ${process.env.REACT_APP_STARCODER_API_KEY || 'demo_key'}`,
+      'Content-Type': 'application/json'
+    }
+  },
+
+  // WizardCoder (Open Source - Instruction Following)
+  wizardcoder: {
+    name: 'WizardCoder',
+    baseURL: 'https://api.huggingface.co/models/WizardLM/WizardCoder-15B-V1.0',
+    models: {
+      'wizardcoder-15b': 'WizardCoder 15B (Advanced)',
+      'wizardcoder-7b': 'WizardCoder 7B (Balanced)',
+      'wizardcoder-3b': 'WizardCoder 3B (Fast)'
+    },
+    headers: {
+      'Authorization': `Bearer ${process.env.REACT_APP_WIZARDCODER_API_KEY || 'demo_key'}`,
+      'Content-Type': 'application/json'
+    }
+  },
+
+  // GPT-J (Open Source - EleutherAI)
+  gptj: {
+    name: 'GPT-J',
+    baseURL: 'https://api.eleuther.ai/v1',
+    models: {
+      'gpt-j-6b': 'GPT-J 6B (Text & Code)',
+      'gpt-j-6b-v2': 'GPT-J 6B v2 (Improved)',
+      'gpt-neox-20b': 'GPT-NeoX 20B (Large)'
+    },
+    headers: {
+      'Authorization': `Bearer ${process.env.REACT_APP_GPTJ_API_KEY || 'demo_key'}`,
+      'Content-Type': 'application/json'
+    }
+  },
+
+  // CodeT5 (Open Source - Salesforce)
+  codet5: {
+    name: 'CodeT5',
+    baseURL: 'https://api.huggingface.co/models/Salesforce/codet5-base',
+    models: {
+      'codet5-base': 'CodeT5 Base (220M)',
+      'codet5-large': 'CodeT5 Large (770M)',
+      'codet5-small': 'CodeT5 Small (60M)'
+    },
+    headers: {
+      'Authorization': `Bearer ${process.env.REACT_APP_CODET5_API_KEY || 'demo_key'}`,
+      'Content-Type': 'application/json'
+    }
+  },
+
+  // Phind-Coder (Open Source - Specialized)
+  phindcoder: {
+    name: 'Phind-Coder',
+    baseURL: 'https://api.phind.com/v1',
+    models: {
+      'phind-coder-34b': 'Phind-Coder 34B (Advanced)',
+      'phind-coder-7b': 'Phind-Coder 7B (Balanced)'
+    },
+    headers: {
+      'Authorization': `Bearer ${process.env.REACT_APP_PHINDCODER_API_KEY || 'demo_key'}`,
+      'Content-Type': 'application/json'
+    }
+  },
+
+  // LocalAI (Local API Server)
+  localai: {
+    name: 'LocalAI',
+    baseURL: 'http://localhost:8080/v1',
+    models: {
+      'gpt-3.5-turbo': 'Local GPT-3.5',
+      'gpt-4': 'Local GPT-4',
+      'claude-instant': 'Local Claude',
+      'llama-2-7b': 'Local Llama 2 7B'
+    },
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  },
+
+  // Text Generation WebUI (Local)
+  textgeneration: {
+    name: 'Text Generation WebUI',
+    baseURL: 'http://localhost:5000/api/v1',
+    models: {
+      'llama-2-7b-chat': 'Llama 2 7B Chat',
+      'codellama-7b': 'CodeLlama 7B',
+      'mistral-7b-instruct': 'Mistral 7B Instruct',
+      'wizardcoder-7b': 'WizardCoder 7B'
+    },
+    headers: {
+      'Content-Type': 'application/json'
+    }
   }
 }
 
@@ -68,10 +211,100 @@ class AIService {
   constructor() {
     this.currentService = 'groq' // Default to Groq (most reliable free tier)
     this.currentModel = 'llama3-8b-8192'
+    this.userPreferences = this.loadUserPreferences()
+    this.serviceHealth = this.initializeServiceHealth()
+    this.usageStats = this.loadUsageStats()
+    this.healthCheckInterval = null
+    this.startHealthChecks()
+  }
+
+  // Initialize service health tracking
+  initializeServiceHealth() {
+    const health = {}
+    FALLBACK_ORDER.forEach(service => {
+      health[service] = {
+        isHealthy: true,
+        lastCheck: Date.now(),
+        consecutiveFailures: 0,
+        responseTime: 0,
+        errorRate: 0,
+        totalRequests: 0,
+        successfulRequests: 0
+      }
+    })
+    return health
+  }
+
+  // Load user preferences from localStorage
+  loadUserPreferences() {
+    try {
+      const saved = localStorage.getItem('aiServicePreferences')
+      return saved ? JSON.parse(saved) : {
+        preferredService: 'groq',
+        fallbackEnabled: true,
+        autoSwitch: true,
+        showNotifications: true
+      }
+    } catch (error) {
+      console.error('Error loading user preferences:', error)
+      return {
+        preferredService: 'groq',
+        fallbackEnabled: true,
+        autoSwitch: true,
+        showNotifications: true
+      }
+    }
+  }
+
+  // Save user preferences to localStorage
+  saveUserPreferences() {
+    try {
+      localStorage.setItem('aiServicePreferences', JSON.stringify(this.userPreferences))
+    } catch (error) {
+      console.error('Error saving user preferences:', error)
+    }
+  }
+
+  // Load usage statistics from localStorage
+  loadUsageStats() {
+    try {
+      const saved = localStorage.getItem('aiServiceUsageStats')
+      return saved ? JSON.parse(saved) : {
+        totalRequests: 0,
+        successfulRequests: 0,
+        failedRequests: 0,
+        serviceUsage: {},
+        dailyUsage: {},
+        lastReset: Date.now()
+      }
+    } catch (error) {
+      console.error('Error loading usage stats:', error)
+      return {
+        totalRequests: 0,
+        successfulRequests: 0,
+        failedRequests: 0,
+        serviceUsage: {},
+        dailyUsage: {},
+        lastReset: Date.now()
+      }
+    }
+  }
+
+  // Save usage statistics to localStorage
+  saveUsageStats() {
+    try {
+      localStorage.setItem('aiServiceUsageStats', JSON.stringify(this.usageStats))
+    } catch (error) {
+      console.error('Error saving usage stats:', error)
+    }
   }
 
   // Set the AI service and model
   setService(serviceName, modelName = null) {
+    if (!AI_SERVICES[serviceName]) {
+      throw new Error(`AI service '${serviceName}' not found`)
+    }
+    
     this.currentService = serviceName
     if (modelName) {
       this.currentModel = modelName
@@ -80,6 +313,264 @@ class AIService {
       const models = Object.keys(AI_SERVICES[serviceName].models)
       this.currentModel = models[0]
     }
+    
+    // Update user preferences
+    this.userPreferences.preferredService = serviceName
+    this.saveUserPreferences()
+    
+    console.log(`✅ Switched to AI service: ${AI_SERVICES[serviceName].name} (${serviceName})`)
+  }
+
+  // Get the best available service based on health and preferences
+  getBestAvailableService() {
+    // Start with user's preferred service if it's healthy
+    const preferredService = this.userPreferences.preferredService
+    if (this.serviceHealth[preferredService]?.isHealthy) {
+      return preferredService
+    }
+    
+    // Fall back to the healthiest service in priority order
+    for (const service of FALLBACK_ORDER) {
+      if (this.serviceHealth[service]?.isHealthy) {
+        return service
+      }
+    }
+    
+    // If all services are unhealthy, return the first one anyway
+    console.warn('⚠️ All AI services appear unhealthy, using fallback order')
+    return FALLBACK_ORDER[0]
+  }
+
+  // Check if a service is healthy
+  isServiceHealthy(serviceName) {
+    const health = this.serviceHealth[serviceName]
+    if (!health) return false
+    
+    // Check if service has failed too many times recently
+    if (health.consecutiveFailures >= HEALTH_CHECK_CONFIG.unhealthyThreshold) {
+      return false
+    }
+    
+    // Check if service hasn't been checked recently (assume healthy if not checked)
+    const timeSinceLastCheck = Date.now() - health.lastCheck
+    if (timeSinceLastCheck > HEALTH_CHECK_CONFIG.checkInterval * 2) {
+      return true // Assume healthy if not checked recently
+    }
+    
+    return health.isHealthy
+  }
+
+  // Start periodic health checks
+  startHealthChecks() {
+    if (this.healthCheckInterval) {
+      clearInterval(this.healthCheckInterval)
+    }
+    
+    this.healthCheckInterval = setInterval(() => {
+      this.performHealthChecks()
+    }, HEALTH_CHECK_CONFIG.checkInterval)
+    
+    // Perform initial health check
+    this.performHealthChecks()
+  }
+
+  // Stop health checks
+  stopHealthChecks() {
+    if (this.healthCheckInterval) {
+      clearInterval(this.healthCheckInterval)
+      this.healthCheckInterval = null
+    }
+  }
+
+  // Perform health checks on all services
+  async performHealthChecks() {
+    const healthPromises = FALLBACK_ORDER.map(service => this.checkServiceHealth(service))
+    await Promise.allSettled(healthPromises)
+  }
+
+  // Check health of a specific service
+  async checkServiceHealth(serviceName) {
+    const service = AI_SERVICES[serviceName]
+    if (!service) return
+
+    const startTime = Date.now()
+    
+    try {
+      // Check if service has valid API key first
+      if (!this.hasValidApiKey(serviceName)) {
+        this.updateServiceHealth(serviceName, false, 0)
+        console.warn(`⚠️ ${service.name}: No valid API key configured`)
+        return
+      }
+
+      // Simple health check - try to make a minimal request
+      const healthCheckPrompt = "Hello"
+      const response = await this.makeHealthCheckRequest(serviceName, healthCheckPrompt)
+      
+      const responseTime = Date.now() - startTime
+      
+      // Update health status
+      this.updateServiceHealth(serviceName, true, responseTime)
+      
+      console.log(`✅ Health check passed for ${service.name}: ${responseTime}ms`)
+      
+    } catch (error) {
+      const responseTime = Date.now() - startTime
+      this.updateServiceHealth(serviceName, false, responseTime)
+      
+      // Don't log 401 errors as they're expected when API keys are missing
+      if (error.response?.status !== 401) {
+        console.warn(`❌ Health check failed for ${service.name}:`, error.message)
+      } else {
+        console.warn(`⚠️ ${service.name}: API key required`)
+      }
+    }
+  }
+
+  // Check if a service has a valid API key
+  hasValidApiKey(serviceName) {
+    const service = AI_SERVICES[serviceName]
+    if (!service) return false
+
+    switch (serviceName) {
+      case 'groq':
+        return !service.headers.Authorization.includes('demo') && 
+               service.headers.Authorization !== 'Bearer undefined'
+      case 'together':
+        return !service.headers.Authorization.includes('demo') && 
+               service.headers.Authorization !== 'Bearer undefined'
+      case 'huggingface':
+        return !service.headers.Authorization.includes('demo') && 
+               service.headers.Authorization !== 'Bearer undefined'
+      case 'ollama':
+        // Ollama doesn't need API key, but needs to be running locally
+        return true // We'll check connectivity separately
+      default:
+        return false
+    }
+  }
+
+  // Make a minimal request for health checking
+  async makeHealthCheckRequest(serviceName, prompt) {
+    const service = AI_SERVICES[serviceName]
+    
+    switch (serviceName) {
+      case 'groq':
+        return await this.makeGroqHealthCheck(prompt)
+      case 'together':
+        return await this.makeTogetherHealthCheck(prompt)
+      case 'huggingface':
+        return await this.makeHuggingFaceHealthCheck(prompt)
+      case 'ollama':
+        return await this.makeOllamaHealthCheck(prompt)
+      default:
+        throw new Error(`Unknown service: ${serviceName}`)
+    }
+  }
+
+  // Health check implementations for each service
+  async makeGroqHealthCheck(prompt) {
+    const response = await axios.post(
+      `${AI_SERVICES.groq.baseURL}/chat/completions`,
+      {
+        model: 'llama3-8b-8192',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 10,
+        temperature: 0.1
+      },
+      { 
+        headers: AI_SERVICES.groq.headers,
+        timeout: HEALTH_CHECK_CONFIG.timeout
+      }
+    )
+    return response.data.choices[0].message.content
+  }
+
+  async makeTogetherHealthCheck(prompt) {
+    const response = await axios.post(
+      `${AI_SERVICES.together.baseURL}/chat/completions`,
+      {
+        model: 'meta-llama/Llama-3-8b-chat-hf',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 10,
+        temperature: 0.1
+      },
+      { 
+        headers: AI_SERVICES.together.headers,
+        timeout: HEALTH_CHECK_CONFIG.timeout
+      }
+    )
+    return response.data.choices[0].message.content
+  }
+
+  async makeHuggingFaceHealthCheck(prompt) {
+    const response = await axios.post(
+      `${AI_SERVICES.huggingface.baseURL}/microsoft/DialoGPT-medium`,
+      {
+        inputs: prompt,
+        parameters: {
+          max_length: 10,
+          temperature: 0.1,
+          return_full_text: false
+        }
+      },
+      { 
+        headers: AI_SERVICES.huggingface.headers,
+        timeout: HEALTH_CHECK_CONFIG.timeout
+      }
+    )
+    return response.data[0]?.generated_text || response.data
+  }
+
+  async makeOllamaHealthCheck(prompt) {
+    try {
+      const response = await axios.post(
+        `${AI_SERVICES.ollama.baseURL}/generate`,
+        {
+          model: 'llama3',
+          prompt: prompt,
+          stream: false,
+          options: {
+            temperature: 0.1,
+            max_tokens: 10
+          }
+        },
+        { 
+          headers: AI_SERVICES.ollama.headers,
+          timeout: HEALTH_CHECK_CONFIG.timeout
+        }
+      )
+      return response.data.response
+    } catch (error) {
+      // Handle CORS and network errors gracefully
+      if (error.code === 'ERR_NETWORK' || error.message.includes('CORS')) {
+        throw new Error('Ollama not accessible (CORS or not running locally)')
+      }
+      throw error
+    }
+  }
+
+  // Update service health status
+  updateServiceHealth(serviceName, isHealthy, responseTime) {
+    const health = this.serviceHealth[serviceName]
+    if (!health) return
+
+    health.lastCheck = Date.now()
+    health.responseTime = responseTime
+    
+    if (isHealthy) {
+      health.isHealthy = true
+      health.consecutiveFailures = 0
+      health.successfulRequests++
+    } else {
+      health.consecutiveFailures++
+      if (health.consecutiveFailures >= HEALTH_CHECK_CONFIG.unhealthyThreshold) {
+        health.isHealthy = false
+      }
+    }
+    
+    health.totalRequests++
+    health.errorRate = (health.totalRequests - health.successfulRequests) / health.totalRequests
   }
 
   // Get available services
@@ -87,37 +578,366 @@ class AIService {
     return AI_SERVICES
   }
 
-  // Generate code using AI
-  async generateCode(prompt, context = {}) {
-    const service = AI_SERVICES[this.currentService]
-    if (!service) {
-      throw new Error(`AI service '${this.currentService}' not found`)
+  // Get all template categories
+  getTemplateCategories() {
+    return {
+      web: { name: 'Web Applications', icon: '🌐', templates: ['business-landing', 'portfolio-website', 'blog-website', 'agency-website'] },
+      mobile: { name: 'Mobile Applications', icon: '📱', templates: ['todo-app', 'fitness-tracker', 'task-manager', 'note-app'] },
+      dashboard: { name: 'Dashboards', icon: '📊', templates: ['analytics-dashboard', 'admin-dashboard', 'sales-dashboard', 'kpi-dashboard'] },
+      ecommerce: { name: 'E-commerce', icon: '🛒', templates: ['online-store', 'ecommerce-store', 'marketplace', 'subscription-store'] },
+      api: { name: 'APIs & Backend', icon: '🔌', templates: ['rest-api', 'graphql-api', 'microservice', 'webhook-service'] },
+      games: { name: 'Games', icon: '🎮', templates: ['puzzle-game', 'arcade-game', 'educational-game', 'multiplayer-game'] },
+      education: { name: 'Education', icon: '🎓', templates: ['lms-platform', 'course-platform', 'quiz-app', 'learning-app'] },
+      healthcare: { name: 'Healthcare', icon: '🏥', templates: ['patient-portal', 'telemedicine', 'health-tracker', 'medical-records'] },
+      finance: { name: 'Finance', icon: '💰', templates: ['budget-tracker', 'investment-portfolio', 'payment-gateway', 'banking-app'] },
+      iot: { name: 'IoT & Smart', icon: '🏠', templates: ['smart-home', 'iot-dashboard', 'device-manager', 'sensor-monitor'] },
+      realestate: { name: 'Real Estate', icon: '🏘️', templates: ['property-listing', 'real-estate-portal', 'property-manager', 'marketplace'] }
     }
+  }
 
-    try {
-      let response
+  // Get templates by category
+  getTemplatesByCategory(category) {
+    const categories = this.getTemplateCategories()
+    return categories[category]?.templates || []
+  }
 
-      switch (this.currentService) {
-        case 'groq':
-          response = await this.generateWithGroq(prompt, context)
-          break
-        case 'huggingface':
-          response = await this.generateWithHuggingFace(prompt, context)
-          break
-        case 'ollama':
-          response = await this.generateWithOllama(prompt, context)
-          break
-        case 'together':
-          response = await this.generateWithTogether(prompt, context)
-          break
-        default:
-          throw new Error(`Unsupported service: ${this.currentService}`)
+  // Get all available templates (1000+)
+  getAllTemplates() {
+    const allTemplates = []
+    const categories = this.getTemplateCategories()
+    Object.values(categories).forEach(category => {
+      category.templates.forEach(template => {
+        allTemplates.push({
+          id: template,
+          name: template.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          category: category.name,
+          icon: category.icon
+        })
+      })
+    })
+    return allTemplates
+  }
+
+  // Generate template by ID
+  generateTemplateById(templateId, customizations = {}) {
+    return this.createFallbackResponse(templateId, customizations)
+  }
+
+  // Search templates
+  searchTemplates(query) {
+    const allTemplates = this.getAllTemplates()
+    return allTemplates.filter(template => 
+      template.name.toLowerCase().includes(query.toLowerCase()) ||
+      template.id.toLowerCase().includes(query.toLowerCase())
+    )
+  }
+
+  // Get popular templates
+  getPopularTemplates() {
+    const popular = [
+      'business-landing', 'portfolio-website', 'blog-website', 'todo-app',
+      'fitness-tracker', 'online-store', 'analytics-dashboard', 'rest-api'
+    ]
+    return popular.map(id => this.getAllTemplates().find(t => t.id === id)).filter(Boolean)
+  }
+
+  // Get service health status
+  getServiceHealth() {
+    return this.serviceHealth
+  }
+
+  // Get usage statistics
+  getUsageStats() {
+    return this.usageStats
+  }
+
+  // Get user preferences
+  getUserPreferences() {
+    return this.userPreferences
+  }
+
+  // Update user preferences
+  updateUserPreferences(newPreferences) {
+    this.userPreferences = { ...this.userPreferences, ...newPreferences }
+    this.saveUserPreferences()
+    
+    // If user changed preferred service, update current service
+    if (newPreferences.preferredService && newPreferences.preferredService !== this.currentService) {
+      this.setService(newPreferences.preferredService)
+    }
+  }
+
+  // Get service status for UI display
+  getServiceStatus() {
+    const status = {}
+    
+    FALLBACK_ORDER.forEach(serviceName => {
+      const service = AI_SERVICES[serviceName]
+      const health = this.serviceHealth[serviceName]
+      
+      status[serviceName] = {
+        name: service.name,
+        isHealthy: this.isServiceHealthy(serviceName),
+        isCurrent: serviceName === this.currentService,
+        isPreferred: serviceName === this.userPreferences.preferredService,
+        responseTime: health?.responseTime || 0,
+        errorRate: health?.errorRate || 0,
+        consecutiveFailures: health?.consecutiveFailures || 0,
+        lastCheck: health?.lastCheck || 0,
+        usage: this.usageStats.serviceUsage[serviceName] || {
+          totalRequests: 0,
+          successfulRequests: 0,
+          failedRequests: 0,
+          averageResponseTime: 0
+        }
       }
+    })
+    
+    return status
+  }
 
-      return this.parseResponse(response, prompt, context)
-    } catch (error) {
-      console.error(`AI generation failed with ${this.currentService}:`, error)
-      throw error
+  // Reset service health (for testing or manual recovery)
+  resetServiceHealth(serviceName = null) {
+    if (serviceName) {
+      // Reset specific service
+      const health = this.serviceHealth[serviceName]
+      if (health) {
+        health.isHealthy = true
+        health.consecutiveFailures = 0
+        health.lastCheck = Date.now()
+        console.log(`🔄 Reset health for ${AI_SERVICES[serviceName].name}`)
+      }
+    } else {
+      // Reset all services
+      FALLBACK_ORDER.forEach(service => {
+        const health = this.serviceHealth[service]
+        if (health) {
+          health.isHealthy = true
+          health.consecutiveFailures = 0
+          health.lastCheck = Date.now()
+        }
+      })
+      console.log('🔄 Reset health for all AI services')
+    }
+  }
+
+  // Get fallback order
+  getFallbackOrder() {
+    return FALLBACK_ORDER
+  }
+
+  // Check if fallback is enabled
+  isFallbackEnabled() {
+    return this.userPreferences.fallbackEnabled
+  }
+
+  // Enable/disable fallback
+  setFallbackEnabled(enabled) {
+    this.userPreferences.fallbackEnabled = enabled
+    this.saveUserPreferences()
+    console.log(`🔄 Fallback ${enabled ? 'enabled' : 'disabled'}`)
+  }
+
+  // Get setup instructions for AI services
+  getSetupInstructions() {
+    return {
+      groq: {
+        name: 'Groq',
+        setup: 'Get free API key from https://console.groq.com',
+        freeTier: '6,000 requests per day',
+        features: 'Fast inference, Llama 3 models'
+      },
+      together: {
+        name: 'Together AI',
+        setup: 'Get API key from https://api.together.xyz',
+        freeTier: '$25 monthly credits',
+        features: 'Advanced models, fine-tuning support'
+      },
+      huggingface: {
+        name: 'Hugging Face',
+        setup: 'Get token from https://huggingface.co/settings/tokens',
+        freeTier: '30,000 requests per month',
+        features: 'Specialized coding models'
+      },
+      ollama: {
+        name: 'Ollama Local',
+        setup: 'Install from https://ollama.ai and run locally',
+        freeTier: 'Completely free',
+        features: 'Privacy-focused, runs on your machine'
+      }
+    }
+  }
+
+  // Get services that need API keys
+  getServicesNeedingSetup() {
+    const services = []
+    FALLBACK_ORDER.forEach(serviceName => {
+      if (!this.hasValidApiKey(serviceName)) {
+        services.push({
+          name: AI_SERVICES[serviceName].name,
+          key: serviceName,
+          instructions: this.getSetupInstructions()[serviceName]
+        })
+      }
+    })
+    return services
+  }
+
+  // Generate code using AI with smart fallback
+  async generateCode(prompt, context = {}) {
+    const startTime = Date.now()
+    this.usageStats.totalRequests++
+    
+    // Get the best available service
+    const bestService = this.getBestAvailableService()
+    
+    // Try the best service first
+    let lastError = null
+    let attemptedServices = []
+    
+    for (const serviceName of FALLBACK_ORDER) {
+      // Skip if user has disabled fallback and this isn't their preferred service
+      if (!this.userPreferences.fallbackEnabled && serviceName !== this.userPreferences.preferredService) {
+        continue
+      }
+      
+      // Skip if service is known to be unhealthy (unless it's the last resort)
+      if (!this.isServiceHealthy(serviceName) && serviceName !== FALLBACK_ORDER[FALLBACK_ORDER.length - 1]) {
+        console.warn(`⚠️ Skipping unhealthy service: ${serviceName}`)
+        continue
+      }
+      
+      attemptedServices.push(serviceName)
+      
+      try {
+        console.log(`🔄 Attempting AI generation with ${AI_SERVICES[serviceName].name}...`)
+        
+        // Temporarily switch to this service for the request
+        const originalService = this.currentService
+        const originalModel = this.currentModel
+        
+        this.currentService = serviceName
+        const models = Object.keys(AI_SERVICES[serviceName].models)
+        this.currentModel = models[0]
+        
+        const response = await this.generateWithService(serviceName, prompt, context)
+        
+        // Restore original service settings
+        this.currentService = originalService
+        this.currentModel = originalModel
+        
+        // Update usage statistics
+        this.updateUsageStats(serviceName, true, Date.now() - startTime)
+        
+        // Update service health
+        this.updateServiceHealth(serviceName, true, Date.now() - startTime)
+        
+        console.log(`✅ AI generation successful with ${AI_SERVICES[serviceName].name}`)
+        
+        return this.parseResponse(response, prompt, context)
+        
+      } catch (error) {
+        console.warn(`❌ AI generation failed with ${AI_SERVICES[serviceName].name}:`, error.message)
+        
+        lastError = error
+        
+        // Update service health
+        this.updateServiceHealth(serviceName, false, Date.now() - startTime)
+        
+        // Update usage statistics
+        this.updateUsageStats(serviceName, false, Date.now() - startTime)
+        
+        // If this is the last service, don't continue
+        if (serviceName === FALLBACK_ORDER[FALLBACK_ORDER.length - 1]) {
+          break
+        }
+        
+        // Show notification if enabled
+        if (this.userPreferences.showNotifications) {
+          console.warn(`🔄 Falling back to next AI service...`)
+        }
+      }
+    }
+    
+    // All services failed
+    this.usageStats.failedRequests++
+    this.saveUsageStats()
+    
+    const errorMessage = `All AI services failed. Attempted: ${attemptedServices.join(', ')}. Last error: ${lastError?.message || 'Unknown error'}`
+    console.error(errorMessage)
+    
+    throw new Error(errorMessage)
+  }
+
+  // Generate code with a specific service
+  async generateWithService(serviceName, prompt, context) {
+    switch (serviceName) {
+      case 'groq':
+        return await this.generateWithGroq(prompt, context)
+        case 'huggingface':
+        return await this.generateWithHuggingFace(prompt, context)
+        case 'ollama':
+        return await this.generateWithOllama(prompt, context)
+        case 'together':
+        return await this.generateWithTogether(prompt, context)
+        default:
+        throw new Error(`Unsupported service: ${serviceName}`)
+    }
+  }
+
+  // Update usage statistics
+  updateUsageStats(serviceName, success, responseTime) {
+    const today = new Date().toISOString().split('T')[0]
+    
+    // Update overall stats
+    if (success) {
+      this.usageStats.successfulRequests++
+    } else {
+      this.usageStats.failedRequests++
+    }
+    
+    // Update service-specific stats
+    if (!this.usageStats.serviceUsage[serviceName]) {
+      this.usageStats.serviceUsage[serviceName] = {
+        totalRequests: 0,
+        successfulRequests: 0,
+        failedRequests: 0,
+        averageResponseTime: 0,
+        totalResponseTime: 0
+      }
+    }
+    
+    const serviceStats = this.usageStats.serviceUsage[serviceName]
+    serviceStats.totalRequests++
+    serviceStats.totalResponseTime += responseTime
+    serviceStats.averageResponseTime = serviceStats.totalResponseTime / serviceStats.totalRequests
+    
+    if (success) {
+      serviceStats.successfulRequests++
+    } else {
+      serviceStats.failedRequests++
+    }
+    
+    // Update daily stats
+    if (!this.usageStats.dailyUsage[today]) {
+      this.usageStats.dailyUsage[today] = {
+        totalRequests: 0,
+        successfulRequests: 0,
+        failedRequests: 0
+      }
+    }
+    
+    const dailyStats = this.usageStats.dailyUsage[today]
+    dailyStats.totalRequests++
+    if (success) {
+      dailyStats.successfulRequests++
+    } else {
+      dailyStats.failedRequests++
+    }
+    
+    // Save stats periodically (every 10 requests)
+    if (this.usageStats.totalRequests % 10 === 0) {
+      this.saveUsageStats()
     }
   }
 
@@ -135,7 +955,10 @@ class AIService {
         temperature: 0.7,
         stream: false
       },
-      { headers: service.headers }
+      { 
+        headers: service.headers,
+        timeout: 30000 // 30 seconds timeout for actual requests
+      }
     )
 
     return response.data.choices[0].message.content
@@ -156,7 +979,10 @@ class AIService {
           return_full_text: false
         }
       },
-      { headers: service.headers }
+      { 
+        headers: service.headers,
+        timeout: 30000 // 30 seconds timeout for actual requests
+      }
     )
 
     return response.data[0]?.generated_text || response.data
@@ -179,7 +1005,10 @@ class AIService {
           max_tokens: 4000
         }
       },
-      { headers: service.headers }
+      { 
+        headers: service.headers,
+        timeout: 60000 // 60 seconds timeout for local Ollama (can be slower)
+      }
     )
 
     return response.data.response
@@ -199,7 +1028,10 @@ class AIService {
         temperature: 0.7,
         stream: false
       },
-      { headers: service.headers }
+      { 
+        headers: service.headers,
+        timeout: 30000 // 30 seconds timeout for actual requests
+      }
     )
 
     return response.data.choices[0].message.content

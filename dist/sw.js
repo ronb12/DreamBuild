@@ -51,6 +51,15 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
+        // Skip localhost requests to avoid CORS issues
+        if (event.request.url.includes('localhost') || event.request.url.includes('127.0.0.1')) {
+          console.log('DreamBuild Service Worker skipping localhost request:', event.request.url);
+          return fetch(event.request).catch(() => {
+            // Return a basic response for failed localhost requests
+            return new Response('Local service not available', { status: 503 });
+          });
+        }
+
         // Return cached version or fetch from network
         if (response) {
           console.log('DreamBuild Service Worker serving from cache:', event.request.url);
@@ -63,6 +72,8 @@ self.addEventListener('fetch', event => {
           if (event.request.destination === 'document') {
             return caches.match('/');
           }
+          // Return a basic response for other failed requests
+          return new Response('Network request failed', { status: 503 });
         });
       })
   );

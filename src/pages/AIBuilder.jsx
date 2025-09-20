@@ -20,20 +20,8 @@ const AIBuilder = () => {
     <div className="h-screen bg-background flex flex-col pt-16">
       {/* Header Bar */}
       <div className="flex items-center justify-between px-6 py-4 bg-card/80 backdrop-blur-sm border-b border-border/50 shadow-sm">
-        {/* Left Side - Navigation */}
+        {/* Left Side - Title */}
         <div className="flex items-center gap-4">
-          <motion.a
-            href="/"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-3 py-2 bg-background/50 border border-border/50 rounded-lg hover:bg-background transition-colors"
-          >
-            <Home className="h-4 w-4" />
-            <span className="text-sm font-medium">Home</span>
-          </motion.a>
-          
-          <div className="h-6 w-px bg-border/50" />
-          
           <h1 className="text-lg font-semibold text-foreground">AI Builder</h1>
         </div>
 

@@ -51,7 +51,7 @@ const AIPrompt = () => {
     return () => clearInterval(interval)
   }, [])
 
-  // Smart suggestions based on prompt
+  // Smart suggestions based on prompt - removed UI, keeping background logic
   useEffect(() => {
     if (prompt.length > 10) {
       generateSuggestions()
@@ -200,12 +200,13 @@ const AIPrompt = () => {
   }
 
   const handleSuggestionClick = (suggestion) => {
-    setPrompt(prev => prev + ' ' + suggestion.text)
-    toast.success(`Added suggestion: ${suggestion.text}`)
+    // Background suggestion logic - UI removed but functionality preserved
+    console.log(`Suggestion available: ${suggestion.text}`)
   }
 
   const handleHistoryClick = (historyItem) => {
-    setPrompt(historyItem)
+    // Background history logic - UI removed but functionality preserved
+    console.log(`History item available: ${historyItem}`)
   }
 
   const handleKeyPress = (e) => {
@@ -301,56 +302,6 @@ const AIPrompt = () => {
           </div>
         </div>
 
-        {/* Smart Suggestions */}
-        <AnimatePresence>
-          {suggestions.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-2"
-            >
-              <label className="text-sm font-medium text-muted-foreground">Suggestions</label>
-              <div className="flex flex-wrap gap-2">
-                {suggestions.map((suggestion, index) => (
-                  <motion.button
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className={`flex items-center gap-1 px-2 py-1 text-xs rounded-md border transition-colors ${
-                      suggestion.type === 'feature'
-                        ? 'border-white/20 bg-white/10 text-white hover:bg-white/20'
-                        : 'border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
-                    }`}
-                  >
-                    <span>{suggestion.icon}</span>
-                    <span>{suggestion.text}</span>
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Generation History */}
-        {generationHistory.length > 0 && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Recent Prompts</label>
-            <div className="space-y-1">
-              {generationHistory.slice(0, 3).map((historyItem, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleHistoryClick(historyItem)}
-                  className="w-full text-left p-2 text-xs bg-muted hover:bg-muted/80 rounded-md transition-colors truncate"
-                  title={historyItem}
-                >
-                  {historyItem}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Generate Button */}

@@ -1690,6 +1690,10 @@ Additional context: ${searchKnowledge.summary}`
       technologies: this.extractTechnologiesFromFiles(files)
     }
     
+    if (!Array.isArray(history)) {
+      history = []
+    }
+    
     return [...history, newTurn]
   }
 
@@ -3402,10 +3406,18 @@ export const Error = {
       
       // Initialize Firebase
       this.firebaseApp = await import('firebase/app').then(firebase => {
-        if (!firebase.apps || !firebase.apps.length) {
-          return firebase.initializeApp(firebaseConfig)
+        try {
+          if (!firebase.apps || !firebase.apps.length) {
+            return firebase.initializeApp(firebaseConfig)
+          }
+          return firebase.app()
+        } catch (error) {
+          if (error.code === 'app/duplicate-app') {
+            // App already exists, get the existing instance
+            return firebase.app()
+          }
+          throw error
         }
-        return firebase.app()
       })
       
       // Initialize Firestore

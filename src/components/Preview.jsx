@@ -144,6 +144,17 @@ const Preview = () => {
     // Detect game type based on available files
     const isTempleRun = templeRunUIFile || runnerPlayerFile || obstacleFile
     const isCoinCollector = playerFile || coinFile
+    
+    // Debug logging
+    console.log('🎮 Preview Debug - Available files:')
+    console.log('🎮 - templeRunUIFile:', !!templeRunUIFile)
+    console.log('🎮 - runnerPlayerFile:', !!runnerPlayerFile)
+    console.log('🎮 - obstacleFile:', !!obstacleFile)
+    console.log('🎮 - playerFile:', !!playerFile)
+    console.log('🎮 - coinFile:', !!coinFile)
+    console.log('🎮 - isTempleRun:', isTempleRun)
+    console.log('🎮 - isCoinCollector:', isCoinCollector)
+    console.log('🎮 - All project files:', Object.keys(currentProject.files))
 
     // Create a complete React app HTML
     const reactHTML = `

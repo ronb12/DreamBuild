@@ -45,7 +45,8 @@ const AIPrompt = () => {
   const [showWebSearch, setShowWebSearch] = useState(false)
   const [webSearchResults, setWebSearchResults] = useState(null)
   const [selectedService, setSelectedService] = useState('local-ai')
-  const [aiModel, setAIModel] = useState('llama3-8b-8192')
+  const [aiModel, setAIModel] = useState('auto')
+  const [showModelSelector, setShowModelSelector] = useState(false)
   const [suggestions, setSuggestions] = useState([])
   const [generationHistory, setGenerationHistory] = useState([])
   const [serviceStatus, setServiceStatus] = useState({})
@@ -71,6 +72,18 @@ const AIPrompt = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Close model selector when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showModelSelector && !event.target.closest('.model-selector')) {
+        setShowModelSelector(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showModelSelector])
 
   // Load service status
   useEffect(() => {
@@ -444,6 +457,36 @@ Please implement this suggestion in my current project.`
     toast.success(`Feedback recorded: ${feedback}`)
   }
 
+  // Helper functions for AI model selection
+  const getModelDisplayName = (modelId) => {
+    const models = {
+      'codellama-7b': 'CodeLlama 7B',
+      'codellama-13b': 'CodeLlama 13B',
+      'codellama-34b': 'CodeLlama 34B',
+      'starcoder-15b': 'StarCoder 15B',
+      'deepseek-coder': 'DeepSeek Coder',
+      'wizardcoder-7b': 'WizardCoder 7B',
+      'phi3-mini': 'Phi-3 Mini',
+      'llama3-8b': 'Llama 3 8B',
+      'auto': 'Auto (Recommended)'
+    }
+    return models[modelId] || 'Unknown Model'
+  }
+
+  const getAvailableModels = () => {
+    return [
+      { id: 'auto', name: 'Auto (Recommended)', description: 'Automatically selects the best model', type: 'Auto Selection', ram: 'Smart' },
+      { id: 'codellama-7b', name: 'CodeLlama 7B', description: 'Fast and efficient code generation', type: 'Code Generation', ram: '8GB' },
+      { id: 'codellama-13b', name: 'CodeLlama 13B', description: 'Higher quality code generation', type: 'Code Generation', ram: '16GB' },
+      { id: 'codellama-34b', name: 'CodeLlama 34B', description: 'Best quality code generation', type: 'Code Generation', ram: '32GB' },
+      { id: 'starcoder-15b', name: 'StarCoder 15B', description: 'Excellent code completion', type: 'Code Completion', ram: '24GB' },
+      { id: 'deepseek-coder', name: 'DeepSeek Coder', description: 'High-performance generation', type: 'High Performance', ram: '12GB' },
+      { id: 'wizardcoder-7b', name: 'WizardCoder 7B', description: 'Great at following instructions', type: 'Instruction Following', ram: '10GB' },
+      { id: 'phi3-mini', name: 'Phi-3 Mini', description: 'Lightweight but powerful', type: 'Lightweight General', ram: '6GB' },
+      { id: 'llama3-8b', name: 'Llama 3 8B', description: 'General purpose model', type: 'General Purpose', ram: '10GB' }
+    ]
+  }
+
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -467,6 +510,76 @@ Please implement this suggestion in my current project.`
             AI Assistant
           </h3>
           <div className="flex items-center gap-2">
+            {/* AI Model Selector */}
+            <div className="relative model-selector">
+              <button
+                onClick={() => setShowModelSelector(!showModelSelector)}
+                className="flex items-center gap-2 px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md border border-blue-200 dark:border-blue-700 transition-colors"
+                title="Select AI Model"
+              >
+                <Bot className="h-3 w-3" />
+                <span className="font-medium">{getModelDisplayName(aiModel)}</span>
+                <span className="text-blue-500">▼</span>
+              </button>
+              
+              {/* Model Dropdown */}
+              {showModelSelector && (
+                <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-border rounded-lg shadow-lg z-50">
+                  <div className="p-2 border-b border-border">
+                    <h4 className="text-sm font-medium">Select AI Model</h4>
+                    <p className="text-xs text-muted-foreground">Choose the AI model for code generation</p>
+                  </div>
+                  
+                  <div className="max-h-60 overflow-y-auto">
+                    {getAvailableModels().map((model) => (
+                      <button
+                        key={model.id}
+                        onClick={() => {
+                          setAIModel(model.id)
+                          setShowModelSelector(false)
+                          // Update the AI service with new model
+                          if (simpleAIService?.setModel) {
+                            simpleAIService.setModel(model.id)
+                          }
+                          // Show feedback for model change
+                          if (model.id === 'auto') {
+                            toast.success('AI will automatically select the best model for each request')
+                          } else {
+                            toast.success(`Switched to ${model.name}`)
+                          }
+                        }}
+                        className={`w-full flex items-center justify-between p-2 text-xs hover:bg-muted transition-colors ${
+                          aiModel === model.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                        }`}
+                      >
+                        <div className="flex flex-col items-start">
+                          <span className="font-medium">{model.name}</span>
+                          <span className="text-muted-foreground">{model.description}</span>
+                        </div>
+                        <div className="flex flex-col items-end text-xs text-muted-foreground">
+                          <span>{model.ram}</span>
+                          <span className={`px-1 py-0.5 rounded text-xs ${
+                            model.type === 'Code Generation' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300' :
+                            model.type === 'Code Completion' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' :
+                            model.type === 'High Performance' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300' :
+                            'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
+                          }`}>
+                            {model.type}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="p-2 border-t border-border bg-muted/30">
+                    <p className="text-xs text-muted-foreground">
+                      💡 <strong>Auto</strong> selects the best model based on your request complexity
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
               {simpleAIService?.currentService || 'local-ai'}
             </span>
@@ -631,7 +744,7 @@ Please implement this suggestion in my current project.`
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ask me anything..."
-                  className="w-full resize-none bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground text-sm leading-relaxed"
+                  className="w-full resize-y bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground text-sm leading-relaxed"
                   style={{ minHeight: '120px', maxHeight: '300px' }}
                   disabled={isGenerating}
                   rows={4}
@@ -668,29 +781,6 @@ Please implement this suggestion in my current project.`
         </div>
       </div>
 
-      {/* Generate Button */}
-      <div className="p-3 border-t border-border">
-        <button
-          onClick={handleGenerate}
-          disabled={!prompt.trim() || isGenerating}
-          className="w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20"
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Generating...</span>
-            </>
-          ) : (
-            <>
-              <Zap className="h-4 w-4" />
-              <span>Generate Code</span>
-            </>
-          )}
-        </button>
-        <p className="text-xs text-muted-foreground text-center mt-2">
-          Press Enter to generate
-        </p>
-      </div>
 
       {/* Template Browser */}
       <TemplateBrowser 

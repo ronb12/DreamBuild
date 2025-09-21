@@ -952,15 +952,30 @@ Additional context: ${searchKnowledge.summary}`
     Object.assign(files, componentFiles)
     console.log('🧩 Component-based files generated:', Object.keys(componentFiles).length)
     
-    // 4. DATABASE-DRIVEN TEMPLATES - Use database to store and retrieve patterns
-    const templateFiles = this.generateDatabaseDrivenFiles(prompt, context, files)
-    Object.assign(files, templateFiles)
-    console.log('🗄️ Database-driven files generated:', Object.keys(templateFiles).length)
+    // Check if this is a game request - if so, skip database templates to avoid overriding
+    const isGameRequest = prompt.toLowerCase().includes('game') || 
+                         prompt.toLowerCase().includes('coin') || 
+                         prompt.toLowerCase().includes('collector') || 
+                         prompt.toLowerCase().includes('playable') ||
+                         prompt.toLowerCase().includes('fun')
+    
+    if (isGameRequest) {
+      console.log('🎮 Game request detected - skipping database templates to preserve game files')
+    } else {
+      // 4. DATABASE-DRIVEN TEMPLATES - Use database to store and retrieve patterns
+      const templateFiles = this.generateDatabaseDrivenFiles(prompt, context, files)
+      Object.assign(files, templateFiles)
+      console.log('🗄️ Database-driven files generated:', Object.keys(templateFiles).length)
+    }
     
     // 5. PROGRESSIVE ENHANCEMENT - Build applications incrementally
-    const progressiveFiles = this.generateProgressiveEnhancement(prompt, context, files)
-    Object.assign(files, progressiveFiles)
-    console.log('🚀 Progressive enhancement files generated:', Object.keys(progressiveFiles).length)
+    if (isGameRequest) {
+      console.log('🎮 Game request detected - skipping progressive enhancement to preserve game files')
+    } else {
+      const progressiveFiles = this.generateProgressiveEnhancement(prompt, context, files)
+      Object.assign(files, progressiveFiles)
+      console.log('🚀 Progressive enhancement files generated:', Object.keys(progressiveFiles).length)
+    }
     
     // 6. CONTEXT PERSISTENCE - Maintain project context across generations
     const persistentContext = await this.persistContext(context, prompt, files)
@@ -987,8 +1002,14 @@ Additional context: ${searchKnowledge.summary}`
     files['package.json'] = this.generatePackageJSON(prompt, context, codebaseContext)
     files['README.md'] = this.generateREADME(prompt, context, codebaseContext)
     files['index.html'] = this.generateMainHTML(prompt, context, codebaseContext)
-    files['styles.css'] = this.generateComprehensiveCSS(prompt, context, codebaseContext)
-    files['script.js'] = this.generateComprehensiveJS(prompt, context, codebaseContext)
+    
+    // Only generate generic CSS/JS if not a game request
+    if (!isGameRequest) {
+      files['styles.css'] = this.generateComprehensiveCSS(prompt, context, codebaseContext)
+      files['script.js'] = this.generateComprehensiveJS(prompt, context, codebaseContext)
+    } else {
+      console.log('🎮 Game request detected - skipping generic CSS/JS to preserve game files')
+    }
     
     // Generate files based on application type and complexity with context
     const fileGenerators = this.getFileGenerators(prompt, analysis, codebaseContext)

@@ -20,10 +20,6 @@
   "storage": {
     "rules": "storage.rules"
   },
-  "functions": {
-    "source": "functions",
-    "runtime": "nodejs18"
-  },
   "emulators": {
     "auth": {
       "port": 9099
@@ -39,4 +35,7 @@
     },
     "ui": {
       "enabled": true,
-      "port
+      "port": 4000
+    }
+  }
+}

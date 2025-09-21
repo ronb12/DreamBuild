@@ -928,10 +928,15 @@ Additional context: ${searchKnowledge.summary}`
     
     console.log('🚀 Starting advanced dynamic file generation with all Lovable-style capabilities...')
     
-    // 0. MEMORY SYSTEM - Load conversation memory and context
+    // 0. MEMORY SYSTEM - Load conversation memory and context (non-blocking)
     const projectId = context.projectId || this.generateProjectId()
-    const conversationContext = await firebaseService.getConversationContext(projectId, prompt)
-    console.log('🧠 Conversation context loaded:', conversationContext ? 'Yes' : 'No')
+    let conversationContext = null
+    try {
+      conversationContext = await firebaseService.getConversationContext(projectId, prompt)
+      console.log('🧠 Conversation context loaded:', conversationContext ? 'Yes' : 'No')
+    } catch (error) {
+      console.log('⚠️ Firebase context unavailable, continuing without memory:', error.message)
+    }
     
     // 1. FULL CODEBASE CONTEXT - Analyze existing project structure
     const codebaseContext = this.analyzeCodebaseContext(files, context)
@@ -961,9 +966,13 @@ Additional context: ${searchKnowledge.summary}`
     const persistentContext = await this.persistContext(context, prompt, files)
     console.log('💾 Context persisted for future generations')
     
-    // 7. FIREBASE STORAGE - Store unlimited data in cloud
-    await this.storeFilesInFirebase(files, persistentContext.projectId)
-    console.log('☁️ Files stored in Firebase for unlimited storage')
+    // 7. FIREBASE STORAGE - Store unlimited data in cloud (non-blocking)
+    try {
+      await this.storeFilesInFirebase(files, persistentContext.projectId)
+      console.log('☁️ Files stored in Firebase for unlimited storage')
+    } catch (error) {
+      console.log('⚠️ Firebase storage unavailable, continuing without cloud storage:', error.message)
+    }
     
     // 7. MULTI-TURN CONVERSATIONS - Generate files iteratively
     const iterativeFiles = await this.generateIteratively(prompt, persistentContext, files)
@@ -1002,25 +1011,29 @@ Additional context: ${searchKnowledge.summary}`
     const enhancedFiles = this.enhanceFilesWithAdvancedPrompts(files, prompt, codebaseContext)
     Object.assign(files, enhancedFiles)
     
-    // 10. MEMORY SYSTEM - Store conversation in Firebase for future reference
+    // 10. MEMORY SYSTEM - Store conversation in Firebase for future reference (non-blocking)
     const response = `Generated ${Object.keys(files).length} files with advanced capabilities`
-    await firebaseService.addPromptToMemory(projectId, prompt, response, {
-      files: files,
-      context: persistentContext,
-      capabilities: {
-        fullCodebaseContext: true,
-        multiTurnConversations: true,
-        fileDependencyManagement: true,
-        dynamicExpansion: true,
-        advancedPromptEngineering: true,
-        componentBasedGeneration: true,
-        databaseDrivenTemplates: true,
-        progressiveEnhancement: true,
-        contextPersistence: true,
-        memorySystem: true
-      }
-    })
-    console.log('🧠 Conversation stored in memory for future reference')
+    try {
+      await firebaseService.addPromptToMemory(projectId, prompt, response, {
+        files: files,
+        context: persistentContext,
+        capabilities: {
+          fullCodebaseContext: true,
+          multiTurnConversations: true,
+          fileDependencyManagement: true,
+          dynamicExpansion: true,
+          advancedPromptEngineering: true,
+          componentBasedGeneration: true,
+          databaseDrivenTemplates: true,
+          progressiveEnhancement: true,
+          contextPersistence: true,
+          memorySystem: true
+        }
+      })
+      console.log('🧠 Conversation stored in memory for future reference')
+    } catch (error) {
+      console.log('⚠️ Firebase memory unavailable, continuing without memory storage:', error.message)
+    }
     
     console.log(`✅ Generated ${Object.keys(files).length} files with all advanced capabilities`)
     console.log('📁 Generated files:', Object.keys(files))
@@ -9346,6 +9359,406 @@ export const useMultipleLocalStorage = (keys) => {
 
   return { values, setValue, removeValue, clearAll }
 }`
+  }
+
+  // Generate API Service
+  generateAPIService(prompt, context) {
+    return `// API Service for handling HTTP requests and data management
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api'
+
+class APIService {
+  constructor() {
+    this.baseURL = API_BASE_URL
+    this.defaultHeaders = {
+      'Content-Type': 'application/json',
+    }
+  }
+
+  // Generic request method
+  async request(endpoint, options = {}) {
+    const url = \`\${this.baseURL}\${endpoint}\`
+    const config = {
+      headers: {
+        ...this.defaultHeaders,
+        ...options.headers,
+      },
+      ...options,
+    }
+
+    // Add auth token if available
+    const token = localStorage.getItem('authToken')
+    if (token) {
+      config.headers.Authorization = \`Bearer \${token}\`
+    }
+
+    try {
+      const response = await fetch(url, config)
+      
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json()
+      }
+      
+      return await response.text()
+    } catch (error) {
+      console.error('API request failed:', error)
+      throw error
+    }
+  }
+
+  // GET request
+  async get(endpoint, params = {}) {
+    const queryString = new URLSearchParams(params).toString()
+    const url = queryString ? \`\${endpoint}?\${queryString}\` : endpoint
+    return this.request(url, { method: 'GET' })
+  }
+
+  // POST request
+  async post(endpoint, data = {}) {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  // PUT request
+  async put(endpoint, data = {}) {
+    return this.request(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  // PATCH request
+  async patch(endpoint, data = {}) {
+    return this.request(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    })
+  }
+
+  // DELETE request
+  async delete(endpoint) {
+    return this.request(endpoint, { method: 'DELETE' })
+  }
+
+  // Upload file
+  async uploadFile(endpoint, file, onProgress = null) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const config = {
+      method: 'POST',
+      body: formData,
+      headers: {
+        // Don't set Content-Type, let browser set it with boundary
+        ...this.defaultHeaders,
+      },
+    }
+
+    // Remove Content-Type from headers for file upload
+    delete config.headers['Content-Type']
+
+    if (onProgress) {
+      config.onUploadProgress = onProgress
+    }
+
+    return this.request(endpoint, config)
+  }
+
+  // Set auth token
+  setAuthToken(token) {
+    if (token) {
+      localStorage.setItem('authToken', token)
+    } else {
+      localStorage.removeItem('authToken')
+    }
+  }
+
+  // Get auth token
+  getAuthToken() {
+    return localStorage.getItem('authToken')
+  }
+
+  // Clear auth token
+  clearAuthToken() {
+    localStorage.removeItem('authToken')
+  }
+
+  // Check if user is authenticated
+  isAuthenticated() {
+    return !!this.getAuthToken()
+  }
+}
+
+// Create singleton instance
+const apiService = new APIService()
+
+// Export individual methods for convenience
+export const api = {
+  get: (endpoint, params) => apiService.get(endpoint, params),
+  post: (endpoint, data) => apiService.post(endpoint, data),
+  put: (endpoint, data) => apiService.put(endpoint, data),
+  patch: (endpoint, data) => apiService.patch(endpoint, data),
+  delete: (endpoint) => apiService.delete(endpoint),
+  uploadFile: (endpoint, file, onProgress) => apiService.uploadFile(endpoint, file, onProgress),
+  setAuthToken: (token) => apiService.setAuthToken(token),
+  getAuthToken: () => apiService.getAuthToken(),
+  clearAuthToken: () => apiService.clearAuthToken(),
+  isAuthenticated: () => apiService.isAuthenticated(),
+}
+
+// Export the service class and instance
+export { APIService, apiService }
+export default apiService`
+  }
+
+  // Generate Storage Service
+  generateStorageService(prompt, context) {
+    return `// Storage Service for handling data persistence and caching
+
+class StorageService {
+  constructor() {
+    this.prefix = 'app_'
+    this.cache = new Map()
+    this.maxCacheSize = 100
+  }
+
+  // Local Storage methods
+  setItem(key, value, options = {}) {
+    const { expires, encrypt = false } = options
+    const item = {
+      value: encrypt ? this.encrypt(JSON.stringify(value)) : value,
+      timestamp: Date.now(),
+      expires: expires ? Date.now() + expires : null,
+    }
+
+    try {
+      localStorage.setItem(\`\${this.prefix}\${key}\`, JSON.stringify(item))
+      this.cache.set(key, value)
+      this.cleanupCache()
+    } catch (error) {
+      console.error('Failed to set item in localStorage:', error)
+      throw error
+    }
+  }
+
+  getItem(key, defaultValue = null) {
+    // Check cache first
+    if (this.cache.has(key)) {
+      return this.cache.get(key)
+    }
+
+    try {
+      const item = localStorage.getItem(\`\${this.prefix}\${key}\`)
+      if (!item) return defaultValue
+
+      const parsed = JSON.parse(item)
+      
+      // Check if item has expired
+      if (parsed.expires && Date.now() > parsed.expires) {
+        this.removeItem(key)
+        return defaultValue
+      }
+
+      const value = parsed.encrypt ? this.decrypt(parsed.value) : parsed.value
+      this.cache.set(key, value)
+      return value
+    } catch (error) {
+      console.error('Failed to get item from localStorage:', error)
+      return defaultValue
+    }
+  }
+
+  removeItem(key) {
+    try {
+      localStorage.removeItem(\`\${this.prefix}\${key}\`)
+      this.cache.delete(key)
+    } catch (error) {
+      console.error('Failed to remove item from localStorage:', error)
+    }
+  }
+
+  clear() {
+    try {
+      const keys = Object.keys(localStorage)
+      keys.forEach(key => {
+        if (key.startsWith(this.prefix)) {
+          localStorage.removeItem(key)
+        }
+      })
+      this.cache.clear()
+    } catch (error) {
+      console.error('Failed to clear localStorage:', error)
+    }
+  }
+
+  // Session Storage methods
+  setSessionItem(key, value) {
+    try {
+      sessionStorage.setItem(\`\${this.prefix}\${key}\`, JSON.stringify(value))
+    } catch (error) {
+      console.error('Failed to set item in sessionStorage:', error)
+    }
+  }
+
+  getSessionItem(key, defaultValue = null) {
+    try {
+      const item = sessionStorage.getItem(\`\${this.prefix}\${key}\`)
+      return item ? JSON.parse(item) : defaultValue
+    } catch (error) {
+      console.error('Failed to get item from sessionStorage:', error)
+      return defaultValue
+    }
+  }
+
+  removeSessionItem(key) {
+    try {
+      sessionStorage.removeItem(\`\${this.prefix}\${key}\`)
+    } catch (error) {
+      console.error('Failed to remove item from sessionStorage:', error)
+    }
+  }
+
+  // IndexedDB methods (for larger data)
+  async setIndexedDBItem(key, value) {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('AppStorage', 1)
+      
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => {
+        const db = request.result
+        const transaction = db.transaction(['storage'], 'readwrite')
+        const store = transaction.objectStore('storage')
+        const putRequest = store.put({ key, value, timestamp: Date.now() })
+        
+        putRequest.onsuccess = () => resolve()
+        putRequest.onerror = () => reject(putRequest.error)
+      }
+      
+      request.onupgradeneeded = () => {
+        const db = request.result
+        if (!db.objectStoreNames.contains('storage')) {
+          db.createObjectStore('storage', { keyPath: 'key' })
+        }
+      }
+    })
+  }
+
+  async getIndexedDBItem(key, defaultValue = null) {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('AppStorage', 1)
+      
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => {
+        const db = request.result
+        const transaction = db.transaction(['storage'], 'readonly')
+        const store = transaction.objectStore('storage')
+        const getRequest = store.get(key)
+        
+        getRequest.onsuccess = () => {
+          resolve(getRequest.result ? getRequest.result.value : defaultValue)
+        }
+        getRequest.onerror = () => reject(getRequest.error)
+      }
+    })
+  }
+
+  // Cache management
+  cleanupCache() {
+    if (this.cache.size > this.maxCacheSize) {
+      const firstKey = this.cache.keys().next().value
+      this.cache.delete(firstKey)
+    }
+  }
+
+  clearCache() {
+    this.cache.clear()
+  }
+
+  // Encryption methods (simple base64 encoding for demo)
+  encrypt(text) {
+    return btoa(text)
+  }
+
+  decrypt(encryptedText) {
+    try {
+      return atob(encryptedText)
+    } catch (error) {
+      console.error('Failed to decrypt:', error)
+      return encryptedText
+    }
+  }
+
+  // Utility methods
+  getStorageSize() {
+    let total = 0
+    for (let key in localStorage) {
+      if (key.startsWith(this.prefix)) {
+        total += localStorage[key].length
+      }
+    }
+    return total
+  }
+
+  getCacheSize() {
+    return this.cache.size
+  }
+
+  // Export/Import data
+  exportData() {
+    const data = {}
+    for (let key in localStorage) {
+      if (key.startsWith(this.prefix)) {
+        data[key] = localStorage[key]
+      }
+    }
+    return JSON.stringify(data, null, 2)
+  }
+
+  importData(jsonData) {
+    try {
+      const data = JSON.parse(jsonData)
+      Object.keys(data).forEach(key => {
+        localStorage.setItem(key, data[key])
+      })
+      return true
+    } catch (error) {
+      console.error('Failed to import data:', error)
+      return false
+    }
+  }
+}
+
+// Create singleton instance
+const storageService = new StorageService()
+
+// Export individual methods for convenience
+export const storage = {
+  set: (key, value, options) => storageService.setItem(key, value, options),
+  get: (key, defaultValue) => storageService.getItem(key, defaultValue),
+  remove: (key) => storageService.removeItem(key),
+  clear: () => storageService.clear(),
+  setSession: (key, value) => storageService.setSessionItem(key, value),
+  getSession: (key, defaultValue) => storageService.getSessionItem(key, defaultValue),
+  removeSession: (key) => storageService.removeSessionItem(key),
+  setIndexed: (key, value) => storageService.setIndexedDBItem(key, value),
+  getIndexed: (key, defaultValue) => storageService.getIndexedDBItem(key, defaultValue),
+  clearCache: () => storageService.clearCache(),
+  getSize: () => storageService.getStorageSize(),
+  getCacheSize: () => storageService.getCacheSize(),
+  export: () => storageService.exportData(),
+  import: (data) => storageService.importData(data),
+}
+
+// Export the service class and instance
+export { StorageService, storageService }
+export default storageService`
   }
 }
 

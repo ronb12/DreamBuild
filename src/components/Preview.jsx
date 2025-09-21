@@ -170,20 +170,19 @@ const Preview = () => {
         <script type="text/babel">
           const { useState, useEffect, useRef, useCallback } = React;
           
-          // Game Component
-          ${gameComponentFile}
+          // Remove import statements from components and inject them
+          const gameComponentCode = \`${gameComponentFile}\`.replace(/import[^;]+;/g, '');
+          const gameUICode = \`${gameUIFile}\`.replace(/import[^;]+;/g, '');
+          const coinCode = \`${coinFile}\`.replace(/import[^;]+;/g, '');
+          const playerCode = \`${playerFile}\`.replace(/import[^;]+;/g, '');
+          const gameAppCode = \`${gameAppFile}\`.replace(/import[^;]+;/g, '');
           
-          // Game UI Component  
-          ${gameUIFile}
-          
-          // Coin Component
-          ${coinFile}
-          
-          // Player Component
-          ${playerFile}
-          
-          // Game App Component
-          ${gameAppFile}
+          // Execute the component code
+          eval(gameComponentCode);
+          eval(gameUICode);
+          eval(coinCode);
+          eval(playerCode);
+          eval(gameAppCode);
           
           // Render the app
           const root = ReactDOM.createRoot(document.getElementById('root'));

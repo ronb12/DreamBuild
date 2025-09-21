@@ -964,14 +964,26 @@ Additional context: ${searchKnowledge.summary}`
     
     // Check if this is a game request - if so, skip database templates to avoid overriding
     const isGameRequest = lowerPrompt.includes('game') || 
-                         lowerPrompt.includes('coin') || 
+                         lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+                         lowerPrompt.includes('subway surfers') || lowerPrompt.includes('flappy bird') || lowerPrompt.includes('angry birds') ||
+                         lowerPrompt.includes('pac-man') || lowerPrompt.includes('tetris') || lowerPrompt.includes('snake') ||
+                         lowerPrompt.includes('puzzle') || lowerPrompt.includes('platformer') || lowerPrompt.includes('arcade') ||
+                         (lowerPrompt.includes('clone') && (lowerPrompt.includes('run') || lowerPrompt.includes('jump') || lowerPrompt.includes('race'))) ||
+                         (lowerPrompt.includes('coin') && lowerPrompt.includes('collect')) || 
                          lowerPrompt.includes('collector') || 
                          lowerPrompt.includes('playable') ||
-                         lowerPrompt.includes('fun')
+                         lowerPrompt.includes('fun') ||
+                         lowerPrompt.includes('runner')
     
     console.log('🎯 DEBUG: Game detection check:')
     console.log('🎯 DEBUG: - includes "game":', lowerPrompt.includes('game'))
+    console.log('🎯 DEBUG: - includes "temple run":', lowerPrompt.includes('temple run'))
+    console.log('🎯 DEBUG: - includes "endless runner":', lowerPrompt.includes('endless runner'))
+    console.log('🎯 DEBUG: - includes "runner":', lowerPrompt.includes('runner'))
+    console.log('🎯 DEBUG: - includes "clone":', lowerPrompt.includes('clone'))
+    console.log('🎯 DEBUG: - includes "run":', lowerPrompt.includes('run'))
     console.log('🎯 DEBUG: - includes "coin":', lowerPrompt.includes('coin'))
+    console.log('🎯 DEBUG: - includes "collect":', lowerPrompt.includes('collect'))
     console.log('🎯 DEBUG: - includes "collector":', lowerPrompt.includes('collector'))
     console.log('🎯 DEBUG: - includes "playable":', lowerPrompt.includes('playable'))
     console.log('🎯 DEBUG: - includes "fun":', lowerPrompt.includes('fun'))
@@ -979,6 +991,12 @@ Additional context: ${searchKnowledge.summary}`
     
     if (isGameRequest) {
       console.log('🎮 Game request detected - skipping database templates to preserve game files')
+      
+      // For Temple Run specifically, ensure we don't override with generic templates
+      if (lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+          (lowerPrompt.includes('clone') && lowerPrompt.includes('run'))) {
+        console.log('🏃‍♂️ Temple Run detected - ensuring no database template override')
+      }
     } else {
       console.log('📄 Non-game request - proceeding with database templates')
       // 4. DATABASE-DRIVEN TEMPLATES - Use database to store and retrieve patterns

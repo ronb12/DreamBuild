@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import FileManager from '../components/FileManager'
 import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
+import PreviewSimple from '../components/PreviewSimple'
 import AIPromptCursorStyle from '../components/AIPromptCursorStyle'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
@@ -127,14 +128,9 @@ const AIBuilder = () => {
                 {activeTab === 'preview' && (
                   <>
                     {console.log('🎮 AIBuilder: Rendering Preview component for activeTab:', activeTab)}
-                    <Preview />
+                    <PreviewSimple />
                   </>
                 )}
-                {/* Temporary: Always render Preview component for debugging */}
-                <div style={{ position: 'absolute', top: 0, right: 0, width: '200px', height: '100px', background: 'red', color: 'white', zIndex: 9999 }}>
-                  DEBUG: Preview Component Test
-                  <Preview />
-                </div>
                 {activeTab === 'workspace' && isWorkspaceVisible && <IntegratedWorkspace projectId="demo-project" />}
                 {activeTab === 'workspace' && !isWorkspaceVisible && (
                   <div className="h-full flex items-center justify-center bg-muted/20">

@@ -2,7 +2,7 @@
 
 import puppeteer from 'puppeteer';
 
-class PreviewDebugger {
+class PreviewDebugTest {
   constructor() {
     this.browser = null;
     this.page = null;
@@ -29,11 +29,11 @@ class PreviewDebugger {
       };
       this.consoleLogs.push(logEntry);
       
-      // Log preview-related messages immediately
-      if (logEntry.text.includes('Preview Debug') || 
-          logEntry.text.includes('createReactPreview') ||
-          logEntry.text.includes('GameApp') ||
-          logEntry.text.includes('GameComponent')) {
+      // Log all relevant messages
+      if (logEntry.text.includes('Preview') || 
+          logEntry.text.includes('AIBuilder') ||
+          logEntry.text.includes('RENDERED') ||
+          logEntry.text.includes('Render count')) {
         console.log(`📱 ${logEntry.type.toUpperCase()}: ${logEntry.text}`);
       }
     });
@@ -41,7 +41,7 @@ class PreviewDebugger {
     console.log('✅ Browser initialized');
   }
 
-  async navigateAndTest() {
+  async testPreviewDebug() {
     console.log('🌐 Navigating to DreamBuild...');
     
     try {
@@ -52,76 +52,57 @@ class PreviewDebugger {
       
       console.log('✅ Successfully navigated to DreamBuild');
       
-      // Wait for AI prompt
-      await this.page.waitForSelector('textarea', { timeout: 15000 });
-      console.log('✅ AI prompt found');
+      // Wait for page to load
+      await this.page.waitForTimeout(5000);
       
-      // Request Temple Run
-      const textarea = await this.page.$('textarea');
-      await textarea.click();
-      await textarea.evaluate(el => el.value = '');
-      await textarea.type('clone temple run');
-      await textarea.press('Enter');
-      console.log('✅ Requested Temple Run');
-      
-      // Wait for generation
-      await this.page.waitForTimeout(10000);
-      console.log('✅ Waited for generation');
-      
-      // Check if preview area exists
-      const previewExists = await this.page.$('[class*="preview"], [class*="Preview"], iframe');
-      console.log(`📱 Preview area exists: ${!!previewExists}`);
-      
-      if (previewExists) {
-        // Check if iframe exists
-        const iframeExists = await this.page.$('iframe');
-        console.log(`📱 Iframe exists: ${!!iframeExists}`);
-        
-        if (iframeExists) {
-          // Try to access iframe content
-          try {
-            const iframe = await this.page.$('iframe');
-            const frame = await iframe.contentFrame();
-            
-            if (frame) {
-              console.log('✅ Iframe content accessible');
-              
-              // Check what's in the iframe
-              const bodyText = await frame.$eval('body', el => el.textContent);
-              console.log('📄 Iframe content preview:');
-              console.log(bodyText.substring(0, 200) + '...');
-              
-              // Check for specific elements
-              const hasTempleRun = bodyText.includes('Temple Run');
-              const hasCoinCollector = bodyText.includes('Coin Collector');
-              
-              console.log(`🎮 Contains "Temple Run": ${hasTempleRun}`);
-              console.log(`🪙 Contains "Coin Collector": ${hasCoinCollector}`);
-            } else {
-              console.log('❌ Iframe content not accessible');
-            }
-          } catch (error) {
-            console.log(`❌ Error accessing iframe: ${error.message}`);
-          }
-        }
-      }
-      
-      // Check project files in the UI
-      const fileElements = await this.page.$$eval('[class*="file"], [class*="File"]', elements => 
-        elements.map(el => el.textContent).filter(text => text && text.trim())
+      // Check for debug elements
+      console.log('\n🔍 STEP 1: Checking for debug elements...');
+      const debugElements = await this.page.$$eval('*', elements => 
+        elements.filter(el => {
+          const textContent = el.textContent || '';
+          const style = el.style ? el.style.cssText : '';
+          return textContent.includes('DEBUG') || 
+                 textContent.includes('RENDERED') ||
+                 style.includes('background: red') ||
+                 style.includes('background-color: red');
+        }).map(el => ({
+          tagName: el.tagName,
+          className: el.className,
+          id: el.id,
+          textContent: el.textContent?.substring(0, 100) || '',
+          style: el.style ? el.style.cssText : ''
+        }))
       );
       
-      console.log(`📁 Found ${fileElements.length} file elements:`);
-      fileElements.slice(0, 10).forEach(file => console.log(`  - ${file}`));
+      console.log(`📱 Found ${debugElements.length} debug elements:`);
+      debugElements.forEach((el, i) => {
+        console.log(`  ${i + 1}. ${el.tagName} - class: "${el.className}" - id: "${el.id}"`);
+        console.log(`     Text: "${el.textContent}"`);
+        console.log(`     Style: "${el.style}"`);
+      });
       
-      // Check for specific Temple Run files
-      const hasGameApp = fileElements.some(file => file.includes('GameApp'));
-      const hasTempleRunUI = fileElements.some(file => file.includes('TempleRunUI'));
-      const hasRunnerPlayer = fileElements.some(file => file.includes('RunnerPlayer'));
+      // Check for Preview component elements
+      console.log('\n🔍 STEP 2: Checking for Preview component elements...');
+      const previewElements = await this.page.$$eval('*', elements => 
+        elements.filter(el => {
+          const textContent = el.textContent || '';
+          const className = (el.className && typeof el.className === 'string') ? el.className : '';
+          return textContent.includes('Live Preview') ||
+                 className.includes('preview') ||
+                 el.tagName.toLowerCase() === 'iframe';
+        }).map(el => ({
+          tagName: el.tagName,
+          className: el.className,
+          id: el.id,
+          textContent: el.textContent?.substring(0, 100) || ''
+        }))
+      );
       
-      console.log(`🎮 Has GameApp file: ${hasGameApp}`);
-      console.log(`🎮 Has TempleRunUI file: ${hasTempleRunUI}`);
-      console.log(`🎮 Has RunnerPlayer file: ${hasRunnerPlayer}`);
+      console.log(`📱 Found ${previewElements.length} Preview elements:`);
+      previewElements.forEach((el, i) => {
+        console.log(`  ${i + 1}. ${el.tagName} - class: "${el.className}" - id: "${el.id}"`);
+        console.log(`     Text: "${el.textContent}"`);
+      });
       
       return true;
     } catch (error) {
@@ -130,34 +111,26 @@ class PreviewDebugger {
     }
   }
 
-  async analyzeLogs() {
-    console.log('\n🔍 Analyzing console logs...');
+  async analyzeConsoleLogs() {
+    console.log('\n🔍 ANALYZING CONSOLE LOGS:');
     
-    const previewLogs = this.consoleLogs.filter(log => 
+    const relevantLogs = this.consoleLogs.filter(log => 
       log.text.includes('Preview') || 
-      log.text.includes('createReactPreview') ||
-      log.text.includes('GameApp') ||
-      log.text.includes('GameComponent')
+      log.text.includes('AIBuilder') ||
+      log.text.includes('RENDERED') ||
+      log.text.includes('Render count')
     );
     
-    const fileLogs = this.consoleLogs.filter(log => 
-      log.text.includes('Adding file') ||
-      log.text.includes('Updating file') ||
-      log.text.includes('Project files')
-    );
+    console.log(`📱 Relevant logs: ${relevantLogs.length}`);
     
-    console.log(`📱 Preview-related logs: ${previewLogs.length}`);
-    console.log(`📁 File-related logs: ${fileLogs.length}`);
-    
-    if (previewLogs.length > 0) {
-      console.log('\n📱 Preview Logs:');
-      previewLogs.forEach(log => console.log(`  ${log.type}: ${log.text.substring(0, 100)}...`));
+    if (relevantLogs.length > 0) {
+      console.log('\n📱 Relevant Logs:');
+      relevantLogs.forEach(log => console.log(`  ${log.type}: ${log.text}`));
+    } else {
+      console.log('\n❌ No relevant logs found');
     }
     
-    if (fileLogs.length > 0) {
-      console.log('\n📁 File Logs (first 5):');
-      fileLogs.slice(0, 5).forEach(log => console.log(`  ${log.type}: ${log.text.substring(0, 100)}...`));
-    }
+    return relevantLogs;
   }
 
   async cleanup() {
@@ -170,8 +143,8 @@ class PreviewDebugger {
   async run() {
     try {
       await this.initialize();
-      await this.navigateAndTest();
-      await this.analyzeLogs();
+      await this.testPreviewDebug();
+      await this.analyzeConsoleLogs();
     } catch (error) {
       console.error('💥 Test failed:', error);
     } finally {
@@ -181,5 +154,5 @@ class PreviewDebugger {
 }
 
 // Run the test
-const previewDebugger = new PreviewDebugger();
-previewDebugger.run().catch(console.error);
+const previewDebugTest = new PreviewDebugTest();
+previewDebugTest.run().catch(console.error);

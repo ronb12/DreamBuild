@@ -4,11 +4,9 @@ import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
 import AIPrompt from '../components/AIPrompt'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
-import ChatInterface from '../components/chat/ChatInterface'
-import { ChatProvider } from '../contexts/ChatContext'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, MessageSquare } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder } from 'lucide-react'
 
 const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('editor')
@@ -17,7 +15,6 @@ const AIBuilder = () => {
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
     { id: 'preview', label: 'Live Preview', icon: Eye, description: 'View your application in real-time' },
-    { id: 'chat', label: 'AI Chat', icon: MessageSquare, description: 'Conversational AI assistant with recommendations' },
     { id: 'terminal', label: 'Terminal', icon: TerminalIcon, description: 'Command line interface' },
     { id: 'workspace', label: 'Advanced Workspace', icon: Brain, description: 'Full-featured workspace with collaboration, visual editor, and deployment' }
   ]
@@ -114,7 +111,6 @@ const AIBuilder = () => {
                 <div className="flex items-center gap-2">
                   {activeTab === 'editor' && <Code className="h-4 w-4 text-primary" />}
                   {activeTab === 'preview' && <Eye className="h-4 w-4 text-primary" />}
-                  {activeTab === 'chat' && <MessageSquare className="h-4 w-4 text-primary" />}
                   {activeTab === 'workspace' && <Brain className="h-4 w-4 text-primary" />}
                   {activeTab === 'terminal' && <TerminalIcon className="h-4 w-4 text-primary" />}
                   <span className="text-sm font-medium text-foreground capitalize">{activeTab}</span>
@@ -129,11 +125,6 @@ const AIBuilder = () => {
               <div className="flex-1 overflow-hidden h-full min-h-[600px]">
                 {activeTab === 'editor' && <CodeEditor />}
                 {activeTab === 'preview' && <Preview />}
-                {activeTab === 'chat' && (
-                  <ChatProvider>
-                    <ChatInterface />
-                  </ChatProvider>
-                )}
                 {activeTab === 'workspace' && isWorkspaceVisible && <IntegratedWorkspace projectId="demo-project" />}
                 {activeTab === 'workspace' && !isWorkspaceVisible && (
                   <div className="h-full flex items-center justify-center bg-muted/20">

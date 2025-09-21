@@ -13,13 +13,22 @@ import {
   RefreshCw,
   BarChart3,
   Code,
-  Search
+  Search,
+  User,
+  Bot,
+  Copy,
+  ThumbsUp,
+  ThumbsDown,
+  MessageSquare,
+  Lightbulb
 } from 'lucide-react'
 import simpleAIService from '../services/simpleAIService'
 import AIServiceStatus from './AIServiceStatus'
 import TemplateBrowser from './TemplateBrowser'
 import RecommendationPanel from './RecommendationPanel'
 import WebSearchPanel from './WebSearchPanel'
+import MessageBubble from './chat/MessageBubble'
+import RecommendationCard from './chat/RecommendationCard'
 import toast from 'react-hot-toast'
 
 const AIPrompt = () => {
@@ -37,7 +46,14 @@ const AIPrompt = () => {
   const [suggestions, setSuggestions] = useState([])
   const [generationHistory, setGenerationHistory] = useState([])
   const [serviceStatus, setServiceStatus] = useState({})
+  
+  // Chat conversation state
+  const [messages, setMessages] = useState([])
+  const [aiRecommendations, setAiRecommendations] = useState([])
+  const [showChatHistory, setShowChatHistory] = useState(true)
+  
   const textareaRef = useRef(null)
+  const messagesEndRef = useRef(null)
 
   // Auto-resize textarea
   useEffect(() => {
@@ -46,6 +62,11 @@ const AIPrompt = () => {
       textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px'
     }
   }, [prompt])
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   // Load service status
   useEffect(() => {
@@ -133,11 +154,33 @@ const AIPrompt = () => {
       return
     }
 
+    const userPrompt = prompt.trim()
+    setPrompt('')
     setIsGenerating(true)
+    
+    // Add user message to conversation
+    const userMessage = {
+      id: Date.now(),
+      type: 'user',
+      content: userPrompt,
+      timestamp: new Date(),
+      status: 'sent'
+    }
+    setMessages(prev => [...prev, userMessage])
+    
+    // Add AI response placeholder
+    const aiMessage = {
+      id: Date.now() + 1,
+      type: 'ai',
+      content: '',
+      timestamp: new Date(),
+      status: 'generating'
+    }
+    setMessages(prev => [...prev, aiMessage])
     
     try {
       // Update generation history
-      setGenerationHistory(prev => [prompt, ...prev.slice(0, 4)])
+      setGenerationHistory(prev => [userPrompt, ...prev.slice(0, 4)])
 
       // Debug: Check if simpleAIService and generateCode method exist
       console.log('AI Service object:', simpleAIService)
@@ -147,12 +190,15 @@ const AIPrompt = () => {
         throw new Error('AI Service not properly initialized. generateCode method not found.')
       }
 
+      // Generate AI recommendations based on the prompt
+      generateRecommendations(userPrompt)
+
       // Generate code using AI service (now includes web search)
       const contextWithPrompt = {
         ...currentProject.config,
-        prompt: prompt
+        prompt: userPrompt
       };
-      const generatedFiles = await simpleAIService.generateCode(prompt, contextWithPrompt)
+      const generatedFiles = await simpleAIService.generateCode(userPrompt, contextWithPrompt)
       
       // Store web search results if available
       if (generatedFiles._webSearchResults) {
@@ -172,15 +218,38 @@ const AIPrompt = () => {
       console.log('📁 Files after update:', Object.keys(currentProject.files))
 
       // Auto-configure project based on prompt
-      autoConfigureProject(prompt)
+      autoConfigureProject(userPrompt)
+
+      // Update AI message with response
+      const responseContent = `I've generated your ${Object.keys(generatedFiles).length} files! Here's what I created:
+
+${Object.keys(generatedFiles).map(file => `• ${file}`).join('\n')}
+
+The code has been added to your project. You can view and edit the files in the file manager.`
+      
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessage.id 
+          ? { ...msg, content: responseContent, status: 'generated', metadata: { files: Object.keys(generatedFiles) } }
+          : msg
+      ))
 
       toast.success('Code generated successfully!')
-      
-      // Clear prompt after successful generation
-      setPrompt('')
 
     } catch (error) {
       console.error('AI generation error:', error)
+      
+      // Update AI message with error
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessage.id 
+          ? { 
+              ...msg, 
+              content: `I encountered an error while generating your code: ${error.message}\n\nPlease try again or modify your request.`,
+              status: 'error',
+              metadata: { error: error.message }
+            }
+          : msg
+      ))
+      
       toast.error('Failed to generate code: ' + error.message)
     } finally {
       setIsGenerating(false)
@@ -221,6 +290,97 @@ const AIPrompt = () => {
     updateConfig(config)
   }
 
+  // Generate AI recommendations based on conversation
+  const generateRecommendations = (promptText) => {
+    const recommendations = []
+    const lowerPrompt = promptText.toLowerCase()
+
+    // Technology recommendations
+    if (lowerPrompt.includes('react') || lowerPrompt.includes('frontend')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'technology',
+        title: 'Add React Router',
+        description: 'Implement client-side routing for better navigation',
+        action: 'Add React Router to your project for single-page application routing',
+        priority: 'high'
+      })
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'technology',
+        title: 'Add State Management',
+        description: 'Consider Redux or Zustand for complex state management',
+        action: 'Implement state management for better data flow',
+        priority: 'medium'
+      })
+    }
+
+    if (lowerPrompt.includes('database') || lowerPrompt.includes('backend')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'technology',
+        title: 'Add Database Integration',
+        description: 'Integrate with PostgreSQL, MongoDB, or Firebase',
+        action: 'Set up database connection and models',
+        priority: 'high'
+      })
+    }
+
+    // Feature recommendations
+    if (lowerPrompt.includes('auth') || lowerPrompt.includes('login')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'feature',
+        title: 'Add Authentication',
+        description: 'Implement user authentication and authorization',
+        action: 'Add login/signup functionality with secure session management',
+        priority: 'high'
+      })
+    }
+
+    if (lowerPrompt.includes('responsive') || lowerPrompt.includes('mobile')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'feature',
+        title: 'Make Responsive',
+        description: 'Ensure your app works on all device sizes',
+        action: 'Add responsive design with mobile-first approach',
+        priority: 'high'
+      })
+    }
+
+    // Performance recommendations
+    recommendations.push({
+      id: Date.now() + Math.random(),
+      type: 'performance',
+      title: 'Add Loading States',
+      description: 'Improve user experience with loading indicators',
+      action: 'Add loading spinners and skeleton screens',
+      priority: 'medium'
+    })
+
+    recommendations.push({
+      id: Date.now() + Math.random(),
+      type: 'performance',
+      title: 'Optimize Images',
+      description: 'Add image optimization for better performance',
+      action: 'Implement lazy loading and image compression',
+      priority: 'medium'
+    })
+
+    // Security recommendations
+    recommendations.push({
+      id: Date.now() + Math.random(),
+      type: 'security',
+      title: 'Add Input Validation',
+      description: 'Validate all user inputs to prevent security issues',
+      action: 'Implement client and server-side validation',
+      priority: 'high'
+    })
+
+    setAiRecommendations(recommendations)
+  }
+
   const handleSuggestionClick = (suggestion) => {
     // Background suggestion logic - UI removed but functionality preserved
     console.log(`Suggestion available: ${suggestion.text}`)
@@ -229,6 +389,34 @@ const AIPrompt = () => {
   const handleHistoryClick = (historyItem) => {
     // Background history logic - UI removed but functionality preserved
     console.log(`History item available: ${historyItem}`)
+  }
+
+  const handleApplyRecommendation = (recommendation) => {
+    // Generate a prompt based on the recommendation
+    const recommendationPrompt = `Apply this recommendation: ${recommendation.title}
+
+Description: ${recommendation.description}
+Action: ${recommendation.action}
+
+Please implement this suggestion in my current project.`
+    
+    setPrompt(recommendationPrompt)
+  }
+
+  const handleCopyMessage = (content) => {
+    navigator.clipboard.writeText(content)
+    toast.success('Message copied to clipboard')
+  }
+
+  const handleFeedback = (messageId, feedback) => {
+    // Update message with feedback
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId 
+        ? { ...msg, metadata: { ...msg.metadata, feedback, feedbackTimestamp: new Date() } }
+        : msg
+    ))
+    
+    toast.success(`Feedback recorded: ${feedback}`)
   }
 
   const handleKeyPress = (e) => {
@@ -257,6 +445,13 @@ const AIPrompt = () => {
             <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
               {simpleAIService?.currentService || 'local-ai'}
             </span>
+            <button
+              onClick={() => setShowChatHistory(!showChatHistory)}
+              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              title={showChatHistory ? "Hide Chat History" : "Show Chat History"}
+            >
+              <MessageSquare className="h-4 w-4" />
+            </button>
             <button
               onClick={() => setShowTemplateBrowser(true)}
               className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
@@ -318,26 +513,94 @@ const AIPrompt = () => {
         </div>
       </div>
 
-      {/* Prompt Input */}
-      <div className="flex-1 p-3 space-y-3">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Describe what you want to build</label>
-          <div className="relative">
-            <textarea
-              ref={textareaRef}
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Create a healthy food tips website with nutrition advice and meal planning features..."
-              className="w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              disabled={isGenerating}
-            />
-            <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
-              {prompt.length}/2000
+      {/* Main Content Area */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Chat History */}
+        {showChatHistory && (
+          <div className="w-1/2 border-r border-border overflow-y-auto">
+            <div className="p-3 border-b border-border bg-muted/20">
+              <h4 className="text-sm font-medium flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                Conversation History
+              </h4>
+              <p className="text-xs text-muted-foreground">{messages.length} messages</p>
+            </div>
+            
+            <div className="p-3 space-y-3">
+              {messages.length === 0 ? (
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
+                    <Bot className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Start a conversation to see your chat history
+                  </p>
+                </div>
+              ) : (
+                <AnimatePresence>
+                  {messages.map((message) => (
+                    <MessageBubble
+                      key={message.id}
+                      message={message}
+                      onCopy={handleCopyMessage}
+                      onFeedback={handleFeedback}
+                    />
+                  ))}
+                </AnimatePresence>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+        )}
+
+        {/* Right Side - Recommendations and Input */}
+        <div className={`${showChatHistory ? 'w-1/2' : 'w-full'} flex flex-col`}>
+          {/* AI Recommendations */}
+          {aiRecommendations.length > 0 && (
+            <div className="border-b border-border bg-muted/10">
+              <div className="p-3 border-b border-border">
+                <h4 className="text-sm font-medium flex items-center gap-2">
+                  <Lightbulb className="h-4 w-4" />
+                  AI Recommendations
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  {aiRecommendations.length} suggestions based on your conversation
+                </p>
+              </div>
+              
+              <div className="p-3 max-h-32 overflow-y-auto space-y-2">
+                {aiRecommendations.slice(0, 3).map((recommendation) => (
+                  <RecommendationCard
+                    key={recommendation.id}
+                    recommendation={recommendation}
+                    onApply={handleApplyRecommendation}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Prompt Input */}
+          <div className="flex-1 p-3 space-y-3">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Describe what you want to build</label>
+              <div className="relative">
+                <textarea
+                  ref={textareaRef}
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Create a healthy food tips website with nutrition advice and meal planning features..."
+                  className="w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  disabled={isGenerating}
+                />
+                <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
+                  {prompt.length}/2000
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Generate Button */}

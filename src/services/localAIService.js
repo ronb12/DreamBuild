@@ -4259,6 +4259,24 @@ ${content}`
     const generators = []
     const lowerPrompt = prompt.toLowerCase()
     
+    // Check if this is a game request - if so, skip all file generators
+    const isGameRequest = lowerPrompt.includes('game') || 
+                         lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+                         lowerPrompt.includes('subway surfers') || lowerPrompt.includes('flappy bird') || lowerPrompt.includes('angry birds') ||
+                         lowerPrompt.includes('pac-man') || lowerPrompt.includes('tetris') || lowerPrompt.includes('snake') ||
+                         lowerPrompt.includes('puzzle') || lowerPrompt.includes('platformer') || lowerPrompt.includes('arcade') ||
+                         (lowerPrompt.includes('clone') && (lowerPrompt.includes('run') || lowerPrompt.includes('jump') || lowerPrompt.includes('race'))) ||
+                         (lowerPrompt.includes('coin') && lowerPrompt.includes('collect')) || 
+                         lowerPrompt.includes('collector') || 
+                         lowerPrompt.includes('playable') ||
+                         lowerPrompt.includes('fun') ||
+                         lowerPrompt.includes('runner')
+    
+    if (isGameRequest) {
+      console.log('🎮 Game request detected - skipping file generators to preserve game files')
+      return generators // Return empty generators array for games
+    }
+    
     // React/Component-based applications
     if (lowerPrompt.includes('react') || lowerPrompt.includes('component') || analysis.complexity === 'high') {
       generators.push(this.generateReactFiles.bind(this))
@@ -4402,6 +4420,24 @@ ${content}`
     const files = {}
     const lowerPrompt = prompt.toLowerCase()
     
+    // Check if this is a game request - if so, skip feature-based files
+    const isGameRequest = lowerPrompt.includes('game') || 
+                         lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+                         lowerPrompt.includes('subway surfers') || lowerPrompt.includes('flappy bird') || lowerPrompt.includes('angry birds') ||
+                         lowerPrompt.includes('pac-man') || lowerPrompt.includes('tetris') || lowerPrompt.includes('snake') ||
+                         lowerPrompt.includes('puzzle') || lowerPrompt.includes('platformer') || lowerPrompt.includes('arcade') ||
+                         (lowerPrompt.includes('clone') && (lowerPrompt.includes('run') || lowerPrompt.includes('jump') || lowerPrompt.includes('race'))) ||
+                         (lowerPrompt.includes('coin') && lowerPrompt.includes('collect')) || 
+                         lowerPrompt.includes('collector') || 
+                         lowerPrompt.includes('playable') ||
+                         lowerPrompt.includes('fun') ||
+                         lowerPrompt.includes('runner')
+    
+    if (isGameRequest) {
+      console.log('🎮 Game request detected - skipping feature-based files to preserve game files')
+      return files // Return empty files object for games
+    }
+    
     // Authentication features
     if (lowerPrompt.includes('auth') || lowerPrompt.includes('login') || lowerPrompt.includes('user')) {
       files['src/auth/AuthProvider.jsx'] = this.generateAuthProvider(prompt, context)
@@ -4437,6 +4473,25 @@ ${content}`
   // Generate utility files
   generateUtilityFiles(prompt, context, existingFiles) {
     const files = {}
+    const lowerPrompt = prompt.toLowerCase()
+    
+    // Check if this is a game request - if so, skip utility files
+    const isGameRequest = lowerPrompt.includes('game') || 
+                         lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+                         lowerPrompt.includes('subway surfers') || lowerPrompt.includes('flappy bird') || lowerPrompt.includes('angry birds') ||
+                         lowerPrompt.includes('pac-man') || lowerPrompt.includes('tetris') || lowerPrompt.includes('snake') ||
+                         lowerPrompt.includes('puzzle') || lowerPrompt.includes('platformer') || lowerPrompt.includes('arcade') ||
+                         (lowerPrompt.includes('clone') && (lowerPrompt.includes('run') || lowerPrompt.includes('jump') || lowerPrompt.includes('race'))) ||
+                         (lowerPrompt.includes('coin') && lowerPrompt.includes('collect')) || 
+                         lowerPrompt.includes('collector') || 
+                         lowerPrompt.includes('playable') ||
+                         lowerPrompt.includes('fun') ||
+                         lowerPrompt.includes('runner')
+    
+    if (isGameRequest) {
+      console.log('🎮 Game request detected - skipping utility files to preserve game files')
+      return files // Return empty files object for games
+    }
     
     files['src/utils/constants.js'] = this.generateConstants(prompt, context)
     files['src/utils/helpers.js'] = this.generateHelpers(prompt, context)

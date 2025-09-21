@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { 
   Code2, FileText, Globe, Smartphone, Database, Zap,
   Copy, Download, ExternalLink, Play, Star, Github,
-  Search, Filter, Grid3X3, List, Tag, Calendar
+  Search, Filter, Grid3x3, List, Tag, Calendar
 } from 'lucide-react'
 
 const Examples = () => {

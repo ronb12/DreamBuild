@@ -18,23 +18,27 @@
     "firebase:emulators": "firebase emulators:start"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.15.0",
+    "@monaco-editor/react": "^4.7.0",
+    "axios": "^1.12.2",
+    "clsx": "^2.0.0",
+    "firebase": "^10.7.1",
     "framer-motion": "^10.16.4",
     "lucide-react": "^0.263.1",
-    "clsx": "^2.0.0",
-    "tailwind-merge": "^1.14.0",
-    "firebase": "^10.7.1",
+    "react": "^18.2.0",
     "react-dnd": "^16.0.1",
-    "react-dnd-html5-backend": "^16.0.1"
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^6.15.0",
+    "tailwind-merge": "^1.14.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.0.8",
-    "puppeteer": "^21.6.1"
+    "puppeteer": "^21.6.1",
+    "vite": "^5.0.8"
   },
   "keywords": [
     "ai",

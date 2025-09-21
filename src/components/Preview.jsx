@@ -11,6 +11,13 @@ const Preview = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [previewError, setPreviewError] = useState(null)
+  const [renderCount, setRenderCount] = useState(0)
+  
+  // Increment render count to track component renders
+  React.useEffect(() => {
+    setRenderCount(prev => prev + 1)
+    console.log('🎮 Preview component rendered! Render count:', renderCount + 1)
+  }, [])
 
   // Update preview when files change
   useEffect(() => {
@@ -777,6 +784,8 @@ const Preview = () => {
       <div className="flex items-center justify-between p-3 border-b border-border bg-muted/50">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold text-sm">Live Preview</h3>
+          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">RENDERED</span>
+          <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">#{renderCount}</span>
           {isLoading && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <div className="spinner"></div>

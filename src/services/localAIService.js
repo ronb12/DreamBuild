@@ -2166,6 +2166,9 @@ ${content}`
       
       requirements.complexity = 'medium'
       console.log('🎮 Game components added:', requirements.components.length, 'Game type:', gameType)
+      
+      // Return early for game requests to avoid adding generic components
+      return requirements
     }
 
     // Detect Sim-like character requests
@@ -2897,6 +2900,25 @@ export const Error = {
   // NEW: Generate supporting files for components
   generateSupportingFilesForComponents(componentFiles, prompt, context) {
     const files = {}
+    const lowerPrompt = prompt.toLowerCase()
+    
+    // Check if this is a game request - if so, skip generic supporting files
+    const isGameRequest = lowerPrompt.includes('game') || 
+                         lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+                         lowerPrompt.includes('subway surfers') || lowerPrompt.includes('flappy bird') || lowerPrompt.includes('angry birds') ||
+                         lowerPrompt.includes('pac-man') || lowerPrompt.includes('tetris') || lowerPrompt.includes('snake') ||
+                         lowerPrompt.includes('puzzle') || lowerPrompt.includes('platformer') || lowerPrompt.includes('arcade') ||
+                         (lowerPrompt.includes('clone') && (lowerPrompt.includes('run') || lowerPrompt.includes('jump') || lowerPrompt.includes('race'))) ||
+                         (lowerPrompt.includes('coin') && lowerPrompt.includes('collect')) || 
+                         lowerPrompt.includes('collector') || 
+                         lowerPrompt.includes('playable') ||
+                         lowerPrompt.includes('fun') ||
+                         lowerPrompt.includes('runner')
+    
+    if (isGameRequest) {
+      console.log('🎮 Game request detected - skipping generic supporting files to preserve game files')
+      return files // Return empty files object for games
+    }
     
     // Generate context files
     files['src/context/AppContext.jsx'] = this.generateAppContext(prompt, context)

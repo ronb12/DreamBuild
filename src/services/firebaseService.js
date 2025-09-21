@@ -30,7 +30,18 @@ class FirebaseService {
         appId: process.env.REACT_APP_FIREBASE_APP_ID || "your-app-id"
       }
 
-      this.app = initializeApp(firebaseConfig)
+      // Check if Firebase app is already initialized
+      try {
+        this.app = initializeApp(firebaseConfig)
+      } catch (error) {
+        if (error.code === 'app/duplicate-app') {
+          // App already exists, get the existing instance
+          this.app = initializeApp()
+        } else {
+          throw error
+        }
+      }
+      
       this.db = getFirestore(this.app)
       this.storage = getStorage(this.app)
       this.auth = getAuth(this.app)

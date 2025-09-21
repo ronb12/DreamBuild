@@ -8804,6 +8804,76 @@ document.addEventListener('DOMContentLoaded', function() {
     
     return templates.slice(0, 300)
   }
+
+  // Generate App Context component
+  generateAppContext(prompt, context) {
+    return `import React, { createContext, useContext, useReducer } from 'react'
+
+// App Context for state management
+const AppContext = createContext()
+
+// Initial state
+const initialState = {
+  user: null,
+  theme: 'light',
+  loading: false,
+  error: null,
+  data: {}
+}
+
+// Reducer function
+const appReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_USER':
+      return { ...state, user: action.payload }
+    case 'SET_THEME':
+      return { ...state, theme: action.payload }
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload }
+    case 'SET_ERROR':
+      return { ...state, error: action.payload }
+    case 'SET_DATA':
+      return { ...state, data: { ...state.data, ...action.payload } }
+    case 'CLEAR_ERROR':
+      return { ...state, error: null }
+    default:
+      return state
+  }
+}
+
+// Context Provider component
+export const AppProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(appReducer, initialState)
+
+  const value = {
+    ...state,
+    dispatch,
+    setUser: (user) => dispatch({ type: 'SET_USER', payload: user }),
+    setTheme: (theme) => dispatch({ type: 'SET_THEME', payload: theme }),
+    setLoading: (loading) => dispatch({ type: 'SET_LOADING', payload: loading }),
+    setError: (error) => dispatch({ type: 'SET_ERROR', payload: error }),
+    setData: (data) => dispatch({ type: 'SET_DATA', payload: data }),
+    clearError: () => dispatch({ type: 'CLEAR_ERROR' })
+  }
+
+  return (
+    <AppContext.Provider value={value}>
+      {children}
+    </AppContext.Provider>
+  )
+}
+
+// Custom hook to use the context
+export const useApp = () => {
+  const context = useContext(AppContext)
+  if (!context) {
+    throw new Error('useApp must be used within an AppProvider')
+  }
+  return context
+}
+
+export default AppContext`
+  }
 }
 
 // Export singleton instance

@@ -29,6 +29,9 @@ import RecommendationPanel from './RecommendationPanel'
 import WebSearchPanel from './WebSearchPanel'
 import MessageBubble from './chat/MessageBubble'
 import RecommendationCard from './chat/RecommendationCard'
+import CursorMessageBubble from './chat/CursorMessageBubble'
+import AIAgentPanel from './aiAgent/AIAgentPanel'
+import aiAgentService from '../services/aiAgentService'
 import toast from 'react-hot-toast'
 
 const AIPrompt = () => {
@@ -51,6 +54,7 @@ const AIPrompt = () => {
   const [messages, setMessages] = useState([])
   const [aiRecommendations, setAiRecommendations] = useState([])
   const [showChatHistory, setShowChatHistory] = useState(true)
+  const [showAIAgent, setShowAIAgent] = useState(false)
   
   const textareaRef = useRef(null)
   const messagesEndRef = useRef(null)
@@ -186,6 +190,27 @@ const AIPrompt = () => {
 
       // Generate AI recommendations based on the prompt
       generateRecommendations(userPrompt)
+
+      // Check if Auto Mode is enabled and task is complex enough
+      const agentStatus = aiAgentService.getStatus()
+      if (agentStatus.isAutoModeEnabled) {
+        const taskBreakdown = aiAgentService.breakdownTask(userPrompt, currentProject.config)
+        
+        // Add system message about auto mode
+        const systemMessage = {
+          id: Date.now() + 2,
+          type: 'system',
+          content: `🤖 Auto Mode: I'll break this down into ${taskBreakdown.tasks.length} tasks and work autonomously.`,
+          timestamp: new Date(),
+          status: 'sent'
+        }
+        setMessages(prev => [...prev, systemMessage])
+        
+        // Start autonomous operation
+        setTimeout(() => {
+          aiAgentService.startContinuousIteration(userPrompt, currentProject.config)
+        }, 2000)
+      }
 
       // Generate code using AI service (now includes web search)
       const contextWithPrompt = {
@@ -447,6 +472,13 @@ Please implement this suggestion in my current project.`
               <MessageSquare className="h-4 w-4" />
             </button>
             <button
+              onClick={() => setShowAIAgent(!showAIAgent)}
+              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              title={showAIAgent ? "Hide AI Agent" : "Show AI Agent"}
+            >
+              <Bot className="h-4 w-4" />
+            </button>
+            <button
               onClick={() => setShowTemplateBrowser(true)}
               className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
               title="Browse Templates (1000+)"
@@ -507,94 +539,126 @@ Please implement this suggestion in my current project.`
         </div>
       </div>
 
-      {/* Main Content Area */}
+      {/* Cursor-Style Chat Interface */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Chat History */}
-        {showChatHistory && (
-          <div className="w-1/2 border-r border-border overflow-y-auto">
-            <div className="p-3 border-b border-border bg-muted/20">
-              <h4 className="text-sm font-medium flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Conversation History
-              </h4>
-              <p className="text-xs text-muted-foreground">{messages.length} messages</p>
-            </div>
-            
-            <div className="p-3 space-y-3">
-              {messages.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
-                    <Bot className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Start a conversation to see your chat history
-                  </p>
+        {/* AI Agent Panel */}
+        {showAIAgent && (
+          <div className="w-80 border-r border-border flex-shrink-0">
+            <AIAgentPanel 
+              onProgress={(progress) => {
+                // Handle agent progress updates
+                console.log('AI Agent Progress:', progress)
+              }}
+              onTaskComplete={(task) => {
+                // Handle task completion
+                console.log('Task completed:', task)
+              }}
+            />
+          </div>
+        )}
+
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Chat Messages Area */}
+        <div className="flex-1 overflow-y-auto">
+          {messages.length === 0 ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center max-w-md">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="h-8 w-8 text-blue-500" />
                 </div>
-              ) : (
-                <AnimatePresence>
-                  {messages.map((message) => (
-                    <MessageBubble
-                      key={message.id}
+                <h3 className="text-lg font-semibold text-foreground mb-2">Ask me anything</h3>
+                <p className="text-sm text-muted-foreground">
+                  I can help you build applications, fix bugs, explain code, and much more.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-0">
+              <AnimatePresence>
+                {messages.map((message, index) => (
+                  <div key={message.id} className="border-b border-border/50 last:border-b-0">
+                    <CursorMessageBubble
                       message={message}
                       onCopy={handleCopyMessage}
                       onFeedback={handleFeedback}
                     />
-                  ))}
-                </AnimatePresence>
-              )}
+                  </div>
+                ))}
+              </AnimatePresence>
               <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
+
+        {/* AI Recommendations - Cursor Style */}
+        {aiRecommendations.length > 0 && (
+          <div className="border-t border-border/50 bg-muted/30">
+            <div className="p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Lightbulb className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm font-medium">Suggestions</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {aiRecommendations.slice(0, 4).map((recommendation) => (
+                  <button
+                    key={recommendation.id}
+                    onClick={() => handleApplyRecommendation(recommendation)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-700 transition-colors"
+                  >
+                    <span>{recommendation.title}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Right Side - Recommendations and Input */}
-        <div className={`${showChatHistory ? 'w-1/2' : 'w-full'} flex flex-col`}>
-          {/* AI Recommendations */}
-          {aiRecommendations.length > 0 && (
-            <div className="border-b border-border bg-muted/10">
-              <div className="p-3 border-b border-border">
-                <h4 className="text-sm font-medium flex items-center gap-2">
-                  <Lightbulb className="h-4 w-4" />
-                  AI Recommendations
-                </h4>
-                <p className="text-xs text-muted-foreground">
-                  {aiRecommendations.length} suggestions based on your conversation
-                </p>
-              </div>
-              
-              <div className="p-3 max-h-32 overflow-y-auto space-y-2">
-                {aiRecommendations.slice(0, 3).map((recommendation) => (
-                  <RecommendationCard
-                    key={recommendation.id}
-                    recommendation={recommendation}
-                    onApply={handleApplyRecommendation}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Prompt Input */}
-          <div className="flex-1 p-3 space-y-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Describe what you want to build</label>
-              <div className="relative">
-                <input
+        {/* Cursor-Style Input Area */}
+        <div className="border-t border-border/50 bg-background">
+          <div className="relative">
+            <div className="flex items-end gap-2 p-3">
+              <div className="flex-1 relative">
+                <textarea
                   ref={textareaRef}
-                  type="text"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Create a healthy food tips website with nutrition advice and meal planning features..."
-                  className="w-full p-3 border border-border rounded-md bg-black focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Ask me anything..."
+                  className="w-full resize-none bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground text-sm leading-relaxed"
+                  style={{ minHeight: '24px', maxHeight: '200px' }}
                   disabled={isGenerating}
+                  rows={1}
                 />
-                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground">
-                  {prompt.length}/2000
-                </div>
+              </div>
+              <button
+                onClick={handleGenerate}
+                disabled={!prompt.trim() || isGenerating}
+                className="flex-shrink-0 w-8 h-8 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+              >
+                {isGenerating ? (
+                  <Loader2 className="h-4 w-4 text-white animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 text-white" />
+                )}
+              </button>
+            </div>
+            
+            {/* Cursor-style bottom bar */}
+            <div className="px-3 pb-2 flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center gap-4">
+                <span>Press Enter to send</span>
+                {prompt.length > 0 && (
+                  <span>{prompt.length} characters</span>
+                )}
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>AI Ready</span>
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
 

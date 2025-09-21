@@ -42,6 +42,7 @@ const CodeEditor = () => {
 
   const handleEditorDidMount = (editor, monaco) => {
     try {
+      console.log('🎯 Monaco Editor mounting...')
       setIsLoading(false)
       setEditorError(null)
       editorRef.current = editor
@@ -136,7 +137,8 @@ const CodeEditor = () => {
       }
     })
     } catch (error) {
-      console.error('Error mounting Monaco Editor:', error)
+      console.error('❌ Error mounting Monaco Editor:', error)
+      console.error('❌ Monaco Editor error details:', error.message, error.stack)
       setEditorError(error.message)
       setIsLoading(false)
       toast.error('Failed to load code editor')

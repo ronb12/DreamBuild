@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Dashboard - 5 Features Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .task-completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        .expense-positive {
+            color: #10b981;
+        }
+        .expense-negative {
+            color: #ef4444;
+        }
+        .weather-icon {
+            font-size: 3rem;
+        }
+        .note-card {
+            border-left: 4px solid #3b82f6;
+        }
+        .calendar-day {
+            transition: all 0.2s ease;
+        }
+        .calendar-day:hover {
+            background-color: #dbeafe;
+        }
+        .calendar-day.has-event {
+            background-color: #3b82f6;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">📊 Personal Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600" id="currentTime"></span>
+                    <button id="toggleTheme" class="p-2 rounded-md text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome to Your Dashboard</h2>
+            <p class="text-gray-600">Manage your tasks, track expenses, take notes, check weather, and schedule events all in one place.</p>
+        </div>
+
+        <!-- Feature Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            
+            <!-- Feature 1: Task Management -->
+            <div class="feature-card bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-900">📝 Task Management</h3>
+                    <span class="text-sm text-gray-500" id="taskCount">0 tasks</span>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex gap-2">
+                        <input type="text" id="taskInput" placeholder="Add a new task..." 
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button id="addTask" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="taskList" class="space-y-2 max-h-60 overflow-y-auto">
+                        <!-- Tasks will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 2: Weather Widget -->
+            <div class="feature-card bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-900">🌤️ Weather</h3>
+                    <button id="refreshWeather" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <div class="weather-icon mb-2" id="weatherIcon">☀️</div>
+                    <div class="text-3xl font-bold text-gray-900" id="temperature">72°F</div>
+                    <div class="text-gray-600" id="weatherDescription">Sunny</div>
+                    <div class="text-sm text-gray-500 mt-2" id="location">New York, NY</div>
+                    <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
+                        <div>
+                            <span class="text-gray-500">Humidity:</span>
+                            <span id="humidity">45%</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Wind:</span>
+                            <span id="windSpeed">8 mph</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3: Note Taking -->
+            <div class="feature-card bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-900">📄 Notes</h3>
+                    <span class="text-sm text-gray-500" id="noteCount">0 notes</span>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex gap-2">
+                        <input type="text" id="noteTitle" placeholder="Note title..." 
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button id="addNote" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <textarea id="noteContent" placeholder="Write your note here..." rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    
+                    <div id="notesList" class="space-y-2 max-h-48 overflow-y-auto">
+                        <!-- Notes will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 4: Expense Tracker -->
+            <div class="feature-card bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-900">💰 Expense Tracker</h3>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-500">Today's Total</div>
+                        <div class="text-lg font-bold" id="dailyTotal">$0.00</div>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="expenseDescription" placeholder="Description" 
+                               class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" id="expenseAmount" placeholder="Amount" step="0.01"
+                               class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <select id="expenseCategory" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="food">🍔 Food</option>
+                            <option value="transport">🚗 Transport</option>
+                            <option value="entertainment">🎬 Entertainment</option>
+                            <option value="shopping">🛍️ Shopping</option>
+                            <option value="other">📦 Other</option>
+                        </select>
+                        <button id="addExpense" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="expensesList" class="space-y-2 max-h-48 overflow-y-auto">
+                        <!-- Expenses will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 5: Calendar/Events -->
+            <div class="feature-card bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold text-gray-900">📅 Calendar</h3>
+                    <div class="flex gap-2">
+                        <button id="prevMonth" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <span id="currentMonth" class="font-semibold">September 2024</span>
+                        <button id="nextMonth" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex gap-2">
+                        <input type="text" id="eventTitle" placeholder="Event title..." 
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="date" id="eventDate" 
+                               class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button id="addEvent" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-xs">
+                        <div class="text-center font-semibold py-2">Sun</div>
+                        <div class="text-center font-semibold py-2">Mon</div>
+                        <div class="text-center font-semibold py-2">Tue</div>
+                        <div class="text-center font-semibold py-2">Wed</div>
+                        <div class="text-center font-semibold py-2">Thu</div>
+                        <div class="text-center font-semibold py-2">Fri</div>
+                        <div class="text-center font-semibold py-2">Sat</div>
+                        <!-- Calendar days will be generated here -->
+                    </div>
+                    
+                    <div id="eventsList" class="space-y-2 max-h-32 overflow-y-auto">
+                        <!-- Events will be listed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="feature-card bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md p-6 lg:col-span-2 xl:col-span-1">
+                <h3 class="text-xl font-semibold mb-4">📊 Today's Summary</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span>Tasks Completed:</span>
+                        <span id="completedTasks">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Notes Created:</span>
+                        <span id="totalNotes">0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Expenses Today:</span>
+                        <span id="todayExpenses">$0.00</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Events Today:</span>
+                        <span id="todayEvents">0</span>
+                    </div>
+                    <hr class="border-white/20">
+                    <div class="flex justify-between font-bold">
+                        <span>Productivity Score:</span>
+                        <span id="productivityScore">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State
+        const appState = {
+            tasks: JSON.parse(localStorage.getItem('dashboard_tasks') || '[]'),
+            notes: JSON.parse(localStorage.getItem('dashboard_notes') || '[]'),
+            expenses: JSON.parse(localStorage.getItem('dashboard_expenses') || '[]'),
+            events: JSON.parse(localStorage.getItem('dashboard_events') || '[]'),
+            currentDate: new Date(),
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear()
+        };
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            updateTime();
+            generateCalendar();
+            updateSummary();
+        });
+
+        function initializeApp() {
+            // Load saved data
+            loadTasks();
+            loadNotes();
+            loadExpenses();
+            loadEvents();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize weather (mock data)
+            updateWeather();
+        }
+
+        function setupEventListeners() {
+            // Task Management
+            document.getElementById('addTask').addEventListener('click', addTask);
+            document.getElementById('taskInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addTask();
+            });
+
+            // Notes
+            document.getElementById('addNote').addEventListener('click', addNote);
+            document.getElementById('noteTitle').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addNote();
+            });
+
+            // Expenses
+            document.getElementById('addExpense').addEventListener('click', addExpense);
+            document.getElementById('expenseAmount').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addExpense();
+            });
+
+            // Events
+            document.getElementById('addEvent').addEventListener('click', addEvent);
+            document.getElementById('prevMonth').addEventListener('click', previousMonth);
+            document.getElementById('nextMonth').addEventListener('click', nextMonth);
+
+            // Weather refresh
+            document.getElementById('refreshWeather').addEventListener('click', updateWeather);
+        }
+
+        // Task Management Functions
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const task = {
+                id: Date.now(),
+                text: text,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+
+            appState.tasks.push(task);
+            saveTasks();
+            loadTasks();
+            input.value = '';
+            updateSummary();
+        }
+
+        function toggleTask(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                loadTasks();
+                updateSummary();
+            }
+        }
+
+        function deleteTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            saveTasks();
+            loadTasks();
+            updateSummary();
+        }
+
+        function loadTasks() {
+            const container = document.getElementById('taskList');
+            const countElement = document.getElementById('taskCount');
+            
+            countElement.textContent = `${appState.tasks.length} tasks`;
+            
+            if (appState.tasks.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No tasks yet. Add one above!</p>';
+                return;
+            }
+
+            container.innerHTML = appState.tasks.map(task => `
+                <div class="flex items-center gap-2 p-2 border border-gray-200 rounded-md ${task.completed ? 'task-completed' : ''}">
+                    <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                           onchange="toggleTask(${task.id})" class="rounded">
+                    <span class="flex-1">${task.text}</span>
+                    <button onclick="deleteTask(${task.id})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash text-sm"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function saveTasks() {
+            localStorage.setItem('dashboard_tasks', JSON.stringify(appState.tasks));
+        }
+
+        // Notes Functions
+        function addNote() {
+            const titleInput = document.getElementById('noteTitle');
+            const contentInput = document.getElementById('noteContent');
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
+
+            if (!title || !content) return;
+
+            const note = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                createdAt: new Date().toISOString()
+            };
+
+            appState.notes.push(note);
+            saveNotes();
+            loadNotes();
+            titleInput.value = '';
+            contentInput.value = '';
+            updateSummary();
+        }
+
+        function deleteNote(id) {
+            appState.notes = appState.notes.filter(n => n.id !== id);
+            saveNotes();
+            loadNotes();
+            updateSummary();
+        }
+
+        function loadNotes() {
+            const container = document.getElementById('notesList');
+            const countElement = document.getElementById('noteCount');
+            
+            countElement.textContent = `${appState.notes.length} notes`;
+            
+            if (appState.notes.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No notes yet. Create one above!</p>';
+                return;
+            }
+
+            container.innerHTML = appState.notes.slice(-5).map(note => `
+                <div class="note-card bg-gray-50 p-3 rounded-md">
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="font-semibold text-sm">${note.title}</h4>
+                        <button onclick="deleteNote(${note.id})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-600">${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</p>
+                </div>
+            `).join('');
+        }
+
+        function saveNotes() {
+            localStorage.setItem('dashboard_notes', JSON.stringify(appState.notes));
+        }
+
+        // Expense Functions
+        function addExpense() {
+            const descriptionInput = document.getElementById('expenseDescription');
+            const amountInput = document.getElementById('expenseAmount');
+            const categorySelect = document.getElementById('expenseCategory');
+            
+            const description = descriptionInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+            const category = categorySelect.value;
+
+            if (!description || isNaN(amount) || amount <= 0) return;
+
+            const expense = {
+                id: Date.now(),
+                description: description,
+                amount: amount,
+                category: category,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            appState.expenses.push(expense);
+            saveExpenses();
+            loadExpenses();
+            descriptionInput.value = '';
+            amountInput.value = '';
+            updateSummary();
+        }
+
+        function deleteExpense(id) {
+            appState.expenses = appState.expenses.filter(e => e.id !== id);
+            saveExpenses();
+            loadExpenses();
+            updateSummary();
+        }
+
+        function loadExpenses() {
+            const container = document.getElementById('expensesList');
+            const today = new Date().toISOString().split('T')[0];
+            const todayExpenses = appState.expenses.filter(e => e.date === today);
+            const total = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
+            
+            document.getElementById('dailyTotal').textContent = `$${total.toFixed(2)}`;
+            
+            if (todayExpenses.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No expenses today.</p>';
+                return;
+            }
+
+            container.innerHTML = todayExpenses.slice(-5).map(expense => `
+                <div class="flex justify-between items-center p-2 border border-gray-200 rounded-md">
+                    <div>
+                        <div class="text-sm font-medium">${expense.description}</div>
+                        <div class="text-xs text-gray-500">${getCategoryEmoji(expense.category)} ${expense.category}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold expense-negative">-$${expense.amount.toFixed(2)}</span>
+                        <button onclick="deleteExpense(${expense.id})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getCategoryEmoji(category) {
+            const emojis = {
+                food: '🍔',
+                transport: '🚗',
+                entertainment: '🎬',
+                shopping: '🛍️',
+                other: '📦'
+            };
+            return emojis[category] || '📦';
+        }
+
+        function saveExpenses() {
+            localStorage.setItem('dashboard_expenses', JSON.stringify(appState.expenses));
+        }
+
+        // Calendar/Events Functions
+        function addEvent() {
+            const titleInput = document.getElementById('eventTitle');
+            const dateInput = document.getElementById('eventDate');
+            const title = titleInput.value.trim();
+            const date = dateInput.value;
+
+            if (!title || !date) return;
+
+            const event = {
+                id: Date.now(),
+                title: title,
+                date: date,
+                createdAt: new Date().toISOString()
+            };
+
+            appState.events.push(event);
+            saveEvents();
+            loadEvents();
+            titleInput.value = '';
+            dateInput.value = '';
+            generateCalendar();
+            updateSummary();
+        }
+
+        function deleteEvent(id) {
+            appState.events = appState.events.filter(e => e.id !== id);
+            saveEvents();
+            loadEvents();
+            generateCalendar();
+            updateSummary();
+        }
+
+        function loadEvents() {
+            const container = document.getElementById('eventsList');
+            const today = new Date().toISOString().split('T')[0];
+            const todayEvents = appState.events.filter(e => e.date === today);
+            
+            if (todayEvents.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No events today.</p>';
+                return;
+            }
+
+            container.innerHTML = todayEvents.map(event => `
+                <div class="flex justify-between items-center p-2 bg-blue-50 border border-blue-200 rounded-md">
+                    <span class="text-sm">${event.title}</span>
+                    <button onclick="deleteEvent(${event.id})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function generateCalendar() {
+            const container = document.getElementById('calendarGrid');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            document.getElementById('currentMonth').textContent = `${monthNames[appState.currentMonth]} ${appState.currentYear}`;
+            
+            const firstDay = new Date(appState.currentYear, appState.currentMonth, 1);
+            const lastDay = new Date(appState.currentYear, appState.currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+            
+            let calendarHTML = '';
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                calendarHTML += '<div class="calendar-day h-8"></div>';
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${appState.currentYear}-${String(appState.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const hasEvent = appState.events.some(e => e.date === dateStr);
+                const isToday = dateStr === new Date().toISOString().split('T')[0];
+                
+                calendarHTML += `
+                    <div class="calendar-day h-8 flex items-center justify-center rounded cursor-pointer ${hasEvent ? 'has-event' : ''} ${isToday ? 'bg-yellow-200' : ''}">
+                        ${day}
+                    </div>
+                `;
+            }
+            
+            // Remove existing calendar days (keep header)
+            const existingDays = container.querySelectorAll('.calendar-day');
+            existingDays.forEach(day => day.remove());
+            
+            // Insert new calendar
+            container.insertAdjacentHTML('beforeend', calendarHTML);
+        }
+
+        function previousMonth() {
+            appState.currentMonth--;
+            if (appState.currentMonth < 0) {
+                appState.currentMonth = 11;
+                appState.currentYear--;
+            }
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            appState.currentMonth++;
+            if (appState.currentMonth > 11) {
+                appState.currentMonth = 0;
+                appState.currentYear++;
+            }
+            generateCalendar();
+        }
+
+        function saveEvents() {
+            localStorage.setItem('dashboard_events', JSON.stringify(appState.events));
+        }
+
+        // Weather Functions (Mock Data)
+        function updateWeather() {
+            const weatherData = {
+                icon: '☀️',
+                temperature: '72°F',
+                description: 'Sunny',
+                location: 'New York, NY',
+                humidity: '45%',
+                windSpeed: '8 mph'
+            };
+
+            document.getElementById('weatherIcon').textContent = weatherData.icon;
+            document.getElementById('temperature').textContent = weatherData.temperature;
+            document.getElementById('weatherDescription').textContent = weatherData.description;
+            document.getElementById('location').textContent = weatherData.location;
+            document.getElementById('humidity').textContent = weatherData.humidity;
+            document.getElementById('windSpeed').textContent = weatherData.windSpeed;
+        }
+
+        // Summary Functions
+        function updateSummary() {
+            const completedTasks = appState.tasks.filter(t => t.completed).length;
+            const totalTasks = appState.tasks.length;
+            const totalNotes = appState.notes.length;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayExpenses = appState.expenses.filter(e => e.date === today);
+            const todayEvents = appState.events.filter(e => e.date === today);
+            
+            const totalExpenses = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
+            
+            document.getElementById('completedTasks').textContent = completedTasks;
+            document.getElementById('totalNotes').textContent = totalNotes;
+            document.getElementById('todayExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+            document.getElementById('todayEvents').textContent = todayEvents.length;
+            
+            // Calculate productivity score
+            const productivityScore = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            document.getElementById('productivityScore').textContent = `${productivityScore}%`;
+        }
+
+        // Utility Functions
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // Update time every minute
+        setInterval(updateTime, 60000);
+
+        // Auto-refresh data every 30 seconds
+        setInterval(() => {
+            updateSummary();
+            loadEvents();
+        }, 30000);
+    </script>
+</body>
+</html>

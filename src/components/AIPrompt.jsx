@@ -148,7 +148,11 @@ const AIPrompt = () => {
       }
 
       // Generate code using AI service (now includes web search)
-      const generatedFiles = await simpleAIService.generateCode(prompt, currentProject.config)
+      const contextWithPrompt = {
+        ...currentProject.config,
+        prompt: prompt
+      };
+      const generatedFiles = await simpleAIService.generateCode(prompt, contextWithPrompt)
       
       // Store web search results if available
       if (generatedFiles._webSearchResults) {

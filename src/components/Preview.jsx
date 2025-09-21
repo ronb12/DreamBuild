@@ -19,26 +19,40 @@ const Preview = () => {
     console.log('🎮 Preview component rendered! Render count:', renderCount + 1)
   }, [])
 
-  // Update preview when files change
+  // Update preview when files change - use separate effect for iframe mounting
   useEffect(() => {
     console.log('🎮 Preview useEffect triggered - files changed:', Object.keys(currentProject.files))
     console.log('🎮 Preview useEffect - currentProject:', currentProject)
     console.log('🎮 Preview useEffect - file count:', Object.keys(currentProject.files).length)
-    updatePreview()
+    
+    // Use a small delay to ensure iframe is mounted
+    const timer = setTimeout(() => {
+      updatePreview()
+    }, 50)
+    
+    return () => clearTimeout(timer)
   }, [currentProject.files, currentProject.activeFile, currentProject])
+
+  // Additional effect to handle iframe mounting
+  useEffect(() => {
+    const checkIframeReady = () => {
+      if (iframeRef.current) {
+        console.log('🎮 Iframe mounted, updating preview...')
+        updatePreview()
+      } else {
+        console.log('🎮 Iframe not ready, retrying...')
+        setTimeout(checkIframeReady, 50)
+      }
+    }
+    
+    // Check iframe readiness after component mounts
+    setTimeout(checkIframeReady, 100)
+  }, [])
 
   const updatePreview = () => {
     console.log('🎮 updatePreview called with files:', Object.keys(currentProject.files))
     if (!iframeRef.current) {
-      console.log('🎮 updatePreview: iframeRef.current is null, retrying in 100ms...')
-      setTimeout(() => {
-        if (iframeRef.current) {
-          console.log('🎮 updatePreview: Retry successful, iframeRef.current now exists')
-          updatePreview()
-        } else {
-          console.log('🎮 updatePreview: Retry failed, iframeRef.current still null')
-        }
-      }, 100)
+      console.log('🎮 updatePreview: iframeRef.current is null, skipping update')
       return
     }
 
@@ -61,6 +75,9 @@ const Preview = () => {
       // Log file contents for debugging
       if (gameComponentFile) {
         console.log('🎮 Preview Debug - GameComponent content preview:', gameComponentFile.substring(0, 200) + '...')
+        console.log('🎮 Preview Debug - GameComponent contains Temple Run:', gameComponentFile.toLowerCase().includes('temple run'))
+        console.log('🎮 Preview Debug - GameComponent contains lane:', gameComponentFile.toLowerCase().includes('lane'))
+        console.log('🎮 Preview Debug - GameComponent contains jump:', gameComponentFile.toLowerCase().includes('jump'))
       }
       
       // Debug logging for file detection
@@ -657,11 +674,22 @@ const Preview = () => {
     `
 
     const iframe = iframeRef.current
+    console.log('🎮 Setting iframe content, length:', reactHTML.length)
     iframe.srcdoc = reactHTML
 
     iframe.onload = () => {
+      console.log('🎮 Iframe loaded successfully')
       setIsLoading(false)
       setPreviewError(null)
+      
+      // Verify iframe content
+      try {
+        const iframeContent = iframe.contentDocument?.body?.textContent || ''
+        console.log('🎮 Iframe content verification - length:', iframeContent.length)
+        console.log('🎮 Iframe content preview:', iframeContent.substring(0, 100))
+      } catch (e) {
+        console.log('🎮 Iframe content verification - access denied:', e.message)
+      }
     }
 
     iframe.onerror = () => {

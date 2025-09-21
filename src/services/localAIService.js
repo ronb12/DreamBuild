@@ -1428,15 +1428,15 @@ function showRecipeDetails(recipeId) {
     
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex items-center justify-center p-4';
-    modal.innerHTML = `
+    modal.innerHTML = \`
         <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
             <div class="p-6">
                 <div class="flex items-start justify-between mb-6">
                     <div class="flex items-center">
-                        <div class="text-4xl mr-4">${recipe.image}</div>
+                        <div class="text-4xl mr-4">\${recipe.image}</div>
                         <div>
-                            <h2 class="text-2xl font-bold">${recipe.title}</h2>
-                            <p class="text-gray-600">${recipe.description}</p>
+                            <h2 class="text-2xl font-bold">\${recipe.title}</h2>
+                            <p class="text-gray-600">\${recipe.description}</p>
                         </div>
                     </div>
                     <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
@@ -1448,14 +1448,14 @@ function showRecipeDetails(recipeId) {
                     <div>
                         <h3 class="text-lg font-semibold mb-3">Ingredients</h3>
                         <ul class="space-y-2">
-                            ${recipe.ingredients.map(ingredient => `<li class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>${ingredient}</li>`).join('')}
+                            \${recipe.ingredients.map(ingredient => \`<li class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>\${ingredient}</li>\`).join('')}
                         </ul>
                     </div>
                     
                     <div>
                         <h3 class="text-lg font-semibold mb-3">Instructions</h3>
                         <ol class="space-y-2">
-                            ${recipe.instructions.map((instruction, index) => `<li class="flex"><span class="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 flex-shrink-0">${index + 1}</span><span>${instruction}</span></li>`).join('')}
+                            \${recipe.instructions.map((instruction, index) => \`<li class="flex"><span class="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 flex-shrink-0">\${index + 1}</span><span>\${instruction}</span></li>\`).join('')}
                         </ol>
                     </div>
                 </div>
@@ -1463,26 +1463,26 @@ function showRecipeDetails(recipeId) {
                 <div class="mt-6 pt-6 border-t border-gray-200">
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                         <div>
-                            <div class="text-2xl font-bold text-green-600">${recipe.prepTime}</div>
+                            <div class="text-2xl font-bold text-green-600">\${recipe.prepTime}</div>
                             <div class="text-sm text-gray-600">Prep Time</div>
                         </div>
                         <div>
-                            <div class="text-2xl font-bold text-blue-600">${recipe.cookTime}</div>
+                            <div class="text-2xl font-bold text-blue-600">\${recipe.cookTime}</div>
                             <div class="text-sm text-gray-600">Cook Time</div>
                         </div>
                         <div>
-                            <div class="text-2xl font-bold text-purple-600">${recipe.servings}</div>
+                            <div class="text-2xl font-bold text-purple-600">\${recipe.servings}</div>
                             <div class="text-sm text-gray-600">Servings</div>
                         </div>
                         <div>
-                            <div class="text-2xl font-bold text-orange-600">${recipe.calories}</div>
+                            <div class="text-2xl font-bold text-orange-600">\${recipe.calories}</div>
                             <div class="text-sm text-gray-600">Calories</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    `;
+    \`;
     
     document.body.appendChild(modal);
 }

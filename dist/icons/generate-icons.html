@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate DreamBuild Icons</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        canvas { border: 1px solid #ddd; margin: 10px; }
+        button { margin: 5px; padding: 10px 15px; }
+    </style>
+</head>
+<body>
+    <h1>DreamBuild Icon Generator</h1>
+    <canvas id="canvas192" width="192" height="192"></canvas>
+    <canvas id="canvas512" width="512" height="512"></canvas>
+    
+    <div>
+        <button onclick="downloadIcon('canvas192', 'icon-192.png')">Download 192x192 PNG</button>
+        <button onclick="downloadIcon('canvas512', 'icon-512.png')">Download 512x512 PNG</button>
+    </div>
+
+    <script>
+        function drawDreamBuildIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const center = size / 2;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Background circle with gradient
+            const gradient = ctx.createRadialGradient(center, center, 0, center, center, size * 0.45);
+            gradient.addColorStop(0, '#4dabf7');
+            gradient.addColorStop(1, '#007acc');
+            
+            ctx.beginPath();
+            ctx.arc(center, center, size * 0.45, 0, 2 * Math.PI);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // White border
+            ctx.beginPath();
+            ctx.arc(center, center, size * 0.45, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = size * 0.02;
+            ctx.stroke();
+            
+            // Main diamond shape
+            ctx.beginPath();
+            ctx.moveTo(center, center - size * 0.15);
+            ctx.lineTo(center + size * 0.15, center);
+            ctx.lineTo(center, center + size * 0.15);
+            ctx.lineTo(center - size * 0.15, center);
+            ctx.closePath();
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            
+            // Code brackets
+            const bracketWidth = size * 0.025;
+            const bracketHeight = size * 0.2;
+            const bracketSpacing = size * 0.02;
+            
+            // Left bracket
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(center - size * 0.25, center - bracketHeight/2, bracketWidth, bracketHeight);
+            
+            // Right bracket  
+            ctx.fillRect(center + size * 0.225, center - bracketHeight/2, bracketWidth, bracketHeight);
+            
+            // Central "D" symbol
+            ctx.beginPath();
+            ctx.arc(center, center, size * 0.08, 0, 2 * Math.PI);
+            ctx.fillStyle = '#007acc';
+            ctx.fill();
+            
+            // D letter
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size * 0.12}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('D', center, center);
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            console.log(`Downloaded ${filename}`);
+        }
+        
+        // Generate icons on page load
+        window.onload = function() {
+            drawDreamBuildIcon(document.getElementById('canvas192'), 192);
+            drawDreamBuildIcon(document.getElementById('canvas512'), 512);
+            console.log('Icons generated! Click buttons to download.');
+        };
+    </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 // DreamBuild Simple AI Service - 100% Local, No API Keys
 // This replaces all the complex API services with just local AI
 
-import localAIService from './localAIService.jsx'
+import localAIService from './localAIService.js'
 
 class SimpleAIService {
   constructor() {

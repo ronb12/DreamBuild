@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { useProject } from '../contexts/ProjectContext'
 import { motion } from 'framer-motion'
 import { RefreshCw, ExternalLink, Maximize2, Minimize2 } from 'lucide-react'

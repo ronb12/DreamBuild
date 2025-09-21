@@ -13,11 +13,16 @@ const Preview = () => {
 
   // Update preview when files change
   useEffect(() => {
+    console.log('🎮 Preview useEffect triggered - files changed:', Object.keys(currentProject.files))
     updatePreview()
   }, [currentProject.files, currentProject.activeFile])
 
   const updatePreview = () => {
-    if (!iframeRef.current) return
+    console.log('🎮 updatePreview called with files:', Object.keys(currentProject.files))
+    if (!iframeRef.current) {
+      console.log('🎮 updatePreview: iframeRef.current is null')
+      return
+    }
 
     setIsLoading(true)
     setPreviewError(null)

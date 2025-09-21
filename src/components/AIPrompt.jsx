@@ -55,13 +55,7 @@ const AIPrompt = () => {
   const textareaRef = useRef(null)
   const messagesEndRef = useRef(null)
 
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px'
-    }
-  }, [prompt])
+  // No auto-resize needed for input field
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -420,7 +414,7 @@ Please implement this suggestion in my current project.`
   }
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    if (e.key === 'Enter') {
       e.preventDefault()
       handleGenerate()
     }
@@ -585,16 +579,17 @@ Please implement this suggestion in my current project.`
             <div className="space-y-2">
               <label className="text-sm font-medium">Describe what you want to build</label>
               <div className="relative">
-                <textarea
+                <input
                   ref={textareaRef}
+                  type="text"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Create a healthy food tips website with nutrition advice and meal planning features..."
-                  className="w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full p-3 border border-border rounded-md bg-black focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   disabled={isGenerating}
                 />
-                <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground">
                   {prompt.length}/2000
                 </div>
               </div>
@@ -623,7 +618,7 @@ Please implement this suggestion in my current project.`
           )}
         </button>
         <p className="text-xs text-muted-foreground text-center mt-2">
-          Press Ctrl+Enter to generate
+          Press Enter to generate
         </p>
       </div>
 

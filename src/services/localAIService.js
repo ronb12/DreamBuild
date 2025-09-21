@@ -943,6 +943,7 @@ Additional context: ${searchKnowledge.summary}`
     
     // 3. COMPONENT-BASED GENERATION - Create files based on component needs
     const componentFiles = this.generateComponentBasedFiles(prompt, context, files)
+    console.log('🧩 Component files before assign:', Object.keys(componentFiles))
     Object.assign(files, componentFiles)
     console.log('🧩 Component-based files generated:', Object.keys(componentFiles).length)
     
@@ -1022,6 +1023,7 @@ Additional context: ${searchKnowledge.summary}`
     console.log('🧠 Conversation stored in memory for future reference')
     
     console.log(`✅ Generated ${Object.keys(files).length} files with all advanced capabilities`)
+    console.log('📁 Generated files:', Object.keys(files))
     return {
       files,
       context: persistentContext,

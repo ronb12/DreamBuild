@@ -10,6 +10,7 @@ import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder } fr
 
 const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('editor')
+  const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(false)
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
@@ -17,6 +18,23 @@ const AIBuilder = () => {
     { id: 'terminal', label: 'Terminal', icon: TerminalIcon, description: 'Command line interface' },
     { id: 'workspace', label: 'Advanced Workspace', icon: Brain, description: 'Full-featured workspace with collaboration, visual editor, and deployment' }
   ]
+
+  const handleTabClick = (tabId) => {
+    if (tabId === 'workspace') {
+      // Toggle workspace visibility
+      if (activeTab === 'workspace' && isWorkspaceVisible) {
+        setIsWorkspaceVisible(false)
+        setActiveTab('editor') // Switch back to editor when hiding
+      } else {
+        setIsWorkspaceVisible(true)
+        setActiveTab(tabId)
+      }
+    } else {
+      // For other tabs, just switch normally
+      setActiveTab(tabId)
+      setIsWorkspaceVisible(false) // Hide workspace when switching to other tabs
+    }
+  }
 
   return (
     <div className="h-screen bg-background flex flex-col pt-16">
@@ -36,7 +54,7 @@ const AIBuilder = () => {
                 key={tab.id}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabClick(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                   activeTab === tab.id
                     ? 'bg-primary text-primary-foreground shadow-sm'
@@ -107,7 +125,25 @@ const AIBuilder = () => {
               <div className="flex-1 overflow-hidden h-full min-h-[600px]">
                 {activeTab === 'editor' && <CodeEditor />}
                 {activeTab === 'preview' && <Preview />}
-                {activeTab === 'workspace' && <IntegratedWorkspace projectId="demo-project" />}
+                {activeTab === 'workspace' && isWorkspaceVisible && <IntegratedWorkspace projectId="demo-project" />}
+                {activeTab === 'workspace' && !isWorkspaceVisible && (
+                  <div className="h-full flex items-center justify-center bg-muted/20">
+                    <div className="text-center">
+                      <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-foreground mb-2">Advanced Workspace</h3>
+                      <p className="text-muted-foreground mb-4">Click the Advanced Workspace button to open the full-featured workspace</p>
+                      <div className="text-sm text-muted-foreground">
+                        <p>Features include:</p>
+                        <ul className="mt-2 space-y-1">
+                          <li>• Real-time Collaboration</li>
+                          <li>• Visual Editor</li>
+                          <li>• One-click Deployment</li>
+                          <li>• Memory Management</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {activeTab === 'terminal' && (
                   <div className="h-full flex flex-col bg-gray-900">
                     {/* Terminal Content */}

@@ -17,7 +17,7 @@ import simpleAIService from '../services/simpleAIService'
 import aiAgentService from '../services/aiAgentService'
 
 export default function AIPromptCursorStyle() {
-  const { addFile, setActiveFile } = useProject()
+  const { updateFile, switchFile } = useProject()
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const textareaRef = useRef(null)
@@ -105,7 +105,16 @@ export default function AIPromptCursorStyle() {
       }
 
       // Generate code
+      console.log('🚀 Starting AI generation...')
       const files = await simpleAIService.generateCode(userPrompt)
+      console.log('📁 Files received:', files)
+      console.log('📁 Files type:', typeof files)
+      console.log('📁 Files keys:', files ? Object.keys(files) : 'No files')
+      
+      // Check if files is valid
+      if (!files || typeof files !== 'object') {
+        throw new Error('Invalid files response from AI service')
+      }
       
       // Update AI message with results
       setMessages(prev => prev.map(msg => 
@@ -120,14 +129,21 @@ export default function AIPromptCursorStyle() {
       ))
 
       // Add files to project
+      let filesAdded = 0
       Object.entries(files).forEach(([filename, content]) => {
-        addFile(filename, content)
+        if (filename && content !== undefined) {
+          console.log(`📄 Adding file: ${filename} (${typeof content})`)
+          updateFile(filename, content)
+          filesAdded++
+        }
       })
+      console.log(`✅ Added ${filesAdded} files to project`)
 
       // Set first file as active
       const firstFile = Object.keys(files)[0]
       if (firstFile) {
-        setActiveFile(firstFile)
+        switchFile(firstFile)
+        console.log(`🎯 Set active file: ${firstFile}`)
       }
 
     } catch (error) {
@@ -402,6 +418,7 @@ export default function AIPromptCursorStyle() {
               rows={4}
             />
             
+            
             {/* Drag overlay */}
             {isDragOver && (
               <div className="absolute inset-0 bg-blue-500/10 border-2 border-blue-500 border-dashed rounded-lg flex items-center justify-center pointer-events-none">
@@ -480,8 +497,22 @@ export default function AIPromptCursorStyle() {
               </button>
             </div>
             
-            {/* Infinity symbol on the right */}
-            <div className="flex items-center">
+            {/* Right side controls */}
+            <div className="flex items-center gap-3">
+              {/* Send button */}
+              <button
+                onClick={handleGenerate}
+                disabled={!prompt.trim() || isGenerating}
+                className="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center shadow-sm"
+              >
+                {isGenerating ? (
+                  <Loader2 className="h-4 w-4 text-white animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 text-white rotate-90" />
+                )}
+              </button>
+              
+              {/* Infinity symbol */}
               <button
                 onClick={() => setShowContextModeSelector(!showContextModeSelector)}
                 className={`text-lg transition-colors hover:text-blue-600 ${

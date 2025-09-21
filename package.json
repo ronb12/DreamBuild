@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node automated-test.js",
+    "test:puppeteer": "node test-ai-builder.js",
     "debug": "node debug-generation.js",
     "comprehensive": "node comprehensive-test.js",
     "verify": "node final-verification.js",

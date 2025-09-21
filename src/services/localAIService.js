@@ -12788,6 +12788,8 @@ export default ${component.name};`
 import './${component.name}.css';
 
 const ${component.name} = () => {
+  // Game type flag - always Temple Run for this component
+  const isTempleRun = true;
   const canvasRef = useRef(null);
   const gameLoopRef = useRef(null);
   const [gameState, setGameState] = useState({

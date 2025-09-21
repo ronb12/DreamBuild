@@ -3410,13 +3410,18 @@ export const Error = {
           if (!firebase.apps || !firebase.apps.length) {
             return firebase.initializeApp(firebaseConfig)
           }
-          return firebase.app()
+          return firebase.getApp()
         } catch (error) {
           if (error.code === 'app/duplicate-app') {
             // App already exists, get the existing instance
-            return firebase.app()
+            return firebase.getApp()
           }
-          throw error
+          // If all else fails, try to get any existing app
+          try {
+            return firebase.getApp()
+          } catch {
+            return null
+          }
         }
       })
       
@@ -5115,7 +5120,7 @@ export const storage = {
   generateUserManagement(prompt, context) { return `import React from 'react';\nconst UserManagement = () => <div>User Management</div>;\nexport default UserManagement;` }
   generateDataTable(prompt, context) { return `import React from 'react';\nconst DataTable = () => <table>Data Table</table>;\nexport default DataTable;` }
   generateConstants(prompt, context) { return `export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';\nexport const APP_NAME = 'DreamBuild App';` }
-  generateHelpers(prompt, context) { return `export const formatCurrency = (amount) => \`$${amount.toFixed(2)}\`;\nexport const formatDate = (date) => new Date(date).toLocaleDateString();` }
+  generateHelpers(prompt, context) { return `export const formatCurrency = (amount) => \`$\${amount.toFixed(2)}\`;\nexport const formatDate = (date) => new Date(date).toLocaleDateString();` }
   generateValidationUtils(prompt, context) { return `export const validateEmail = (email) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\nexport const validateRequired = (value) => value && value.trim().length > 0;` }
   generateFormattingUtils(prompt, context) { return `export const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);\nexport const truncate = (str, length) => str.length > length ? str.substring(0, length) + '...' : str;` }
   generateStorageUtils(prompt, context) { return `export const storage = {\n  get: (key) => JSON.parse(localStorage.getItem(key)),\n  set: (key, value) => localStorage.setItem(key, JSON.stringify(value))\n};` }

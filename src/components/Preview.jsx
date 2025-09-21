@@ -92,7 +92,9 @@ const Preview = () => {
       // If we have game components, create a React app preview
       if (gameAppFile || gameComponentFile) {
         console.log('🎮 Preview Debug - Game files detected, creating React preview')
+        console.log('🎮 Preview Debug - About to call createReactPreview, iframeRef.current:', !!iframeRef.current)
         createReactPreview()
+        console.log('🎮 Preview Debug - createReactPreview call completed')
         return
       }
 

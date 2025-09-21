@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import FileManager from '../components/FileManager'
 import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
-import AIPrompt from '../components/AIPrompt'
+import AIPromptCursorStyle from '../components/AIPromptCursorStyle'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
@@ -196,7 +196,7 @@ const AIBuilder = () => {
               
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden">
-                <AIPrompt />
+                <AIPromptCursorStyle />
               </div>
             </div>
           </ResizablePanel>

@@ -502,13 +502,52 @@ Please implement this suggestion in my current project.`
       animate={{ opacity: 1, x: 0 }}
       className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden"
     >
-      {/* AI Prompt Header */}
-      <div className="p-3 border-b border-border bg-muted/50">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-medium text-sm text-foreground">
-            AI Assistant
-          </h3>
-          <div className="flex items-center gap-2">
+      {/* Minimal Header - Cursor Style */}
+      <div className="px-4 py-3 border-b border-border/50 bg-background/50">
+        <div className="flex items-center justify-between">
+          {/* AI Model Selector - Minimal */}
+          <div className="relative model-selector">
+            <button
+              onClick={() => setShowModelSelector(!showModelSelector)}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm bg-transparent hover:bg-muted/50 text-foreground rounded-md border border-border/50 transition-colors"
+              title="Select AI Model"
+            >
+              <span className="font-medium">{getModelDisplayName(aiModel)}</span>
+              <span className="text-muted-foreground text-xs">▼</span>
+            </button>
+            
+            {/* Model Dropdown */}
+            {showModelSelector && (
+              <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-border rounded-md shadow-lg z-50">
+                <div className="p-2">
+                  <div className="text-xs text-muted-foreground mb-2 px-2">AI Model</div>
+                  <div className="max-h-60 overflow-y-auto">
+                    {getAvailableModels().map((model) => (
+                      <button
+                        key={model.id}
+                        onClick={() => {
+                          setAIModel(model.id)
+                          setShowModelSelector(false)
+                          if (simpleAIService?.setModel) {
+                            simpleAIService.setModel(model.id)
+                          }
+                        }}
+                        className={`w-full flex items-center justify-between px-2 py-1.5 text-sm hover:bg-muted rounded transition-colors ${
+                          aiModel === model.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                        }`}
+                      >
+                        <span className="font-medium">{model.name}</span>
+                        <span className="text-xs text-muted-foreground">{model.ram}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1">
             {/* AI Model Selector */}
             <div className="relative model-selector">
               <button

@@ -1266,19 +1266,19 @@ function handleSearch() {
 
     results.innerHTML = searchResults.map(item => {
         const isFavorite = appState.favorites.includes(item.id);
-        return `
-            <div class="p-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer" onclick="selectSearchResult('${item.id}', '${item.title}')">
+        return \`
+            <div class="p-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer" onclick="selectSearchResult('\${item.id}', '\${item.title}')">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h4 class="font-medium">${item.title}</h4>
-                        <p class="text-sm text-gray-600">${item.description || item.content.substring(0, 100)}...</p>
+                        <h4 class="font-medium">\${item.title}</h4>
+                        <p class="text-sm text-gray-600">\${item.description || item.content.substring(0, 100)}...</p>
                     </div>
-                    <button onclick="toggleFavorite(${item.id}); event.stopPropagation();" class="favorite-btn ${isFavorite ? 'active' : ''}">
+                    <button onclick="toggleFavorite(\${item.id}); event.stopPropagation();" class="favorite-btn \${isFavorite ? 'active' : ''}">
                         <i class="fas fa-heart"></i>
                     </button>
                 </div>
             </div>
-        `;
+        \`;
     }).join('');
 }
 
@@ -1302,22 +1302,22 @@ function loadTips() {
     
     container.innerHTML = tipsToShow.map(tip => {
         const isFavorite = appState.favorites.includes(tip.id);
-        return `
+        return \`
             <div class="tip-card p-6">
                 <div class="flex items-start justify-between mb-4">
-                    <div class="text-4xl">${tip.image}</div>
-                    <button onclick="toggleFavorite(${tip.id})" class="favorite-btn ${isFavorite ? 'active' : ''}">
+                    <div class="text-4xl">\${tip.image}</div>
+                    <button onclick="toggleFavorite(\${tip.id})" class="favorite-btn \${isFavorite ? 'active' : ''}">
                         <i class="fas fa-heart"></i>
                     </button>
                 </div>
-                <h3 class="text-xl font-semibold mb-2">${tip.title}</h3>
-                <p class="text-gray-600 mb-4">${tip.content}</p>
+                <h3 class="text-xl font-semibold mb-2">\${tip.title}</h3>
+                <p class="text-gray-600 mb-4">\${tip.content}</p>
                 <div class="flex items-center justify-between">
-                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">${tip.category}</span>
-                    <span class="text-sm text-gray-500">${tip.difficulty}</span>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">\${tip.category}</span>
+                    <span class="text-sm text-gray-500">\${tip.difficulty}</span>
                 </div>
             </div>
-        `;
+        \`;
     }).join('');
 }
 
@@ -1326,32 +1326,32 @@ function loadRecipes() {
     
     container.innerHTML = sampleRecipes.map(recipe => {
         const isFavorite = appState.favorites.includes(recipe.id);
-        return `
-            <div class="recipe-card p-6" data-category="${recipe.category}">
+        return \`
+            <div class="recipe-card p-6" data-category="\${recipe.category}">
                 <div class="flex items-start justify-between mb-4">
-                    <div class="text-4xl">${recipe.image}</div>
-                    <button onclick="toggleFavorite(${recipe.id})" class="favorite-btn ${isFavorite ? 'active' : ''}">
+                    <div class="text-4xl">\${recipe.image}</div>
+                    <button onclick="toggleFavorite(\${recipe.id})" class="favorite-btn \${isFavorite ? 'active' : ''}">
                         <i class="fas fa-heart"></i>
                     </button>
                 </div>
-                <h3 class="text-xl font-semibold mb-2">${recipe.title}</h3>
-                <p class="text-gray-600 mb-4">${recipe.description}</p>
+                <h3 class="text-xl font-semibold mb-2">\${recipe.title}</h3>
+                <p class="text-gray-600 mb-4">\${recipe.description}</p>
                 <div class="space-y-2 mb-4">
                     <div class="flex justify-between text-sm">
-                        <span>Prep: ${recipe.prepTime}</span>
-                        <span>Cook: ${recipe.cookTime}</span>
-                        <span>Servings: ${recipe.servings}</span>
+                        <span>Prep: \${recipe.prepTime}</span>
+                        <span>Cook: \${recipe.cookTime}</span>
+                        <span>Servings: \${recipe.servings}</span>
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span>Calories: ${recipe.calories}</span>
-                        <span class="capitalize">${recipe.difficulty}</span>
+                        <span>Calories: \${recipe.calories}</span>
+                        <span class="capitalize">\${recipe.difficulty}</span>
                     </div>
                 </div>
-                <button onclick="showRecipeDetails(${recipe.id})" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition">
+                <button onclick="showRecipeDetails(\${recipe.id})" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition">
                     View Recipe
                 </button>
             </div>
-        `;
+        \`;
     }).join('');
 }
 
@@ -1385,22 +1385,22 @@ function loadFavorites() {
     }
     
     container.innerHTML = favoriteItems.map(item => {
-        return `
+        return \`
             <div class="tip-card p-6">
                 <div class="flex items-start justify-between mb-4">
-                    <div class="text-4xl">${item.image}</div>
-                    <button onclick="toggleFavorite(${item.id})" class="favorite-btn active">
+                    <div class="text-4xl">\${item.image}</div>
+                    <button onclick="toggleFavorite(\${item.id})" class="favorite-btn active">
                         <i class="fas fa-heart"></i>
                     </button>
                 </div>
-                <h3 class="text-xl font-semibold mb-2">${item.title}</h3>
-                <p class="text-gray-600 mb-4">${item.description || item.content.substring(0, 100)}...</p>
+                <h3 class="text-xl font-semibold mb-2">\${item.title}</h3>
+                <p class="text-gray-600 mb-4">\${item.description || item.content.substring(0, 100)}...</p>
                 <div class="flex items-center justify-between">
-                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">${item.category}</span>
-                    <span class="text-sm text-gray-500">${item.difficulty || 'N/A'}</span>
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">\${item.category}</span>
+                    <span class="text-sm text-gray-500">\${item.difficulty || 'N/A'}</span>
                 </div>
             </div>
-        `;
+        \`;
     }).join('');
 }
 

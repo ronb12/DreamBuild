@@ -355,20 +355,75 @@ class FirebaseService {
     try {
       await this.initialize()
       
-      const memoryRef = doc(this.db, 'conversationMemory', projectId)
-      await setDoc(memoryRef, {
-        projectId,
-        conversation,
-        userId: this.user?.uid || 'anonymous',
-        lastUpdated: new Date().toISOString(),
-        memorySize: JSON.stringify(conversation).length
-      })
+      const conversationData = JSON.stringify(conversation)
+      const maxSize = 800000 // 800KB to be safe (Firestore limit is 1MB)
       
-      console.log('🧠 Conversation memory stored successfully')
+      if (conversationData.length > maxSize) {
+        console.log('⚠️ Conversation data too large, storing in chunks')
+        // Store in chunks
+        const chunks = this.chunkData(conversation, maxSize)
+        for (let i = 0; i < chunks.length; i++) {
+          const chunkRef = doc(this.db, 'conversationMemory', `${projectId}_chunk_${i}`)
+          await setDoc(chunkRef, {
+            projectId,
+            chunkIndex: i,
+            totalChunks: chunks.length,
+            conversation: chunks[i],
+            userId: this.user?.uid || 'anonymous',
+            lastUpdated: new Date().toISOString()
+          })
+        }
+        console.log(`🧠 Conversation memory stored in ${chunks.length} chunks`)
+      } else {
+        const memoryRef = doc(this.db, 'conversationMemory', projectId)
+        await setDoc(memoryRef, {
+          projectId,
+          conversation,
+          userId: this.user?.uid || 'anonymous',
+          lastUpdated: new Date().toISOString(),
+          memorySize: conversationData.length
+        })
+        console.log('🧠 Conversation memory stored successfully')
+      }
     } catch (error) {
       console.error('❌ Failed to store conversation memory:', error)
       throw error
     }
+  }
+
+  // Helper method to chunk large data
+  chunkData(data, maxSize) {
+    const chunks = []
+    const dataStr = JSON.stringify(data)
+    
+    // Split by approximate size, trying to break at logical points
+    let start = 0
+    while (start < dataStr.length) {
+      let end = Math.min(start + maxSize, dataStr.length)
+      
+      // Try to break at a logical point (end of object/array)
+      if (end < dataStr.length) {
+        let lastBrace = dataStr.lastIndexOf('}', end)
+        let lastBracket = dataStr.lastIndexOf(']', end)
+        let lastComma = dataStr.lastIndexOf(',', end)
+        
+        const breakPoint = Math.max(lastBrace, lastBracket, lastComma)
+        if (breakPoint > start + maxSize * 0.8) { // Only break if we get at least 80% of max size
+          end = breakPoint + 1
+        }
+      }
+      
+      try {
+        chunks.push(JSON.parse(dataStr.slice(start, end)))
+      } catch (e) {
+        // If parsing fails, just store as string
+        chunks.push(dataStr.slice(start, end))
+      }
+      
+      start = end
+    }
+    
+    return chunks
   }
 
   // Load conversation memory
@@ -376,16 +431,39 @@ class FirebaseService {
     try {
       await this.initialize()
       
+      // First try to load as single document
       const memoryRef = doc(this.db, 'conversationMemory', projectId)
       const memoryDoc = await getDoc(memoryRef)
       
       if (memoryDoc.exists()) {
         console.log('🧠 Conversation memory loaded successfully')
         return memoryDoc.data().conversation
-      } else {
-        console.log('❌ Conversation memory not found')
-        return null
       }
+      
+      // If not found, try to load chunks
+      const chunksRef = collection(this.db, 'conversationMemory')
+      const chunksQuery = query(chunksRef, where('projectId', '==', projectId), where('chunkIndex', '>=', 0))
+      const chunksSnapshot = await getDocs(chunksQuery)
+      
+      if (!chunksSnapshot.empty) {
+        const chunks = []
+        chunksSnapshot.forEach(doc => {
+          chunks.push({
+            index: doc.data().chunkIndex,
+            data: doc.data().conversation
+          })
+        })
+        
+        // Sort chunks by index and reconstruct
+        chunks.sort((a, b) => a.index - b.index)
+        const reconstructedData = chunks.map(chunk => chunk.data)
+        
+        console.log(`🧠 Conversation memory loaded from ${chunks.length} chunks`)
+        return reconstructedData
+      }
+      
+      console.log('❌ Conversation memory not found')
+      return null
     } catch (error) {
       console.error('❌ Failed to load conversation memory:', error)
       return null

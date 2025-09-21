@@ -2926,22 +2926,61 @@ export const Error = {
       
       const { getFirestore, collection, doc, setDoc } = await import('firebase/firestore')
       const db = getFirestore(this.firebaseApp)
-      const filesRef = doc(collection(db, 'projectFiles'), projectId)
       
-      // Store files data
-      await setDoc(filesRef, {
-        projectId,
-        files,
-        fileCount: Object.keys(files).length,
-        totalSize: JSON.stringify(files).length,
-        storedAt: new Date().toISOString()
-      })
+      const filesData = JSON.stringify(files)
+      const maxSize = 800000 // 800KB to be safe (Firestore limit is 1MB)
       
-      console.log('✅ Files stored in Firebase successfully')
+      if (filesData.length > maxSize) {
+        console.log('⚠️ Files data too large, storing in chunks')
+        // Store in chunks
+        const chunks = this.chunkFilesData(files, maxSize)
+        for (let i = 0; i < chunks.length; i++) {
+          const chunkRef = doc(collection(db, 'projectFiles'), `${projectId}_chunk_${i}`)
+          await setDoc(chunkRef, {
+            projectId,
+            chunkIndex: i,
+            totalChunks: chunks.length,
+            files: chunks[i],
+            fileCount: Object.keys(chunks[i]).length,
+            storedAt: new Date().toISOString()
+          })
+        }
+        console.log(`✅ Files stored in Firebase in ${chunks.length} chunks`)
+      } else {
+        const filesRef = doc(collection(db, 'projectFiles'), projectId)
+        await setDoc(filesRef, {
+          projectId,
+          files,
+          fileCount: Object.keys(files).length,
+          totalSize: filesData.length,
+          storedAt: new Date().toISOString()
+        })
+        console.log('✅ Files stored in Firebase successfully')
+      }
     } catch (error) {
       console.error('❌ Failed to store files in Firebase:', error)
       throw error
     }
+  }
+
+  // Helper method to chunk files data
+  chunkFilesData(files, maxSize) {
+    const chunks = []
+    const fileEntries = Object.entries(files)
+    const filesPerChunk = Math.max(1, Math.floor(fileEntries.length / Math.ceil(JSON.stringify(files).length / maxSize)))
+    
+    for (let i = 0; i < fileEntries.length; i += filesPerChunk) {
+      const chunk = {}
+      const chunkEntries = fileEntries.slice(i, i + filesPerChunk)
+      
+      for (const [filename, content] of chunkEntries) {
+        chunk[filename] = content
+      }
+      
+      chunks.push(chunk)
+    }
+    
+    return chunks
   }
 
   // NEW: Load files from Firebase Storage

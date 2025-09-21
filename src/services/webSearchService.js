@@ -392,7 +392,7 @@ const doubleCount = computed(() => count.value * 2);`
           'Regular security audits'
         ],
         codeExamples: {
-          validation: `function validateInput(input) {
+          validation: `function sanitizeInput(input) {
   return input.replace(/<script[^>]*>.*?<\/script>/gi, '');
 }`,
           headers: 'Content-Security-Policy: default-src \'self\'; script-src \'self\' \'unsafe-inline\';'

@@ -1916,6 +1916,35 @@ ${content}`
     
     const lowerPrompt = prompt.toLowerCase()
     
+    // Detect game requests and generate actual playable games
+    if (lowerPrompt.includes('game') || lowerPrompt.includes('coin collector') || lowerPrompt.includes('playable')) {
+      requirements.components.push({
+        type: 'game',
+        name: 'GameComponent',
+        props: ['score', 'level', 'onGameOver', 'onScoreUpdate'],
+        dependencies: ['game-engine', 'canvas', 'input-handling', 'collision-detection']
+      })
+      requirements.components.push({
+        type: 'game-ui',
+        name: 'GameUI',
+        props: ['score', 'lives', 'level', 'isPaused'],
+        dependencies: ['ui-components', 'state-management']
+      })
+      requirements.components.push({
+        type: 'game-object',
+        name: 'Coin',
+        props: ['x', 'y', 'value', 'isCollected'],
+        dependencies: ['physics', 'rendering']
+      })
+      requirements.components.push({
+        type: 'game-object',
+        name: 'Player',
+        props: ['x', 'y', 'speed', 'lives'],
+        dependencies: ['input-handling', 'collision-detection']
+      })
+      requirements.complexity = 'medium'
+    }
+    
     // Detect UI components
     if (lowerPrompt.includes('button') || lowerPrompt.includes('form')) {
       requirements.components.push({
@@ -2077,6 +2106,11 @@ ${content}`
       // Generate component-specific files
       const componentSpecificFiles = this.generateComponentSpecificFiles(component, prompt, context)
       Object.assign(files, componentSpecificFiles)
+      
+      // Generate CSS for game components
+      if (component.type === 'game' || component.type === 'game-ui' || component.type === 'game-object') {
+        files[`src/components/${component.name}.css`] = this.generateGameCSS(component, prompt, context)
+      }
     })
     
     // Generate component index
@@ -2136,6 +2170,19 @@ export default ${rootName};`
   generateComponentFile(component, hierarchy, prompt, context) {
     const props = component.props || []
     const dependencies = component.dependencies || []
+    
+    // Generate game-specific components
+    if (component.type === 'game') {
+      return this.generateGameComponent(component, prompt, context)
+    }
+    
+    if (component.type === 'game-ui') {
+      return this.generateGameUIComponent(component, prompt, context)
+    }
+    
+    if (component.type === 'game-object') {
+      return this.generateGameObjectComponent(component, prompt, context)
+    }
     
     return `import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
@@ -11443,6 +11490,596 @@ const FormField = ({
 }
 
 export default FormField`
+  }
+
+  // NEW: Generate actual playable game components
+  generateGameComponent(component, prompt, context) {
+    return `import React, { useState, useEffect, useRef, useCallback } from 'react';
+import './${component.name}.css';
+
+const ${component.name} = () => {
+  const canvasRef = useRef(null);
+  const [gameState, setGameState] = useState({
+    score: 0,
+    level: 1,
+    lives: 3,
+    isPlaying: false,
+    isPaused: false,
+    gameOver: false
+  });
+  
+  const [player, setPlayer] = useState({
+    x: 400,
+    y: 500,
+    width: 50,
+    height: 50,
+    speed: 5
+  });
+  
+  const [coins, setCoins] = useState([]);
+  const [keys, setKeys] = useState({});
+  
+  // Game loop
+  useEffect(() => {
+    if (!gameState.isPlaying || gameState.isPaused) return;
+    
+    const gameLoop = setInterval(() => {
+      updateGame();
+    }, 16); // ~60 FPS
+    
+    return () => clearInterval(gameLoop);
+  }, [gameState.isPlaying, gameState.isPaused]);
+  
+  // Handle keyboard input
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      setKeys(prev => ({ ...prev, [e.key]: true }));
+    };
+    
+    const handleKeyUp = (e) => {
+      setKeys(prev => ({ ...prev, [e.key]: false }));
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+  
+  // Update game state
+  const updateGame = useCallback(() => {
+    // Move player
+    setPlayer(prev => {
+      let newX = prev.x;
+      let newY = prev.y;
+      
+      if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+        newX = Math.max(0, prev.x - prev.speed);
+      }
+      if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+        newX = Math.min(750, prev.x + prev.speed);
+      }
+      if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+        newY = Math.max(0, prev.y - prev.speed);
+      }
+      if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+        newY = Math.min(550, prev.y + prev.speed);
+      }
+      
+      return { ...prev, x: newX, y: newY };
+    });
+    
+    // Update coins
+    setCoins(prev => {
+      const newCoins = prev.map(coin => ({
+        ...coin,
+        y: coin.y + 2,
+        rotation: coin.rotation + 0.1
+      })).filter(coin => coin.y < 600);
+      
+      // Add new coins
+      if (Math.random() < 0.02) {
+        newCoins.push({
+          id: Date.now(),
+          x: Math.random() * 700 + 50,
+          y: -50,
+          width: 30,
+          height: 30,
+          value: 10,
+          rotation: 0
+        });
+      }
+      
+      return newCoins;
+    });
+    
+    // Check collisions
+    checkCollisions();
+  }, [keys]);
+  
+  // Check collisions between player and coins
+  const checkCollisions = useCallback(() => {
+    setCoins(prevCoins => {
+      const remainingCoins = [];
+      let scoreIncrease = 0;
+      
+      prevCoins.forEach(coin => {
+        const playerRect = {
+          x: player.x,
+          y: player.y,
+          width: player.width,
+          height: player.height
+        };
+        
+        const coinRect = {
+          x: coin.x,
+          y: coin.y,
+          width: coin.width,
+          height: coin.height
+        };
+        
+        if (isColliding(playerRect, coinRect)) {
+          scoreIncrease += coin.value;
+        } else {
+          remainingCoins.push(coin);
+        }
+      });
+      
+      if (scoreIncrease > 0) {
+        setGameState(prev => ({
+          ...prev,
+          score: prev.score + scoreIncrease
+        }));
+      }
+      
+      return remainingCoins;
+    });
+  }, [player]);
+  
+  // Collision detection
+  const isColliding = (rect1, rect2) => {
+    return rect1.x < rect2.x + rect2.width &&
+           rect1.x + rect1.width > rect2.x &&
+           rect1.y < rect2.y + rect2.height &&
+           rect1.y + rect1.height > rect2.y;
+  };
+  
+  // Start game
+  const startGame = () => {
+    setGameState(prev => ({
+      ...prev,
+      isPlaying: true,
+      isPaused: false,
+      gameOver: false,
+      score: 0,
+      lives: 3
+    }));
+    setPlayer({ x: 400, y: 500, width: 50, height: 50, speed: 5 });
+    setCoins([]);
+  };
+  
+  // Pause/Resume game
+  const togglePause = () => {
+    setGameState(prev => ({
+      ...prev,
+      isPaused: !prev.isPaused
+    }));
+  };
+  
+  // Draw game
+  const drawGame = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw background
+    ctx.fillStyle = '#87CEEB';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw player
+    ctx.fillStyle = '#FF6B6B';
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+    
+    // Draw coins
+    coins.forEach(coin => {
+      ctx.save();
+      ctx.translate(coin.x + coin.width/2, coin.y + coin.height/2);
+      ctx.rotate(coin.rotation);
+      ctx.fillStyle = '#FFD700';
+      ctx.fillRect(-coin.width/2, -coin.height/2, coin.width, coin.height);
+      ctx.restore();
+    });
+  }, [player, coins]);
+  
+  // Draw game on canvas
+  useEffect(() => {
+    drawGame();
+  }, [drawGame]);
+  
+  return (
+    <div className="game-container">
+      <div className="game-ui">
+        <div className="score">Score: {gameState.score}</div>
+        <div className="lives">Lives: {gameState.lives}</div>
+        <div className="level">Level: {gameState.level}</div>
+      </div>
+      
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={600}
+        className="game-canvas"
+      />
+      
+      <div className="game-controls">
+        {!gameState.isPlaying ? (
+          <button onClick={startGame} className="start-button">
+            Start Game
+          </button>
+        ) : (
+          <button onClick={togglePause} className="pause-button">
+            {gameState.isPaused ? 'Resume' : 'Pause'}
+          </button>
+        )}
+      </div>
+      
+      <div className="game-instructions">
+        <p>Use arrow keys or WASD to move and collect coins!</p>
+      </div>
+    </div>
+  );
+};
+
+export default ${component.name};`
+  }
+
+  generateGameUIComponent(component, prompt, context) {
+    return `import React from 'react';
+import './${component.name}.css';
+
+const ${component.name} = ({ score, lives, level, isPaused }) => {
+  return (
+    <div className="game-ui">
+      <div className="ui-panel">
+        <div className="stat">
+          <span className="label">Score:</span>
+          <span className="value">{score}</span>
+        </div>
+        <div className="stat">
+          <span className="label">Lives:</span>
+          <span className="value">{lives}</span>
+        </div>
+        <div className="stat">
+          <span className="label">Level:</span>
+          <span className="value">{level}</span>
+        </div>
+        {isPaused && (
+          <div className="pause-indicator">PAUSED</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ${component.name};`
+  }
+
+  generateGameObjectComponent(component, prompt, context) {
+    if (component.name === 'Coin') {
+      return `import React from 'react';
+import './${component.name}.css';
+
+const ${component.name} = ({ x, y, value, isCollected, rotation = 0 }) => {
+  if (isCollected) return null;
+  
+  return (
+    <div 
+      className="coin"
+      style={{
+        left: x,
+        top: y,
+        transform: \`rotate(\${rotation}rad)\`
+      }}
+    >
+      <div className="coin-inner">
+        <span className="coin-value">{value}</span>
+      </div>
+    </div>
+  );
+};
+
+export default ${component.name};`
+    }
+    
+    if (component.name === 'Player') {
+      return `import React from 'react';
+import './${component.name}.css';
+
+const ${component.name} = ({ x, y, speed, lives }) => {
+  return (
+    <div 
+      className="player"
+      style={{
+        left: x,
+        top: y
+      }}
+    >
+      <div className="player-body">
+        <div className="player-eyes"></div>
+      </div>
+    </div>
+  );
+};
+
+export default ${component.name};`
+    }
+    
+    return `import React from 'react';
+import './${component.name}.css';
+
+const ${component.name} = ({ x, y, ...props }) => {
+  return (
+    <div 
+      className="${component.name.toLowerCase()}"
+      style={{
+        left: x,
+        top: y
+      }}
+      {...props}
+    />
+  );
+};
+
+export default ${component.name};`
+  }
+
+  // Generate CSS for game components
+  generateGameCSS(component, prompt, context) {
+    if (component.type === 'game') {
+      return `.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  font-family: 'Arial', sans-serif;
+}
+
+.game-ui {
+  display: flex;
+  justify-content: space-between;
+  width: 800px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-ui .score,
+.game-ui .lives,
+.game-ui .level {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.game-canvas {
+  border: 3px solid #333;
+  border-radius: 10px;
+  background: #87CEEB;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  cursor: crosshair;
+}
+
+.game-controls {
+  margin: 20px 0;
+}
+
+.start-button,
+.pause-button {
+  background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  transition: all 0.3s ease;
+}
+
+.start-button:hover,
+.pause-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+}
+
+.game-instructions {
+  margin-top: 15px;
+  text-align: center;
+  color: white;
+  font-size: 16px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.game-instructions p {
+  margin: 5px 0;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+  border-radius: 20px;
+  display: inline-block;
+}`
+    }
+    
+    if (component.type === 'game-ui') {
+      return `.game-ui {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+.ui-panel {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  gap: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat .label {
+  font-size: 12px;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat .value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #FFD700;
+}
+
+.pause-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 0, 0, 0.9);
+  color: white;
+  padding: 20px 40px;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 10px;
+  z-index: 2000;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}`
+    }
+    
+    if (component.type === 'game-object') {
+      if (component.name === 'Coin') {
+        return `.coin {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 10;
+}
+
+.coin-inner {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: coinSpin 2s linear infinite;
+}
+
+.coin-value {
+  color: #333;
+  font-weight: bold;
+  font-size: 12px;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes coinSpin {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}`
+      }
+      
+      if (component.name === 'Player') {
+        return `.player {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  z-index: 20;
+}
+
+.player-body {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: playerBounce 0.5s ease-in-out infinite alternate;
+}
+
+.player-eyes {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+}
+
+.player-eyes::before,
+.player-eyes::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #333;
+  border-radius: 50%;
+  top: 2px;
+}
+
+.player-eyes::before {
+  left: 3px;
+}
+
+.player-eyes::after {
+  right: 3px;
+}
+
+@keyframes playerBounce {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}`
+      }
+      
+      return `.${component.name.toLowerCase()} {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #666;
+  border-radius: 5px;
+}`
+    }
+    
+    return `/* ${component.name} styles */
+.${component.name.toLowerCase()} {
+  /* Component styles */
+}`
   }
 }
 

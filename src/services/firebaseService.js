@@ -1,7 +1,7 @@
 // Firebase Service for DreamBuild
 // Handles unlimited cloud storage for projects, contexts, and templates
 
-import { initializeApp } from 'firebase/app'
+import { initializeApp, getApp } from 'firebase/app'
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, startAfter, writeBatch } from 'firebase/firestore'
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth'
@@ -36,11 +36,11 @@ class FirebaseService {
       } catch (error) {
         if (error.code === 'app/duplicate-app') {
           // App already exists, get the existing instance
-          this.app = initializeApp()
+          this.app = getApp()
         } else if (error.code === 'app/no-options') {
           // No options provided, try to get existing app or create with minimal config
           try {
-            this.app = initializeApp()
+            this.app = getApp()
           } catch (e) {
             // If that fails, create with minimal config
             this.app = initializeApp({

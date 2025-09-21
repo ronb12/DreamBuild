@@ -165,8 +165,8 @@ class LocalAIService {
         this.performHealthChecks()
       }, 60000) // Check every minute
     } else {
-      console.log('🌐 Running on deployed domain - using enhanced template mode')
-      // Set all models as healthy for deployed app (uses enhanced templates)
+      console.log('🌐 Running on deployed domain - using dynamic file generation')
+      // Set all models as healthy for deployed app (uses dynamic generation)
       for (const [modelId, model] of Object.entries(LOCAL_AI_MODELS)) {
         this.modelHealth[modelId] = {
           isHealthy: true,
@@ -174,7 +174,7 @@ class LocalAIService {
           error: null
         }
       }
-      console.log('✅ Template mode active - AI generation available')
+      console.log('✅ Dynamic generation active - AI generation available')
     }
   }
 

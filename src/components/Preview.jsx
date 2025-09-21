@@ -231,6 +231,16 @@ const Preview = () => {
     console.log('🎮 - isTempleRun:', isTempleRun)
     console.log('🎮 - isCoinCollector:', isCoinCollector)
     console.log('🎮 - All project files:', Object.keys(currentProject.files))
+    
+    // Final game type decision
+    console.log('🎮 FINAL GAME TYPE DECISION:')
+    if (isTempleRun) {
+      console.log('🎮 ✅ RENDERING TEMPLE RUN GAME')
+    } else if (isCoinCollector) {
+      console.log('🎮 ✅ RENDERING COIN COLLECTOR GAME')
+    } else {
+      console.log('🎮 ✅ RENDERING DEFAULT GAME')
+    }
 
     // Create a complete React app HTML
     const reactHTML = `

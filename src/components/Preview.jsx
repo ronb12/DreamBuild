@@ -30,7 +30,15 @@ const Preview = () => {
   const updatePreview = () => {
     console.log('🎮 updatePreview called with files:', Object.keys(currentProject.files))
     if (!iframeRef.current) {
-      console.log('🎮 updatePreview: iframeRef.current is null')
+      console.log('🎮 updatePreview: iframeRef.current is null, retrying in 100ms...')
+      setTimeout(() => {
+        if (iframeRef.current) {
+          console.log('🎮 updatePreview: Retry successful, iframeRef.current now exists')
+          updatePreview()
+        } else {
+          console.log('🎮 updatePreview: Retry failed, iframeRef.current still null')
+        }
+      }, 100)
       return
     }
 

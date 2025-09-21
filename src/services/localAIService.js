@@ -10481,6 +10481,907 @@ export default {
   refreshUtils
 }`
   }
+
+  // Extract features from existing files
+  extractFeatures(files) {
+    const features = []
+    const fileNames = Object.keys(files)
+    
+    // Check for common features based on file names and content
+    if (fileNames.some(name => name.includes('auth') || name.includes('Auth'))) {
+      features.push('authentication')
+    }
+    if (fileNames.some(name => name.includes('chart') || name.includes('Chart'))) {
+      features.push('data-visualization')
+    }
+    if (fileNames.some(name => name.includes('api') || name.includes('service'))) {
+      features.push('api-integration')
+    }
+    if (fileNames.some(name => name.includes('hook') || name.includes('Hook'))) {
+      features.push('custom-hooks')
+    }
+    if (fileNames.some(name => name.includes('context') || name.includes('Context'))) {
+      features.push('state-management')
+    }
+    if (fileNames.some(name => name.includes('test') || name.includes('Test'))) {
+      features.push('testing')
+    }
+    if (fileNames.some(name => name.includes('css') || name.includes('style'))) {
+      features.push('styling')
+    }
+    if (fileNames.some(name => name.includes('form') || name.includes('Form'))) {
+      features.push('form-handling')
+    }
+    if (fileNames.some(name => name.includes('table') || name.includes('Table'))) {
+      features.push('data-tables')
+    }
+    if (fileNames.some(name => name.includes('storage') || name.includes('Storage'))) {
+      features.push('data-persistence')
+    }
+    
+    return features
+  }
+
+  // Extract dependencies from existing files
+  extractDependencies(files) {
+    const dependencies = new Set()
+    const fileNames = Object.keys(files)
+    
+    // Check for common dependencies based on file content patterns
+    fileNames.forEach(fileName => {
+      const content = files[fileName] || ''
+      
+      if (content.includes('useState') || content.includes('useEffect')) {
+        dependencies.add('react')
+      }
+      if (content.includes('useReducer') || content.includes('createContext')) {
+        dependencies.add('react')
+      }
+      if (content.includes('chart') || content.includes('Chart')) {
+        dependencies.add('chart.js')
+        dependencies.add('react-chartjs-2')
+      }
+      if (content.includes('router') || content.includes('Router')) {
+        dependencies.add('react-router-dom')
+      }
+      if (content.includes('axios') || content.includes('fetch')) {
+        dependencies.add('axios')
+      }
+      if (content.includes('motion') || content.includes('framer')) {
+        dependencies.add('framer-motion')
+      }
+      if (content.includes('query') || content.includes('Query')) {
+        dependencies.add('react-query')
+      }
+      if (content.includes('tailwind') || content.includes('className')) {
+        dependencies.add('tailwindcss')
+      }
+    })
+    
+    return Array.from(dependencies)
+  }
+
+  // Generate progressive enhancement files
+  generateProgressiveEnhancementFiles(features, dependencies, prompt, context) {
+    const files = {}
+    
+    // Generate feature-specific enhancements
+    if (features.includes('authentication')) {
+      files['src/components/ProtectedRoute.jsx'] = this.generateProtectedRoute(prompt, context)
+      files['src/components/LoginForm.jsx'] = this.generateLoginForm(prompt, context)
+    }
+    
+    if (features.includes('data-visualization')) {
+      files['src/components/ChartContainer.jsx'] = this.generateChartContainer(prompt, context)
+      files['src/hooks/useChartData.js'] = this.generateChartDataHook(prompt, context)
+    }
+    
+    if (features.includes('api-integration')) {
+      files['src/hooks/useApi.js'] = this.generateApiHook(prompt, context)
+      files['src/utils/requestInterceptor.js'] = this.generateRequestInterceptor(prompt, context)
+    }
+    
+    if (features.includes('testing')) {
+      files['src/utils/testUtils.js'] = this.generateTestUtils(prompt, context)
+      files['src/setupTests.js'] = this.generateSetupTests(prompt, context)
+    }
+    
+    if (features.includes('form-handling')) {
+      files['src/hooks/useForm.js'] = this.generateFormHook(prompt, context)
+      files['src/components/FormField.jsx'] = this.generateFormField(prompt, context)
+    }
+    
+    return files
+  }
+
+  // Generate Protected Route component
+  generateProtectedRoute(prompt, context) {
+    return `import React from 'react'
+import { useAuth } from '../context/AuthContext'
+
+const ProtectedRoute = ({ children, fallback = null }) => {
+  const { isAuthenticated, isLoading } = useAuth()
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return fallback || (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
+          <p className="text-gray-600">Please log in to access this page.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return children
+}
+
+export default ProtectedRoute`
+  }
+
+  // Generate Login Form component
+  generateLoginForm(prompt, context) {
+    return `import React, { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
+
+const LoginForm = ({ onSuccess, onError }) => {
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: ''
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const { login } = useAuth()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      const result = await login(credentials)
+      if (result.success) {
+        onSuccess?.()
+      } else {
+        onError?.(result.error)
+      }
+    } catch (error) {
+      onError?.(error.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleChange = (e) => {
+    setCredentials(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+          Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={credentials.email}
+          onChange={handleChange}
+          required
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          value={credentials.password}
+          onChange={handleChange}
+          required
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+      
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+      >
+        {isLoading ? 'Signing in...' : 'Sign in'}
+      </button>
+    </form>
+  )
+}
+
+export default LoginForm`
+  }
+
+  // Generate Chart Container component
+  generateChartContainer(prompt, context) {
+    return `import React from 'react'
+import { Line, Bar, Pie, Doughnut } from 'react-chartjs-2'
+import { chartConfigs } from '../utils/chartHelpers'
+
+const ChartContainer = ({ 
+  type = 'line', 
+  data, 
+  title, 
+  height = 400,
+  className = ''
+}) => {
+  const getChartComponent = () => {
+    switch (type) {
+      case 'bar':
+        return <Bar data={data} options={chartConfigs.bar} />
+      case 'pie':
+        return <Pie data={data} options={chartConfigs.pie} />
+      case 'doughnut':
+        return <Doughnut data={data} options={chartConfigs.doughnut} />
+      default:
+        return <Line data={data} options={chartConfigs.line} />
+    }
+  }
+
+  return (
+    <div className={\`bg-white p-6 rounded-lg shadow-md \${className}\`}>
+      {title && (
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+      )}
+      <div style={{ height: height }}>
+        {getChartComponent()}
+      </div>
+    </div>
+  )
+}
+
+export default ChartContainer`
+  }
+
+  // Generate Chart Data Hook
+  generateChartDataHook(prompt, context) {
+    return `import { useState, useEffect, useCallback } from 'react'
+import { chartFormatters } from '../utils/chartHelpers'
+
+export const useChartData = (endpoint, options = {}) => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+
+      const rawData = await response.json()
+      
+      // Format data based on chart type
+      let formattedData
+      if (options.chartType === 'line') {
+        formattedData = chartFormatters.formatLineData(
+          rawData, 
+          options.xField || 'label', 
+          options.yField || 'value'
+        )
+      } else if (options.chartType === 'bar') {
+        formattedData = chartFormatters.formatBarData(
+          rawData, 
+          options.xField || 'label', 
+          options.yField || 'value'
+        )
+      } else if (options.chartType === 'pie') {
+        formattedData = chartFormatters.formatPieData(
+          rawData, 
+          options.labelField || 'label', 
+          options.valueField || 'value'
+        )
+      } else {
+        formattedData = rawData
+      }
+
+      setData(formattedData)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [endpoint, options])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  const refresh = useCallback(() => {
+    fetchData()
+  }, [fetchData])
+
+  return {
+    data,
+    loading,
+    error,
+    refresh
+  }
+}
+
+export default useChartData`
+  }
+
+  // Generate API Hook
+  generateApiHook(prompt, context) {
+    return `import { useState, useCallback } from 'react'
+import { apiUtils } from '../utils/token'
+
+export const useApi = (baseUrl = '') => {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const request = useCallback(async (endpoint, options = {}) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const url = baseUrl + endpoint
+      const response = await apiUtils.makeAuthenticatedRequest(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+
+      const data = await response.json()
+      return { success: true, data }
+    } catch (err) {
+      setError(err.message)
+      return { success: false, error: err.message }
+    } finally {
+      setLoading(false)
+    }
+  }, [baseUrl])
+
+  const get = useCallback((endpoint, options = {}) => {
+    return request(endpoint, { ...options, method: 'GET' })
+  }, [request])
+
+  const post = useCallback((endpoint, data, options = {}) => {
+    return request(endpoint, {
+      ...options,
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  }, [request])
+
+  const put = useCallback((endpoint, data, options = {}) => {
+    return request(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+  }, [request])
+
+  const del = useCallback((endpoint, options = {}) => {
+    return request(endpoint, { ...options, method: 'DELETE' })
+  }, [request])
+
+  return {
+    loading,
+    error,
+    request,
+    get,
+    post,
+    put,
+    delete: del
+  }
+}
+
+export default useApi`
+  }
+
+  // Generate Request Interceptor
+  generateRequestInterceptor(prompt, context) {
+    return `// Request interceptor for API calls
+
+class RequestInterceptor {
+  constructor() {
+    this.interceptors = {
+      request: [],
+      response: []
+    }
+  }
+
+  // Add request interceptor
+  addRequestInterceptor(interceptor) {
+    this.interceptors.request.push(interceptor)
+  }
+
+  // Add response interceptor
+  addResponseInterceptor(interceptor) {
+    this.interceptors.response.push(interceptor)
+  }
+
+  // Process request interceptors
+  async processRequest(config) {
+    let processedConfig = { ...config }
+    
+    for (const interceptor of this.interceptors.request) {
+      processedConfig = await interceptor(processedConfig)
+    }
+    
+    return processedConfig
+  }
+
+  // Process response interceptors
+  async processResponse(response) {
+    let processedResponse = response
+    
+    for (const interceptor of this.interceptors.response) {
+      processedResponse = await interceptor(processedResponse)
+    }
+    
+    return processedResponse
+  }
+
+  // Clear all interceptors
+  clear() {
+    this.interceptors.request = []
+    this.interceptors.response = []
+  }
+}
+
+// Create global instance
+const requestInterceptor = new RequestInterceptor()
+
+// Add common interceptors
+requestInterceptor.addRequestInterceptor(async (config) => {
+  // Add auth token
+  const token = localStorage.getItem('auth_token')
+  if (token) {
+    config.headers = {
+      ...config.headers,
+      'Authorization': \`Bearer \${token}\`
+    }
+  }
+  
+  // Add timestamp
+  config.headers = {
+    ...config.headers,
+    'X-Request-Time': new Date().toISOString()
+  }
+  
+  return config
+})
+
+requestInterceptor.addResponseInterceptor(async (response) => {
+  // Log response
+  console.log(\`API Response: \${response.status} - \${response.url}\`)
+  
+  // Handle common errors
+  if (response.status === 401) {
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('auth_user')
+    window.location.href = '/login'
+  }
+  
+  return response
+})
+
+export default requestInterceptor`
+  }
+
+  // Generate Test Utils
+  generateTestUtils(prompt, context) {
+    return `// Test utilities for React components
+
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
+
+// Custom render function with providers
+export const renderWithProviders = (ui, options = {}) => {
+  const { route = '/' } = options
+  
+  window.history.pushState({}, 'Test page', route)
+  
+  return render(ui, { wrapper: BrowserRouter })
+}
+
+// Mock fetch function
+export const mockFetch = (data, status = 200) => {
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: status >= 200 && status < 300,
+      status,
+      json: () => Promise.resolve(data)
+    })
+  )
+}
+
+// Mock localStorage
+export const mockLocalStorage = () => {
+  const store = {}
+  
+  return {
+    getItem: jest.fn((key) => store[key] || null),
+    setItem: jest.fn((key, value) => {
+      store[key] = value
+    }),
+    removeItem: jest.fn((key) => {
+      delete store[key]
+    }),
+    clear: jest.fn(() => {
+      Object.keys(store).forEach(key => delete store[key])
+    })
+  }
+}
+
+// Wait for async operations
+export const waitForAsync = () => waitFor(() => {})
+
+// Custom matchers
+export const customMatchers = {
+  toBeInTheDocument: (received) => {
+    const pass = received !== null && received !== undefined
+    return {
+      pass,
+      message: () => \`Expected element to be in the document\`
+    }
+  }
+}
+
+export default {
+  renderWithProviders,
+  mockFetch,
+  mockLocalStorage,
+  waitForAsync,
+  customMatchers
+}`
+  }
+
+  // Generate Setup Tests
+  generateSetupTests(prompt, context) {
+    return `// Jest setup file for testing
+
+import '@testing-library/jest-dom'
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+})
+
+// Mock IntersectionObserver
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+}
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+  unobserve() {}
+}
+
+// Mock fetch
+global.fetch = jest.fn()
+
+// Mock console methods to reduce noise in tests
+const originalError = console.error
+beforeAll(() => {
+  console.error = (...args) => {
+    if (
+      typeof args[0] === 'string' &&
+      args[0].includes('Warning: ReactDOM.render is no longer supported')
+    ) {
+      return
+    }
+    originalError.call(console, ...args)
+  }
+})
+
+afterAll(() => {
+  console.error = originalError
+})`
+  }
+
+  // Generate Form Hook
+  generateFormHook(prompt, context) {
+    return `import { useState, useCallback } from 'react'
+
+export const useForm = (initialValues = {}, validationRules = {}) => {
+  const [values, setValues] = useState(initialValues)
+  const [errors, setErrors] = useState({})
+  const [touched, setTouched] = useState({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Handle input change
+  const handleChange = useCallback((e) => {
+    const { name, value, type, checked } = e.target
+    const fieldValue = type === 'checkbox' ? checked : value
+    
+    setValues(prev => ({
+      ...prev,
+      [name]: fieldValue
+    }))
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }))
+    }
+  }, [errors])
+
+  // Handle input blur
+  const handleBlur = useCallback((e) => {
+    const { name } = e.target
+    setTouched(prev => ({
+      ...prev,
+      [name]: true
+    }))
+
+    // Validate field on blur
+    validateField(name, values[name])
+  }, [values])
+
+  // Validate single field
+  const validateField = useCallback((fieldName, value) => {
+    const rule = validationRules[fieldName]
+    if (!rule) return true
+
+    let error = ''
+    
+    if (rule.required && (!value || value.toString().trim() === '')) {
+      error = rule.required
+    } else if (rule.minLength && value.length < rule.minLength) {
+      error = rule.minLength
+    } else if (rule.maxLength && value.length > rule.maxLength) {
+      error = rule.maxLength
+    } else if (rule.pattern && !rule.pattern.test(value)) {
+      error = rule.pattern
+    } else if (rule.custom && !rule.custom(value)) {
+      error = rule.custom
+    }
+
+    setErrors(prev => ({
+      ...prev,
+      [fieldName]: error
+    }))
+
+    return !error
+  }, [validationRules])
+
+  // Validate all fields
+  const validateForm = useCallback(() => {
+    const newErrors = {}
+    let isValid = true
+
+    Object.keys(validationRules).forEach(fieldName => {
+      const fieldValue = values[fieldName]
+      const rule = validationRules[fieldName]
+      
+      if (rule.required && (!fieldValue || fieldValue.toString().trim() === '')) {
+        newErrors[fieldName] = rule.required
+        isValid = false
+      } else if (rule.minLength && fieldValue.length < rule.minLength) {
+        newErrors[fieldName] = rule.minLength
+        isValid = false
+      } else if (rule.maxLength && fieldValue.length > rule.maxLength) {
+        newErrors[fieldName] = rule.maxLength
+        isValid = false
+      } else if (rule.pattern && !rule.pattern.test(fieldValue)) {
+        newErrors[fieldName] = rule.pattern
+        isValid = false
+      } else if (rule.custom && !rule.custom(fieldValue)) {
+        newErrors[fieldName] = rule.custom
+        isValid = false
+      }
+    })
+
+    setErrors(newErrors)
+    return isValid
+  }, [values, validationRules])
+
+  // Handle form submission
+  const handleSubmit = useCallback(async (onSubmit) => {
+    setIsSubmitting(true)
+    
+    const isValid = validateForm()
+    if (!isValid) {
+      setIsSubmitting(false)
+      return
+    }
+
+    try {
+      await onSubmit(values)
+    } catch (error) {
+      console.error('Form submission error:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }, [values, validateForm])
+
+  // Reset form
+  const resetForm = useCallback(() => {
+    setValues(initialValues)
+    setErrors({})
+    setTouched({})
+    setIsSubmitting(false)
+  }, [initialValues])
+
+  // Set field value programmatically
+  const setFieldValue = useCallback((fieldName, value) => {
+    setValues(prev => ({
+      ...prev,
+      [fieldName]: value
+    }))
+  }, [])
+
+  // Set field error programmatically
+  const setFieldError = useCallback((fieldName, error) => {
+    setErrors(prev => ({
+      ...prev,
+      [fieldName]: error
+    }))
+  }, [])
+
+  return {
+    values,
+    errors,
+    touched,
+    isSubmitting,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    resetForm,
+    setFieldValue,
+    setFieldError,
+    validateField,
+    validateForm
+  }
+}
+
+export default useForm`
+  }
+
+  // Generate Form Field component
+  generateFormField(prompt, context) {
+    return `import React from 'react'
+
+const FormField = ({
+  name,
+  label,
+  type = 'text',
+  value,
+  onChange,
+  onBlur,
+  error,
+  touched,
+  placeholder,
+  required = false,
+  disabled = false,
+  className = '',
+  ...props
+}) => {
+  const fieldId = \`field-\${name}\`
+  const hasError = touched && error
+
+  return (
+    <div className={\`mb-4 \${className}\`}>
+      {label && (
+        <label 
+          htmlFor={fieldId} 
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
+      
+      {type === 'textarea' ? (
+        <textarea
+          id={fieldId}
+          name={name}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          disabled={disabled}
+          rows={4}
+          className={\`
+            w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+            \${hasError ? 'border-red-500' : 'border-gray-300'}
+            \${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
+          \`}
+          {...props}
+        />
+      ) : type === 'select' ? (
+        <select
+          id={fieldId}
+          name={name}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          disabled={disabled}
+          className={\`
+            w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+            \${hasError ? 'border-red-500' : 'border-gray-300'}
+            \${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
+          \`}
+          {...props}
+        >
+          {props.children}
+        </select>
+      ) : (
+        <input
+          id={fieldId}
+          name={name}
+          type={type}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          disabled={disabled}
+          className={\`
+            w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+            \${hasError ? 'border-red-500' : 'border-gray-300'}
+            \${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
+          \`}
+          {...props}
+        />
+      )}
+      
+      {hasError && (
+        <p className="mt-1 text-sm text-red-600">{error}</p>
+      )}
+    </div>
+  )
+}
+
+export default FormField`
+  }
 }
 
 // Export singleton instance

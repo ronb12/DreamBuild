@@ -170,19 +170,208 @@ const Preview = () => {
         <script type="text/babel">
           const { useState, useEffect, useRef, useCallback } = React;
           
-          // Remove import statements from components and inject them
-          const gameComponentCode = \`${gameComponentFile}\`.replace(/import[^;]+;/g, '');
-          const gameUICode = \`${gameUIFile}\`.replace(/import[^;]+;/g, '');
-          const coinCode = \`${coinFile}\`.replace(/import[^;]+;/g, '');
-          const playerCode = \`${playerFile}\`.replace(/import[^;]+;/g, '');
-          const gameAppCode = \`${gameAppFile}\`.replace(/import[^;]+;/g, '');
+          // Simple coin collector game implementation
+          const GameComponent = () => {
+            const canvasRef = useRef(null);
+            const [gameState, setGameState] = useState({
+              score: 0,
+              level: 1,
+              lives: 3,
+              isPlaying: false,
+              isPaused: false,
+              gameOver: false
+            });
+            
+            const [player, setPlayer] = useState({ x: 200, y: 300, size: 20 });
+            const [coins, setCoins] = useState([]);
+            const [keys, setKeys] = useState({});
+            
+            const handleKeyDown = useCallback((e) => {
+              setKeys(prev => ({ ...prev, [e.code]: true }));
+            }, []);
+            
+            const handleKeyUp = useCallback((e) => {
+              setKeys(prev => ({ ...prev, [e.code]: false }));
+            }, []);
+            
+            useEffect(() => {
+              window.addEventListener('keydown', handleKeyDown);
+              window.addEventListener('keyup', handleKeyUp);
+              return () => {
+                window.removeEventListener('keydown', handleKeyDown);
+                window.removeEventListener('keyup', handleKeyUp);
+              };
+            }, [handleKeyDown, handleKeyUp]);
+            
+            const startGame = () => {
+              setGameState(prev => ({ ...prev, isPlaying: true, gameOver: false, score: 0 }));
+              setPlayer({ x: 200, y: 300, size: 20 });
+              setCoins([]);
+            };
+            
+            const pauseGame = () => {
+              setGameState(prev => ({ ...prev, isPaused: !prev.isPaused }));
+            };
+            
+            const gameLoop = useCallback(() => {
+              if (!gameState.isPlaying || gameState.isPaused) return;
+              
+              setPlayer(prevPlayer => {
+                let newX = prevPlayer.x;
+                let newY = prevPlayer.y;
+                
+                if (keys['ArrowLeft'] || keys['KeyA']) newX = Math.max(0, newX - 5);
+                if (keys['ArrowRight'] || keys['KeyD']) newX = Math.min(380, newX + 5);
+                if (keys['ArrowUp'] || keys['KeyW']) newY = Math.max(0, newY - 5);
+                if (keys['ArrowDown'] || keys['KeyS']) newY = Math.min(380, newY + 5);
+                
+                return { ...prevPlayer, x: newX, y: newY };
+              });
+              
+              // Spawn coins
+              if (Math.random() < 0.02) {
+                setCoins(prevCoins => [...prevCoins, {
+                  id: Date.now(),
+                  x: Math.random() * 360,
+                  y: Math.random() * 360,
+                  size: 15,
+                  collected: false
+                }]);
+              }
+              
+              // Check collisions
+              setCoins(prevCoins => {
+                return prevCoins.map(coin => {
+                  const distance = Math.sqrt(
+                    Math.pow(coin.x - player.x, 2) + Math.pow(coin.y - player.y, 2)
+                  );
+                  
+                  if (distance < 25 && !coin.collected) {
+                    setGameState(prev => ({ ...prev, score: prev.score + 10 }));
+                    return { ...coin, collected: true };
+                  }
+                  
+                  return coin;
+                }).filter(coin => !coin.collected);
+              });
+              
+              requestAnimationFrame(gameLoop);
+            }, [keys, player.x, player.y, gameState.isPlaying, gameState.isPaused]);
+            
+            useEffect(() => {
+              if (gameState.isPlaying && !gameState.isPaused) {
+                const timer = setTimeout(gameLoop, 16);
+                return () => clearTimeout(timer);
+              }
+            }, [gameLoop, gameState.isPlaying, gameState.isPaused]);
+            
+            return (
+              <div style={{ 
+                width: '400px', 
+                height: '400px', 
+                border: '2px solid #333', 
+                position: 'relative',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '10px',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '10px',
+                  left: '10px',
+                  color: 'white',
+                  fontSize: '18px',
+                  fontWeight: 'bold'
+                }}>
+                  Score: {gameState.score}
+                </div>
+                
+                {!gameState.isPlaying && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    textAlign: 'center',
+                    color: 'white'
+                  }}>
+                    <h2>Coin Collector Game</h2>
+                    <p>Use arrow keys or WASD to move</p>
+                    <button onClick={startGame} style={{
+                      padding: '10px 20px',
+                      fontSize: '16px',
+                      background: '#4CAF50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '5px',
+                      cursor: 'pointer'
+                    }}>
+                      Start Game
+                    </button>
+                  </div>
+                )}
+                
+                {gameState.isPlaying && (
+                  <>
+                    <div style={{
+                      position: 'absolute',
+                      top: player.y,
+                      left: player.x,
+                      width: player.size,
+                      height: player.size,
+                      background: '#FFD700',
+                      borderRadius: '50%',
+                      border: '2px solid #FFA500'
+                    }} />
+                    
+                    {coins.map(coin => (
+                      <div key={coin.id} style={{
+                        position: 'absolute',
+                        top: coin.y,
+                        left: coin.x,
+                        width: coin.size,
+                        height: coin.size,
+                        background: '#FFD700',
+                        borderRadius: '50%',
+                        border: '2px solid #FFA500',
+                        boxShadow: '0 0 10px #FFD700'
+                      }} />
+                    ))}
+                    
+                    <button onClick={pauseGame} style={{
+                      position: 'absolute',
+                      bottom: '10px',
+                      right: '10px',
+                      padding: '5px 10px',
+                      fontSize: '12px',
+                      background: '#f44336',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '3px',
+                      cursor: 'pointer'
+                    }}>
+                      {gameState.isPaused ? 'Resume' : 'Pause'}
+                    </button>
+                  </>
+                )}
+              </div>
+            );
+          };
           
-          // Execute the component code
-          eval(gameComponentCode);
-          eval(gameUICode);
-          eval(coinCode);
-          eval(playerCode);
-          eval(gameAppCode);
+          const GameApp = () => {
+            return (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '100vh',
+                background: '#f0f0f0',
+                fontFamily: 'Arial, sans-serif'
+              }}>
+                <GameComponent />
+              </div>
+            );
+          };
           
           // Render the app
           const root = ReactDOM.createRoot(document.getElementById('root'));

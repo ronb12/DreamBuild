@@ -9760,6 +9760,185 @@ export const storage = {
 export { StorageService, storageService }
 export default storageService`
   }
+
+  // Generate Chart Helpers
+  generateChartHelpers(prompt, context) {
+    return `// Chart helpers for data visualization
+
+// Chart.js configuration helpers
+export const chartConfigs = {
+  line: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top' },
+      title: { display: true, text: 'Line Chart' }
+    },
+    scales: { y: { beginAtZero: true } }
+  },
+  bar: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top' },
+      title: { display: true, text: 'Bar Chart' }
+    },
+    scales: { y: { beginAtZero: true } }
+  },
+  pie: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'right' },
+      title: { display: true, text: 'Pie Chart' }
+    }
+  }
+}
+
+// Color palettes
+export const colorPalettes = {
+  primary: ['#3B82F6', '#1D4ED8', '#1E40AF', '#1E3A8A', '#312E81'],
+  success: ['#10B981', '#059669', '#047857', '#065F46', '#064E3B'],
+  warning: ['#F59E0B', '#D97706', '#B45309', '#92400E', '#78350F'],
+  danger: ['#EF4444', '#DC2626', '#B91C1C', '#991B1B', '#7F1D1D']
+}
+
+// Generate random colors
+export const generateColors = (count, palette = 'primary') => {
+  const colors = colorPalettes[palette] || colorPalettes.primary
+  const result = []
+  for (let i = 0; i < count; i++) {
+    result.push(colors[i % colors.length])
+  }
+  return result
+}
+
+// Chart data formatters
+export const chartFormatters = {
+  formatLineData: (data, xField, yField) => ({
+    labels: data.map(item => item[xField]),
+    datasets: [{
+      label: yField,
+      data: data.map(item => item[yField]),
+      borderColor: '#3B82F6',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      tension: 0.4
+    }]
+  }),
+  formatBarData: (data, xField, yField) => ({
+    labels: data.map(item => item[xField]),
+    datasets: [{
+      label: yField,
+      data: data.map(item => item[yField]),
+      backgroundColor: generateColors(data.length),
+      borderColor: generateColors(data.length).map(color => color + '80'),
+      borderWidth: 1
+    }]
+  }),
+  formatPieData: (data, labelField, valueField) => ({
+    labels: data.map(item => item[labelField]),
+    datasets: [{
+      data: data.map(item => item[valueField]),
+      backgroundColor: generateColors(data.length),
+      borderColor: '#ffffff',
+      borderWidth: 2
+    }]
+  })
+}
+
+export default { chartConfigs, colorPalettes, generateColors, chartFormatters }`
+  }
+
+  // Generate Analytics Hook
+  generateAnalyticsHook(prompt, context) {
+    return `import { useState, useEffect, useCallback } from 'react'
+
+// Custom hook for analytics and data tracking
+export const useAnalytics = (config = {}) => {
+  const [analytics, setAnalytics] = useState({
+    pageViews: 0,
+    events: [],
+    user: null,
+    session: null,
+    isEnabled: true
+  })
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  // Initialize analytics
+  useEffect(() => {
+    if (config.autoInit !== false) {
+      initializeAnalytics()
+    }
+  }, [])
+
+  const initializeAnalytics = useCallback(() => {
+    try {
+      const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+      const userId = localStorage.getItem('analytics_user_id') || 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+      localStorage.setItem('analytics_user_id', userId)
+      
+      setAnalytics(prev => ({
+        ...prev,
+        session: sessionId,
+        user: userId,
+        isEnabled: config.enabled !== false
+      }))
+
+      trackPageView()
+    } catch (err) {
+      setError(err.message)
+    }
+  }, [config])
+
+  const trackPageView = useCallback((page = window.location.pathname) => {
+    if (!analytics.isEnabled) return
+
+    const pageView = {
+      type: 'page_view',
+      page,
+      timestamp: new Date().toISOString(),
+      session: analytics.session,
+      user: analytics.user
+    }
+
+    setAnalytics(prev => ({
+      ...prev,
+      pageViews: prev.pageViews + 1,
+      events: [...prev.events, pageView]
+    }))
+  }, [analytics.isEnabled, analytics.session, analytics.user])
+
+  const trackEvent = useCallback((eventName, properties = {}) => {
+    if (!analytics.isEnabled) return
+
+    const event = {
+      type: 'custom_event',
+      name: eventName,
+      properties,
+      timestamp: new Date().toISOString(),
+      session: analytics.session,
+      user: analytics.user
+    }
+
+    setAnalytics(prev => ({
+      ...prev,
+      events: [...prev.events, event]
+    }))
+  }, [analytics.isEnabled, analytics.session, analytics.user])
+
+  return {
+    analytics,
+    isLoading,
+    error,
+    trackPageView,
+    trackEvent
+  }
+}
+
+export default useAnalytics`
+  }
 }
 
 // Export singleton instance

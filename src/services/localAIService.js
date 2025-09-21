@@ -2902,10 +2902,11 @@ export const Error = {
         await this.initializeFirebase()
       }
       
-      const db = this.firebaseApp.firestore()
-      const templateRef = db.collection('templates').doc(newPattern.id)
+      const { getFirestore, collection, doc, setDoc } = await import('firebase/firestore')
+      const db = getFirestore(this.firebaseApp)
+      const templateRef = doc(collection(db, 'templates'), newPattern.id)
       
-      await templateRef.set({
+      await setDoc(templateRef, {
         ...newPattern,
         updatedAt: new Date().toISOString()
       })
@@ -2923,11 +2924,12 @@ export const Error = {
         await this.initializeFirebase()
       }
       
-      const db = this.firebaseApp.firestore()
-      const filesRef = db.collection('projectFiles').doc(projectId)
+      const { getFirestore, collection, doc, setDoc } = await import('firebase/firestore')
+      const db = getFirestore(this.firebaseApp)
+      const filesRef = doc(collection(db, 'projectFiles'), projectId)
       
       // Store files data
-      await filesRef.set({
+      await setDoc(filesRef, {
         projectId,
         files,
         fileCount: Object.keys(files).length,

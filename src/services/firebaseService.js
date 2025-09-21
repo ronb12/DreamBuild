@@ -64,8 +64,12 @@ class FirebaseService {
         console.log('Firebase auth state changed:', user ? 'authenticated' : 'not authenticated')
       })
 
-      // Sign in anonymously for basic functionality
-      await signInAnonymously(this.auth)
+      // Try to sign in anonymously, but don't fail if it doesn't work
+      try {
+        await signInAnonymously(this.auth)
+      } catch (authError) {
+        console.log('⚠️ Firebase auth not available, continuing without authentication')
+      }
 
       this.isInitialized = true
       console.log('🔥 Firebase initialized successfully')

@@ -2,7 +2,7 @@
 // Handles unlimited cloud storage for projects, contexts, and templates
 
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, startAfter, batch, writeBatch } from 'firebase/firestore'
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, startAfter, writeBatch } from 'firebase/firestore'
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth'
 

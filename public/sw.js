@@ -48,6 +48,20 @@ self.addEventListener('activate', event => {
 
 // Fetch event - serve cached content when offline
 self.addEventListener('fetch', event => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip module scripts and assets to avoid MIME type issues
+  if (event.request.url.includes('/assets/') || 
+      event.request.url.includes('.js') || 
+      event.request.url.includes('.css') ||
+      event.request.url.includes('.map')) {
+    console.log('DreamBuild Service Worker skipping asset/module request:', event.request.url);
+    return fetch(event.request);
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {

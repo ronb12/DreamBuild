@@ -1034,7 +1034,7 @@ Additional context: ${searchKnowledge.summary}`
 
   // NEW: Analyze full codebase context
   analyzeCodebaseContext(files, context) {
-    const context = {
+    const codebaseContext = {
       projectType: this.detectProjectType(files),
       architecture: this.detectArchitecture(files),
       technologies: this.detectTechnologies(files),
@@ -1046,14 +1046,14 @@ Additional context: ${searchKnowledge.summary}`
     }
     
     console.log('🔍 Codebase analysis:', {
-      type: context.projectType,
-      architecture: context.architecture,
-      technologies: context.technologies.length,
-      patterns: context.patterns.length,
-      complexity: context.complexity
+      type: codebaseContext.projectType,
+      architecture: codebaseContext.architecture,
+      technologies: codebaseContext.technologies.length,
+      patterns: codebaseContext.patterns.length,
+      complexity: codebaseContext.complexity
     })
     
-    return context
+    return codebaseContext
   }
 
   // NEW: Detect project type from existing files

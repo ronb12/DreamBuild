@@ -42,14 +42,19 @@ export function ProjectProvider({ children }) {
   }, [])
 
   const updateFile = useCallback((filename, content) => {
-    setCurrentProject(prev => ({
-      ...prev,
-      files: {
-        ...prev.files,
-        [filename]: content
-      },
-      lastModified: new Date()
-    }))
+    console.log(`🔄 Updating file: ${filename} (${content?.length || 0} chars)`)
+    setCurrentProject(prev => {
+      const newProject = {
+        ...prev,
+        files: {
+          ...prev.files,
+          [filename]: content
+        },
+        lastModified: new Date()
+      }
+      console.log(`📁 Project files after update:`, Object.keys(newProject.files))
+      return newProject
+    })
   }, [])
 
   const updateConfig = useCallback((config) => {

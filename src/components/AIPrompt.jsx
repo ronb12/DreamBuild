@@ -161,9 +161,15 @@ const AIPrompt = () => {
       }
       
       // Update project files
+      console.log('📁 Generated files received:', Object.keys(generatedFiles))
+      console.log('📁 Generated files count:', Object.keys(generatedFiles).length)
+      
       Object.entries(generatedFiles).forEach(([filename, content]) => {
+        console.log(`📄 Adding file: ${filename} (${content?.length || 0} chars)`)
         updateFile(filename, content)
       })
+      
+      console.log('📁 Files after update:', Object.keys(currentProject.files))
 
       // Auto-configure project based on prompt
       autoConfigureProject(prompt)

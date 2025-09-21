@@ -124,7 +124,12 @@ const AIBuilder = () => {
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden h-full min-h-[600px]">
                 {activeTab === 'editor' && <CodeEditor />}
-                {activeTab === 'preview' && <Preview />}
+                {activeTab === 'preview' && (
+                  <>
+                    {console.log('🎮 AIBuilder: Rendering Preview component for activeTab:', activeTab)}
+                    <Preview />
+                  </>
+                )}
                 {activeTab === 'workspace' && isWorkspaceVisible && <IntegratedWorkspace projectId="demo-project" />}
                 {activeTab === 'workspace' && !isWorkspaceVisible && (
                   <div className="h-full flex items-center justify-center bg-muted/20">

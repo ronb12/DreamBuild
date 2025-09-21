@@ -14,8 +14,9 @@ const Preview = () => {
   // Update preview when files change
   useEffect(() => {
     console.log('🎮 Preview useEffect triggered - files changed:', Object.keys(currentProject.files))
+    console.log('🎮 Preview useEffect - currentProject:', currentProject)
     updatePreview()
-  }, [currentProject.files, currentProject.activeFile])
+  }, [currentProject.files, currentProject.activeFile, currentProject])
 
   const updatePreview = () => {
     console.log('🎮 updatePreview called with files:', Object.keys(currentProject.files))
@@ -38,6 +39,11 @@ const Preview = () => {
       const templeRunUIFile = currentProject.files['src/components/TempleRunUI.jsx'] || ''
       const runnerPlayerFile = currentProject.files['src/components/RunnerPlayer.jsx'] || ''
       const obstacleFile = currentProject.files['src/components/Obstacle.jsx'] || ''
+      
+      // Log file contents for debugging
+      if (gameComponentFile) {
+        console.log('🎮 Preview Debug - GameComponent content preview:', gameComponentFile.substring(0, 200) + '...')
+      }
       
       // Debug logging for file detection
       console.log('🎮 Preview Debug - Checking for game files:')

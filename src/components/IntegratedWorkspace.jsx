@@ -16,11 +16,11 @@ const IntegratedWorkspace = ({ projectId, initialFiles = {} }) => {
   const [deploymentStatus, setDeploymentStatus] = useState(null)
 
   const tabs = [
-    { id: 'code', name: '💻 Code Editor', icon: '💻' },
-    { id: 'visual', name: '🎨 Visual Editor', icon: '🎨' },
-    { id: 'collaboration', name: '🤝 Collaboration', icon: '🤝' },
-    { id: 'deployment', name: '🚀 Deployment', icon: '🚀' },
-    { id: 'memory', name: '🧠 Memory', icon: '🧠' }
+    { id: 'code', name: 'Code Editor', icon: '💻' },
+    { id: 'visual', name: 'Visual Editor', icon: '🎨' },
+    { id: 'collaboration', name: 'Collaboration', icon: '🤝' },
+    { id: 'deployment', name: 'Deployment', icon: '🚀' },
+    { id: 'memory', name: 'Memory', icon: '🧠' }
   ]
 
   const handleFileChange = (filename, content) => {

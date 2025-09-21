@@ -9,34 +9,4 @@
     
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json?v=2.0.0" />
-    <meta name="theme-color" content="#007acc" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="DreamBuild" />
-    <link rel="apple-touch-icon" href="/icons/icon.svg" />
-    
-    <!-- Additional PWA Meta Tags -->
-    <meta name="msapplication-TileColor" content="#10b981" />
-    <meta name="msapplication-config" content="/browserconfig.xml" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-    
-    <!-- Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('DreamBuild SW registered: ', registration);
-            })
-            .catch((registrationError) => {
-              console.log('DreamBuild SW registration failed: ', registrationError);
-            });
-        });
-      }
-    </script>
-  </body>
-</html>
+    <meta name="theme-c

@@ -11,8 +11,12 @@
     "start": "node server/index.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run start\"",
     "firebase:init": "node firebase-bootstrap.js",
+    "firebase:setup": "node firebase-setup.js",
+    "firebase:verify": "node verify-firebase-setup.js",
     "firebase:deploy": "firebase deploy",
-    "firebase:serve": "firebase serve"
+    "firebase:deploy:all": "./firebase-deploy.sh",
+    "firebase:serve": "firebase serve",
+    "firebase:emulators": "firebase emulators:start"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
@@ -40,6 +44,8 @@
     "react-markdown": "^9.0.1",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.30.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "refractor": "^5.0.0",
     "tailwind-merge": "^2.6.0",
     "ws": "^8.14.2",

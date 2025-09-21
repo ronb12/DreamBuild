@@ -1,0 +1,125 @@
+{
+  "name": "dreambuild-vscode-extension",
+  "displayName": "DreamBuild AI Assistant",
+  "description": "AI-powered code generation and assistance for VS Code",
+  "version": "1.0.0",
+  "publisher": "dreambuild",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning",
+    "Snippets"
+  ],
+  "activationEvents": [
+    "onCommand:dreambuild.generateCode",
+    "onCommand:dreambuild.generateComponent",
+    "onCommand:dreambuild.generateTest",
+    "onCommand:dreambuild.explainCode",
+    "onCommand:dreambuild.refactorCode",
+    "onCommand:dreambuild.optimizeCode"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "dreambuild.generateCode",
+        "title": "Generate Code",
+        "category": "DreamBuild"
+      },
+      {
+        "command": "dreambuild.generateComponent",
+        "title": "Generate Component",
+        "category": "DreamBuild"
+      },
+      {
+        "command": "dreambuild.generateTest",
+        "title": "Generate Test",
+        "category": "DreamBuild"
+      },
+      {
+        "command": "dreambuild.explainCode",
+        "title": "Explain Code",
+        "category": "DreamBuild"
+      },
+      {
+        "command": "dreambuild.refactorCode",
+        "title": "Refactor Code",
+        "category": "DreamBuild"
+      },
+      {
+        "command": "dreambuild.optimizeCode",
+        "title": "Optimize Code",
+        "category": "DreamBuild"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "dreambuild.generateCode",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g"
+      },
+      {
+        "command": "dreambuild.explainCode",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "dreambuild.generateCode",
+          "group": "dreambuild"
+        },
+        {
+          "command": "dreambuild.explainCode",
+          "group": "dreambuild"
+        },
+        {
+          "command": "dreambuild.refactorCode",
+          "group": "dreambuild"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "dreambuild.generateComponent",
+          "group": "dreambuild"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "DreamBuild",
+      "properties": {
+        "dreambuild.apiUrl": {
+          "type": "string",
+          "default": "http://localhost:3000/api",
+          "description": "DreamBuild API URL"
+        },
+        "dreambuild.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "DreamBuild API Key"
+        },
+        "dreambuild.autoGenerate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable auto-generation of code"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "axios": "^1.3.4"
+  }
+}

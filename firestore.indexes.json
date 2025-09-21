@@ -43,6 +43,20 @@
       ]
     },
     {
+      "collectionGroup": "conversationMemory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "projectId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "chunkIndex",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "projectPresence",
       "queryScope": "COLLECTION",
       "fields": [

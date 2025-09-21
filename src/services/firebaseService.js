@@ -442,7 +442,7 @@ class FirebaseService {
       
       // If not found, try to load chunks
       const chunksRef = collection(this.db, 'conversationMemory')
-      const chunksQuery = query(chunksRef, where('projectId', '==', projectId), where('chunkIndex', '>=', 0))
+      const chunksQuery = query(chunksRef, where('projectId', '==', projectId))
       const chunksSnapshot = await getDocs(chunksQuery)
       
       if (!chunksSnapshot.empty) {

@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
                        ...userData
                      })
                    } catch (firestoreError) {
-                     console.warn('Failed to fetch user data from Firestore:', firestoreError)
+                     console.log('⚠️ Firestore not available, using basic user data:', firestoreError.message)
                      // Set user without Firestore data
                      setUser({
                        uid: user.uid,

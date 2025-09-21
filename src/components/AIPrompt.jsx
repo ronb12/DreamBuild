@@ -59,7 +59,13 @@ const AIPrompt = () => {
   const textareaRef = useRef(null)
   const messagesEndRef = useRef(null)
 
-  // No auto-resize needed for input field
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px'
+    }
+  }, [prompt])
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -626,9 +632,9 @@ Please implement this suggestion in my current project.`
                   onKeyPress={handleKeyPress}
                   placeholder="Ask me anything..."
                   className="w-full resize-none bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground text-sm leading-relaxed"
-                  style={{ minHeight: '24px', maxHeight: '200px' }}
+                  style={{ minHeight: '120px', maxHeight: '300px' }}
                   disabled={isGenerating}
-                  rows={1}
+                  rows={4}
                 />
               </div>
               <button

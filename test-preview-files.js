@@ -78,21 +78,9 @@ class PreviewFilesTest {
         await promptInput.click();
         await promptInput.type('clone temple run');
         
-        // Find and click generate button
-        const generateButton = await this.page.evaluateHandle(() => {
-          const buttons = Array.from(document.querySelectorAll('button'));
-          return buttons.find(btn => 
-            btn.textContent?.includes('Generate') || 
-            btn.textContent?.includes('Send') ||
-            btn.textContent?.includes('▶') ||
-            btn.textContent?.includes('→')
-          );
-        });
-        
-        if (generateButton) {
-          await generateButton.click();
-          console.log('✅ Clicked generate button');
-        }
+        // Press Enter to submit
+        await promptInput.press('Enter');
+        console.log('✅ Pressed Enter to submit');
         
         // Wait for generation
         console.log('⏳ Waiting for generation...');

@@ -5,6 +5,7 @@ import { RefreshCw, ExternalLink, Maximize2, Minimize2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const Preview = () => {
+  console.log('🎮 Preview component rendered!')
   const { currentProject } = useProject()
   const iframeRef = useRef(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -15,6 +16,7 @@ const Preview = () => {
   useEffect(() => {
     console.log('🎮 Preview useEffect triggered - files changed:', Object.keys(currentProject.files))
     console.log('🎮 Preview useEffect - currentProject:', currentProject)
+    console.log('🎮 Preview useEffect - file count:', Object.keys(currentProject.files).length)
     updatePreview()
   }, [currentProject.files, currentProject.activeFile, currentProject])
 

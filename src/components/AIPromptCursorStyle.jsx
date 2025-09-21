@@ -17,7 +17,7 @@ import simpleAIService from '../services/simpleAIService'
 import aiAgentService from '../services/aiAgentService'
 
 export default function AIPromptCursorStyle() {
-  const { updateFile, switchFile } = useProject()
+  const { currentProject, updateFile, switchFile } = useProject()
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const textareaRef = useRef(null)
@@ -104,9 +104,15 @@ export default function AIPromptCursorStyle() {
         await aiAgentService.breakdownTask(userPrompt)
       }
 
-      // Generate code
+      // Generate code with conversation context
       console.log('🚀 Starting AI generation...')
-      const files = await simpleAIService.generateCode(userPrompt)
+      const context = {
+        conversationHistory: messages,
+        currentPrompt: userPrompt,
+        previousFiles: Object.keys(currentProject.files),
+        projectContext: currentProject.config
+      }
+      const files = await simpleAIService.generateCode(userPrompt, context)
       console.log('📁 Files received:', files)
       console.log('📁 Files type:', typeof files)
       console.log('📁 Files keys:', files ? Object.keys(files) : 'No files')
@@ -123,7 +129,8 @@ export default function AIPromptCursorStyle() {
               ...msg, 
               content: `Generated ${Object.keys(files).length} files successfully!`,
               isLoading: false,
-              files: files
+              files: files,
+              timestamp: new Date()
             }
           : msg
       ))

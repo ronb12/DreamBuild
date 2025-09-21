@@ -280,6 +280,12 @@ class LocalAIService {
   // Generate code using local AI with web search enhancement
   async generateCode(prompt, context = {}) {
     try {
+      // Use conversation history if available
+      if (context.conversationHistory && context.conversationHistory.length > 0) {
+        console.log('💬 Using conversation history for context-aware generation')
+        return await this.generateIteratively(prompt, context, context.conversationHistory)
+      }
+
       // Check if this is an enhancement request for existing project
       if (this.isEnhancementRequest(prompt, context)) {
         console.log('🔧 Enhancement request detected - enhancing existing project')
@@ -1556,6 +1562,7 @@ Additional context: ${searchKnowledge.summary}`
   // NEW: Multi-turn conversation system for iterative file generation
   async generateIteratively(prompt, context, conversationHistory = []) {
     console.log('🔄 Starting iterative file generation with conversation history...')
+    console.log('💬 Conversation history length:', conversationHistory.length)
     
     // Analyze conversation history
     const conversationContext = this.analyzeConversationHistory(conversationHistory)
@@ -1565,10 +1572,22 @@ Additional context: ${searchKnowledge.summary}`
     const isContinuation = this.isContinuationRequest(prompt, conversationHistory)
     const isEnhancement = this.isEnhancementRequest(prompt, conversationHistory)
     const isNewFeature = this.isNewFeatureRequest(prompt, conversationHistory)
+    const isModification = this.isModificationRequest(prompt, conversationHistory)
+    
+    console.log('🎯 Request type analysis:', {
+      isContinuation,
+      isEnhancement, 
+      isNewFeature,
+      isModification
+    })
     
     let files = {}
     
-    if (isContinuation) {
+    if (isModification) {
+      // Modify existing files based on conversation
+      console.log('🔧 Modification request detected - updating existing files')
+      files = await this.modifyExistingFiles(prompt, context, conversationHistory)
+    } else if (isContinuation) {
       // Continue from previous state
       files = await this.continueFromPreviousState(prompt, context, conversationHistory)
     } else if (isEnhancement) {
@@ -1672,6 +1691,24 @@ Additional context: ${searchKnowledge.summary}`
     return featureKeywords.some(keyword => lowerPrompt.includes(keyword))
   }
 
+  isModificationRequest(prompt, history) {
+    const modificationKeywords = [
+      'character', 'move', 'side to side', 'collecting', 'coins', 'drop', 'top',
+      'player', 'controls', 'movement', 'gameplay', 'mechanic'
+    ]
+    
+    const lowerPrompt = prompt.toLowerCase()
+    const hasModificationKeywords = modificationKeywords.some(keyword => lowerPrompt.includes(keyword))
+    
+    // Check if this is a follow-up to a game creation
+    // Ensure history is an array before using .some()
+    const hasGameContext = Array.isArray(history) && history.some(msg => 
+      msg && msg.content && msg.content.toLowerCase().includes('game')
+    )
+    
+    return hasModificationKeywords && hasGameContext
+  }
+
   // NEW: Continue from previous state
   async continueFromPreviousState(prompt, context, history) {
     console.log('🔄 Continuing from previous state...')
@@ -1719,6 +1756,61 @@ Additional context: ${searchKnowledge.summary}`
     const newFeatureFiles = this.generateNewFeatureFiles(prompt, context, codebaseContext)
     
     return { ...existingFiles, ...newFeatureFiles }
+  }
+
+  // NEW: Modify existing files based on conversation
+  async modifyExistingFiles(prompt, context, history) {
+    console.log('🔧 Modifying existing files based on conversation...')
+    
+    const lastState = history[history.length - 1]
+    const existingFiles = lastState?.files || {}
+    
+    console.log('📁 Existing files:', Object.keys(existingFiles))
+    
+    // Create a context-aware prompt that includes the conversation history
+    const conversationContext = this.buildConversationContext(history, prompt)
+    
+    // Generate modified files based on the conversation context
+    const modifiedFiles = await this.generateDynamicFiles(conversationContext, {
+      ...context,
+      existingFiles,
+      isModification: true
+    })
+    
+    // Merge with existing files, prioritizing modifications
+    const mergedFiles = { ...existingFiles, ...modifiedFiles }
+    
+    console.log('🔧 Modified files:', Object.keys(modifiedFiles))
+    console.log('📁 Final files:', Object.keys(mergedFiles))
+    
+    return mergedFiles
+  }
+
+  // NEW: Build conversation context for better understanding
+  buildConversationContext(history, currentPrompt) {
+    // Ensure history is an array before using .find()
+    if (!Array.isArray(history)) {
+      return currentPrompt
+    }
+    
+    const gameCreationPrompt = history.find(msg => 
+      msg && msg.content && msg.content.toLowerCase().includes('game')
+    )
+    
+    if (gameCreationPrompt) {
+      return `Based on the previous request: "${gameCreationPrompt.content}", 
+      now modify the game with these additional requirements: "${currentPrompt}".
+      
+      Please update the existing game files to include:
+      - Character movement (side to side)
+      - Coin collection mechanics
+      - Coins dropping from the top
+      - Player controls
+      
+      Make sure the game is playable and interactive.`
+    }
+    
+    return currentPrompt
   }
 
   // NEW: Update conversation history
@@ -1958,35 +2050,161 @@ ${content}`
     const lowerPrompt = prompt.toLowerCase()
     
     // Detect game requests and generate actual playable games
-    if (lowerPrompt.includes('game') || lowerPrompt.includes('coin collector') || lowerPrompt.includes('playable') || 
-        lowerPrompt.includes('coin') || lowerPrompt.includes('collector') || lowerPrompt.includes('fun')) {
+    // PRIORITIZE Temple Run and runner games FIRST to avoid conflicts
+    if (lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+        lowerPrompt.includes('subway surfers') || lowerPrompt.includes('flappy bird') || lowerPrompt.includes('angry birds') ||
+        lowerPrompt.includes('pac-man') || lowerPrompt.includes('tetris') || lowerPrompt.includes('snake') ||
+        lowerPrompt.includes('puzzle') || lowerPrompt.includes('platformer') || lowerPrompt.includes('arcade') ||
+        (lowerPrompt.includes('clone') && (lowerPrompt.includes('run') || lowerPrompt.includes('jump') || lowerPrompt.includes('race'))) ||
+        lowerPrompt.includes('game') || lowerPrompt.includes('coin collector') || lowerPrompt.includes('playable') || 
+        (lowerPrompt.includes('coin') && lowerPrompt.includes('collect')) || lowerPrompt.includes('collector') || lowerPrompt.includes('fun') ||
+        lowerPrompt.includes('runner')) {
       console.log('🎮 Game detected in prompt:', prompt)
+      // Determine specific game type
+      let gameType = 'generic';
+      if (lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+          lowerPrompt.includes('subway surfers') || (lowerPrompt.includes('clone') && lowerPrompt.includes('run'))) {
+        gameType = 'temple-run';
+        console.log('🏃‍♂️ Temple Run game type detected');
+      } else if (lowerPrompt.includes('coin') && lowerPrompt.includes('collect') && 
+                 lowerPrompt.includes('side') && lowerPrompt.includes('move')) {
+        gameType = 'coin-collector';
+        console.log('🪙 Coin collector game type detected');
+      } else if (lowerPrompt.includes('flappy bird')) {
+        gameType = 'flappy-bird';
+        console.log('🐦 Flappy Bird game type detected');
+      } else if (lowerPrompt.includes('pac-man')) {
+        gameType = 'pacman';
+        console.log('👻 Pac-Man game type detected');
+      }
+      
       requirements.components.push({
         type: 'game',
         name: 'GameComponent',
         props: ['score', 'level', 'onGameOver', 'onScoreUpdate'],
-        dependencies: ['game-engine', 'canvas', 'input-handling', 'collision-detection']
+        dependencies: ['game-engine', 'canvas', 'input-handling', 'collision-detection'],
+        gameType: gameType
       })
-      requirements.components.push({
-        type: 'game-ui',
-        name: 'GameUI',
-        props: ['score', 'lives', 'level', 'isPaused'],
-        dependencies: ['ui-components', 'state-management']
-      })
-      requirements.components.push({
-        type: 'game-object',
-        name: 'Coin',
-        props: ['x', 'y', 'value', 'isCollected'],
-        dependencies: ['physics', 'rendering']
-      })
-      requirements.components.push({
-        type: 'game-object',
-        name: 'Player',
-        props: ['x', 'y', 'speed', 'lives'],
-        dependencies: ['input-handling', 'collision-detection']
-      })
+      
+      if (gameType === 'temple-run') {
+        requirements.components.push({
+          type: 'game-ui',
+          name: 'TempleRunUI',
+          props: ['distance', 'score', 'highScore', 'speed'],
+          dependencies: ['ui-components', 'state-management']
+        })
+        requirements.components.push({
+          type: 'game-object',
+          name: 'RunnerPlayer',
+          props: ['x', 'y', 'lane', 'isJumping', 'isSliding'],
+          dependencies: ['input-handling', 'collision-detection', 'physics']
+        })
+        requirements.components.push({
+          type: 'game-object',
+          name: 'Obstacle',
+          props: ['x', 'y', 'type', 'lane'],
+          dependencies: ['physics', 'rendering']
+        })
+        requirements.components.push({
+          type: 'game-object',
+          name: 'Coin',
+          props: ['x', 'y', 'value', 'lane'],
+          dependencies: ['physics', 'rendering']
+        })
+      } else if (gameType === 'coin-collector') {
+        requirements.components.push({
+          type: 'game-ui',
+          name: 'GameUI',
+          props: ['score', 'lives', 'level', 'isPaused'],
+          dependencies: ['ui-components', 'state-management']
+        })
+        requirements.components.push({
+          type: 'game-object',
+          name: 'Coin',
+          props: ['x', 'y', 'value', 'isCollected'],
+          dependencies: ['physics', 'rendering']
+        })
+        requirements.components.push({
+          type: 'game-object',
+          name: 'Player',
+          props: ['x', 'y', 'speed', 'lives'],
+          dependencies: ['input-handling', 'collision-detection']
+        })
+      } else {
+        // Generic game components
+        requirements.components.push({
+          type: 'game-ui',
+          name: 'GameUI',
+          props: ['score', 'lives', 'level', 'isPaused'],
+          dependencies: ['ui-components', 'state-management']
+        })
+        requirements.components.push({
+          type: 'game-object',
+          name: 'Player',
+          props: ['x', 'y', 'speed', 'lives'],
+          dependencies: ['input-handling', 'collision-detection']
+        })
+      }
+      
       requirements.complexity = 'medium'
-      console.log('🎮 Game components added:', requirements.components.length)
+      console.log('🎮 Game components added:', requirements.components.length, 'Game type:', gameType)
+    }
+
+    // Detect Sim-like character requests
+    if (lowerPrompt.includes('sim') || lowerPrompt.includes('character') || lowerPrompt.includes('avatar') || 
+        lowerPrompt.includes('person') || lowerPrompt.includes('npc') || lowerPrompt.includes('simulation')) {
+      console.log('👤 Sim-like character detected in prompt:', prompt)
+      
+      // Main character component with Sim-like features
+      requirements.components.push({
+        type: 'sim-character',
+        name: 'SimCharacter',
+        props: ['name', 'age', 'mood', 'energy', 'hunger', 'social', 'hygiene', 'fun', 'position', 'direction'],
+        dependencies: ['character-ai', 'mood-system', 'needs-system', 'animation', 'pathfinding']
+      })
+      
+      // Character needs system (like The Sims)
+      requirements.components.push({
+        type: 'needs-system',
+        name: 'NeedsSystem',
+        props: ['hunger', 'energy', 'social', 'hygiene', 'fun', 'comfort'],
+        dependencies: ['state-management', 'time-system']
+      })
+      
+      // Character mood and personality
+      requirements.components.push({
+        type: 'personality-system',
+        name: 'PersonalitySystem',
+        props: ['traits', 'mood', 'relationships', 'preferences'],
+        dependencies: ['ai-system', 'relationship-engine']
+      })
+      
+      // Character actions and interactions
+      requirements.components.push({
+        type: 'action-system',
+        name: 'ActionSystem',
+        props: ['currentAction', 'actionQueue', 'interactions'],
+        dependencies: ['animation-system', 'interaction-engine']
+      })
+      
+      // Character appearance and customization
+      requirements.components.push({
+        type: 'appearance-system',
+        name: 'AppearanceSystem',
+        props: ['clothing', 'hair', 'skin', 'accessories', 'bodyType'],
+        dependencies: ['rendering-system', 'customization-ui']
+      })
+      
+      // Character AI and decision making
+      requirements.components.push({
+        type: 'character-ai',
+        name: 'CharacterAI',
+        props: ['goals', 'decisions', 'behavior', 'autonomy'],
+        dependencies: ['ai-engine', 'decision-tree', 'behavior-system']
+      })
+      
+      requirements.complexity = 'high'
+      console.log('👤 Sim character components added:', requirements.components.length)
     }
     
     // Detect UI components
@@ -2286,6 +2504,31 @@ export default ${rootName};`
     if (component.type === 'game-object') {
       return this.generateGameObjectComponent(component, prompt, context)
     }
+
+    // Generate Sim-like character components
+    if (component.type === 'sim-character') {
+      return this.generateSimCharacter(component, prompt, context)
+    }
+    
+    if (component.type === 'needs-system') {
+      return this.generateNeedsSystem(component, prompt, context)
+    }
+    
+    if (component.type === 'personality-system') {
+      return this.generatePersonalitySystem(component, prompt, context)
+    }
+    
+    if (component.type === 'action-system') {
+      return this.generateActionSystem(component, prompt, context)
+    }
+    
+    if (component.type === 'appearance-system') {
+      return this.generateAppearanceSystem(component, prompt, context)
+    }
+    
+    if (component.type === 'character-ai') {
+      return this.generateCharacterAI(component, prompt, context)
+    }
     
     return `import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
@@ -2361,6 +2604,27 @@ export default ${component.name};`
 
   // NEW: Generate component CSS
   generateComponentCSS(component, prompt, context) {
+    // Check if this is a coin collector game
+    const isCoinCollectorGame = prompt.toLowerCase().includes('coin') && 
+                                prompt.toLowerCase().includes('collect') &&
+                                (prompt.toLowerCase().includes('side') || prompt.toLowerCase().includes('move')) &&
+                                !prompt.toLowerCase().includes('temple run') &&
+                                !prompt.toLowerCase().includes('runner');
+    
+    // Check if this is a Temple Run game
+    const isTempleRunGame = prompt.toLowerCase().includes('temple run') || 
+                            prompt.toLowerCase().includes('endless runner') ||
+                            prompt.toLowerCase().includes('runner') ||
+                            (prompt.toLowerCase().includes('clone') && prompt.toLowerCase().includes('run'));
+    
+    if (isCoinCollectorGame) {
+      return this.generateCoinCollectorCSS(component, prompt, context);
+    }
+    
+    if (isTempleRunGame) {
+      return this.generateTempleRunCSS(component, prompt, context);
+    }
+    
     return `/* ${component.name} Component Styles */
 .${component.name.toLowerCase()} {
   /* Component base styles */
@@ -2936,6 +3200,40 @@ export const Error = {
           'src/components/BlogPost.jsx': '// Blog post template',
           'src/components/PostList.jsx': '// Post list template',
           'src/components/Editor.jsx': '// Content editor template'
+        }
+      },
+      {
+        id: 'temple-run-clone',
+        name: 'Temple Run Clone Template',
+        keywords: ['temple run', 'endless runner', 'runner', 'clone', 'game', 'mobile', 'arcade'],
+        technologies: ['react', 'jsx', 'html5', 'canvas'],
+        patterns: ['endless-runner', 'mobile-game', 'arcade-game'],
+        complexity: 'high',
+        relevanceScore: 1.0,
+        files: {
+          'src/components/TempleRunGame.jsx': '// Temple Run endless runner game',
+          'src/components/Player.jsx': '// Player character component',
+          'src/components/Obstacle.jsx': '// Obstacle generation component',
+          'src/components/Coin.jsx': '// Collectible coins component',
+          'src/components/GameUI.jsx': '// Game UI and HUD',
+          'src/components/TempleRunGame.css': '// Temple Run game styles'
+        }
+      },
+      {
+        id: 'endless-runner-game',
+        name: 'Endless Runner Game Template',
+        keywords: ['endless runner', 'runner', 'jump', 'race', 'obstacle', 'game'],
+        technologies: ['react', 'jsx', 'html5', 'canvas'],
+        patterns: ['endless-runner', 'platformer', 'arcade-game'],
+        complexity: 'high',
+        relevanceScore: 0.9,
+        files: {
+          'src/components/EndlessRunner.jsx': '// Endless runner game component',
+          'src/components/Player.jsx': '// Player character with jump mechanics',
+          'src/components/ObstacleManager.jsx': '// Obstacle generation and management',
+          'src/components/Background.jsx': '// Scrolling background component',
+          'src/components/ScoreSystem.jsx': '// Score and high score system',
+          'src/components/EndlessRunner.css': '// Endless runner game styles'
         }
       }
     ]
@@ -11595,8 +11893,54 @@ const FormField = ({
 export default FormField`
   }
 
+  // NEW: Detect game type from prompt
+  detectGameType(prompt) {
+    const lowerPrompt = prompt.toLowerCase();
+    
+    if (lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+        lowerPrompt.includes('subway surfers') || (lowerPrompt.includes('clone') && lowerPrompt.includes('run'))) {
+      return 'temple-run';
+    }
+    
+    if (lowerPrompt.includes('coin') && lowerPrompt.includes('collect') && 
+        lowerPrompt.includes('side') && lowerPrompt.includes('move')) {
+      return 'coin-collector';
+    }
+    
+    if (lowerPrompt.includes('flappy bird')) {
+      return 'flappy-bird';
+    }
+    
+    if (lowerPrompt.includes('pac-man')) {
+      return 'pacman';
+    }
+    
+    return 'generic';
+  }
+
   // NEW: Generate actual playable game components
   generateGameComponent(component, prompt, context) {
+    // Use gameType from component if available, otherwise detect from prompt
+    const gameType = component.gameType || this.detectGameType(prompt);
+    
+    console.log('🎮 Game type for component generation:', gameType);
+    
+    if (gameType === 'temple-run') {
+      return this.generateTempleRunGame(component, prompt, context);
+    }
+    
+    if (gameType === 'coin-collector') {
+      return this.generateCoinCollectorGame(component, prompt, context);
+    }
+    
+    if (gameType === 'flappy-bird') {
+      return this.generateFlappyBirdGame(component, prompt, context);
+    }
+    
+    if (gameType === 'pacman') {
+      return this.generatePacmanGame(component, prompt, context);
+    }
+    
     return `import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './${component.name}.css';
 
@@ -11839,6 +12183,1287 @@ const ${component.name} = () => {
 };
 
 export default ${component.name};`
+  }
+
+  // NEW: Generate specific coin collector game
+  generateCoinCollectorGame(component, prompt, context) {
+    return `import React, { useState, useEffect, useCallback } from 'react';
+import './${component.name}.css';
+
+const ${component.name} = () => {
+  const [gameState, setGameState] = useState({
+    score: 0,
+    isPlaying: false,
+    gameOver: false,
+    highScore: 0
+  });
+  
+  // Player character - positioned at bottom, can only move side to side
+  const [player, setPlayer] = useState({
+    x: 400, // Center horizontally
+    y: 500, // Fixed at bottom
+    width: 60,
+    height: 60,
+    speed: 8
+  });
+  
+  // Coins falling from the top
+  const [coins, setCoins] = useState([]);
+  const [keys, setKeys] = useState({});
+  
+  // Game loop - 60 FPS
+  useEffect(() => {
+    if (!gameState.isPlaying) return;
+    
+    const gameLoop = setInterval(() => {
+      updateGame();
+    }, 16);
+    
+    return () => clearInterval(gameLoop);
+  }, [gameState.isPlaying]);
+  
+  // Handle keyboard input for side-to-side movement only
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      setKeys(prev => ({ ...prev, [e.key]: true }));
+    };
+    
+    const handleKeyUp = (e) => {
+      setKeys(prev => ({ ...prev, [e.key]: false }));
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+  
+  // Main game update loop
+  const updateGame = useCallback(() => {
+    // Move player SIDE TO SIDE ONLY (left/right arrow keys or A/D)
+    setPlayer(prev => {
+      let newX = prev.x;
+      
+      if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+        newX = Math.max(0, prev.x - prev.speed);
+      }
+      if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+        newX = Math.min(740, prev.x + prev.speed); // 800 - player width
+      }
+      
+      return { ...prev, x: newX };
+    });
+    
+    // Update coins - they fall from the top
+    setCoins(prev => {
+      const updatedCoins = prev.map(coin => ({
+        ...coin,
+        y: coin.y + coin.speed, // Coins fall down
+        rotation: coin.rotation + 0.1 // Spin animation
+      })).filter(coin => coin.y < 600); // Remove coins that hit bottom
+      
+      // Add new coins falling from the top randomly
+      if (Math.random() < 0.03) { // 3% chance each frame
+        updatedCoins.push({
+          id: Date.now() + Math.random(),
+          x: Math.random() * 750 + 25, // Random horizontal position
+          y: -30, // Start above screen
+          width: 30,
+          height: 30,
+          speed: 2 + Math.random() * 2, // Random fall speed
+          value: 10,
+          rotation: 0,
+          type: 'gold'
+        });
+      }
+      
+      return updatedCoins;
+    });
+    
+    // Check for collisions between player and coins
+    checkCollisions();
+  }, [keys]);
+  
+  // Collision detection
+  const checkCollisions = useCallback(() => {
+    setCoins(prevCoins => {
+      const remainingCoins = [];
+      let newScore = gameState.score;
+      
+      prevCoins.forEach(coin => {
+        // Simple collision detection
+        const playerLeft = player.x;
+        const playerRight = player.x + player.width;
+        const playerTop = player.y;
+        const playerBottom = player.y + player.height;
+        
+        const coinLeft = coin.x;
+        const coinRight = coin.x + coin.width;
+        const coinTop = coin.y;
+        const coinBottom = coin.y + coin.height;
+        
+        // Check if player and coin overlap
+        if (playerLeft < coinRight && 
+            playerRight > coinLeft && 
+            playerTop < coinBottom && 
+            playerBottom > coinTop) {
+          // Collision! Player collected the coin
+          newScore += coin.value;
+          // Don't add this coin to remainingCoins (it's collected)
+        } else {
+          // No collision, keep the coin
+          remainingCoins.push(coin);
+        }
+      });
+      
+      // Update score
+      setGameState(prev => ({
+        ...prev,
+        score: newScore,
+        highScore: Math.max(prev.highScore, newScore)
+      }));
+      
+      return remainingCoins;
+    });
+  }, [player, gameState.score]);
+  
+  // Start game
+  const startGame = () => {
+    setGameState({
+      score: 0,
+      isPlaying: true,
+      gameOver: false,
+      highScore: gameState.highScore
+    });
+    setPlayer({ x: 400, y: 500, width: 60, height: 60, speed: 8 });
+    setCoins([]);
+  };
+  
+  // Stop game
+  const stopGame = () => {
+    setGameState(prev => ({ ...prev, isPlaying: false, gameOver: true }));
+  };
+  
+  return (
+    <div className="coin-collector-game">
+      <div className="game-header">
+        <h2>🪙 Coin Collector Game</h2>
+        <div className="game-stats">
+          <div className="stat">
+            <span className="stat-label">Score:</span>
+            <span className="stat-value">{gameState.score}</span>
+          </div>
+          <div className="stat">
+            <span className="stat-label">High Score:</span>
+            <span className="stat-value">{gameState.highScore}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="game-area">
+        {!gameState.isPlaying && !gameState.gameOver && (
+          <div className="game-start-screen">
+            <h3>Ready to collect coins?</h3>
+            <p>Use ← → arrow keys or A/D to move side to side</p>
+            <p>Collect falling coins to increase your score!</p>
+            <button onClick={startGame} className="start-button">
+              Start Game
+            </button>
+          </div>
+        )}
+        
+        {gameState.gameOver && (
+          <div className="game-over-screen">
+            <h3>Game Over!</h3>
+            <p>Final Score: {gameState.score}</p>
+            <button onClick={startGame} className="restart-button">
+              Play Again
+            </button>
+          </div>
+        )}
+        
+        {gameState.isPlaying && (
+          <div className="game-field">
+            {/* Player character */}
+            <div 
+              className="player"
+              style={{
+                left: player.x,
+                top: player.y,
+                width: player.width,
+                height: player.height
+              }}
+            >
+              <div className="player-face">😊</div>
+            </div>
+            
+            {/* Falling coins */}
+            {coins.map(coin => (
+              <div
+                key={coin.id}
+                className="coin"
+                style={{
+                  left: coin.x,
+                  top: coin.y,
+                  width: coin.width,
+                  height: coin.height,
+                  transform: \`rotate(\${coin.rotation}rad)\`
+                }}
+              >
+                🪙
+              </div>
+            ))}
+            
+            <button onClick={stopGame} className="stop-button">
+              Stop Game
+            </button>
+          </div>
+        )}
+      </div>
+      
+      <div className="game-controls">
+        <div className="controls-info">
+          <p><strong>Controls:</strong></p>
+          <p>← → Arrow Keys or A/D - Move side to side</p>
+          <p>Collect falling coins to score points!</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ${component.name};`
+  }
+
+  // NEW: Generate CSS for coin collector game
+  generateCoinCollectorCSS(component, prompt, context) {
+    return `.coin-collector-game {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  font-family: 'Arial', sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.game-header h2 {
+  margin: 0 0 15px 0;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 15px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.game-area {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.game-start-screen,
+.game-over-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40px;
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.game-start-screen h3,
+.game-over-screen h3 {
+  margin: 0 0 20px 0;
+  font-size: 2rem;
+  color: #FFD700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.game-start-screen p,
+.game-over-screen p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.start-button,
+.restart-button {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  transition: all 0.3s ease;
+}
+
+.start-button:hover,
+.restart-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+}
+
+.game-field {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+}
+
+.player {
+  position: absolute;
+  background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  border: 3px solid #fff;
+  z-index: 10;
+  transition: all 0.1s ease;
+}
+
+.player-face {
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.coin {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  z-index: 5;
+  animation: coinSpin 0.5s linear infinite;
+}
+
+@keyframes coinSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.stop-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(45deg, #f44336, #d32f2f);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(244, 67, 54, 0.4);
+  transition: all 0.3s ease;
+}
+
+.stop-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.6);
+}
+
+.game-controls {
+  margin-top: 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.controls-info {
+  color: white;
+}
+
+.controls-info p {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+.controls-info strong {
+  color: #FFD700;
+}
+
+/* Responsive design */
+@media (max-width: 900px) {
+  .game-area {
+    width: 100%;
+    max-width: 700px;
+    height: 500px;
+  }
+  
+  .game-header h2 {
+    font-size: 2rem;
+  }
+  
+  .stat-value {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .game-area {
+    height: 400px;
+  }
+  
+  .game-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .game-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .start-button,
+  .restart-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+}`
+  }
+
+  // NEW: Generate Temple Run endless runner game
+  generateTempleRunGame(component, prompt, context) {
+    return `import React, { useState, useEffect, useCallback, useRef } from 'react';
+import './${component.name}.css';
+
+const ${component.name} = () => {
+  const canvasRef = useRef(null);
+  const gameLoopRef = useRef(null);
+  const [gameState, setGameState] = useState({
+    score: 0,
+    highScore: 0,
+    distance: 0,
+    speed: 3,
+    isPlaying: false,
+    isPaused: false,
+    gameOver: false
+  });
+  
+  // Player character state
+  const [player, setPlayer] = useState({
+    x: 150, // Fixed horizontal position
+    y: 300, // Ground level
+    width: 60,
+    height: 80,
+    jumpPower: 0,
+    isJumping: false,
+    isSliding: false,
+    lane: 1 // 0 = left, 1 = center, 2 = right
+  });
+  
+  // Game objects
+  const [obstacles, setObstacles] = useState([]);
+  const [coins, setCoins] = useState([]);
+  const [keys, setKeys] = useState({});
+  
+  // Game constants
+  const LANE_WIDTH = 150;
+  const LANE_POSITIONS = [75, 225, 375]; // Left, center, right
+  const GRAVITY = 0.8;
+  const JUMP_FORCE = -15;
+  
+  // Game loop - 60 FPS
+  useEffect(() => {
+    if (!gameState.isPlaying || gameState.isPaused) return;
+    
+    gameLoopRef.current = setInterval(() => {
+      updateGame();
+    }, 16); // ~60 FPS
+    
+    return () => {
+      if (gameLoopRef.current) {
+        clearInterval(gameLoopRef.current);
+      }
+    };
+  }, [gameState.isPlaying, gameState.isPaused]);
+  
+  // Handle keyboard input
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      setKeys(prev => ({ ...prev, [e.key]: true }));
+    };
+    
+    const handleKeyUp = (e) => {
+      setKeys(prev => ({ ...prev, [e.key]: false }));
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+  
+  // Main game update loop
+  const updateGame = useCallback(() => {
+    // Update player physics
+    setPlayer(prev => {
+      let newPlayer = { ...prev };
+      
+      // Handle jumping
+      if (prev.isJumping) {
+        newPlayer.y += prev.jumpPower;
+        newPlayer.jumpPower += GRAVITY;
+        
+        // Landing
+        if (newPlayer.y >= 300) {
+          newPlayer.y = 300;
+          newPlayer.jumpPower = 0;
+          newPlayer.isJumping = false;
+        }
+      }
+      
+      // Handle sliding
+      if (prev.isSliding) {
+        newPlayer.height = 40;
+        newPlayer.y = 340;
+      } else {
+        newPlayer.height = 80;
+        if (!prev.isJumping) {
+          newPlayer.y = 300;
+        }
+      }
+      
+      // Handle lane switching
+      if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+        if (newPlayer.lane > 0) {
+          newPlayer.lane--;
+          newPlayer.x = LANE_POSITIONS[newPlayer.lane];
+        }
+      }
+      if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+        if (newPlayer.lane < 2) {
+          newPlayer.lane++;
+          newPlayer.x = LANE_POSITIONS[newPlayer.lane];
+        }
+      }
+      
+      // Handle jumping
+      if ((keys['ArrowUp'] || keys['w'] || keys['W'] || keys[' ']) && !prev.isJumping) {
+        newPlayer.isJumping = true;
+        newPlayer.jumpPower = JUMP_FORCE;
+        newPlayer.y -= 1;
+      }
+      
+      // Handle sliding
+      if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+        newPlayer.isSliding = true;
+      } else {
+        newPlayer.isSliding = false;
+      }
+      
+      return newPlayer;
+    });
+    
+    // Update obstacles
+    setObstacles(prev => {
+      const updatedObstacles = prev.map(obstacle => ({
+        ...obstacle,
+        x: obstacle.x - gameState.speed
+      })).filter(obstacle => obstacle.x > -50);
+      
+      // Add new obstacles
+      if (Math.random() < 0.02) {
+        const lane = Math.floor(Math.random() * 3);
+        const type = Math.random() < 0.7 ? 'low' : 'high'; // 70% low, 30% high
+        updatedObstacles.push({
+          id: Date.now(),
+          x: 600,
+          y: type === 'low' ? 340 : 280, // Low obstacles on ground, high obstacles in air
+          width: 40,
+          height: type === 'low' ? 40 : 60,
+          lane: lane,
+          type: type
+        });
+      }
+      
+      return updatedObstacles;
+    });
+    
+    // Update coins
+    setCoins(prev => {
+      const updatedCoins = prev.map(coin => ({
+        ...coin,
+        x: coin.x - gameState.speed,
+        rotation: coin.rotation + 0.2
+      })).filter(coin => coin.x > -30);
+      
+      // Add new coins
+      if (Math.random() < 0.03) {
+        const lane = Math.floor(Math.random() * 3);
+        updatedCoins.push({
+          id: Date.now(),
+          x: 600,
+          y: 320,
+          width: 30,
+          height: 30,
+          lane: lane,
+          rotation: 0,
+          value: 10
+        });
+      }
+      
+      return updatedCoins;
+    });
+    
+    // Update game state
+    setGameState(prev => ({
+      ...prev,
+      distance: prev.distance + gameState.speed,
+      speed: Math.min(8, 3 + Math.floor(prev.distance / 1000) * 0.5) // Speed increases with distance
+    }));
+    
+    // Check collisions
+    checkCollisions();
+  }, [keys, gameState.speed]);
+  
+  // Collision detection
+  const checkCollisions = useCallback(() => {
+    // Check obstacle collisions
+    setObstacles(prevObstacles => {
+      const remainingObstacles = [];
+      let gameOver = false;
+      
+      prevObstacles.forEach(obstacle => {
+        if (obstacle.lane === player.lane) {
+          const playerRect = {
+            x: player.x,
+            y: player.y,
+            width: player.width,
+            height: player.height
+          };
+          
+          const obstacleRect = {
+            x: obstacle.x,
+            y: obstacle.y,
+            width: obstacle.width,
+            height: obstacle.height
+          };
+          
+          // Check collision
+          if (playerRect.x < obstacleRect.x + obstacleRect.width &&
+              playerRect.x + playerRect.width > obstacleRect.x &&
+              playerRect.y < obstacleRect.y + obstacleRect.height &&
+              playerRect.y + playerRect.height > obstacleRect.y) {
+            
+            // Check if player can avoid obstacle
+            if (obstacle.type === 'high' && player.isSliding) {
+              // Player slides under high obstacle
+              remainingObstacles.push(obstacle);
+            } else if (obstacle.type === 'low' && player.isJumping) {
+              // Player jumps over low obstacle
+              remainingObstacles.push(obstacle);
+            } else {
+              // Collision! Game over
+              gameOver = true;
+            }
+          } else {
+            remainingObstacles.push(obstacle);
+          }
+        } else {
+          remainingObstacles.push(obstacle);
+        }
+      });
+      
+      if (gameOver) {
+        setGameState(prev => ({
+          ...prev,
+          isPlaying: false,
+          gameOver: true,
+          highScore: Math.max(prev.highScore, prev.distance)
+        }));
+      }
+      
+      return remainingObstacles;
+    });
+    
+    // Check coin collisions
+    setCoins(prevCoins => {
+      const remainingCoins = [];
+      let scoreIncrease = 0;
+      
+      prevCoins.forEach(coin => {
+        if (coin.lane === player.lane) {
+          const playerRect = {
+            x: player.x,
+            y: player.y,
+            width: player.width,
+            height: player.height
+          };
+          
+          const coinRect = {
+            x: coin.x,
+            y: coin.y,
+            width: coin.width,
+            height: coin.height
+          };
+          
+          // Check collision
+          if (playerRect.x < coinRect.x + coinRect.width &&
+              playerRect.x + playerRect.width > coinRect.x &&
+              playerRect.y < coinRect.y + coinRect.height &&
+              playerRect.y + playerRect.height > coinRect.y) {
+            // Coin collected!
+            scoreIncrease += coin.value;
+          } else {
+            remainingCoins.push(coin);
+          }
+        } else {
+          remainingCoins.push(coin);
+        }
+      });
+      
+      if (scoreIncrease > 0) {
+        setGameState(prev => ({
+          ...prev,
+          score: prev.score + scoreIncrease
+        }));
+      }
+      
+      return remainingCoins;
+    });
+  }, [player]);
+  
+  // Start game
+  const startGame = () => {
+    setGameState({
+      score: 0,
+      highScore: gameState.highScore,
+      distance: 0,
+      speed: 3,
+      isPlaying: true,
+      isPaused: false,
+      gameOver: false
+    });
+    setPlayer({
+      x: LANE_POSITIONS[1],
+      y: 300,
+      width: 60,
+      height: 80,
+      jumpPower: 0,
+      isJumping: false,
+      isSliding: false,
+      lane: 1
+    });
+    setObstacles([]);
+    setCoins([]);
+  };
+  
+  // Stop game
+  const stopGame = () => {
+    setGameState(prev => ({ ...prev, isPlaying: false, gameOver: true }));
+  };
+  
+  return (
+    <div className="temple-run-game">
+      <div className="game-header">
+        <h2>🏃‍♂️ Temple Run</h2>
+        <div className="game-stats">
+          <div className="stat">
+            <span className="stat-label">Distance:</span>
+            <span className="stat-value">{Math.floor(gameState.distance)}m</span>
+          </div>
+          <div className="stat">
+            <span className="stat-label">Score:</span>
+            <span className="stat-value">{gameState.score}</span>
+          </div>
+          <div className="stat">
+            <span className="stat-label">High Score:</span>
+            <span className="stat-value">{Math.floor(gameState.highScore)}m</span>
+          </div>
+        </div>
+      </div>
+      
+      <div className="game-area">
+        {!gameState.isPlaying && !gameState.gameOver && (
+          <div className="game-start-screen">
+            <h3>Ready to Run?</h3>
+            <p>Use ← → to switch lanes</p>
+            <p>↑ or Space to jump</p>
+            <p>↓ to slide</p>
+            <p>Avoid obstacles and collect coins!</p>
+            <button onClick={startGame} className="start-button">
+              Start Running
+            </button>
+          </div>
+        )}
+        
+        {gameState.gameOver && (
+          <div className="game-over-screen">
+            <h3>Game Over!</h3>
+            <p>Distance: {Math.floor(gameState.distance)}m</p>
+            <p>Score: {gameState.score}</p>
+            <button onClick={startGame} className="restart-button">
+              Run Again
+            </button>
+          </div>
+        )}
+        
+        {gameState.isPlaying && (
+          <div className="game-field">
+            {/* Background lanes */}
+            <div className="lanes">
+              <div className="lane"></div>
+              <div className="lane"></div>
+              <div className="lane"></div>
+            </div>
+            
+            {/* Player character */}
+            <div 
+              className={\`player \${player.isSliding ? 'sliding' : ''} \${player.isJumping ? 'jumping' : ''}\`}
+              style={{
+                left: player.x,
+                top: player.y,
+                width: player.width,
+                height: player.height
+              }}
+            >
+              <div className="player-character">🏃‍♂️</div>
+            </div>
+            
+            {/* Obstacles */}
+            {obstacles.map(obstacle => (
+              <div
+                key={obstacle.id}
+                className={\`obstacle \${obstacle.type}\`}
+                style={{
+                  left: obstacle.x,
+                  top: obstacle.y,
+                  width: obstacle.width,
+                  height: obstacle.height
+                }}
+              >
+                {obstacle.type === 'low' ? '🪨' : '🌳'}
+              </div>
+            ))}
+            
+            {/* Coins */}
+            {coins.map(coin => (
+              <div
+                key={coin.id}
+                className="coin"
+                style={{
+                  left: coin.x,
+                  top: coin.y,
+                  width: coin.width,
+                  height: coin.height,
+                  transform: \`rotate(\${coin.rotation}rad)\`
+                }}
+              >
+                🪙
+              </div>
+            ))}
+            
+            <button onClick={stopGame} className="stop-button">
+              Stop
+            </button>
+          </div>
+        )}
+      </div>
+      
+      <div className="game-controls">
+        <div className="controls-info">
+          <p><strong>Controls:</strong></p>
+          <p>← → Arrow Keys or A/D - Switch lanes</p>
+          <p>↑ or Space - Jump over low obstacles</p>
+          <p>↓ or S - Slide under high obstacles</p>
+          <p>Collect coins and run as far as possible!</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ${component.name};`
+  }
+
+  // NEW: Generate CSS for Temple Run game
+  generateTempleRunCSS(component, prompt, context) {
+    return `.temple-run-game {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #87CEEB 0%, #98FB98 50%, #8FBC8F 100%);
+  font-family: 'Arial', sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.game-header h2 {
+  margin: 0 0 15px 0;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 15px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 80px;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.game-area {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.game-start-screen,
+.game-over-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 40px;
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+}
+
+.game-start-screen h3,
+.game-over-screen h3 {
+  margin: 0 0 20px 0;
+  font-size: 2rem;
+  color: #FFD700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.game-start-screen p,
+.game-over-screen p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.start-button,
+.restart-button {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  transition: all 0.3s ease;
+}
+
+.start-button:hover,
+.restart-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+}
+
+.game-field {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+  overflow: hidden;
+}
+
+.lanes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.lane {
+  flex: 1;
+  height: 100%;
+  border-right: 2px dashed rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+.lane:last-child {
+  border-right: none;
+}
+
+.player {
+  position: absolute;
+  z-index: 50;
+  transition: all 0.2s ease;
+}
+
+.player-character {
+  font-size: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: playerRun 0.5s ease-in-out infinite alternate;
+}
+
+.player.jumping .player-character {
+  animation: playerJump 0.6s ease-in-out;
+}
+
+.player.sliding .player-character {
+  animation: playerSlide 0.3s ease-in-out;
+  transform: rotate(-15deg);
+}
+
+@keyframes playerRun {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-5px); }
+}
+
+@keyframes playerJump {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(-10deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes playerSlide {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-15deg); }
+}
+
+.obstacle {
+  position: absolute;
+  z-index: 20;
+  border-radius: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.obstacle.low {
+  background: linear-gradient(45deg, #8B4513, #A0522D);
+  border: 2px solid #654321;
+}
+
+.obstacle.high {
+  background: linear-gradient(45deg, #228B22, #32CD32);
+  border: 2px solid #006400;
+}
+
+.coin {
+  position: absolute;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  animation: coinSpin 0.5s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+@keyframes coinSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.stop-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(45deg, #f44336, #d32f2f);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 10px rgba(244, 67, 54, 0.4);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.stop-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.6);
+}
+
+.game-controls {
+  margin-top: 20px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 600px;
+}
+
+.controls-info {
+  color: white;
+}
+
+.controls-info p {
+  margin: 5px 0;
+  font-size: 1rem;
+}
+
+.controls-info strong {
+  color: #FFD700;
+}
+
+/* Responsive design */
+@media (max-width: 700px) {
+  .game-area {
+    width: 100%;
+    max-width: 500px;
+    height: 350px;
+  }
+  
+  .game-header h2 {
+    font-size: 2rem;
+  }
+  
+  .stat-value {
+    font-size: 1.2rem;
+  }
+  
+  .game-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 500px) {
+  .game-area {
+    height: 300px;
+  }
+  
+  .game-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .start-button,
+  .restart-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+  
+  .player-character {
+    font-size: 1.5rem;
+  }
+  
+  .coin {
+    font-size: 1rem;
+  }
+}`
   }
 
   generateGameUIComponent(component, prompt, context) {

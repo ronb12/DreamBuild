@@ -1,5 +1,5 @@
 // DreamBuild Service Worker for PWA functionality
-const CACHE_NAME = 'dreambuild-v2.1.0';
+const CACHE_NAME = 'dreambuild-v2.2.0';
 const urlsToCache = [
   '/',
   '/ai-builder',
@@ -53,43 +53,67 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Skip module scripts and assets to avoid MIME type issues
-  if (event.request.url.includes('/assets/') || 
-      event.request.url.includes('.js') || 
-      event.request.url.includes('.css') ||
-      event.request.url.includes('.map')) {
-    console.log('DreamBuild Service Worker skipping asset/module request:', event.request.url);
+  // Skip only source maps to avoid MIME type issues
+  if (event.request.url.includes('.map')) {
+    console.log('DreamBuild Service Worker skipping source map request:', event.request.url);
     return fetch(event.request);
   }
 
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Skip localhost requests to avoid CORS issues
-        if (event.request.url.includes('localhost') || event.request.url.includes('127.0.0.1')) {
-          console.log('DreamBuild Service Worker skipping localhost request:', event.request.url);
-          return fetch(event.request).catch(() => {
-            // Return a basic response for failed localhost requests
-            return new Response('Local service not available', { status: 503 });
-          });
-        }
+    (async () => {
+      // Skip localhost requests to avoid CORS issues
+      if (event.request.url.includes('localhost') || event.request.url.includes('127.0.0.1')) {
+        console.log('DreamBuild Service Worker skipping localhost request:', event.request.url);
+        return fetch(event.request).catch(() => {
+          // Return a basic response for failed localhost requests
+          return new Response('Local service not available', { status: 503 });
+        });
+      }
 
-        // Return cached version or fetch from network
-        if (response) {
-          console.log('DreamBuild Service Worker serving from cache:', event.request.url);
-          return response;
+      // For assets (JS, CSS), always try network first, then cache
+      if (event.request.url.includes('/assets/') || 
+          event.request.url.includes('.js') || 
+          event.request.url.includes('.css')) {
+        try {
+          console.log('DreamBuild Service Worker fetching fresh asset from network:', event.request.url);
+          const networkResponse = await fetch(event.request);
+          if (networkResponse.ok) {
+            // Cache the fresh response
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          }
+        } catch (error) {
+          console.log('DreamBuild Service Worker network failed, trying cache:', event.request.url);
         }
         
-        console.log('DreamBuild Service Worker fetching from network:', event.request.url);
-        return fetch(event.request).catch(() => {
-          // If network fails, show offline page for navigation requests
-          if (event.request.destination === 'document') {
-            return caches.match('/');
-          }
-          // Return a basic response for other failed requests
-          return new Response('Network request failed', { status: 503 });
-        });
-      })
+        // Fallback to cache if network fails
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) {
+          console.log('DreamBuild Service Worker serving from cache:', event.request.url);
+          return cachedResponse;
+        }
+        
+        return new Response('Asset not available', { status: 404 });
+      }
+
+      // For other requests, use cache-first strategy
+      const cachedResponse = await caches.match(event.request);
+      if (cachedResponse) {
+        console.log('DreamBuild Service Worker serving from cache:', event.request.url);
+        return cachedResponse;
+      }
+      
+      console.log('DreamBuild Service Worker fetching from network:', event.request.url);
+      return fetch(event.request).catch(() => {
+        // If network fails, show offline page for navigation requests
+        if (event.request.destination === 'document') {
+          return caches.match('/');
+        }
+        // Return a basic response for other failed requests
+        return new Response('Network request failed', { status: 503 });
+      });
+    })()
   );
 });
 

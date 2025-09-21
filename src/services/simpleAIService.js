@@ -81,7 +81,14 @@ class SimpleAIService {
       this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
       
       console.log('✅ Code generated successfully with Local AI!')
-      return response
+      
+      // Return the files from the response, not the entire response object
+      if (response && response.files) {
+        return response.files
+      } else {
+        console.warn('⚠️ No files found in response, returning empty object')
+        return {}
+      }
       
     } catch (error) {
       console.error('❌ Local AI generation failed:', error)

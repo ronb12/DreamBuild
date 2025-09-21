@@ -323,8 +323,26 @@ class LocalAIService {
         !window.location.hostname.includes('netlify')
       
       if (isWebDomain) {
-        console.log('🌐 Running on external domain - using enhanced template fallback (demo mode)')
-        return this.createEnhancedFallbackResponse(enhancedPrompt, context, searchKnowledge)
+        console.log('🌐 Running on external domain - using dynamic file generation (demo mode)')
+        // Use dynamic file generation even on external domains for full functionality
+        const dynamicFiles = await this.generateDynamicFiles(enhancedPrompt, context)
+        
+        // Add web knowledge as comments if available
+        if (searchKnowledge) {
+          Object.keys(dynamicFiles.files).forEach(filename => {
+            if (dynamicFiles.files[filename]) {
+              const knowledgeComment = this.generateKnowledgeComment(searchKnowledge, filename)
+              dynamicFiles.files[filename] = knowledgeComment + '\n' + dynamicFiles.files[filename]
+            }
+          })
+        }
+        
+        return {
+          success: true,
+          files: dynamicFiles.files,
+          message: `Generated comprehensive application with ${Object.keys(dynamicFiles.files).length} files using dynamic generation`,
+          _webSearchResults: searchKnowledge
+        }
       }
 
       const taskType = this.detectTaskType(enhancedPrompt)

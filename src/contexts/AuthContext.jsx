@@ -58,7 +58,7 @@ export function AuthProvider({ children }) {
       timeoutId = setTimeout(() => {
         console.log('Firebase auth timeout - setting loading to false')
         setLoading(false)
-      }, 3000)
+      }, 5000)
 
     } catch (error) {
       console.error('Error setting up auth listener:', error)

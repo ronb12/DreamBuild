@@ -67,15 +67,21 @@ class FirebaseService {
       // Try to sign in anonymously, but don't fail if it doesn't work
       try {
         await signInAnonymously(this.auth)
+        console.log('✅ Firebase anonymous auth successful')
       } catch (authError) {
-        console.log('⚠️ Firebase auth not available, continuing without authentication')
+        console.log('⚠️ Firebase auth not available, continuing without authentication:', authError.message)
+        // Don't throw error, just continue without auth
+        this.user = null
       }
 
       this.isInitialized = true
       console.log('🔥 Firebase initialized successfully')
     } catch (error) {
       console.error('❌ Failed to initialize Firebase:', error)
-      throw error
+      // Don't throw error, just continue without Firebase
+      this.isInitialized = false
+      this.user = null
+      console.log('⚠️ Continuing without Firebase services')
     }
   }
 

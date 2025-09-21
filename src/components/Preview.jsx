@@ -30,6 +30,8 @@ const Preview = () => {
       // Check if we have React components (game files)
       const gameAppFile = currentProject.files['src/components/GameApp.jsx'] || ''
       const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
+      const templeRunUIFile = currentProject.files['src/components/TempleRunUI.jsx'] || ''
+      const runnerPlayerFile = currentProject.files['src/components/RunnerPlayer.jsx'] || ''
       
       // If we have game components, create a React app preview
       if (gameAppFile || gameComponentFile) {
@@ -124,16 +126,24 @@ const Preview = () => {
     // Get all the React component files
     const gameAppFile = currentProject.files['src/components/GameApp.jsx'] || ''
     const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
-    const gameUIFile = currentProject.files['src/components/GameUI.jsx'] || ''
+    const templeRunUIFile = currentProject.files['src/components/TempleRunUI.jsx'] || ''
+    const runnerPlayerFile = currentProject.files['src/components/RunnerPlayer.jsx'] || ''
+    const obstacleFile = currentProject.files['src/components/Obstacle.jsx'] || ''
     const coinFile = currentProject.files['src/components/Coin.jsx'] || ''
     const playerFile = currentProject.files['src/components/Player.jsx'] || ''
     
     // Get CSS files
     const gameAppCSS = currentProject.files['src/components/GameApp.css'] || ''
     const gameComponentCSS = currentProject.files['src/components/GameComponent.css'] || ''
-    const gameUICSS = currentProject.files['src/components/GameUI.css'] || ''
+    const templeRunUICSS = currentProject.files['src/components/TempleRunUI.css'] || ''
+    const runnerPlayerCSS = currentProject.files['src/components/RunnerPlayer.css'] || ''
+    const obstacleCSS = currentProject.files['src/components/Obstacle.css'] || ''
     const coinCSS = currentProject.files['src/components/Coin.css'] || ''
     const playerCSS = currentProject.files['src/components/Player.css'] || ''
+    
+    // Detect game type based on available files
+    const isTempleRun = templeRunUIFile || runnerPlayerFile || obstacleFile
+    const isCoinCollector = playerFile || coinFile
 
     // Create a complete React app HTML
     const reactHTML = `
@@ -159,7 +169,9 @@ const Preview = () => {
           }
           ${gameAppCSS}
           ${gameComponentCSS}
-          ${gameUICSS}
+          ${templeRunUICSS}
+          ${runnerPlayerCSS}
+          ${obstacleCSS}
           ${coinCSS}
           ${playerCSS}
         </style>
@@ -170,19 +182,19 @@ const Preview = () => {
         <script type="text/babel">
           const { useState, useEffect, useRef, useCallback } = React;
           
-          // Simple coin collector game implementation
+          // Game component based on detected game type
           const GameComponent = () => {
-            const canvasRef = useRef(null);
             const [gameState, setGameState] = useState({
               score: 0,
-              level: 1,
-              lives: 3,
+              distance: 0,
+              speed: 1,
               isPlaying: false,
               isPaused: false,
               gameOver: false
             });
             
-            const [player, setPlayer] = useState({ x: 200, y: 300, size: 20 });
+            const [player, setPlayer] = useState({ x: 100, y: 200, lane: 1, isJumping: false, isSliding: false });
+            const [obstacles, setObstacles] = useState([]);
             const [coins, setCoins] = useState([]);
             const [keys, setKeys] = useState({});
             
@@ -204,8 +216,9 @@ const Preview = () => {
             }, [handleKeyDown, handleKeyUp]);
             
             const startGame = () => {
-              setGameState(prev => ({ ...prev, isPlaying: true, gameOver: false, score: 0 }));
-              setPlayer({ x: 200, y: 300, size: 20 });
+              setGameState(prev => ({ ...prev, isPlaying: true, gameOver: false, score: 0, distance: 0 }));
+              setPlayer({ x: 100, y: 200, lane: 1, isJumping: false, isSliding: false });
+              setObstacles([]);
               setCoins([]);
             };
             
@@ -216,47 +229,103 @@ const Preview = () => {
             const gameLoop = useCallback(() => {
               if (!gameState.isPlaying || gameState.isPaused) return;
               
+              // Handle player movement
               setPlayer(prevPlayer => {
-                let newX = prevPlayer.x;
+                let newLane = prevPlayer.lane;
                 let newY = prevPlayer.y;
+                let newIsJumping = prevPlayer.isJumping;
+                let newIsSliding = prevPlayer.isSliding;
                 
-                if (keys['ArrowLeft'] || keys['KeyA']) newX = Math.max(0, newX - 5);
-                if (keys['ArrowRight'] || keys['KeyD']) newX = Math.min(380, newX + 5);
-                if (keys['ArrowUp'] || keys['KeyW']) newY = Math.max(0, newY - 5);
-                if (keys['ArrowDown'] || keys['KeyS']) newY = Math.min(380, newY + 5);
+                // Lane switching
+                if (keys['ArrowLeft'] || keys['KeyA']) {
+                  newLane = Math.max(0, newLane - 1);
+                }
+                if (keys['ArrowRight'] || keys['KeyD']) {
+                  newLane = Math.min(2, newLane + 1);
+                }
                 
-                return { ...prevPlayer, x: newX, y: newY };
+                // Jumping
+                if ((keys['ArrowUp'] || keys['KeyW']) && !prevPlayer.isJumping) {
+                  newIsJumping = true;
+                  newY = 100;
+                  setTimeout(() => setPlayer(p => ({ ...p, isJumping: false, y: 200 })), 500);
+                }
+                
+                // Sliding
+                if ((keys['ArrowDown'] || keys['KeyS']) && !prevPlayer.isSliding) {
+                  newIsSliding = true;
+                  newY = 250;
+                  setTimeout(() => setPlayer(p => ({ ...p, isSliding: false, y: 200 })), 400);
+                }
+                
+                return { 
+                  ...prevPlayer, 
+                  lane: newLane, 
+                  y: newY, 
+                  isJumping: newIsJumping, 
+                  isSliding: newIsSliding,
+                  x: 50 + newLane * 75
+                };
               });
               
-              // Spawn coins
-              if (Math.random() < 0.02) {
-                setCoins(prevCoins => [...prevCoins, {
+              // Update game state
+              setGameState(prev => ({
+                ...prev,
+                distance: prev.distance + prev.speed,
+                speed: Math.min(3, 1 + Math.floor(prev.distance / 1000) * 0.2)
+              }));
+              
+              // Spawn obstacles
+              if (Math.random() < 0.02 + gameState.speed * 0.01) {
+                setObstacles(prev => [...prev, {
                   id: Date.now(),
-                  x: Math.random() * 360,
-                  y: Math.random() * 360,
-                  size: 15,
+                  lane: Math.floor(Math.random() * 3),
+                  type: Math.random() < 0.7 ? 'low' : 'high',
+                  x: 400,
+                  y: Math.random() < 0.7 ? 200 : 100
+                }]);
+              }
+              
+              // Spawn coins
+              if (Math.random() < 0.01) {
+                setCoins(prev => [...prev, {
+                  id: Date.now(),
+                  lane: Math.floor(Math.random() * 3),
+                  x: 400,
+                  y: 150,
                   collected: false
                 }]);
               }
               
+              // Move obstacles and coins
+              setObstacles(prev => prev.map(obs => ({ ...obs, x: obs.x - gameState.speed * 3 })).filter(obs => obs.x > -50));
+              setCoins(prev => prev.map(coin => ({ ...coin, x: coin.x - gameState.speed * 2 })).filter(coin => coin.x > -50));
+              
               // Check collisions
+              setObstacles(prevObstacles => {
+                return prevObstacles.map(obs => {
+                  if (obs.lane === player.lane && Math.abs(obs.x - player.x) < 30 && 
+                      ((obs.type === 'low' && !player.isJumping) || (obs.type === 'high' && !player.isSliding))) {
+                    setGameState(prev => ({ ...prev, gameOver: true, isPlaying: false }));
+                    return obs;
+                  }
+                  return obs;
+                });
+              });
+              
+              // Check coin collection
               setCoins(prevCoins => {
                 return prevCoins.map(coin => {
-                  const distance = Math.sqrt(
-                    Math.pow(coin.x - player.x, 2) + Math.pow(coin.y - player.y, 2)
-                  );
-                  
-                  if (distance < 25 && !coin.collected) {
+                  if (coin.lane === player.lane && Math.abs(coin.x - player.x) < 25 && !coin.collected) {
                     setGameState(prev => ({ ...prev, score: prev.score + 10 }));
                     return { ...coin, collected: true };
                   }
-                  
                   return coin;
                 }).filter(coin => !coin.collected);
               });
               
               requestAnimationFrame(gameLoop);
-            }, [keys, player.x, player.y, gameState.isPlaying, gameState.isPaused]);
+            }, [keys, player.lane, player.isJumping, player.isSliding, gameState.isPlaying, gameState.isPaused, gameState.speed]);
             
             useEffect(() => {
               if (gameState.isPlaying && !gameState.isPaused) {
@@ -265,97 +334,233 @@ const Preview = () => {
               }
             }, [gameLoop, gameState.isPlaying, gameState.isPaused]);
             
-            return (
-              <div style={{ 
-                width: '400px', 
-                height: '400px', 
-                border: '2px solid #333', 
-                position: 'relative',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '10px',
-                overflow: 'hidden'
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  top: '10px',
-                  left: '10px',
-                  color: 'white',
-                  fontSize: '18px',
-                  fontWeight: 'bold'
+            if (isTempleRun) {
+              // Temple Run Game
+              return (
+                <div style={{ 
+                  width: '400px', 
+                  height: '300px', 
+                  border: '2px solid #333', 
+                  position: 'relative',
+                  background: 'linear-gradient(180deg, #87CEEB 0%, #98FB98 100%)',
+                  borderRadius: '10px',
+                  overflow: 'hidden'
                 }}>
-                  Score: {gameState.score}
-                </div>
-                
-                {!gameState.isPlaying && (
                   <div style={{
                     position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    textAlign: 'center',
-                    color: 'white'
+                    top: '10px',
+                    left: '10px',
+                    color: 'white',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
                   }}>
-                    <h2>Coin Collector Game</h2>
-                    <p>Use arrow keys or WASD to move</p>
-                    <button onClick={startGame} style={{
-                      padding: '10px 20px',
-                      fontSize: '16px',
-                      background: '#4CAF50',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '5px',
-                      cursor: 'pointer'
-                    }}>
-                      Start Game
-                    </button>
+                    Score: {gameState.score} | Distance: {Math.floor(gameState.distance)}
                   </div>
-                )}
-                
-                {gameState.isPlaying && (
-                  <>
+                  
+                  {!gameState.isPlaying && (
                     <div style={{
                       position: 'absolute',
-                      top: player.y,
-                      left: player.x,
-                      width: player.size,
-                      height: player.size,
-                      background: '#FFD700',
-                      borderRadius: '50%',
-                      border: '2px solid #FFA500'
-                    }} />
-                    
-                    {coins.map(coin => (
-                      <div key={coin.id} style={{
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      textAlign: 'center',
+                      color: 'white',
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
+                    }}>
+                      <h2>Temple Run</h2>
+                      <p>A/D or ←/→ to switch lanes</p>
+                      <p>W or ↑ to jump</p>
+                      <p>S or ↓ to slide</p>
+                      <button onClick={startGame} style={{
+                        padding: '10px 20px',
+                        fontSize: '16px',
+                        background: '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                      }}>
+                        Start Game
+                      </button>
+                    </div>
+                  )}
+                  
+                  {gameState.isPlaying && (
+                    <>
+                      {/* Lanes */}
+                      <div style={{ position: 'absolute', left: '50px', top: '0', width: '2px', height: '100%', background: 'rgba(255,255,255,0.3)' }} />
+                      <div style={{ position: 'absolute', left: '125px', top: '0', width: '2px', height: '100%', background: 'rgba(255,255,255,0.3)' }} />
+                      <div style={{ position: 'absolute', left: '200px', top: '0', width: '2px', height: '100%', background: 'rgba(255,255,255,0.3)' }} />
+                      
+                      {/* Player */}
+                      <div style={{
                         position: 'absolute',
-                        top: coin.y,
-                        left: coin.x,
-                        width: coin.size,
-                        height: coin.size,
+                        top: player.y,
+                        left: player.x,
+                        width: '30px',
+                        height: player.isSliding ? '15px' : '30px',
+                        background: player.isSliding ? '#8B4513' : '#FFD700',
+                        borderRadius: player.isSliding ? '5px' : '50%',
+                        border: '2px solid #FFA500',
+                        transition: 'all 0.1s ease'
+                      }} />
+                      
+                      {/* Obstacles */}
+                      {obstacles.map(obs => (
+                        <div key={obs.id} style={{
+                          position: 'absolute',
+                          top: obs.y,
+                          left: obs.x,
+                          width: '25px',
+                          height: obs.type === 'low' ? '40px' : '20px',
+                          background: '#8B4513',
+                          borderRadius: '3px'
+                        }} />
+                      ))}
+                      
+                      {/* Coins */}
+                      {coins.map(coin => (
+                        <div key={coin.id} style={{
+                          position: 'absolute',
+                          top: coin.y,
+                          left: coin.x,
+                          width: '15px',
+                          height: '15px',
+                          background: '#FFD700',
+                          borderRadius: '50%',
+                          border: '2px solid #FFA500',
+                          boxShadow: '0 0 10px #FFD700'
+                        }} />
+                      ))}
+                      
+                      <button onClick={pauseGame} style={{
+                        position: 'absolute',
+                        bottom: '10px',
+                        right: '10px',
+                        padding: '5px 10px',
+                        fontSize: '12px',
+                        background: '#f44336',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer'
+                      }}>
+                        {gameState.isPaused ? 'Resume' : 'Pause'}
+                      </button>
+                    </>
+                  )}
+                  
+                  {gameState.gameOver && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      textAlign: 'center',
+                      color: 'white',
+                      background: 'rgba(0,0,0,0.8)',
+                      padding: '20px',
+                      borderRadius: '10px'
+                    }}>
+                      <h2>Game Over!</h2>
+                      <p>Final Score: {gameState.score}</p>
+                      <p>Distance: {Math.floor(gameState.distance)}</p>
+                      <button onClick={startGame} style={{
+                        padding: '10px 20px',
+                        fontSize: '16px',
+                        background: '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                      }}>
+                        Play Again
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            } else {
+              // Coin Collector Game (fallback)
+              return (
+                <div style={{ 
+                  width: '400px', 
+                  height: '400px', 
+                  border: '2px solid #333', 
+                  position: 'relative',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  borderRadius: '10px',
+                  overflow: 'hidden'
+                }}>
+                  <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: 'bold'
+                  }}>
+                    Score: {gameState.score}
+                  </div>
+                  
+                  {!gameState.isPlaying && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      textAlign: 'center',
+                      color: 'white'
+                    }}>
+                      <h2>Coin Collector Game</h2>
+                      <p>Use arrow keys or WASD to move</p>
+                      <button onClick={startGame} style={{
+                        padding: '10px 20px',
+                        fontSize: '16px',
+                        background: '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer'
+                      }}>
+                        Start Game
+                      </button>
+                    </div>
+                  )}
+                  
+                  {gameState.isPlaying && (
+                    <>
+                      <div style={{
+                        position: 'absolute',
+                        top: 200,
+                        left: 200,
+                        width: '20px',
+                        height: '20px',
                         background: '#FFD700',
                         borderRadius: '50%',
-                        border: '2px solid #FFA500',
-                        boxShadow: '0 0 10px #FFD700'
+                        border: '2px solid #FFA500'
                       }} />
-                    ))}
-                    
-                    <button onClick={pauseGame} style={{
-                      position: 'absolute',
-                      bottom: '10px',
-                      right: '10px',
-                      padding: '5px 10px',
-                      fontSize: '12px',
-                      background: '#f44336',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '3px',
-                      cursor: 'pointer'
-                    }}>
-                      {gameState.isPaused ? 'Resume' : 'Pause'}
-                    </button>
-                  </>
-                )}
-              </div>
-            );
+                      
+                      <button onClick={pauseGame} style={{
+                        position: 'absolute',
+                        bottom: '10px',
+                        right: '10px',
+                        padding: '5px 10px',
+                        fontSize: '12px',
+                        background: '#f44336',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '3px',
+                        cursor: 'pointer'
+                      }}>
+                        {gameState.isPaused ? 'Resume' : 'Pause'}
+                      </button>
+                    </>
+                  )}
+                </div>
+              );
+            }
           };
           
           const GameApp = () => {

@@ -1,0 +1,962 @@
+{
+  "consoleLogs": [
+    {
+      "type": "log",
+      "text": "Firebase config loaded: JSHandle@object",
+      "timestamp": "2025-09-21T15:03:48.788Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Initializing local AI health monitoring...",
+      "timestamp": "2025-09-21T15:03:48.815Z"
+    },
+    {
+      "type": "log",
+      "text": "🌐 Running on deployed domain - using dynamic file generation",
+      "timestamp": "2025-09-21T15:03:48.823Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Dynamic generation active - AI generation available",
+      "timestamp": "2025-09-21T15:03:48.831Z"
+    },
+    {
+      "type": "log",
+      "text": "🤖 Simple AI Service initialized - Local AI only!",
+      "timestamp": "2025-09-21T15:03:48.832Z"
+    },
+    {
+      "type": "log",
+      "text": "DreamBuild SW registered: JSHandle@object",
+      "timestamp": "2025-09-21T15:03:49.175Z"
+    },
+    {
+      "type": "log",
+      "text": "Firebase auth timeout - setting loading to false",
+      "timestamp": "2025-09-21T15:03:54.022Z"
+    },
+    {
+      "type": "log",
+      "text": "AI Service object: JSHandle@object",
+      "timestamp": "2025-09-21T15:03:58.832Z"
+    },
+    {
+      "type": "log",
+      "text": "AI Service generateCode method: function",
+      "timestamp": "2025-09-21T15:03:58.832Z"
+    },
+    {
+      "type": "log",
+      "text": "🚀 Generating code with Local AI...",
+      "timestamp": "2025-09-21T15:03:58.833Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Searching web for current knowledge and best practices...",
+      "timestamp": "2025-09-21T15:03:58.833Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Searching web for knowledge: JSHandle@array",
+      "timestamp": "2025-09-21T15:03:58.835Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Web search completed - enhanced prompt with current best practices",
+      "timestamp": "2025-09-21T15:04:01.585Z"
+    },
+    {
+      "type": "log",
+      "text": "🌐 Running on external domain - using dynamic file generation (demo mode)",
+      "timestamp": "2025-09-21T15:04:01.585Z"
+    },
+    {
+      "type": "log",
+      "text": "🚀 Starting advanced dynamic file generation with all Lovable-style capabilities...",
+      "timestamp": "2025-09-21T15:04:01.587Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ Failed to initialize Firebase: JSHandle@error",
+      "timestamp": "2025-09-21T15:04:01.588Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ Failed to get conversation context: JSHandle@error",
+      "timestamp": "2025-09-21T15:04:01.605Z"
+    },
+    {
+      "type": "log",
+      "text": "🧠 Conversation context loaded: No",
+      "timestamp": "2025-09-21T15:04:01.615Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Codebase analysis: JSHandle@object",
+      "timestamp": "2025-09-21T15:04:01.617Z"
+    },
+    {
+      "type": "log",
+      "text": "📊 Codebase context analyzed: JSHandle@object",
+      "timestamp": "2025-09-21T15:04:01.617Z"
+    },
+    {
+      "type": "log",
+      "text": "🔗 Dependency graph built: 0 relationships",
+      "timestamp": "2025-09-21T15:04:01.618Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 Starting component-based generation...",
+      "timestamp": "2025-09-21T15:04:01.618Z"
+    },
+    {
+      "type": "log",
+      "text": "📋 Component requirements: JSHandle@object",
+      "timestamp": "2025-09-21T15:04:01.618Z"
+    },
+    {
+      "type": "log",
+      "text": "🌳 Component hierarchy: JSHandle@object",
+      "timestamp": "2025-09-21T15:04:01.619Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Generated component files: 9",
+      "timestamp": "2025-09-21T15:04:01.619Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Generated supporting files: 7",
+      "timestamp": "2025-09-21T15:04:01.786Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 Component files before assign: JSHandle@array",
+      "timestamp": "2025-09-21T15:04:01.788Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 Component-based files generated: 16",
+      "timestamp": "2025-09-21T15:04:01.790Z"
+    },
+    {
+      "type": "log",
+      "text": "🗄️ Starting database-driven template generation...",
+      "timestamp": "2025-09-21T15:04:01.791Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Template query: JSHandle@object",
+      "timestamp": "2025-09-21T15:04:01.792Z"
+    },
+    {
+      "type": "log",
+      "text": "📚 Retrieved templates: 1",
+      "timestamp": "2025-09-21T15:04:01.793Z"
+    },
+    {
+      "type": "log",
+      "text": "📋 Using template: E-commerce Store Template",
+      "timestamp": "2025-09-21T15:04:01.796Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ Enhanced AI generation failed: JSHandle@error",
+      "timestamp": "2025-09-21T15:04:01.797Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Code generated successfully with Local AI!",
+      "timestamp": "2025-09-21T15:04:01.798Z"
+    }
+  ],
+  "uiStates": [
+    {
+      "description": "Initial State",
+      "timestamp": "2025-09-21T15:03:56.729Z",
+      "url": "https://dreambuild-2024-app.web.app/ai-builder",
+      "title": "DreamBuild - Universal AI Development Platform",
+      "elements": {
+        "inputs": [
+          {
+            "tagName": "INPUT",
+            "type": "file",
+            "id": "",
+            "className": "hidden",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "inputarea monaco-mouse-cursor-text",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
+            "value": "",
+            "placeholder": "Create a healthy food tips website with nutrition advice and meal planning features..."
+          }
+        ],
+        "buttons": [
+          {
+            "text": "",
+            "className": "p-2 rounded-lg hover:bg-muted/50 transition-all duration-200 border border-border/50 hover:border-primary/30 group",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Code Editor",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-primary text-primary-foreground shadow-sm",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Live Preview",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Terminal",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Advanced Workspace",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Save",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Deploy",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Export",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Details",
+            "className": "text-xs text-primary hover:underline",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Generate Code",
+            "className": "w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20",
+            "id": "",
+            "disabled": true
+          }
+        ],
+        "visibleText": "\n    DreamBuildAI Development PlatformHomeAI BuilderProjectsDashboardSign InAI BuilderCode EditorLive PreviewTerminalAdvanced WorkspaceFilesActiveExplorerFilesSaveDeployExportUntitled Project🌐index.html🎨style.css⚡script.js🧩components.jsxUploadeditorReady🌐index.htmlhtml1Line 1Column 10 charactersCtrl+S to save•Ctrl+C to copy allAI AssistantOnlineAI Assistantlocal-aiAI Ready•Fallback EnabledDetailsDescribe what you want to build0/2000Generate CodePress Ctrl+Enter to generate\n    \n    \n    \n      if ('serviceWorker' in navigator) {\n        window.addEventListener('load', () => {\n          navigator.serviceWorker.register('/sw.js')\n            .then(registration => {\n              console.log('DreamBuild SW registered:', registration);\n            })\n            .catch(error => {\n              console.log('DreamBuild SW registration failed:', error);\n            });\n        });\n      }\n    \n    \n  \n"
+      }
+    },
+    {
+      "description": "After Typing Prompt",
+      "timestamp": "2025-09-21T15:03:58.616Z",
+      "url": "https://dreambuild-2024-app.web.app/ai-builder",
+      "title": "DreamBuild - Universal AI Development Platform",
+      "elements": {
+        "inputs": [
+          {
+            "tagName": "INPUT",
+            "type": "file",
+            "id": "",
+            "className": "hidden",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "inputarea monaco-mouse-cursor-text",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
+            "value": "create a fun coin collector game with multiple levels, power-ups, and high score tracking",
+            "placeholder": "Create a healthy food tips website with nutrition advice and meal planning features..."
+          }
+        ],
+        "buttons": [
+          {
+            "text": "",
+            "className": "p-2 rounded-lg hover:bg-muted/50 transition-all duration-200 border border-border/50 hover:border-primary/30 group",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Code Editor",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-primary text-primary-foreground shadow-sm",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Live Preview",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Terminal",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Advanced Workspace",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Save",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Deploy",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Export",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Details",
+            "className": "text-xs text-primary hover:underline",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Generate Code",
+            "className": "w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20",
+            "id": "",
+            "disabled": false
+          }
+        ],
+        "visibleText": "\n    DreamBuildAI Development PlatformHomeAI BuilderProjectsDashboardSign InAI BuilderCode EditorLive PreviewTerminalAdvanced WorkspaceFilesActiveExplorerFilesSaveDeployExportUntitled Project🌐index.html🎨style.css⚡script.js🧩components.jsxUploadeditorReady🌐index.htmlhtml1Line 1Column 10 charactersCtrl+S to save•Ctrl+C to copy allAI AssistantOnlineAI Assistantlocal-aiAI Ready•Fallback EnabledDetailsDescribe what you want to buildcreate a fun coin collector game with multiple levels, power-ups, and high score tracking89/2000Generate CodePress Ctrl+Enter to generate\n    \n    \n    \n      if ('serviceWorker' in navigator) {\n        window.addEventListener('load', () => {\n          navigator.serviceWorker.register('/sw.js')\n            .then(registration => {\n              console.log('DreamBuild SW registered:', registration);\n            })\n            .catch(error => {\n              console.log('DreamBuild SW registration failed:', error);\n            });\n        });\n      }\n    \n    \n "
+      }
+    },
+    {
+      "description": "After Clicking Generate",
+      "timestamp": "2025-09-21T15:03:58.849Z",
+      "url": "https://dreambuild-2024-app.web.app/ai-builder",
+      "title": "DreamBuild - Universal AI Development Platform",
+      "elements": {
+        "inputs": [
+          {
+            "tagName": "INPUT",
+            "type": "file",
+            "id": "",
+            "className": "hidden",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "inputarea monaco-mouse-cursor-text",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
+            "value": "create a fun coin collector game with multiple levels, power-ups, and high score tracking",
+            "placeholder": "Create a healthy food tips website with nutrition advice and meal planning features..."
+          }
+        ],
+        "buttons": [
+          {
+            "text": "",
+            "className": "p-2 rounded-lg hover:bg-muted/50 transition-all duration-200 border border-border/50 hover:border-primary/30 group",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Code Editor",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-primary text-primary-foreground shadow-sm",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Live Preview",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Terminal",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Advanced Workspace",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Save",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Deploy",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Export",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Details",
+            "className": "text-xs text-primary hover:underline",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Generating...",
+            "className": "w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20",
+            "id": "",
+            "disabled": true
+          }
+        ],
+        "visibleText": "\n    DreamBuildAI Development PlatformHomeAI BuilderProjectsDashboardSign InAI BuilderCode EditorLive PreviewTerminalAdvanced WorkspaceFilesActiveExplorerFilesSaveDeployExportUntitled Project🌐index.html🎨style.css⚡script.js🧩components.jsxUploadeditorReady🌐index.htmlhtml1Line 1Column 10 charactersCtrl+S to save•Ctrl+C to copy allAI AssistantOnlineAI Assistantlocal-aiAI Ready•Fallback EnabledDetailsDescribe what you want to buildcreate a fun coin collector game with multiple levels, power-ups, and high score tracking89/2000Generating...Press Ctrl+Enter to generate\n    \n    \n    \n      if ('serviceWorker' in navigator) {\n        window.addEventListener('load', () => {\n          navigator.serviceWorker.register('/sw.js')\n            .then(registration => {\n              console.log('DreamBuild SW registered:', registration);\n            })\n            .catch(error => {\n              console.log('DreamBuild SW registration failed:', error);\n            });\n        });\n      }\n    \n    \n "
+      }
+    },
+    {
+      "description": "Generation Progress",
+      "timestamp": "2025-09-21T15:03:58.854Z",
+      "url": "https://dreambuild-2024-app.web.app/ai-builder",
+      "title": "DreamBuild - Universal AI Development Platform",
+      "elements": {
+        "inputs": [
+          {
+            "tagName": "INPUT",
+            "type": "file",
+            "id": "",
+            "className": "hidden",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "inputarea monaco-mouse-cursor-text",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
+            "value": "create a fun coin collector game with multiple levels, power-ups, and high score tracking",
+            "placeholder": "Create a healthy food tips website with nutrition advice and meal planning features..."
+          }
+        ],
+        "buttons": [
+          {
+            "text": "",
+            "className": "p-2 rounded-lg hover:bg-muted/50 transition-all duration-200 border border-border/50 hover:border-primary/30 group",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Code Editor",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-primary text-primary-foreground shadow-sm",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Live Preview",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Terminal",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Advanced Workspace",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Save",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Deploy",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Export",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Details",
+            "className": "text-xs text-primary hover:underline",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Generating...",
+            "className": "w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20",
+            "id": "",
+            "disabled": true
+          }
+        ],
+        "visibleText": "\n    DreamBuildAI Development PlatformHomeAI BuilderProjectsDashboardSign InAI BuilderCode EditorLive PreviewTerminalAdvanced WorkspaceFilesActiveExplorerFilesSaveDeployExportUntitled Project🌐index.html🎨style.css⚡script.js🧩components.jsxUploadeditorReady🌐index.htmlhtml1Line 1Column 10 charactersCtrl+S to save•Ctrl+C to copy allAI AssistantOnlineAI Assistantlocal-aiAI Ready•Fallback EnabledDetailsDescribe what you want to buildcreate a fun coin collector game with multiple levels, power-ups, and high score tracking89/2000Generating...Press Ctrl+Enter to generate\n    \n    \n    \n      if ('serviceWorker' in navigator) {\n        window.addEventListener('load', () => {\n          navigator.serviceWorker.register('/sw.js')\n            .then(registration => {\n              console.log('DreamBuild SW registered:', registration);\n            })\n            .catch(error => {\n              console.log('DreamBuild SW registration failed:', error);\n            });\n        });\n      }\n    \n    \n "
+      }
+    },
+    {
+      "description": "Generation Progress",
+      "timestamp": "2025-09-21T15:04:01.877Z",
+      "url": "https://dreambuild-2024-app.web.app/ai-builder",
+      "title": "DreamBuild - Universal AI Development Platform",
+      "elements": {
+        "inputs": [
+          {
+            "tagName": "INPUT",
+            "type": "file",
+            "id": "",
+            "className": "hidden",
+            "value": "",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "inputarea monaco-mouse-cursor-text",
+            "value": "<!DOCTYPE ",
+            "placeholder": ""
+          },
+          {
+            "tagName": "TEXTAREA",
+            "type": "textarea",
+            "id": "",
+            "className": "w-full p-3 border border-border rounded-md bg-black resize-none min-h-[120px] focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
+            "value": "",
+            "placeholder": "Create a healthy food tips website with nutrition advice and meal planning features..."
+          }
+        ],
+        "buttons": [
+          {
+            "text": "",
+            "className": "p-2 rounded-lg hover:bg-muted/50 transition-all duration-200 border border-border/50 hover:border-primary/30 group",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Code Editor",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 bg-primary text-primary-foreground shadow-sm",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Live Preview",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Terminal",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Advanced Workspace",
+            "className": "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1.5 hover:bg-gray-700 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Save",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Deploy",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Export",
+            "className": "flex items-center gap-1.5 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-2 hover:bg-muted rounded-md transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "",
+            "className": "p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Details",
+            "className": "text-xs text-primary hover:underline",
+            "id": "",
+            "disabled": false
+          },
+          {
+            "text": "Generate Code",
+            "className": "w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 border border-blue-500/20",
+            "id": "",
+            "disabled": true
+          }
+        ],
+        "visibleText": "\n    DreamBuildAI Development PlatformHomeAI BuilderProjectsDashboardSign InAI BuilderCode EditorLive PreviewTerminalAdvanced WorkspaceFilesActiveExplorerFilesSaveDeployExportUntitled Project🌐index.html🎨style.css⚡script.js🧩components.jsxUploadeditorReady🌐index.htmlhtml123456789<!DOCTYPE html><html lang=\"en\"><head>    <meta charset=\"UTF-8\">    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">    <title>create a fun coin collector game with multiple lev</title>    <link rel=\"stylesheet\" href=\"style.css\"></head><body>Line 1Column 11467 charactersCtrl+S to save•Ctrl+C to copy allAI AssistantOnlineAI Assistantlocal-aiAI Ready•Fallback EnabledDetailsDescribe what you want to build0/2000Generate CodePress Ctrl+Enter to generateCode generated successfully!\n    \n    \n    \n      if ('serviceWorker' in navigator) {\n        window.addEventListener('load', () => {\n          navigator.serviceWorker.register('/sw.js')\n            .then(registration => {\n              console."
+      }
+    }
+  ],
+  "timestamp": "2025-09-21T15:04:02.530Z"
+}

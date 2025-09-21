@@ -1,0 +1,172 @@
+[
+  {
+    "type": "log",
+    "text": "Firebase config loaded: JSHandle@object",
+    "timestamp": "2025-09-21T15:06:07.865Z"
+  },
+  {
+    "type": "log",
+    "text": "🔍 Initializing local AI health monitoring...",
+    "timestamp": "2025-09-21T15:06:08.050Z"
+  },
+  {
+    "type": "log",
+    "text": "🌐 Running on deployed domain - using dynamic file generation",
+    "timestamp": "2025-09-21T15:06:08.052Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Dynamic generation active - AI generation available",
+    "timestamp": "2025-09-21T15:06:08.057Z"
+  },
+  {
+    "type": "log",
+    "text": "🤖 Simple AI Service initialized - Local AI only!",
+    "timestamp": "2025-09-21T15:06:08.060Z"
+  },
+  {
+    "type": "log",
+    "text": "DreamBuild SW registered: JSHandle@object",
+    "timestamp": "2025-09-21T15:06:08.290Z"
+  },
+  {
+    "type": "log",
+    "text": "Firebase auth timeout - setting loading to false",
+    "timestamp": "2025-09-21T15:06:13.621Z"
+  },
+  {
+    "type": "log",
+    "text": "AI Service object: JSHandle@object",
+    "timestamp": "2025-09-21T15:06:20.808Z"
+  },
+  {
+    "type": "log",
+    "text": "AI Service generateCode method: function",
+    "timestamp": "2025-09-21T15:06:20.822Z"
+  },
+  {
+    "type": "log",
+    "text": "🚀 Generating code with Local AI...",
+    "timestamp": "2025-09-21T15:06:20.823Z"
+  },
+  {
+    "type": "log",
+    "text": "🔍 Searching web for current knowledge and best practices...",
+    "timestamp": "2025-09-21T15:06:20.824Z"
+  },
+  {
+    "type": "log",
+    "text": "🔍 Searching web for knowledge: JSHandle@array",
+    "timestamp": "2025-09-21T15:06:20.833Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Web search completed - enhanced prompt with current best practices",
+    "timestamp": "2025-09-21T15:06:24.171Z"
+  },
+  {
+    "type": "log",
+    "text": "🌐 Running on external domain - using dynamic file generation (demo mode)",
+    "timestamp": "2025-09-21T15:06:24.171Z"
+  },
+  {
+    "type": "log",
+    "text": "🚀 Starting advanced dynamic file generation with all Lovable-style capabilities...",
+    "timestamp": "2025-09-21T15:06:24.172Z"
+  },
+  {
+    "type": "error",
+    "text": "❌ Failed to initialize Firebase: JSHandle@error",
+    "timestamp": "2025-09-21T15:06:24.183Z"
+  },
+  {
+    "type": "error",
+    "text": "❌ Failed to get conversation context: JSHandle@error",
+    "timestamp": "2025-09-21T15:06:24.187Z"
+  },
+  {
+    "type": "log",
+    "text": "🧠 Conversation context loaded: No",
+    "timestamp": "2025-09-21T15:06:24.188Z"
+  },
+  {
+    "type": "log",
+    "text": "🔍 Codebase analysis: JSHandle@object",
+    "timestamp": "2025-09-21T15:06:24.201Z"
+  },
+  {
+    "type": "log",
+    "text": "📊 Codebase context analyzed: JSHandle@object",
+    "timestamp": "2025-09-21T15:06:24.202Z"
+  },
+  {
+    "type": "log",
+    "text": "🔗 Dependency graph built: 0 relationships",
+    "timestamp": "2025-09-21T15:06:24.203Z"
+  },
+  {
+    "type": "log",
+    "text": "🧩 Starting component-based generation...",
+    "timestamp": "2025-09-21T15:06:24.203Z"
+  },
+  {
+    "type": "log",
+    "text": "📋 Component requirements: JSHandle@object",
+    "timestamp": "2025-09-21T15:06:24.204Z"
+  },
+  {
+    "type": "log",
+    "text": "🌳 Component hierarchy: JSHandle@object",
+    "timestamp": "2025-09-21T15:06:24.351Z"
+  },
+  {
+    "type": "log",
+    "text": "📁 Generated component files: 9",
+    "timestamp": "2025-09-21T15:06:24.351Z"
+  },
+  {
+    "type": "log",
+    "text": "🔧 Generated supporting files: 7",
+    "timestamp": "2025-09-21T15:06:24.354Z"
+  },
+  {
+    "type": "log",
+    "text": "🧩 Component files before assign: JSHandle@array",
+    "timestamp": "2025-09-21T15:06:24.356Z"
+  },
+  {
+    "type": "log",
+    "text": "🧩 Component-based files generated: 16",
+    "timestamp": "2025-09-21T15:06:24.356Z"
+  },
+  {
+    "type": "log",
+    "text": "🗄️ Starting database-driven template generation...",
+    "timestamp": "2025-09-21T15:06:24.357Z"
+  },
+  {
+    "type": "log",
+    "text": "🔍 Template query: JSHandle@object",
+    "timestamp": "2025-09-21T15:06:24.359Z"
+  },
+  {
+    "type": "log",
+    "text": "📚 Retrieved templates: 1",
+    "timestamp": "2025-09-21T15:06:24.547Z"
+  },
+  {
+    "type": "log",
+    "text": "📋 Using template: E-commerce Store Template",
+    "timestamp": "2025-09-21T15:06:24.563Z"
+  },
+  {
+    "type": "error",
+    "text": "❌ Enhanced AI generation failed: JSHandle@error",
+    "timestamp": "2025-09-21T15:06:24.568Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Code generated successfully with Local AI!",
+    "timestamp": "2025-09-21T15:06:24.568Z"
+  }
+]

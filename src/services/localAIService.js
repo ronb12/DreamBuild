@@ -1569,6 +1569,10 @@ Additional context: ${searchKnowledge.summary}`
       commonRequests: []
     }
     
+    if (!Array.isArray(history)) {
+      history = []
+    }
+    
     history.forEach((turn, index) => {
       context.projectEvolution.push({
         turn: index + 1,
@@ -3398,7 +3402,7 @@ export const Error = {
       
       // Initialize Firebase
       this.firebaseApp = await import('firebase/app').then(firebase => {
-        if (!firebase.apps.length) {
+        if (!firebase.apps || !firebase.apps.length) {
           return firebase.initializeApp(firebaseConfig)
         }
         return firebase.app()

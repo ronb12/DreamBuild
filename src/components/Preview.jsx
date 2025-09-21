@@ -183,16 +183,21 @@ const Preview = () => {
   }
 
   const createReactPreview = () => {
-    if (!iframeRef.current) return
+    console.log('🎮 Creating React preview...')
+    if (!iframeRef.current) {
+      console.log('🎮 createReactPreview: iframeRef.current is null')
+      return
+    }
 
-    // Get all the React component files
-    const gameAppFile = currentProject.files['src/components/GameApp.jsx'] || ''
-    const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
-    const templeRunUIFile = currentProject.files['src/components/TempleRunUI.jsx'] || ''
-    const runnerPlayerFile = currentProject.files['src/components/RunnerPlayer.jsx'] || ''
-    const obstacleFile = currentProject.files['src/components/Obstacle.jsx'] || ''
-    const coinFile = currentProject.files['src/components/Coin.jsx'] || ''
-    const playerFile = currentProject.files['src/components/Player.jsx'] || ''
+    try {
+      // Get all the React component files
+      const gameAppFile = currentProject.files['src/components/GameApp.jsx'] || ''
+      const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
+      const templeRunUIFile = currentProject.files['src/components/TempleRunUI.jsx'] || ''
+      const runnerPlayerFile = currentProject.files['src/components/RunnerPlayer.jsx'] || ''
+      const obstacleFile = currentProject.files['src/components/Obstacle.jsx'] || ''
+      const coinFile = currentProject.files['src/components/Coin.jsx'] || ''
+      const playerFile = currentProject.files['src/components/Player.jsx'] || ''
     
     // Get CSS files
     const gameAppCSS = currentProject.files['src/components/GameApp.css'] || ''
@@ -703,8 +708,15 @@ const Preview = () => {
     }
 
     iframe.onerror = () => {
+      console.log('🎮 Iframe error occurred')
       setIsLoading(false)
       setPreviewError('Failed to load React preview')
+    }
+    
+    } catch (error) {
+      console.error('🎮 Error in createReactPreview:', error)
+      setIsLoading(false)
+      setPreviewError(`Preview generation failed: ${error.message}`)
     }
   }
 

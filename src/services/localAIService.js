@@ -9027,6 +9027,326 @@ export const objectUtils = {
   }
 }`
   }
+
+  // Generate Data Hook
+  generateDataHook(prompt, context) {
+    return `import { useState, useEffect, useCallback } from 'react'
+
+// Custom hook for data fetching and management
+export const useData = (url, options = {}) => {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        },
+        ...options
+      })
+
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+
+      const result = await response.json()
+      setData(result)
+    } catch (err) {
+      setError(err.message)
+      console.error('Error fetching data:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [url, options])
+
+  useEffect(() => {
+    if (url) {
+      fetchData()
+    }
+  }, [fetchData])
+
+  const refetch = useCallback(() => {
+    fetchData()
+  }, [fetchData])
+
+  return { data, loading, error, refetch }
+}
+
+// Custom hook for form data management
+export const useFormData = (initialData = {}) => {
+  const [formData, setFormData] = useState(initialData)
+  const [errors, setErrors] = useState({})
+  const [touched, setTouched] = useState({})
+
+  const handleChange = useCallback((name, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }))
+    }
+  }, [errors])
+
+  const handleBlur = useCallback((name) => {
+    setTouched(prev => ({
+      ...prev,
+      [name]: true
+    }))
+  }, [])
+
+  const setError = useCallback((name, message) => {
+    setErrors(prev => ({
+      ...prev,
+      [name]: message
+    }))
+  }, [])
+
+  const reset = useCallback(() => {
+    setFormData(initialData)
+    setErrors({})
+    setTouched({})
+  }, [initialData])
+
+  const isValid = Object.keys(errors).length === 0 || Object.values(errors).every(error => !error)
+
+  return {
+    formData,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    setError,
+    reset,
+    isValid
+  }
+}
+
+// Custom hook for pagination
+export const usePagination = (data = [], itemsPerPage = 10) => {
+  const [currentPage, setCurrentPage] = useState(1)
+  
+  const totalPages = Math.ceil(data.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentData = data.slice(startIndex, endIndex)
+
+  const goToPage = useCallback((page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
+    }
+  }, [totalPages])
+
+  const nextPage = useCallback(() => {
+    goToPage(currentPage + 1)
+  }, [currentPage, goToPage])
+
+  const prevPage = useCallback(() => {
+    goToPage(currentPage - 1)
+  }, [currentPage, goToPage])
+
+  const reset = useCallback(() => {
+    setCurrentPage(1)
+  }, [])
+
+  return {
+    currentPage,
+    totalPages,
+    currentData,
+    goToPage,
+    nextPage,
+    prevPage,
+    reset,
+    hasNext: currentPage < totalPages,
+    hasPrev: currentPage > 1
+  }
+}
+
+// Custom hook for debounced values
+export const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+
+  return debouncedValue
+}
+
+// Custom hook for local storage
+export const useLocalStorage = (key, initialValue) => {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
+    } catch (error) {
+      console.error(\`Error reading localStorage key "\${key}":\`, error)
+      return initialValue
+    }
+  })
+
+  const setValue = useCallback((value) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value
+      setStoredValue(valueToStore)
+      window.localStorage.setItem(key, JSON.stringify(valueToStore))
+    } catch (error) {
+      console.error(\`Error setting localStorage key "\${key}":\`, error)
+    }
+  }, [key, storedValue])
+
+  const removeValue = useCallback(() => {
+    try {
+      window.localStorage.removeItem(key)
+      setStoredValue(initialValue)
+    } catch (error) {
+      console.error(\`Error removing localStorage key "\${key}":\`, error)
+    }
+  }, [key, initialValue])
+
+  return [storedValue, setValue, removeValue]
+}`
+  }
+
+  // Generate Local Storage Hook
+  generateLocalStorageHook(prompt, context) {
+    return `import { useState, useEffect, useCallback } from 'react'
+
+// Enhanced local storage hook with persistence and sync
+export const useLocalStorage = (key, initialValue, options = {}) => {
+  const {
+    serialize = JSON.stringify,
+    deserialize = JSON.parse,
+    syncAcrossTabs = true
+  } = options
+
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+      return item ? deserialize(item) : initialValue
+    } catch (error) {
+      console.error(\`Error reading localStorage key "\${key}":\`, error)
+      return initialValue
+    }
+  })
+
+  const setValue = useCallback((value) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value
+      setStoredValue(valueToStore)
+      window.localStorage.setItem(key, serialize(valueToStore))
+      
+      // Dispatch custom event for cross-tab sync
+      if (syncAcrossTabs) {
+        window.dispatchEvent(new CustomEvent('localStorageChange', {
+          detail: { key, value: valueToStore }
+        }))
+      }
+    } catch (error) {
+      console.error(\`Error setting localStorage key "\${key}":\`, error)
+    }
+  }, [key, storedValue, serialize, syncAcrossTabs])
+
+  const removeValue = useCallback(() => {
+    try {
+      window.localStorage.removeItem(key)
+      setStoredValue(initialValue)
+      
+      if (syncAcrossTabs) {
+        window.dispatchEvent(new CustomEvent('localStorageChange', {
+          detail: { key, value: null }
+        }))
+      }
+    } catch (error) {
+      console.error(\`Error removing localStorage key "\${key}":\`, error)
+    }
+  }, [key, initialValue, syncAcrossTabs])
+
+  // Listen for changes from other tabs
+  useEffect(() => {
+    if (!syncAcrossTabs) return
+
+    const handleStorageChange = (e) => {
+      if (e.detail && e.detail.key === key) {
+        setStoredValue(e.detail.value || initialValue)
+      }
+    }
+
+    window.addEventListener('localStorageChange', handleStorageChange)
+    return () => window.removeEventListener('localStorageChange', handleStorageChange)
+  }, [key, initialValue, syncAcrossTabs])
+
+  return [storedValue, setValue, removeValue]
+}
+
+// Hook for managing multiple localStorage keys
+export const useMultipleLocalStorage = (keys) => {
+  const [values, setValues] = useState({})
+
+  useEffect(() => {
+    const initialValues = {}
+    keys.forEach(key => {
+      try {
+        const item = window.localStorage.getItem(key)
+        initialValues[key] = item ? JSON.parse(item) : null
+      } catch (error) {
+        console.error(\`Error reading localStorage key "\${key}":\`, error)
+        initialValues[key] = null
+      }
+    })
+    setValues(initialValues)
+  }, [keys])
+
+  const setValue = useCallback((key, value) => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value))
+      setValues(prev => ({ ...prev, [key]: value }))
+    } catch (error) {
+      console.error(\`Error setting localStorage key "\${key}":\`, error)
+    }
+  }, [])
+
+  const removeValue = useCallback((key) => {
+    try {
+      window.localStorage.removeItem(key)
+      setValues(prev => ({ ...prev, [key]: null }))
+    } catch (error) {
+      console.error(\`Error removing localStorage key "\${key}":\`, error)
+    }
+  }, [])
+
+  const clearAll = useCallback(() => {
+    try {
+      keys.forEach(key => {
+        window.localStorage.removeItem(key)
+      })
+      setValues({})
+    } catch (error) {
+      console.error('Error clearing localStorage:', error)
+    }
+  }, [keys])
+
+  return { values, setValue, removeValue, clearAll }
+}`
+  }
 }
 
 // Export singleton instance

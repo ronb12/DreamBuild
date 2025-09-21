@@ -38,8 +38,17 @@ class FirebaseService {
           // App already exists, get the existing instance
           this.app = initializeApp()
         } else if (error.code === 'app/no-options') {
-          // No options provided, use default config
-          this.app = initializeApp(firebaseConfig)
+          // No options provided, try to get existing app or create with minimal config
+          try {
+            this.app = initializeApp()
+          } catch (e) {
+            // If that fails, create with minimal config
+            this.app = initializeApp({
+              apiKey: "demo-key",
+              authDomain: "demo.firebaseapp.com",
+              projectId: "demo-project"
+            })
+          }
         } else {
           throw error
         }

@@ -130,6 +130,11 @@ const AIBuilder = () => {
                     <Preview />
                   </>
                 )}
+                {/* Temporary: Always render Preview component for debugging */}
+                <div style={{ position: 'absolute', top: 0, right: 0, width: '200px', height: '100px', background: 'red', color: 'white', zIndex: 9999 }}>
+                  DEBUG: Preview Component Test
+                  <Preview />
+                </div>
                 {activeTab === 'workspace' && isWorkspaceVisible && <IntegratedWorkspace projectId="demo-project" />}
                 {activeTab === 'workspace' && !isWorkspaceVisible && (
                   <div className="h-full flex items-center justify-center bg-muted/20">

@@ -12,12 +12,15 @@ import {
   AlertCircle,
   RefreshCw,
   BarChart3,
-  Code
+  Code,
+  Search
 } from 'lucide-react'
 import simpleAIService from '../services/simpleAIService'
 import AIServiceStatus from './AIServiceStatus'
 import TemplateBrowser from './TemplateBrowser'
-// import toast from 'react-hot-toast' // Removed toast import
+import RecommendationPanel from './RecommendationPanel'
+import WebSearchPanel from './WebSearchPanel'
+import toast from 'react-hot-toast'
 
 const AIPrompt = () => {
   const { currentProject, updateFile, updateConfig } = useProject()
@@ -26,6 +29,9 @@ const AIPrompt = () => {
   const [showAISettings, setShowAISettings] = useState(false)
   const [showServiceStatus, setShowServiceStatus] = useState(false)
   const [showTemplateBrowser, setShowTemplateBrowser] = useState(false)
+  const [showRecommendations, setShowRecommendations] = useState(false)
+  const [showWebSearch, setShowWebSearch] = useState(false)
+  const [webSearchResults, setWebSearchResults] = useState(null)
   const [selectedService, setSelectedService] = useState('local-ai')
   const [aiModel, setAIModel] = useState('llama3-8b-8192')
   const [suggestions, setSuggestions] = useState([])
@@ -141,13 +147,17 @@ const AIPrompt = () => {
         throw new Error('AI Service not properly initialized. generateCode method not found.')
       }
 
-      // Generate code using AI service
+      // Generate code using AI service (now includes web search)
       const generatedFiles = await simpleAIService.generateCode(prompt, currentProject.config)
       
+      // Store web search results if available
+      if (generatedFiles._webSearchResults) {
+        setWebSearchResults(generatedFiles._webSearchResults)
+        delete generatedFiles._webSearchResults // Remove from files
+      }
+      
       // Update project files
-      console.log('Generated files:', Object.keys(generatedFiles))
       Object.entries(generatedFiles).forEach(([filename, content]) => {
-        console.log(`Updating file ${filename} with ${content.length} characters`)
         updateFile(filename, content)
       })
 
@@ -243,6 +253,20 @@ const AIPrompt = () => {
               title="Browse Templates (1000+)"
             >
               <Code className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setShowRecommendations(true)}
+              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              title="AI Recommendations & Production Analysis"
+            >
+              <Sparkles className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setShowWebSearch(true)}
+              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              title="Web Knowledge Search"
+            >
+              <Search className="h-4 w-4" />
             </button>
             <button
               onClick={() => setShowServiceStatus(true)}
@@ -343,6 +367,20 @@ const AIPrompt = () => {
       <AIServiceStatus 
         isOpen={showServiceStatus} 
         onClose={() => setShowServiceStatus(false)} 
+      />
+
+      {/* Recommendation Panel */}
+      <RecommendationPanel 
+        isOpen={showRecommendations} 
+        onClose={() => setShowRecommendations(false)} 
+      />
+
+      {/* Web Search Panel */}
+      <WebSearchPanel 
+        isOpen={showWebSearch} 
+        onClose={() => setShowWebSearch(false)}
+        searchResults={webSearchResults}
+        prompt={prompt}
       />
 
       {/* AI Settings Dialog */}

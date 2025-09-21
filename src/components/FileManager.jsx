@@ -252,12 +252,13 @@ const FileManager = () => {
         
         if (deploymentPlatform === 'firebase') {
           result = await deploymentService.deployToFirebase(enhancedProject, projectName)
-        } else {
+        } else if (deploymentPlatform === 'github') {
           result = await deploymentService.deployToGitHub(enhancedProject, projectName)
         }
 
         if (result.success) {
           results.push({ platform: deploymentPlatform, ...result })
+          
           toast.success(`Successfully deployed to ${result.platform}!`)
         }
       }
@@ -833,6 +834,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                         <span>GitHub Pages</span>
                       </div>
                     </label>
+
                   </div>
                 </div>
 
@@ -844,14 +846,16 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                         <p><strong>Firebase Hosting:</strong> Instant deployment with custom domain support</p>
                         <p><strong>Features:</strong> CDN, SSL, automatic HTTPS</p>
                         <p><strong>Cost:</strong> Free tier available</p>
+                        <p><strong>Best for:</strong> Production websites with custom domains</p>
                       </>
-                    ) : (
+                    ) : deploymentPlatform === 'github' ? (
                       <>
                         <p><strong>GitHub Pages:</strong> Host static sites directly from GitHub repositories</p>
-                        <p><strong>Features:</strong> Custom domains, Jekyll support</p>
+                        <p><strong>Features:</strong> Custom domains, Jekyll support, version control</p>
                         <p><strong>Cost:</strong> Free for public repositories</p>
+                        <p><strong>Best for:</strong> Open source projects and documentation</p>
                       </>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 

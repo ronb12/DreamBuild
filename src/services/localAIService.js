@@ -3,6 +3,8 @@
 
 import axios from 'axios'
 import mobileAppService from './mobileAppService.js'
+import webSearchService from './webSearchService.js'
+import paymentService from './paymentService.js'
 
 // Local AI Models Configuration
 const LOCAL_AI_MODELS = {
@@ -171,7 +173,6 @@ class LocalAIService {
           error: null
         }
       }
-      this.isHealthy = true
       console.log('✅ Template mode active - AI generation available')
     }
   }
@@ -275,13 +276,40 @@ class LocalAIService {
     return healthyModels[0].id
   }
 
-  // Generate code using local AI
+  // Generate code using local AI with web search enhancement
   async generateCode(prompt, context = {}) {
     try {
+      // Check if this is an enhancement request for existing project
+      if (this.isEnhancementRequest(prompt, context)) {
+        console.log('🔧 Enhancement request detected - enhancing existing project')
+        return await this.enhanceExistingProject(prompt, context)
+      }
+
       // Check if this is a mobile app request
       if (this.isMobileAppRequest(prompt)) {
         console.log('📱 Mobile app request detected - using mobile app service')
         return await mobileAppService.generateMobileApp(prompt, context)
+      }
+
+      // Check if this is a payment integration request
+      if (this.isPaymentRequest(prompt)) {
+        console.log('💳 Payment integration request detected - using payment service')
+        return await this.generatePaymentIntegration(prompt, context)
+      }
+
+      // Search for current knowledge and best practices
+      console.log('🔍 Searching web for current knowledge and best practices...')
+      const searchResult = await webSearchService.searchForKnowledge(prompt, context)
+      
+      let enhancedPrompt = prompt
+      let searchKnowledge = null
+
+      if (searchResult.success && searchResult.knowledge) {
+        searchKnowledge = searchResult.knowledge
+        enhancedPrompt = this.enhancePromptWithKnowledge(prompt, searchKnowledge, context)
+        console.log('✅ Web search completed - enhanced prompt with current best practices')
+      } else {
+        console.log('⚠️ Web search unavailable - using prompt as-is')
       }
 
       // Check if we're running on a web domain (CORS issues)
@@ -294,18 +322,18 @@ class LocalAIService {
         !window.location.hostname.includes('netlify')
       
       if (isWebDomain) {
-        console.log('🌐 Running on external domain - using template fallback (demo mode)')
-        return this.createFallbackResponse(prompt, context)
+        console.log('🌐 Running on external domain - using enhanced template fallback (demo mode)')
+        return this.createEnhancedFallbackResponse(enhancedPrompt, context, searchKnowledge)
       }
 
-      const taskType = this.detectTaskType(prompt)
+      const taskType = this.detectTaskType(enhancedPrompt)
       const modelId = this.getBestModel(taskType)
       const model = LOCAL_AI_MODELS[modelId]
       
-      console.log(`🤖 Using ${model.name} for ${taskType} task`)
+      console.log(`🤖 Using ${model.name} for ${taskType} task with web knowledge`)
 
-      const systemPrompt = this.buildSystemPrompt(context, model)
-      const fullPrompt = `${systemPrompt}\n\nUser Request: ${prompt}`
+      const systemPrompt = this.buildEnhancedSystemPrompt(context, model, searchKnowledge)
+      const fullPrompt = `${systemPrompt}\n\nUser Request: ${enhancedPrompt}`
 
       const response = await axios.post(`${model.baseURL}/generate`, {
         model: model.model,
@@ -321,11 +349,11 @@ class LocalAIService {
         timeout: 120000 // 2 minute timeout
       })
 
-      return this.parseResponse(response.data.response, prompt, context)
+      return this.parseEnhancedResponse(response.data.response, enhancedPrompt, context, searchKnowledge)
     } catch (error) {
-      console.error('❌ Local AI generation failed:', error)
-      // Fallback to template generation
-      return this.createFallbackResponse(prompt, context)
+      console.error('❌ Enhanced AI generation failed:', error)
+      // Fallback to enhanced template generation
+      return this.createEnhancedFallbackResponse(prompt, context, null)
     }
   }
 
@@ -341,6 +369,8 @@ class LocalAIService {
       return 'instruction-following'
     } else if (this.isMobileAppRequest(prompt)) {
       return 'mobile-app-generation'
+    } else if (this.isPaymentRequest(prompt)) {
+      return 'payment-integration'
     } else {
       return 'code-generation'
     }
@@ -358,26 +388,1205 @@ class LocalAIService {
     return mobileKeywords.some(keyword => lowerPrompt.includes(keyword))
   }
 
+  // Check if prompt is requesting payment integration
+  isPaymentRequest(prompt) {
+    const lowerPrompt = prompt.toLowerCase()
+    const paymentKeywords = [
+      'stripe', 'paypal', 'payment', 'checkout', 'billing', 'subscription',
+      'credit card', 'debit card', 'payment gateway', 'payment processing',
+      'ecommerce', 'online store', 'shopping cart', 'buy now', 'purchase',
+      'donation', 'fundraising', 'marketplace', 'split payment', 'refund',
+      'payment integration', 'payment system', 'payment api', 'webhook'
+    ]
+    
+    return paymentKeywords.some(keyword => lowerPrompt.includes(keyword))
+  }
+
+  // Generate payment integration
+  async generatePaymentIntegration(prompt, context) {
+    try {
+      console.log('💳 Generating payment integration...')
+      
+      // Detect payment provider and type from prompt
+      const provider = this.detectPaymentProvider(prompt)
+      const integrationType = this.detectPaymentType(prompt)
+      
+      // Generate payment integration using payment service (US-only)
+      const paymentIntegration = paymentService.generatePaymentIntegration({
+        provider,
+        type: integrationType,
+        amount: context.amount || 29.99,
+        currency: 'USD', // US Dollar only
+        country: 'US', // United States only
+        features: context.features || []
+      })
+      
+      // Create response with payment files
+      const files = {
+        ...paymentIntegration.integration.frontend,
+        ...paymentIntegration.integration.backend,
+        ...paymentIntegration.integration.documentation
+      }
+      
+      return {
+        success: true,
+        files,
+        message: `Generated ${provider} ${integrationType} integration with complete frontend, backend, and documentation`,
+        provider: provider,
+        integrationType: integrationType,
+        setupInstructions: paymentIntegration.setupInstructions,
+        features: paymentIntegration.features,
+        pricing: paymentIntegration.pricing,
+        _webSearchResults: null // No web search for payment integrations
+      }
+      
+    } catch (error) {
+      console.error('❌ Payment integration generation failed:', error)
+      return {
+        success: false,
+        files: {},
+        message: `Payment integration generation failed: ${error.message}`,
+        error: error.message
+      }
+    }
+  }
+
+  // Detect payment provider from prompt
+  detectPaymentProvider(prompt) {
+    const lowerPrompt = prompt.toLowerCase()
+    
+    if (lowerPrompt.includes('stripe')) return 'stripe'
+    if (lowerPrompt.includes('paypal')) return 'paypal'
+    if (lowerPrompt.includes('square')) return 'square'
+    if (lowerPrompt.includes('razorpay')) return 'razorpay'
+    
+    // Default to Stripe for general payment requests
+    return 'stripe'
+  }
+
+  // Detect payment type from prompt
+  detectPaymentType(prompt) {
+    const lowerPrompt = prompt.toLowerCase()
+    
+    if (lowerPrompt.includes('subscription') || lowerPrompt.includes('recurring')) {
+      return 'subscription-billing'
+    }
+    if (lowerPrompt.includes('marketplace') || lowerPrompt.includes('split')) {
+      return 'marketplace-payments'
+    }
+    if (lowerPrompt.includes('donation') || lowerPrompt.includes('fundraising')) {
+      return 'donation-system'
+    }
+    if (lowerPrompt.includes('booking') || lowerPrompt.includes('reservation')) {
+      return 'booking-payments'
+    }
+    if (lowerPrompt.includes('digital') || lowerPrompt.includes('download')) {
+      return 'digital-product-sales'
+    }
+    if (lowerPrompt.includes('rental') || lowerPrompt.includes('rent')) {
+      return 'rental-payments'
+    }
+    if (lowerPrompt.includes('auction') || lowerPrompt.includes('bid')) {
+      return 'auction-payments'
+    }
+    
+    // Default to one-time payment
+    return 'one-time-payment'
+  }
+
+  // Check if prompt is requesting enhancements to existing project
+  isEnhancementRequest(prompt, context) {
+    const lowerPrompt = prompt.toLowerCase()
+    const enhancementKeywords = [
+      'add', 'enhance', 'improve', 'update', 'modify', 'change', 'fix', 'implement',
+      'include', 'also add', 'can you add', 'please add', 'make it', 'make the',
+      'update the', 'modify the', 'change the', 'enhance the', 'improve the'
+    ]
+    
+    // Check if there are existing files in the project
+    const hasExistingFiles = context.files && Object.keys(context.files).length > 0
+    
+    // Check if prompt contains enhancement keywords
+    const isEnhancementPrompt = enhancementKeywords.some(keyword => lowerPrompt.includes(keyword))
+    
+    return hasExistingFiles && isEnhancementPrompt
+  }
+
+  // Enhance existing project instead of creating new one
+  async enhanceExistingProject(prompt, context) {
+    try {
+      console.log('🔧 Enhancing existing project...')
+      
+      // Get existing files
+      const existingFiles = context.files || {}
+      const existingFileList = Object.keys(existingFiles).join(', ')
+      
+      // Create enhancement prompt that includes existing project context
+      const enhancementPrompt = `
+ENHANCEMENT REQUEST for existing project with files: ${existingFileList}
+
+User Request: ${prompt}
+
+IMPORTANT: This is an ENHANCEMENT request, not a new project creation. Please:
+1. Keep all existing files and functionality
+2. Add new features and improvements to the existing project
+3. Maintain the current project structure
+4. Enhance existing components rather than replacing them
+5. Add new files only if necessary for new features
+6. Ensure all new code integrates properly with existing code
+
+Current project files: ${existingFileList}
+
+Please provide the enhanced code that builds upon the existing project.`
+      
+      // Search for knowledge related to the enhancement
+      const searchResult = await webSearchService.searchForKnowledge(enhancementPrompt, context)
+      
+      let enhancedPrompt = enhancementPrompt
+      let searchKnowledge = null
+
+      if (searchResult.success && searchResult.knowledge) {
+        searchKnowledge = searchResult.knowledge
+        enhancedPrompt = this.enhancePromptWithKnowledge(enhancementPrompt, searchKnowledge, context)
+        console.log('✅ Web search completed - enhanced prompt with current best practices')
+      }
+
+      // Get the best model for enhancement tasks
+      const modelId = this.getBestModel('instruction-following')
+      const model = LOCAL_AI_MODELS[modelId]
+
+      console.log(`🤖 Using ${model.name} for project enhancement`)
+
+      const systemPrompt = this.buildEnhancedSystemPrompt(context, model, searchKnowledge)
+      const fullPrompt = `${systemPrompt}\n\nEnhancement Request: ${enhancedPrompt}`
+
+      const response = await axios.post(`${model.baseURL}/generate`, {
+        model: model.model,
+        prompt: fullPrompt,
+        stream: false,
+        options: {
+          temperature: 0.7,
+          max_tokens: 6000, // Increased for comprehensive enhancements
+          top_p: 0.9,
+          top_k: 40
+        }
+      }, {
+        timeout: 120000
+      })
+
+      return this.parseEnhancedResponse(response.data.response, enhancedPrompt, context, searchKnowledge)
+      
+    } catch (error) {
+      console.error('❌ Project enhancement failed:', error)
+      return this.createEnhancedFallbackResponse(prompt, context, null)
+    }
+  }
+
   // Build system prompt for the model
   buildSystemPrompt(context, model) {
-    return `You are an expert software developer and AI assistant. Generate high-quality, production-ready code based on user requests.
+    return `You are an expert full-stack developer and AI assistant. Generate comprehensive, production-ready applications with full features and functionality.
 
 Context:
-- App Type: ${context.appType || 'frontend'}
+- App Type: ${context.appType || 'full-featured web application'}
 - Language: ${context.language || 'javascript'}
 - Styling: ${context.styling || 'tailwind'}
-- Features: ${context.features?.join(', ') || 'basic functionality'}
+- Features: ${context.features?.join(', ') || 'comprehensive functionality'}
 
-Instructions:
-1. Generate complete, working code
-2. Include proper error handling
-3. Add comments for complex logic
-4. Use modern best practices
-5. Make code responsive and accessible
-6. Include all necessary files (HTML, CSS, JS)
+CRITICAL INSTRUCTIONS FOR FULL-FEATURED APPLICATIONS:
+1. Generate MULTIPLE files for a complete application (HTML, CSS, JS, and additional components)
+2. Create a FULL-FEATURED application, not just a single page
+3. Include ALL necessary features for the requested application type
+4. Add interactive elements, forms, navigation, and dynamic content
+5. Implement proper state management and user interactions
+6. Include responsive design for all screen sizes
+7. Add proper error handling and validation
+8. Use modern best practices and clean code structure
+9. Make the application production-ready with all features working
+
+For example, if asked for a "health food tip webpage with full features":
+- Create multiple pages/sections (home, tips, recipes, nutrition info, search, etc.)
+- Add interactive features (search, filtering, favorites, sharing)
+- Include forms for user input and feedback
+- Add navigation between sections
+- Implement dynamic content loading
+- Include responsive design
+- Add proper styling and animations
 
 You are using ${model.name} - ${model.description}.
 Supported languages: ${model.languages.join(', ')}.`
+  }
+
+  // Build enhanced system prompt with web knowledge
+  buildEnhancedSystemPrompt(context, model, searchKnowledge) {
+    let systemPrompt = this.buildSystemPrompt(context, model)
+    
+    if (searchKnowledge) {
+      systemPrompt += `\n\nCurrent Best Practices and Knowledge (from web search):
+${searchKnowledge.summary}
+
+Key Best Practices to Follow:
+${searchKnowledge.bestPractices.map(practice => `- ${practice}`).join('\n')}
+
+Code Examples and Patterns:
+${Object.entries(searchKnowledge.codeExamples).map(([type, example]) => 
+  `${type}: ${example}`).join('\n')}
+
+Additional Recommendations:
+${searchKnowledge.recommendations.map(rec => `- ${rec}`).join('\n')}
+
+Please incorporate these current best practices and modern techniques into your code generation.`
+    }
+
+    return systemPrompt
+  }
+
+  // Enhance prompt with web knowledge
+  enhancePromptWithKnowledge(prompt, searchKnowledge, context) {
+    let enhancedPrompt = prompt
+
+    if (searchKnowledge) {
+      enhancedPrompt += `\n\nBased on current best practices and modern web development standards, please ensure the application includes:
+${searchKnowledge.bestPractices.slice(0, 5).map(practice => `- ${practice}`).join('\n')}
+
+Additional context: ${searchKnowledge.summary}`
+    }
+
+    return enhancedPrompt
+  }
+
+  // Parse enhanced AI response with web knowledge
+  parseEnhancedResponse(response, prompt, context, searchKnowledge) {
+    try {
+      // Try to extract code blocks from response
+      const codeBlocks = response.match(/```[\s\S]*?```/g)
+      
+      if (codeBlocks && codeBlocks.length > 0) {
+        const files = {}
+        codeBlocks.forEach((block, index) => {
+          const lines = block.split('\n')
+          const firstLine = lines[0].replace(/```/g, '').trim()
+          
+          let filename
+          if (firstLine && firstLine.includes('.')) {
+            filename = firstLine
+          } else {
+            // Auto-detect file type
+            const content = block.replace(/```[\w]*\n?/, '').replace(/```$/, '')
+            filename = this.detectFilename(content, index)
+          }
+          
+          const content = block.replace(/```[\w]*\n?/, '').replace(/```$/, '').trim()
+          files[filename] = content
+        })
+
+        // Add web knowledge as comments if available
+        if (searchKnowledge) {
+          Object.keys(files).forEach(filename => {
+            if (files[filename]) {
+              const knowledgeComment = this.generateKnowledgeComment(searchKnowledge, filename)
+              files[filename] = knowledgeComment + '\n' + files[filename]
+            }
+          })
+        }
+        
+        return files
+      }
+      
+      // If no code blocks, try to create a comprehensive template first
+      const comprehensiveTemplate = this.createComprehensiveTemplate(prompt, context)
+      if (comprehensiveTemplate) {
+        console.log('🎯 Using comprehensive template for application type')
+        return {
+          success: true,
+          files: comprehensiveTemplate,
+          message: `Generated comprehensive ${prompt.toLowerCase().includes('health') ? 'health food tips' : 'application'} with full features and functionality`,
+          _webSearchResults: searchKnowledge
+        }
+      }
+      
+      // If no comprehensive template available, create an enhanced fallback response
+      return this.createEnhancedFallbackResponse(prompt, context, searchKnowledge)
+    } catch (error) {
+      console.error('Error parsing enhanced AI response:', error)
+      return this.createEnhancedFallbackResponse(prompt, context, searchKnowledge)
+    }
+  }
+
+  // Generate knowledge comment for files
+  generateKnowledgeComment(searchKnowledge, filename) {
+    const fileType = filename.split('.').pop().toLowerCase()
+    
+    let comment = ''
+    if (fileType === 'js') {
+      comment = `/*\n * Enhanced with current web development best practices\n * Generated with real-time knowledge search\n * Best practices applied:\n${searchKnowledge.bestPractices.slice(0, 3).map(p => ` * - ${p}`).join('\n')}\n */\n`
+    } else if (fileType === 'css') {
+      comment = `/* Enhanced with modern CSS best practices and responsive design principles */\n`
+    } else if (fileType === 'html') {
+      comment = `<!-- Enhanced with accessibility best practices and semantic HTML -->\n`
+    }
+
+    return comment
+  }
+
+  // Create comprehensive template for specific application types
+  createComprehensiveTemplate(prompt, context) {
+    const lowerPrompt = prompt.toLowerCase()
+    
+    // Health Food Tips Application
+    if (lowerPrompt.includes('health food') || lowerPrompt.includes('nutrition') || lowerPrompt.includes('healthy eating')) {
+      return this.createHealthFoodTemplate()
+    }
+    
+    // E-commerce Application
+    if (lowerPrompt.includes('store') || lowerPrompt.includes('ecommerce') || lowerPrompt.includes('shopping')) {
+      return this.createEcommerceTemplate()
+    }
+    
+    // Blog Application
+    if (lowerPrompt.includes('blog') || lowerPrompt.includes('article') || lowerPrompt.includes('post')) {
+      return this.createBlogTemplate()
+    }
+    
+    // Dashboard Application
+    if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('admin') || lowerPrompt.includes('analytics')) {
+      return this.createDashboardTemplate()
+    }
+    
+    return null
+  }
+
+  // Create comprehensive health food tips application
+  createHealthFoodTemplate() {
+    return {
+      'index.html': `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthy Food Tips - Your Nutrition Guide</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-green-600">🍎 Healthy Tips</h1>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#home" class="nav-link text-gray-900 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="#tips" class="nav-link text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Tips</a>
+                        <a href="#recipes" class="nav-link text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Recipes</a>
+                        <a href="#nutrition" class="nav-link text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Nutrition</a>
+                        <a href="#calculator" class="nav-link text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">Calculator</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button id="searchBtn" class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button id="favoritesBtn" class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 ml-2">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+                <div class="p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Search Tips & Recipes</h3>
+                    <input type="text" id="searchInput" placeholder="Search for tips, recipes, or ingredients..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <div id="searchResults" class="mt-4 max-h-60 overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="bg-gradient-to-r from-green-400 to-blue-500 text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">Healthy Food Tips</h1>
+            <p class="text-xl md:text-2xl mb-8">Your comprehensive guide to nutrition, healthy eating, and wellness</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="scrollToSection('tips')" class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Explore Tips
+                </button>
+                <button onclick="scrollToSection('calculator')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition">
+                    BMI Calculator
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                <div class="p-6">
+                    <div class="text-3xl font-bold text-green-600 mb-2">500+</div>
+                    <div class="text-gray-600">Healthy Tips</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">200+</div>
+                    <div class="text-gray-600">Recipes</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-3xl font-bold text-purple-600 mb-2">50+</div>
+                    <div class="text-gray-600">Nutrition Guides</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-3xl font-bold text-orange-600 mb-2">1000+</div>
+                    <div class="text-gray-600">Happy Users</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tips Section -->
+    <section id="tips" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Daily Health Tips</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="tipsContainer">
+                <!-- Tips will be loaded dynamically -->
+            </div>
+            <div class="text-center mt-12">
+                <button id="loadMoreTips" class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition">
+                    Load More Tips
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recipes Section -->
+    <section id="recipes" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Healthy Recipes</h2>
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <button class="recipe-filter active" data-filter="all">All</button>
+                <button class="recipe-filter" data-filter="breakfast">Breakfast</button>
+                <button class="recipe-filter" data-filter="lunch">Lunch</button>
+                <button class="recipe-filter" data-filter="dinner">Dinner</button>
+                <button class="recipe-filter" data-filter="snack">Snacks</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="recipesContainer">
+                <!-- Recipes will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Nutrition Calculator -->
+    <section id="calculator" class="py-16 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Nutrition Calculator</h2>
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">BMI Calculator</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Height (cm)</label>
+                                <input type="number" id="height" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="170">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+                                <input type="number" id="weight" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="70">
+                            </div>
+                            <button onclick="calculateBMI()" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition">
+                                Calculate BMI
+                            </button>
+                            <div id="bmiResult" class="mt-4 p-4 rounded-md hidden"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Daily Calorie Calculator</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                                <input type="number" id="age" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="25">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                                <select id="gender" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Activity Level</label>
+                                <select id="activity" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                    <option value="1.2">Sedentary</option>
+                                    <option value="1.375">Lightly Active</option>
+                                    <option value="1.55">Moderately Active</option>
+                                    <option value="1.725">Very Active</option>
+                                    <option value="1.9">Extra Active</option>
+                                </select>
+                            </div>
+                            <button onclick="calculateCalories()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                                Calculate Calories
+                            </button>
+                            <div id="calorieResult" class="mt-4 p-4 rounded-md hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Favorites Section -->
+    <section id="favorites" class="py-16 bg-white hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Your Favorites</h2>
+            <div id="favoritesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Favorites will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Healthy Tips</h3>
+                    <p class="text-gray-400">Your comprehensive guide to healthy eating and nutrition.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#tips" class="text-gray-400 hover:text-white">Health Tips</a></li>
+                        <li><a href="#recipes" class="text-gray-400 hover:text-white">Recipes</a></li>
+                        <li><a href="#calculator" class="text-gray-400 hover:text-white">Calculator</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Nutrition Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Meal Planning</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Exercise Tips</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2024 Healthy Food Tips. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>`,
+
+      'styles.css': `/* Custom styles for Healthy Food Tips */
+.nav-link {
+    transition: all 0.3s ease;
+}
+
+.recipe-filter {
+    @apply px-4 py-2 rounded-full border border-gray-300 text-gray-600 hover:bg-green-50 hover:border-green-300 hover:text-green-600 transition-all duration-200;
+}
+
+.recipe-filter.active {
+    @apply bg-green-600 text-white border-green-600;
+}
+
+.tip-card, .recipe-card {
+    @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer;
+}
+
+.tip-card:hover, .recipe-card:hover {
+    transform: translateY(-2px);
+}
+
+.favorite-btn {
+    @apply text-gray-400 hover:text-red-500 transition-colors duration-200;
+}
+
+.favorite-btn.active {
+    @apply text-red-500;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Loading animation */
+.loading {
+    @apply animate-pulse;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+}`,
+
+      'script.js': `// Healthy Food Tips Application JavaScript
+
+// Application state
+const appState = {
+    tips: [],
+    recipes: [],
+    favorites: JSON.parse(localStorage.getItem('favorites') || '[]'),
+    currentTipPage: 1,
+    currentRecipeFilter: 'all'
+};
+
+// Sample data
+const sampleTips = [
+    {
+        id: 1,
+        title: "Start Your Day with Protein",
+        content: "Eating protein at breakfast helps stabilize blood sugar and keeps you full longer. Try eggs, Greek yogurt, or protein smoothies.",
+        category: "breakfast",
+        image: "🥚",
+        difficulty: "easy"
+    },
+    {
+        id: 2,
+        title: "Drink Water Before Meals",
+        content: "Drinking a glass of water 30 minutes before meals can help with digestion and prevent overeating.",
+        category: "hydration",
+        image: "💧",
+        difficulty: "easy"
+    },
+    {
+        id: 3,
+        title: "Eat the Rainbow",
+        content: "Include colorful fruits and vegetables in every meal. Different colors provide different nutrients and antioxidants.",
+        category: "nutrition",
+        image: "🌈",
+        difficulty: "easy"
+    },
+    {
+        id: 4,
+        title: "Mindful Eating",
+        content: "Eat slowly, chew thoroughly, and pay attention to your hunger cues. This helps with portion control and digestion.",
+        category: "mindfulness",
+        image: "🧘",
+        difficulty: "medium"
+    },
+    {
+        id: 5,
+        title: "Healthy Snacking",
+        content: "Choose nuts, fruits, or vegetables for snacks instead of processed foods. They provide sustained energy and nutrients.",
+        category: "snacking",
+        image: "🥜",
+        difficulty: "easy"
+    },
+    {
+        id: 6,
+        title: "Meal Prep Sundays",
+        content: "Prepare healthy meals and snacks on Sundays to ensure you have nutritious options throughout the week.",
+        category: "meal-planning",
+        image: "📅",
+        difficulty: "medium"
+    }
+];
+
+const sampleRecipes = [
+    {
+        id: 1,
+        title: "Quinoa Power Bowl",
+        description: "Nutrient-dense bowl with quinoa, vegetables, and lean protein",
+        category: "lunch",
+        prepTime: "15 min",
+        cookTime: "20 min",
+        servings: 2,
+        ingredients: ["1 cup quinoa", "2 cups mixed vegetables", "4 oz grilled chicken", "2 tbsp olive oil", "1 tbsp lemon juice"],
+        instructions: ["Cook quinoa according to package directions", "Sauté vegetables in olive oil", "Grill chicken breast", "Combine all ingredients", "Drizzle with lemon juice"],
+        image: "🥗",
+        difficulty: "easy",
+        calories: 450
+    },
+    {
+        id: 2,
+        title: "Green Smoothie Bowl",
+        description: "Refreshing smoothie bowl packed with greens and fruits",
+        category: "breakfast",
+        prepTime: "10 min",
+        cookTime: "0 min",
+        servings: 1,
+        ingredients: ["2 cups spinach", "1 banana", "1/2 avocado", "1 cup almond milk", "1 tbsp honey", "Granola for topping"],
+        instructions: ["Blend spinach, banana, avocado, and almond milk", "Add honey to taste", "Pour into bowl", "Top with granola and fresh fruits"],
+        image: "🥤",
+        difficulty: "easy",
+        calories: 320
+    },
+    {
+        id: 3,
+        title: "Baked Salmon with Herbs",
+        description: "Simple and delicious baked salmon with fresh herbs",
+        category: "dinner",
+        prepTime: "10 min",
+        cookTime: "25 min",
+        servings: 4,
+        ingredients: ["4 salmon fillets", "2 tbsp olive oil", "2 cloves garlic", "Fresh herbs (dill, parsley)", "Lemon", "Salt and pepper"],
+        instructions: ["Preheat oven to 400°F", "Season salmon with salt and pepper", "Mix herbs with olive oil and garlic", "Brush mixture over salmon", "Bake for 20-25 minutes", "Serve with lemon wedges"],
+        image: "🐟",
+        difficulty: "medium",
+        calories: 380
+    }
+];
+
+// Initialize application
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+    setupEventListeners();
+    loadTips();
+    loadRecipes();
+});
+
+function initializeApp() {
+    // Set initial active navigation
+    document.querySelector('.nav-link').classList.add('text-green-600');
+    document.querySelector('.nav-link').classList.remove('text-gray-500');
+}
+
+function setupEventListeners() {
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetSection = this.getAttribute('href').substring(1);
+            scrollToSection(targetSection);
+            updateActiveNav(this);
+        });
+    });
+
+    // Search functionality
+    document.getElementById('searchBtn').addEventListener('click', openSearchModal);
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    
+    // Favorites
+    document.getElementById('favoritesBtn').addEventListener('click', toggleFavorites);
+
+    // Recipe filters
+    document.querySelectorAll('.recipe-filter').forEach(filter => {
+        filter.addEventListener('click', function() {
+            document.querySelectorAll('.recipe-filter').forEach(f => f.classList.remove('active'));
+            this.classList.add('active');
+            appState.currentRecipeFilter = this.dataset.filter;
+            filterRecipes();
+        });
+    });
+
+    // Load more tips
+    document.getElementById('loadMoreTips').addEventListener('click', loadMoreTips);
+
+    // Close search modal when clicking outside
+    document.getElementById('searchModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeSearchModal();
+        }
+    });
+}
+
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function updateActiveNav(activeLink) {
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('text-green-600');
+        link.classList.add('text-gray-500');
+    });
+    activeLink.classList.remove('text-gray-500');
+    activeLink.classList.add('text-green-600');
+}
+
+function openSearchModal() {
+    document.getElementById('searchModal').classList.remove('hidden');
+    document.getElementById('searchInput').focus();
+}
+
+function closeSearchModal() {
+    document.getElementById('searchModal').classList.add('hidden');
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+}
+
+function handleSearch() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const results = document.getElementById('searchResults');
+    
+    if (query.length < 2) {
+        results.innerHTML = '';
+        return;
+    }
+
+    const searchResults = [
+        ...sampleTips.filter(tip => 
+            tip.title.toLowerCase().includes(query) || 
+            tip.content.toLowerCase().includes(query)
+        ),
+        ...sampleRecipes.filter(recipe => 
+            recipe.title.toLowerCase().includes(query) || 
+            recipe.description.toLowerCase().includes(query) ||
+            recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(query))
+        )
+    ];
+
+    if (searchResults.length === 0) {
+        results.innerHTML = '<p class="text-gray-500">No results found</p>';
+        return;
+    }
+
+    results.innerHTML = searchResults.map(item => {
+        const isFavorite = appState.favorites.includes(item.id);
+        return `
+            <div class="p-3 border-b border-gray-200 hover:bg-gray-50 cursor-pointer" onclick="selectSearchResult('${item.id}', '${item.title}')">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-medium">${item.title}</h4>
+                        <p class="text-sm text-gray-600">${item.description || item.content.substring(0, 100)}...</p>
+                    </div>
+                    <button onclick="toggleFavorite(${item.id}); event.stopPropagation();" class="favorite-btn ${isFavorite ? 'active' : ''}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function selectSearchResult(id, title) {
+    closeSearchModal();
+    // Scroll to the item or show details
+    console.log('Selected:', title);
+}
+
+function toggleFavorites() {
+    const favoritesSection = document.getElementById('favorites');
+    favoritesSection.classList.toggle('hidden');
+    if (!favoritesSection.classList.contains('hidden')) {
+        loadFavorites();
+    }
+}
+
+function loadTips() {
+    const container = document.getElementById('tipsContainer');
+    const tipsToShow = sampleTips.slice(0, appState.currentTipPage * 6);
+    
+    container.innerHTML = tipsToShow.map(tip => {
+        const isFavorite = appState.favorites.includes(tip.id);
+        return `
+            <div class="tip-card p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="text-4xl">${tip.image}</div>
+                    <button onclick="toggleFavorite(${tip.id})" class="favorite-btn ${isFavorite ? 'active' : ''}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">${tip.title}</h3>
+                <p class="text-gray-600 mb-4">${tip.content}</p>
+                <div class="flex items-center justify-between">
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">${tip.category}</span>
+                    <span class="text-sm text-gray-500">${tip.difficulty}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function loadRecipes() {
+    const container = document.getElementById('recipesContainer');
+    
+    container.innerHTML = sampleRecipes.map(recipe => {
+        const isFavorite = appState.favorites.includes(recipe.id);
+        return `
+            <div class="recipe-card p-6" data-category="${recipe.category}">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="text-4xl">${recipe.image}</div>
+                    <button onclick="toggleFavorite(${recipe.id})" class="favorite-btn ${isFavorite ? 'active' : ''}">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">${recipe.title}</h3>
+                <p class="text-gray-600 mb-4">${recipe.description}</p>
+                <div class="space-y-2 mb-4">
+                    <div class="flex justify-between text-sm">
+                        <span>Prep: ${recipe.prepTime}</span>
+                        <span>Cook: ${recipe.cookTime}</span>
+                        <span>Servings: ${recipe.servings}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Calories: ${recipe.calories}</span>
+                        <span class="capitalize">${recipe.difficulty}</span>
+                    </div>
+                </div>
+                <button onclick="showRecipeDetails(${recipe.id})" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition">
+                    View Recipe
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+function filterRecipes() {
+    const recipes = document.querySelectorAll('.recipe-card');
+    const filter = appState.currentRecipeFilter;
+    
+    recipes.forEach(recipe => {
+        if (filter === 'all' || recipe.dataset.category === filter) {
+            recipe.style.display = 'block';
+        } else {
+            recipe.style.display = 'none';
+        }
+    });
+}
+
+function loadMoreTips() {
+    appState.currentTipPage++;
+    loadTips();
+}
+
+function loadFavorites() {
+    const container = document.getElementById('favoritesContainer');
+    const favoriteItems = [...sampleTips, ...sampleRecipes].filter(item => 
+        appState.favorites.includes(item.id)
+    );
+    
+    if (favoriteItems.length === 0) {
+        container.innerHTML = '<p class="col-span-full text-center text-gray-500">No favorites yet. Click the heart icon to add items to your favorites!</p>';
+        return;
+    }
+    
+    container.innerHTML = favoriteItems.map(item => {
+        return `
+            <div class="tip-card p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="text-4xl">${item.image}</div>
+                    <button onclick="toggleFavorite(${item.id})" class="favorite-btn active">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">${item.title}</h3>
+                <p class="text-gray-600 mb-4">${item.description || item.content.substring(0, 100)}...</p>
+                <div class="flex items-center justify-between">
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">${item.category}</span>
+                    <span class="text-sm text-gray-500">${item.difficulty || 'N/A'}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function toggleFavorite(id) {
+    const index = appState.favorites.indexOf(id);
+    if (index > -1) {
+        appState.favorites.splice(index, 1);
+    } else {
+        appState.favorites.push(id);
+    }
+    
+    localStorage.setItem('favorites', JSON.stringify(appState.favorites));
+    
+    // Update UI
+    loadTips();
+    loadRecipes();
+    if (!document.getElementById('favorites').classList.contains('hidden')) {
+        loadFavorites();
+    }
+}
+
+function showRecipeDetails(recipeId) {
+    const recipe = sampleRecipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex items-start justify-between mb-6">
+                    <div class="flex items-center">
+                        <div class="text-4xl mr-4">${recipe.image}</div>
+                        <div>
+                            <h2 class="text-2xl font-bold">${recipe.title}</h2>
+                            <p class="text-gray-600">${recipe.description}</p>
+                        </div>
+                    </div>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">Ingredients</h3>
+                        <ul class="space-y-2">
+                            ${recipe.ingredients.map(ingredient => `<li class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>${ingredient}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">Instructions</h3>
+                        <ol class="space-y-2">
+                            ${recipe.instructions.map((instruction, index) => `<li class="flex"><span class="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 flex-shrink-0">${index + 1}</span><span>${instruction}</span></li>`).join('')}
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-green-600">${recipe.prepTime}</div>
+                            <div class="text-sm text-gray-600">Prep Time</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-blue-600">${recipe.cookTime}</div>
+                            <div class="text-sm text-gray-600">Cook Time</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-purple-600">${recipe.servings}</div>
+                            <div class="text-sm text-gray-600">Servings</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-orange-600">${recipe.calories}</div>
+                            <div class="text-sm text-gray-600">Calories</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function calculateBMI() {
+    const height = parseFloat(document.getElementById('height').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    
+    if (!height || !weight) {
+        alert('Please enter both height and weight');
+        return;
+    }
+    
+    const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
+    let category = '';
+    let color = '';
+    
+    if (bmi < 18.5) {
+        category = 'Underweight';
+        color = 'blue';
+    } else if (bmi < 25) {
+        category = 'Normal weight';
+        color = 'green';
+    } else if (bmi < 30) {
+        category = 'Overweight';
+        color = 'yellow';
+    } else {
+        category = 'Obese';
+        color = 'red';
+    }
+    
+    const resultDiv = document.getElementById('bmiResult');
+    resultDiv.className = \`mt-4 p-4 rounded-md bg-\${color}-100 text-\${color}-800\`;
+    resultDiv.innerHTML = \`
+        <h4 class="font-semibold mb-2">BMI Result</h4>
+        <p class="text-2xl font-bold">\${bmi}</p>
+        <p>Category: \${category}</p>
+    \`;
+    resultDiv.classList.remove('hidden');
+}
+
+function calculateCalories() {
+    const age = parseInt(document.getElementById('age').value);
+    const gender = document.getElementById('gender').value;
+    const activity = parseFloat(document.getElementById('activity').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const height = parseFloat(document.getElementById('height').value);
+    
+    if (!age || !weight || !height) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    // Harris-Benedict Equation
+    let bmr;
+    if (gender === 'male') {
+        bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+    } else {
+        bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    }
+    
+    const dailyCalories = Math.round(bmr * activity);
+    
+    const resultDiv = document.getElementById('calorieResult');
+    resultDiv.className = 'mt-4 p-4 rounded-md bg-blue-100 text-blue-800';
+    resultDiv.innerHTML = \`
+        <h4 class="font-semibold mb-2">Daily Calorie Needs</h4>
+        <p class="text-2xl font-bold">\${dailyCalories} calories/day</p>
+        <p class="text-sm mt-2">This is your estimated daily calorie requirement to maintain your current weight.</p>
+    \`;
+    resultDiv.classList.remove('hidden');
+}`,
+
+      'package.json': JSON.stringify({
+        "name": "healthy-food-tips",
+        "version": "1.0.0",
+        "description": "A comprehensive health food tips application with full features",
+        "main": "index.html",
+        "scripts": {
+          "start": "npx serve .",
+          "dev": "npx live-server --port=3000"
+        },
+        "keywords": ["health", "nutrition", "food", "tips", "recipes", "wellness"],
+        "author": "DreamBuild AI",
+        "license": "MIT"
+      }, null, 2)
+    }
+  }
+
+  // Create enhanced fallback response with web knowledge
+  createEnhancedFallbackResponse(prompt, context, searchKnowledge) {
+    const fallbackResponse = this.createFallbackResponse(prompt, context)
+    
+    if (searchKnowledge) {
+      // Enhance the fallback response with web knowledge
+      Object.keys(fallbackResponse).forEach(filename => {
+        if (fallbackResponse[filename]) {
+          const knowledgeComment = this.generateKnowledgeComment(searchKnowledge, filename)
+          fallbackResponse[filename] = knowledgeComment + '\n' + fallbackResponse[filename]
+        }
+      })
+    }
+
+    return fallbackResponse
   }
 
   // Parse AI response and extract code
@@ -1367,6 +2576,14 @@ document.addEventListener('DOMContentLoaded', function() {
         count: 800
       },
       
+      // Payment Integration (300 templates)
+      payments: { 
+        name: 'Payment Integration', 
+        icon: '💳', 
+        templates: this.generatePaymentTemplates(),
+        count: 300
+      },
+      
       // APIs & Backend (700 templates)
       api: { 
         name: 'APIs & Backend', 
@@ -1734,6 +2951,46 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     
     return templates.slice(0, 800)
+  }
+
+  // Payment Integration (300 templates)
+  generatePaymentTemplates() {
+    const providers = ['stripe', 'paypal', 'square'] // US-focused payment providers
+    const types = [
+      'one-time-payment', 'subscription-billing', 'marketplace-payments', 'donation-system',
+      'booking-payments', 'digital-product-sales', 'physical-product-sales', 'service-payments',
+      'rental-payments', 'auction-payments', 'crowdfunding', 'membership-billing'
+    ]
+    const industries = ['ecommerce', 'saas', 'marketplace', 'nonprofit', 'booking', 'education', 'healthcare', 'finance']
+    const features = ['us-tax-calculation', 'ach-transfers', 'us-bank-accounts', 'mobile-optimized', 'pci-compliant', 'fraud-protection', '1099-k-reporting']
+    
+    const templates = []
+    let id = 1
+    
+    providers.forEach(provider => {
+      types.forEach(type => {
+        industries.forEach(industry => {
+          features.forEach(feature => {
+            if (templates.length < 300) {
+              templates.push({
+                id: `payment-${id++}`,
+                name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} ${type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`,
+                category: 'Payment Integration',
+                icon: provider === 'stripe' ? '💳' : provider === 'paypal' ? '🟦' : '💳',
+                description: `US-only ${feature} ${provider} ${type.replace(/-/g, ' ')} for ${industry}`,
+                tags: ['payment', provider, type, industry, feature],
+                provider: provider,
+                integrationType: type,
+                industry: industry,
+                features: [feature]
+              })
+            }
+          })
+        })
+      })
+    })
+    
+    return templates.slice(0, 300)
   }
 
   // APIs & Backend (700 templates)

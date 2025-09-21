@@ -76,7 +76,10 @@ const AIBuilder = () => {
             </div>
           </ResizablePanel>
           
-          <ResizableHandle className="w-2 bg-border/30 hover:bg-primary/50 transition-all duration-200 cursor-col-resize hover:w-3 group">
+          <ResizableHandle 
+            className="w-2 bg-border/30 hover:bg-primary/50 transition-all duration-200 cursor-col-resize hover:w-3 group"
+            handleIndex={0}
+          >
             <div className="w-1 h-8 bg-border/50 rounded-full mx-auto group-hover:bg-primary/70 transition-colors" />
           </ResizableHandle>
           
@@ -98,7 +101,7 @@ const AIBuilder = () => {
               </div>
               
               {/* Panel Content */}
-              <div className="flex-1 overflow-hidden min-h-[500px]">
+              <div className="flex-1 overflow-hidden h-full min-h-[600px]">
                 {activeTab === 'editor' && <CodeEditor />}
                 {activeTab === 'preview' && <Preview />}
                 {activeTab === 'terminal' && (
@@ -129,7 +132,10 @@ const AIBuilder = () => {
             </div>
           </ResizablePanel>
           
-          <ResizableHandle className="w-2 bg-border/30 hover:bg-primary/50 transition-all duration-200 cursor-col-resize hover:w-3 group">
+          <ResizableHandle 
+            className="w-2 bg-border/30 hover:bg-primary/50 transition-all duration-200 cursor-col-resize hover:w-3 group"
+            handleIndex={1}
+          >
             <div className="w-1 h-8 bg-border/50 rounded-full mx-auto group-hover:bg-primary/70 transition-colors" />
           </ResizableHandle>
           

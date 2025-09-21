@@ -4,12 +4,13 @@ import { useTheme } from '../contexts/ThemeContext'
 import { useProject } from '../contexts/ProjectContext'
 import { motion } from 'framer-motion'
 import { Copy, Download, RefreshCw } from 'lucide-react'
-// import toast from 'react-hot-toast' // Removed toast import
+import toast from 'react-hot-toast'
 
 const CodeEditor = () => {
   const { theme } = useTheme()
   const { currentProject, updateFile } = useProject()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [editorError, setEditorError] = useState(null)
   const editorRef = useRef(null)
 
   // Update editor content when active file or content changes
@@ -25,17 +26,34 @@ const CodeEditor = () => {
     }
   }, [currentProject.activeFile, currentProject.files[currentProject.activeFile]])
 
-  const handleEditorDidMount = (editor, monaco) => {
-    editorRef.current = editor
-    
-    // Set initial content if available
-    const content = currentProject.files[currentProject.activeFile] || ''
-    if (content) {
-      editor.setValue(content)
+  // Handle window resize to update editor layout
+  useEffect(() => {
+    const handleResize = () => {
+      if (editorRef.current) {
+        setTimeout(() => {
+          editorRef.current.layout()
+        }, 100)
+      }
     }
-    
-    // Configure Monaco Editor
-    monaco.editor.defineTheme('custom-dark', {
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const handleEditorDidMount = (editor, monaco) => {
+    try {
+      setIsLoading(false)
+      setEditorError(null)
+      editorRef.current = editor
+      
+      // Set initial content if available
+      const content = currentProject.files[currentProject.activeFile] || ''
+      if (content) {
+        editor.setValue(content)
+      }
+      
+      // Configure Monaco Editor
+      monaco.editor.defineTheme('custom-dark', {
       base: 'vs-dark',
       inherit: true,
       rules: [
@@ -93,8 +111,19 @@ const CodeEditor = () => {
       formatOnType: true,
       suggestOnTriggerCharacters: true,
       acceptSuggestionOnEnter: 'on',
-      tabCompletion: 'on'
+      tabCompletion: 'on',
+      wrappingIndent: 'indent',
+      lineNumbers: 'on',
+      glyphMargin: true,
+      folding: true,
+      foldingStrategy: 'indentation',
+      showFoldingControls: 'always'
     })
+
+    // Force layout update after mounting
+    setTimeout(() => {
+      editor.layout()
+    }, 100)
 
     // Add keyboard shortcuts
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
@@ -106,11 +135,22 @@ const CodeEditor = () => {
         handleCopyAll()
       }
     })
+    } catch (error) {
+      console.error('Error mounting Monaco Editor:', error)
+      setEditorError(error.message)
+      setIsLoading(false)
+      toast.error('Failed to load code editor')
+    }
   }
 
   const handleEditorChange = (value) => {
-    if (value !== undefined) {
-      updateFile(currentProject.activeFile, value)
+    try {
+      if (value !== undefined) {
+        updateFile(currentProject.activeFile, value)
+      }
+    } catch (error) {
+      console.error('Error updating file:', error)
+      toast.error('Failed to save changes')
     }
   }
 
@@ -156,13 +196,13 @@ const CodeEditor = () => {
   const handleCopy = () => {
     const content = currentProject.files[currentProject.activeFile] || ''
     navigator.clipboard.writeText(content)
-    console.log('Code copied to clipboard!')
+    toast.success('Code copied to clipboard!')
   }
 
   const handleCopyAll = () => {
     const content = currentProject.files[currentProject.activeFile] || ''
     navigator.clipboard.writeText(content)
-    console.log('All code copied to clipboard!')
+    toast.success('All code copied to clipboard!')
   }
 
   const handleDownload = () => {
@@ -176,17 +216,17 @@ const CodeEditor = () => {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    console.log(`Downloaded ${currentProject.activeFile}`)
+    toast.success(`Downloaded ${currentProject.activeFile}`)
   }
 
   const handleSave = () => {
-    console.log('Code saved!')
+    toast.success('Code saved!')
   }
 
   const handleFormat = () => {
     if (editorRef.current) {
       editorRef.current.getAction('editor.action.formatDocument').run()
-      console.log('Code formatted!')
+      toast.success('Code formatted!')
     }
   }
 
@@ -245,22 +285,38 @@ const CodeEditor = () => {
       </div>
 
       {/* Editor Content */}
-      <div className="flex-1 relative min-h-[400px]">
-        <Editor
-          key={`${currentProject.activeFile}-${currentProject.files[currentProject.activeFile]?.length || 0}`}
-          height="100%"
-          language={getLanguage()}
-          value={currentProject.files[currentProject.activeFile] || ''}
-          onChange={handleEditorChange}
-          onMount={handleEditorDidMount}
-          theme={theme === 'dark' ? 'custom-dark' : 'custom-light'}
-          loading={
-            <div className="flex items-center justify-center h-full">
-              <div className="spinner"></div>
-              <span className="ml-2">Loading editor...</span>
-            </div>
-          }
-          options={{
+      <div className="flex-1 relative h-full min-h-[500px]">
+        {editorError ? (
+          <div className="flex flex-col items-center justify-center h-full text-center p-8">
+            <div className="text-red-500 text-lg mb-4">⚠️ Editor Error</div>
+            <div className="text-muted-foreground mb-4">{editorError}</div>
+            <button 
+              onClick={() => {
+                setEditorError(null)
+                setIsLoading(true)
+                window.location.reload()
+              }}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Reload Editor
+            </button>
+          </div>
+        ) : (
+          <Editor
+            key={`${currentProject.activeFile}-${currentProject.files[currentProject.activeFile]?.length || 0}`}
+            height="100%"
+            language={getLanguage()}
+            value={currentProject.files[currentProject.activeFile] || ''}
+            onChange={handleEditorChange}
+            onMount={handleEditorDidMount}
+            theme={theme === 'dark' ? 'custom-dark' : 'custom-light'}
+            loading={
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span className="ml-2">Loading editor...</span>
+              </div>
+            }
+            options={{
             selectOnLineNumbers: true,
             roundedSelection: false,
             readOnly: false,
@@ -278,9 +334,36 @@ const CodeEditor = () => {
             guides: {
               bracketPairs: true,
               indentation: true
+            },
+            scrollBeyondLastLine: false,
+            wordWrap: 'on',
+            wrappingIndent: 'indent',
+            lineNumbers: 'on',
+            glyphMargin: true,
+            folding: true,
+            foldingStrategy: 'indentation',
+            showFoldingControls: 'always',
+            unfoldOnClickAfterEnd: false,
+            contextmenu: true,
+            mouseWheelScrollSensitivity: 1,
+            fastScrollSensitivity: 5,
+            cursorSurroundingLines: 3,
+            cursorSurroundingLinesStyle: 'default',
+            scrollbar: {
+              vertical: 'auto',
+              horizontal: 'auto',
+              verticalScrollbarSize: 14,
+              horizontalScrollbarSize: 14,
+              useShadows: true,
+              verticalHasArrows: false,
+              horizontalHasArrows: false,
+              arrowSize: 11,
+              verticalSliderSize: 14,
+              horizontalSliderSize: 14
             }
           }}
-        />
+          />
+        )}
       </div>
 
       {/* Editor Footer */}

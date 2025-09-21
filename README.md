@@ -150,20 +150,42 @@ DreamBuild/
 - **Demo Mode**: Try without registration
 - **User Dashboard**: Track projects and usage
 
-## 🚀 Deployment
+## 🚀 Deployment Options
 
-### Firebase Hosting
+DreamBuild supports two deployment platforms optimized for web applications:
+
+### 🔥 Firebase Hosting (Recommended)
+- **Instant deployment** with global CDN
+- **Custom domain support** with automatic SSL
+- **Automatic HTTPS** and security headers
+- **Free tier** with generous limits
+- **Best for**: Production websites with custom domains
+
 ```bash
-# Build and deploy
+# Build and deploy to Firebase
 npm run build
 firebase deploy --only hosting
 ```
 
-### Custom Domain
+### 📚 GitHub Pages
+- **Free hosting** for public repositories
+- **Version control integration** with Git
+- **Custom domains** and Jekyll support
+- **CI/CD integration** with GitHub Actions
+- **Best for**: Open source projects and documentation
+
 ```bash
-# Add custom domain in Firebase Console
-firebase hosting:channel:deploy production
+# Deploy to GitHub Pages
+git push origin main
+# Enable GitHub Pages in repository settings
 ```
+
+### 🎯 One-Click Deployment
+1. **Generate your app** using DreamBuild AI Builder
+2. **Click the Deploy button** in the File Manager
+3. **Choose your platform** (Firebase or GitHub Pages)
+4. **Enter project name** and deploy instantly
+5. **Get live URL** and share your application
 
 ## 🤝 Contributing
 

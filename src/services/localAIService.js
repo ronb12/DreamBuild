@@ -927,6 +927,8 @@ Additional context: ${searchKnowledge.summary}`
     const analysis = this.analyzePromptForCompleteness(prompt)
     
     console.log('🚀 Starting advanced dynamic file generation with all Lovable-style capabilities...')
+    console.log('🎯 DEBUG: Prompt received:', prompt)
+    console.log('🎯 DEBUG: Lower prompt:', lowerPrompt)
     
     // 0. MEMORY SYSTEM - Load conversation memory and context (non-blocking)
     const projectId = context.projectId || this.generateProjectId()
@@ -947,21 +949,32 @@ Additional context: ${searchKnowledge.summary}`
     console.log('🔗 Dependency graph built:', Object.keys(dependencyGraph).length, 'relationships')
     
     // 3. COMPONENT-BASED GENERATION - Create files based on component needs
+    console.log('🧩 DEBUG: Starting component-based generation for prompt:', prompt)
     const componentFiles = this.generateComponentBasedFiles(prompt, context, files)
     console.log('🧩 Component files before assign:', Object.keys(componentFiles))
+    console.log('🧩 DEBUG: Component files content preview:', Object.keys(componentFiles).map(f => ({ file: f, size: componentFiles[f]?.length || 0 })))
     Object.assign(files, componentFiles)
     console.log('🧩 Component-based files generated:', Object.keys(componentFiles).length)
     
     // Check if this is a game request - if so, skip database templates to avoid overriding
-    const isGameRequest = prompt.toLowerCase().includes('game') || 
-                         prompt.toLowerCase().includes('coin') || 
-                         prompt.toLowerCase().includes('collector') || 
-                         prompt.toLowerCase().includes('playable') ||
-                         prompt.toLowerCase().includes('fun')
+    const isGameRequest = lowerPrompt.includes('game') || 
+                         lowerPrompt.includes('coin') || 
+                         lowerPrompt.includes('collector') || 
+                         lowerPrompt.includes('playable') ||
+                         lowerPrompt.includes('fun')
+    
+    console.log('🎯 DEBUG: Game detection check:')
+    console.log('🎯 DEBUG: - includes "game":', lowerPrompt.includes('game'))
+    console.log('🎯 DEBUG: - includes "coin":', lowerPrompt.includes('coin'))
+    console.log('🎯 DEBUG: - includes "collector":', lowerPrompt.includes('collector'))
+    console.log('🎯 DEBUG: - includes "playable":', lowerPrompt.includes('playable'))
+    console.log('🎯 DEBUG: - includes "fun":', lowerPrompt.includes('fun'))
+    console.log('🎯 DEBUG: - isGameRequest:', isGameRequest)
     
     if (isGameRequest) {
       console.log('🎮 Game request detected - skipping database templates to preserve game files')
     } else {
+      console.log('📄 Non-game request - proceeding with database templates')
       // 4. DATABASE-DRIVEN TEMPLATES - Use database to store and retrieve patterns
       const templateFiles = this.generateDatabaseDrivenFiles(prompt, context, files)
       Object.assign(files, templateFiles)
@@ -1058,6 +1071,13 @@ Additional context: ${searchKnowledge.summary}`
     
     console.log(`✅ Generated ${Object.keys(files).length} files with all advanced capabilities`)
     console.log('📁 Generated files:', Object.keys(files))
+    
+    // DEBUG: Show what type of files were generated
+    const gameFiles = Object.keys(files).filter(f => f.includes('Game') || f.includes('game'))
+    const componentFilesList = Object.keys(files).filter(f => f.includes('component'))
+    console.log('🎮 DEBUG: Game-related files:', gameFiles)
+    console.log('🧩 DEBUG: Component files:', componentFilesList)
+    console.log('📄 DEBUG: All file types:', Object.keys(files).map(f => f.split('/').pop()))
     return {
       files,
       context: persistentContext,

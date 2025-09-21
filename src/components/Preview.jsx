@@ -26,6 +26,16 @@ const Preview = () => {
       const htmlContent = currentProject.files['index.html'] || ''
       const cssContent = currentProject.files['style.css'] || ''
       const jsContent = currentProject.files['script.js'] || ''
+      
+      // Check if we have React components (game files)
+      const gameAppFile = currentProject.files['src/components/GameApp.jsx'] || ''
+      const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
+      
+      // If we have game components, create a React app preview
+      if (gameAppFile || gameComponentFile) {
+        createReactPreview()
+        return
+      }
 
       if (!htmlContent.trim()) {
         showPlaceholder()
@@ -105,6 +115,95 @@ const Preview = () => {
       console.error('Preview update error:', error)
       setIsLoading(false)
       setPreviewError('Preview update failed')
+    }
+  }
+
+  const createReactPreview = () => {
+    if (!iframeRef.current) return
+
+    // Get all the React component files
+    const gameAppFile = currentProject.files['src/components/GameApp.jsx'] || ''
+    const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
+    const gameUIFile = currentProject.files['src/components/GameUI.jsx'] || ''
+    const coinFile = currentProject.files['src/components/Coin.jsx'] || ''
+    const playerFile = currentProject.files['src/components/Player.jsx'] || ''
+    
+    // Get CSS files
+    const gameAppCSS = currentProject.files['src/components/GameApp.css'] || ''
+    const gameComponentCSS = currentProject.files['src/components/GameComponent.css'] || ''
+    const gameUICSS = currentProject.files['src/components/GameUI.css'] || ''
+    const coinCSS = currentProject.files['src/components/Coin.css'] || ''
+    const playerCSS = currentProject.files['src/components/Player.css'] || ''
+
+    // Create a complete React app HTML
+    const reactHTML = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DreamBuild Game Preview</title>
+        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+          }
+          #root {
+            width: 100%;
+            min-height: 100vh;
+          }
+          ${gameAppCSS}
+          ${gameComponentCSS}
+          ${gameUICSS}
+          ${coinCSS}
+          ${playerCSS}
+        </style>
+      </head>
+      <body>
+        <div id="root"></div>
+        
+        <script type="text/babel">
+          const { useState, useEffect, useRef, useCallback } = React;
+          
+          // Game Component
+          ${gameComponentFile}
+          
+          // Game UI Component  
+          ${gameUIFile}
+          
+          // Coin Component
+          ${coinFile}
+          
+          // Player Component
+          ${playerFile}
+          
+          // Game App Component
+          ${gameAppFile}
+          
+          // Render the app
+          const root = ReactDOM.createRoot(document.getElementById('root'));
+          root.render(React.createElement(GameApp));
+        </script>
+      </body>
+      </html>
+    `
+
+    const iframe = iframeRef.current
+    iframe.srcdoc = reactHTML
+
+    iframe.onload = () => {
+      setIsLoading(false)
+      setPreviewError(null)
+    }
+
+    iframe.onerror = () => {
+      setIsLoading(false)
+      setPreviewError('Failed to load React preview')
     }
   }
 

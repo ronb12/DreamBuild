@@ -32,9 +32,20 @@ const Preview = () => {
       const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
       const templeRunUIFile = currentProject.files['src/components/TempleRunUI.jsx'] || ''
       const runnerPlayerFile = currentProject.files['src/components/RunnerPlayer.jsx'] || ''
+      const obstacleFile = currentProject.files['src/components/Obstacle.jsx'] || ''
+      
+      // Debug logging for file detection
+      console.log('🎮 Preview Debug - Checking for game files:')
+      console.log('🎮 - GameApp.jsx exists:', !!gameAppFile)
+      console.log('🎮 - GameComponent.jsx exists:', !!gameComponentFile)
+      console.log('🎮 - TempleRunUI.jsx exists:', !!templeRunUIFile)
+      console.log('🎮 - RunnerPlayer.jsx exists:', !!runnerPlayerFile)
+      console.log('🎮 - Obstacle.jsx exists:', !!obstacleFile)
+      console.log('🎮 - All project files:', Object.keys(currentProject.files))
       
       // If we have game components, create a React app preview
       if (gameAppFile || gameComponentFile) {
+        console.log('🎮 Preview Debug - Game files detected, creating React preview')
         createReactPreview()
         return
       }
@@ -141,9 +152,21 @@ const Preview = () => {
     const coinCSS = currentProject.files['src/components/Coin.css'] || ''
     const playerCSS = currentProject.files['src/components/Player.css'] || ''
     
-    // Detect game type based on available files
-    const isTempleRun = templeRunUIFile || runnerPlayerFile || obstacleFile
-    const isCoinCollector = playerFile || coinFile
+    // Detect game type based on available files and content
+    const hasTempleRunFiles = templeRunUIFile || runnerPlayerFile || obstacleFile
+    const hasCoinCollectorFiles = playerFile || coinFile
+    
+    // Also check GameComponent content for Temple Run indicators
+    const gameComponentContent = gameComponentFile.toLowerCase()
+    const hasTempleRunContent = gameComponentContent.includes('temple run') || 
+                               gameComponentContent.includes('lane') ||
+                               gameComponentContent.includes('jump') ||
+                               gameComponentContent.includes('slide') ||
+                               gameComponentContent.includes('obstacle') ||
+                               gameComponentContent.includes('endless runner')
+    
+    const isTempleRun = hasTempleRunFiles || hasTempleRunContent
+    const isCoinCollector = hasCoinCollectorFiles && !isTempleRun
     
     // Debug logging
     console.log('🎮 Preview Debug - Available files:')
@@ -152,6 +175,8 @@ const Preview = () => {
     console.log('🎮 - obstacleFile:', !!obstacleFile)
     console.log('🎮 - playerFile:', !!playerFile)
     console.log('🎮 - coinFile:', !!coinFile)
+    console.log('🎮 - hasTempleRunFiles:', hasTempleRunFiles)
+    console.log('🎮 - hasTempleRunContent:', hasTempleRunContent)
     console.log('🎮 - isTempleRun:', isTempleRun)
     console.log('🎮 - isCoinCollector:', isCoinCollector)
     console.log('🎮 - All project files:', Object.keys(currentProject.files))

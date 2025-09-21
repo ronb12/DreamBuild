@@ -1,0 +1,2078 @@
+{
+  "timestamp": "2025-09-21T21:35:52.644Z",
+  "analysis": {
+    "templeRunLogs": [
+      {
+        "type": "log",
+        "text": "🎯 DEBUG: Prompt received: clone temple run\n\nBased on current best practices and modern web development standards, please ensure the application includes:\n- Use semantic HTML for better accessibility\n- Implement responsive design with CSS Grid and Flexbox\n- Optimize images and assets for better performance\n- Add proper error handling and validation\n- Ensure cross-browser compatibility\n\nAdditional context: General web development best practices and modern techniques. General web development best practices and modern techniques. General web development best practices and modern techniques. ",
+        "timestamp": "2025-09-21T21:35:35.475Z"
+      },
+      {
+        "type": "log",
+        "text": "🎯 DEBUG: Lower prompt: clone temple run\n\nbased on current best practices and modern web development standards, please ensure the application includes:\n- use semantic html for better accessibility\n- implement responsive design with css grid and flexbox\n- optimize images and assets for better performance\n- add proper error handling and validation\n- ensure cross-browser compatibility\n\nadditional context: general web development best practices and modern techniques. general web development best practices and modern techniques. general web development best practices and modern techniques. ",
+        "timestamp": "2025-09-21T21:35:35.475Z"
+      },
+      {
+        "type": "log",
+        "text": "🧩 DEBUG: Starting component-based generation for prompt: clone temple run\n\nBased on current best practices and modern web development standards, please ensure the application includes:\n- Use semantic HTML for better accessibility\n- Implement responsive design with CSS Grid and Flexbox\n- Optimize images and assets for better performance\n- Add proper error handling and validation\n- Ensure cross-browser compatibility\n\nAdditional context: General web development best practices and modern techniques. General web development best practices and modern techniques. General web development best practices and modern techniques. ",
+        "timestamp": "2025-09-21T21:35:36.522Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game detected in prompt: clone temple run\n\nBased on current best practices and modern web development standards, please ensure the application includes:\n- Use semantic HTML for better accessibility\n- Implement responsive design with CSS Grid and Flexbox\n- Optimize images and assets for better performance\n- Add proper error handling and validation\n- Ensure cross-browser compatibility\n\nAdditional context: General web development best practices and modern techniques. General web development best practices and modern techniques. General web development best practices and modern techniques. ",
+        "timestamp": "2025-09-21T21:35:36.538Z"
+      },
+      {
+        "type": "log",
+        "text": "🏃‍♂️ Temple Run game type detected",
+        "timestamp": "2025-09-21T21:35:36.538Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game components added: 5 Game type: temple-run",
+        "timestamp": "2025-09-21T21:35:36.538Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game type for component generation: temple-run",
+        "timestamp": "2025-09-21T21:35:36.538Z"
+      },
+      {
+        "type": "log",
+        "text": "🎯 DEBUG: - includes \"temple run\": true",
+        "timestamp": "2025-09-21T21:35:36.542Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game request detected - skipping database templates to preserve game files",
+        "timestamp": "2025-09-21T21:35:36.542Z"
+      },
+      {
+        "type": "log",
+        "text": "🏃‍♂️ Temple Run detected - ensuring no database template override",
+        "timestamp": "2025-09-21T21:35:36.542Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game request detected - skipping progressive enhancement to preserve game files",
+        "timestamp": "2025-09-21T21:35:36.542Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game request detected - skipping generic CSS/JS to preserve game files",
+        "timestamp": "2025-09-21T21:35:37.018Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 DEBUG: Game-related files: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.455Z"
+      }
+    ],
+    "fileGenerationLogs": [
+      {
+        "type": "log",
+        "text": "📁 Generated component files: 25",
+        "timestamp": "2025-09-21T21:35:36.541Z"
+      },
+      {
+        "type": "log",
+        "text": "🔧 Generated supporting files: 7",
+        "timestamp": "2025-09-21T21:35:36.541Z"
+      },
+      {
+        "type": "log",
+        "text": "🧩 Component files before assign: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:36.541Z"
+      },
+      {
+        "type": "log",
+        "text": "🧩 DEBUG: Component files content preview: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:36.542Z"
+      },
+      {
+        "type": "log",
+        "text": "🧩 Component-based files generated: 32",
+        "timestamp": "2025-09-21T21:35:36.542Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game request detected - skipping database templates to preserve game files",
+        "timestamp": "2025-09-21T21:35:36.542Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game request detected - skipping progressive enhancement to preserve game files",
+        "timestamp": "2025-09-21T21:35:36.542Z"
+      },
+      {
+        "type": "log",
+        "text": "🔧 Enhancing existing files...",
+        "timestamp": "2025-09-21T21:35:37.016Z"
+      },
+      {
+        "type": "log",
+        "text": "🔄 Iterative files generated: 0",
+        "timestamp": "2025-09-21T21:35:37.018Z"
+      },
+      {
+        "type": "log",
+        "text": "📋 Expansion plan created: 11 files planned",
+        "timestamp": "2025-09-21T21:35:37.018Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 Game request detected - skipping generic CSS/JS to preserve game files",
+        "timestamp": "2025-09-21T21:35:37.018Z"
+      },
+      {
+        "type": "log",
+        "text": "✅ Generated 70 files with all advanced capabilities",
+        "timestamp": "2025-09-21T21:35:39.454Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Generated files: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.455Z"
+      },
+      {
+        "type": "log",
+        "text": "🎮 DEBUG: Game-related files: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.455Z"
+      },
+      {
+        "type": "log",
+        "text": "🧩 DEBUG: Component files: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.455Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Files received: JSHandle@object",
+        "timestamp": "2025-09-21T21:35:39.457Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Files type: object",
+        "timestamp": "2025-09-21T21:35:39.457Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Files keys: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.457Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.463Z"
+      },
+      {
+        "type": "log",
+        "text": "✅ Added 70 files to project",
+        "timestamp": "2025-09-21T21:35:39.515Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.516Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.517Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.517Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.517Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.517Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.517Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.517Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.517Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.517Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.518Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.519Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.519Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.519Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.519Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.520Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.520Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.522Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.522Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.522Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.522Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.522Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.522Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.523Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.524Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.524Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.524Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.524Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.524Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.524Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.524Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.525Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.525Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.525Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.525Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.525Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.525Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.525Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.525Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.530Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.530Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.530Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.530Z"
+      },
+      {
+        "type": "log",
+        "text": "📁 Project files after update: JSHandle@array",
+        "timestamp": "2025-09-21T21:35:39.531Z"
+      }
+    ],
+    "previewLogs": [],
+    "errors": [
+      {
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 ()",
+        "timestamp": "2025-09-21T21:35:29.853Z"
+      },
+      {
+        "type": "error",
+        "text": "Monaco initialization: error: JSHandle@error",
+        "timestamp": "2025-09-21T21:35:29.860Z"
+      },
+      {
+        "type": "pageerror",
+        "text": "[object Event]",
+        "timestamp": "2025-09-21T21:35:29.869Z"
+      },
+      {
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 400 ()",
+        "timestamp": "2025-09-21T21:35:35.740Z"
+      },
+      {
+        "type": "error",
+        "text": "Monaco initialization: error: JSHandle@error",
+        "timestamp": "2025-09-21T21:35:39.633Z"
+      },
+      {
+        "type": "pageerror",
+        "text": "[object Event]",
+        "timestamp": "2025-09-21T21:35:39.656Z"
+      }
+    ]
+  },
+  "previewContent": null,
+  "projectFiles": [],
+  "allConsoleLogs": [
+    {
+      "type": "log",
+      "text": "Firebase config loaded: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:28.548Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Initializing local AI health monitoring...",
+      "timestamp": "2025-09-21T21:35:28.679Z"
+    },
+    {
+      "type": "log",
+      "text": "🌐 Running on deployed domain - using dynamic file generation",
+      "timestamp": "2025-09-21T21:35:28.679Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Dynamic generation active - AI generation available",
+      "timestamp": "2025-09-21T21:35:28.679Z"
+    },
+    {
+      "type": "log",
+      "text": "🤖 Simple AI Service initialized - Local AI only!",
+      "timestamp": "2025-09-21T21:35:28.679Z"
+    },
+    {
+      "type": "log",
+      "text": "DreamBuild SW registered: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:29.181Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-09-21T21:35:29.853Z"
+    },
+    {
+      "type": "error",
+      "text": "Monaco initialization: error: JSHandle@error",
+      "timestamp": "2025-09-21T21:35:29.860Z"
+    },
+    {
+      "type": "log",
+      "text": "🚀 Starting AI generation...",
+      "timestamp": "2025-09-21T21:35:32.453Z"
+    },
+    {
+      "type": "log",
+      "text": "🚀 Generating code with Local AI...",
+      "timestamp": "2025-09-21T21:35:32.455Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Searching web for current knowledge and best practices...",
+      "timestamp": "2025-09-21T21:35:32.457Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Searching web for knowledge: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:32.458Z"
+    },
+    {
+      "type": "log",
+      "text": "Firebase auth timeout - setting loading to false",
+      "timestamp": "2025-09-21T21:35:33.960Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Web search completed - enhanced prompt with current best practices",
+      "timestamp": "2025-09-21T21:35:35.472Z"
+    },
+    {
+      "type": "log",
+      "text": "🌐 Running on external domain - using dynamic file generation (demo mode)",
+      "timestamp": "2025-09-21T21:35:35.472Z"
+    },
+    {
+      "type": "log",
+      "text": "🚀 Starting advanced dynamic file generation with all Lovable-style capabilities...",
+      "timestamp": "2025-09-21T21:35:35.475Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: Prompt received: clone temple run\n\nBased on current best practices and modern web development standards, please ensure the application includes:\n- Use semantic HTML for better accessibility\n- Implement responsive design with CSS Grid and Flexbox\n- Optimize images and assets for better performance\n- Add proper error handling and validation\n- Ensure cross-browser compatibility\n\nAdditional context: General web development best practices and modern techniques. General web development best practices and modern techniques. General web development best practices and modern techniques. ",
+      "timestamp": "2025-09-21T21:35:35.475Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: Lower prompt: clone temple run\n\nbased on current best practices and modern web development standards, please ensure the application includes:\n- use semantic html for better accessibility\n- implement responsive design with css grid and flexbox\n- optimize images and assets for better performance\n- add proper error handling and validation\n- ensure cross-browser compatibility\n\nadditional context: general web development best practices and modern techniques. general web development best practices and modern techniques. general web development best practices and modern techniques. ",
+      "timestamp": "2025-09-21T21:35:35.475Z"
+    },
+    {
+      "type": "log",
+      "text": "Firebase auth state changed: not authenticated",
+      "timestamp": "2025-09-21T21:35:35.482Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 400 ()",
+      "timestamp": "2025-09-21T21:35:35.740Z"
+    },
+    {
+      "type": "log",
+      "text": "⚠️ Firebase auth not available, continuing without authentication: Firebase: Error (auth/admin-restricted-operation).",
+      "timestamp": "2025-09-21T21:35:35.747Z"
+    },
+    {
+      "type": "log",
+      "text": "🔥 Firebase initialized successfully",
+      "timestamp": "2025-09-21T21:35:35.747Z"
+    },
+    {
+      "type": "log",
+      "text": "❌ Conversation memory not found",
+      "timestamp": "2025-09-21T21:35:36.516Z"
+    },
+    {
+      "type": "log",
+      "text": "🧠 Conversation context loaded: No",
+      "timestamp": "2025-09-21T21:35:36.517Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Codebase analysis: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:36.519Z"
+    },
+    {
+      "type": "log",
+      "text": "📊 Codebase context analyzed: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:36.519Z"
+    },
+    {
+      "type": "log",
+      "text": "🔗 Dependency graph built: 0 relationships",
+      "timestamp": "2025-09-21T21:35:36.520Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 DEBUG: Starting component-based generation for prompt: clone temple run\n\nBased on current best practices and modern web development standards, please ensure the application includes:\n- Use semantic HTML for better accessibility\n- Implement responsive design with CSS Grid and Flexbox\n- Optimize images and assets for better performance\n- Add proper error handling and validation\n- Ensure cross-browser compatibility\n\nAdditional context: General web development best practices and modern techniques. General web development best practices and modern techniques. General web development best practices and modern techniques. ",
+      "timestamp": "2025-09-21T21:35:36.522Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 Starting component-based generation...",
+      "timestamp": "2025-09-21T21:35:36.522Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Game detected in prompt: clone temple run\n\nBased on current best practices and modern web development standards, please ensure the application includes:\n- Use semantic HTML for better accessibility\n- Implement responsive design with CSS Grid and Flexbox\n- Optimize images and assets for better performance\n- Add proper error handling and validation\n- Ensure cross-browser compatibility\n\nAdditional context: General web development best practices and modern techniques. General web development best practices and modern techniques. General web development best practices and modern techniques. ",
+      "timestamp": "2025-09-21T21:35:36.538Z"
+    },
+    {
+      "type": "log",
+      "text": "🏃‍♂️ Temple Run game type detected",
+      "timestamp": "2025-09-21T21:35:36.538Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Game components added: 5 Game type: temple-run",
+      "timestamp": "2025-09-21T21:35:36.538Z"
+    },
+    {
+      "type": "log",
+      "text": "📋 Component requirements: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:36.538Z"
+    },
+    {
+      "type": "log",
+      "text": "🌳 Component hierarchy: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:36.538Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Game type for component generation: temple-run",
+      "timestamp": "2025-09-21T21:35:36.538Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Generated component files: 25",
+      "timestamp": "2025-09-21T21:35:36.541Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Generated supporting files: 7",
+      "timestamp": "2025-09-21T21:35:36.541Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 Component files before assign: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:36.541Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 DEBUG: Component files content preview: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 Component-based files generated: 32",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: Game detection check:",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"game\": false",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"temple run\": true",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"endless runner\": false",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"runner\": false",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"clone\": true",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"run\": true",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"coin\": false",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"collect\": false",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"collector\": false",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"playable\": false",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - includes \"fun\": false",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 DEBUG: - isGameRequest: true",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Game request detected - skipping database templates to preserve game files",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🏃‍♂️ Temple Run detected - ensuring no database template override",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Game request detected - skipping progressive enhancement to preserve game files",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "💾 Persisting context for future generations...",
+      "timestamp": "2025-09-21T21:35:36.542Z"
+    },
+    {
+      "type": "log",
+      "text": "💾 Context stored in localStorage",
+      "timestamp": "2025-09-21T21:35:36.551Z"
+    },
+    {
+      "type": "log",
+      "text": "💾 Context persisted for future generations",
+      "timestamp": "2025-09-21T21:35:36.560Z"
+    },
+    {
+      "type": "log",
+      "text": "🔥 Firebase initialized successfully",
+      "timestamp": "2025-09-21T21:35:36.560Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Files stored in Firebase successfully",
+      "timestamp": "2025-09-21T21:35:37.016Z"
+    },
+    {
+      "type": "log",
+      "text": "☁️ Files stored in Firebase for unlimited storage",
+      "timestamp": "2025-09-21T21:35:37.016Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Starting iterative file generation with conversation history...",
+      "timestamp": "2025-09-21T21:35:37.016Z"
+    },
+    {
+      "type": "log",
+      "text": "💬 Conversation history length: ",
+      "timestamp": "2025-09-21T21:35:37.016Z"
+    },
+    {
+      "type": "log",
+      "text": "💬 Conversation context: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:37.016Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 Request type analysis: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:37.016Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Enhancing existing files...",
+      "timestamp": "2025-09-21T21:35:37.016Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Iterative files generated: 0",
+      "timestamp": "2025-09-21T21:35:37.018Z"
+    },
+    {
+      "type": "log",
+      "text": "📋 Expansion plan created: 11 files planned",
+      "timestamp": "2025-09-21T21:35:37.018Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 Game request detected - skipping generic CSS/JS to preserve game files",
+      "timestamp": "2025-09-21T21:35:37.018Z"
+    },
+    {
+      "type": "log",
+      "text": "🧠 Applying advanced prompt engineering...",
+      "timestamp": "2025-09-21T21:35:37.020Z"
+    },
+    {
+      "type": "log",
+      "text": "❌ Conversation memory not found",
+      "timestamp": "2025-09-21T21:35:37.219Z"
+    },
+    {
+      "type": "log",
+      "text": "⚠️ Conversation data too large, storing in chunks",
+      "timestamp": "2025-09-21T21:35:37.238Z"
+    },
+    {
+      "type": "log",
+      "text": "🧠 Conversation memory stored in 2 chunks",
+      "timestamp": "2025-09-21T21:35:39.454Z"
+    },
+    {
+      "type": "log",
+      "text": "🧠 Prompt added to memory successfully",
+      "timestamp": "2025-09-21T21:35:39.454Z"
+    },
+    {
+      "type": "log",
+      "text": "🧠 Conversation stored in memory for future reference",
+      "timestamp": "2025-09-21T21:35:39.454Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Generated 70 files with all advanced capabilities",
+      "timestamp": "2025-09-21T21:35:39.454Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Generated files: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.455Z"
+    },
+    {
+      "type": "log",
+      "text": "🎮 DEBUG: Game-related files: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.455Z"
+    },
+    {
+      "type": "log",
+      "text": "🧩 DEBUG: Component files: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.455Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 DEBUG: All file types: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.455Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Code generated successfully with Local AI!",
+      "timestamp": "2025-09-21T21:35:39.457Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Files received: JSHandle@object",
+      "timestamp": "2025-09-21T21:35:39.457Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Files type: object",
+      "timestamp": "2025-09-21T21:35:39.457Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Files keys: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.457Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/GameApp.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.457Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/GameApp.jsx (5210 chars)",
+      "timestamp": "2025-09-21T21:35:39.457Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.463Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/GameApp.css (string)",
+      "timestamp": "2025-09-21T21:35:39.463Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/GameApp.css (1500 chars)",
+      "timestamp": "2025-09-21T21:35:39.463Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/GameComponent.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.463Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/GameComponent.jsx (16516 chars)",
+      "timestamp": "2025-09-21T21:35:39.464Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/GameComponent.css (string)",
+      "timestamp": "2025-09-21T21:35:39.464Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/GameComponent.css (1854 chars)",
+      "timestamp": "2025-09-21T21:35:39.464Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/GameComponent.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.464Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/GameComponent.test.js (5291 chars)",
+      "timestamp": "2025-09-21T21:35:39.464Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/TempleRunUI.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.464Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/TempleRunUI.jsx (4528 chars)",
+      "timestamp": "2025-09-21T21:35:39.465Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/TempleRunUI.css (string)",
+      "timestamp": "2025-09-21T21:35:39.465Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/TempleRunUI.css (1205 chars)",
+      "timestamp": "2025-09-21T21:35:39.465Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/TempleRunUI.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.466Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/TempleRunUI.test.js (5263 chars)",
+      "timestamp": "2025-09-21T21:35:39.466Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/RunnerPlayer.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.466Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/RunnerPlayer.jsx (4034 chars)",
+      "timestamp": "2025-09-21T21:35:39.466Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/RunnerPlayer.css (string)",
+      "timestamp": "2025-09-21T21:35:39.466Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/RunnerPlayer.css (432 chars)",
+      "timestamp": "2025-09-21T21:35:39.466Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/RunnerPlayer.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.466Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/RunnerPlayer.test.js (5283 chars)",
+      "timestamp": "2025-09-21T21:35:39.466Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Obstacle.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.467Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Obstacle.jsx (4006 chars)",
+      "timestamp": "2025-09-21T21:35:39.467Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Obstacle.css (string)",
+      "timestamp": "2025-09-21T21:35:39.467Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Obstacle.css (424 chars)",
+      "timestamp": "2025-09-21T21:35:39.467Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Obstacle.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.467Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Obstacle.test.js (5214 chars)",
+      "timestamp": "2025-09-21T21:35:39.467Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Coin.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.467Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Coin.jsx (4175 chars)",
+      "timestamp": "2025-09-21T21:35:39.467Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Coin.css (string)",
+      "timestamp": "2025-09-21T21:35:39.469Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Coin.css (892 chars)",
+      "timestamp": "2025-09-21T21:35:39.469Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Coin.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Coin.test.js (5170 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/FormComponent.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/FormComponent.jsx (4991 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/FormComponent.css (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/FormComponent.css (6343 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/FormComponent.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/FormComponent.test.js (5288 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/DataTable.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/DataTable.jsx (5019 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/DataTable.css (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/DataTable.css (6339 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/DataTable.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/DataTable.test.js (5234 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/hooks/useDataTable.js (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/hooks/useDataTable.js (5294 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/index.js (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/index.js (4497 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/context/AppContext.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/context/AppContext.jsx (5530 chars)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/utils/validation.js (string)",
+      "timestamp": "2025-09-21T21:35:39.470Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/utils/validation.js (4192 chars)",
+      "timestamp": "2025-09-21T21:35:39.471Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/utils/helpers.js (string)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/utils/helpers.js (4164 chars)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/hooks/useData.js (string)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/hooks/useData.js (4351 chars)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/hooks/useLocalStorage.js (string)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/hooks/useLocalStorage.js (7573 chars)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/services/api.js (string)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/services/api.js (4935 chars)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/services/storage.js (string)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/services/storage.js (10734 chars)",
+      "timestamp": "2025-09-21T21:35:39.480Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: package.json (string)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: package.json (764 chars)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: README.md (string)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: README.md (1586 chars)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: index.html (string)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: index.html (2229 chars)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/App.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/App.jsx (5749 chars)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/index.js (string)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/index.js (4232 chars)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Header.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Header.jsx (3926 chars)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Footer.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Footer.jsx (3926 chars)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Layout.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Layout.jsx (3926 chars)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/styles/App.css (string)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/styles/App.css (1042 chars)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/styles/components.css (string)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/styles/components.css (653 chars)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Form.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Form.jsx (3914 chars)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/components/Input.jsx (string)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/components/Input.jsx (3920 chars)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: tests/setup.js (string)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: tests/setup.js (4071 chars)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: tests/unit/App.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: tests/unit/App.test.js (4147 chars)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: tests/integration/api.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: tests/integration/api.test.js (4190 chars)",
+      "timestamp": "2025-09-21T21:35:39.482Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: tests/e2e/basic.test.js (string)",
+      "timestamp": "2025-09-21T21:35:39.513Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: tests/e2e/basic.test.js (4156 chars)",
+      "timestamp": "2025-09-21T21:35:39.513Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: jest.config.js (string)",
+      "timestamp": "2025-09-21T21:35:39.513Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: jest.config.js (4106 chars)",
+      "timestamp": "2025-09-21T21:35:39.513Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: tests/utils/testHelpers.js (string)",
+      "timestamp": "2025-09-21T21:35:39.513Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: tests/utils/testHelpers.js (4138 chars)",
+      "timestamp": "2025-09-21T21:35:39.513Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: docs/API.md (string)",
+      "timestamp": "2025-09-21T21:35:39.513Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: docs/API.md (313 chars)",
+      "timestamp": "2025-09-21T21:35:39.513Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: docs/README.md (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: docs/README.md (328 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: docs/CHANGELOG.md (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: docs/CHANGELOG.md (309 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: docs/CONTRIBUTING.md (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: docs/CONTRIBUTING.md (337 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: docs/DEPLOYMENT.md (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: docs/DEPLOYMENT.md (357 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: docs/ARCHITECTURE.md (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: docs/ARCHITECTURE.md (312 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: .env.example (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: .env.example (306 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: .gitignore (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: .gitignore (260 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: .eslintrc.js (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: .eslintrc.js (4104 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: .prettierrc (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: .prettierrc (288 chars)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: docker-compose.yml (string)",
+      "timestamp": "2025-09-21T21:35:39.514Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: docker-compose.yml (303 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: Dockerfile (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: Dockerfile (325 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: nginx.conf (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: nginx.conf (300 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: deploy.sh (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: deploy.sh (304 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/utils/constants.js (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/utils/constants.js (4153 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/utils/formatting.js (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/utils/formatting.js (4215 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/utils/storage.js (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/utils/storage.js (4179 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/utils/network.js (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/utils/network.js (4206 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/utils/date.js (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/utils/date.js (4202 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "📄 Adding file: src/utils/string.js (string)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 Updating file: src/utils/string.js (4193 chars)",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ Added 70 files to project",
+      "timestamp": "2025-09-21T21:35:39.515Z"
+    },
+    {
+      "type": "log",
+      "text": "🎯 Set active file: src/components/GameApp.jsx",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.516Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.517Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.517Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.517Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.517Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.517Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.517Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.517Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.517Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.518Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.519Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.519Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.519Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.519Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.520Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.520Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.522Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.522Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.522Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.522Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.522Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.522Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.523Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.524Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.524Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.524Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.524Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.524Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.524Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.524Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.525Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.525Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.525Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.525Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.525Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.525Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.525Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.525Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.530Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.530Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.530Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.530Z"
+    },
+    {
+      "type": "log",
+      "text": "📁 Project files after update: JSHandle@array",
+      "timestamp": "2025-09-21T21:35:39.531Z"
+    },
+    {
+      "type": "error",
+      "text": "Monaco initialization: error: JSHandle@error",
+      "timestamp": "2025-09-21T21:35:39.633Z"
+    }
+  ],
+  "errors": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-09-21T21:35:29.853Z"
+    },
+    {
+      "type": "error",
+      "text": "Monaco initialization: error: JSHandle@error",
+      "timestamp": "2025-09-21T21:35:29.860Z"
+    },
+    {
+      "type": "pageerror",
+      "text": "[object Event]",
+      "timestamp": "2025-09-21T21:35:29.869Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 400 ()",
+      "timestamp": "2025-09-21T21:35:35.740Z"
+    },
+    {
+      "type": "error",
+      "text": "Monaco initialization: error: JSHandle@error",
+      "timestamp": "2025-09-21T21:35:39.633Z"
+    },
+    {
+      "type": "pageerror",
+      "text": "[object Event]",
+      "timestamp": "2025-09-21T21:35:39.656Z"
+    }
+  ]
+}

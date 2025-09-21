@@ -128,7 +128,7 @@ const AIBuilder = () => {
                 {activeTab === 'preview' && (
                   <>
                     {console.log('🎮 AIBuilder: Rendering Preview component for activeTab:', activeTab)}
-                    <PreviewSimple />
+                    <Preview />
                   </>
                 )}
                 {activeTab === 'workspace' && isWorkspaceVisible && <IntegratedWorkspace projectId="demo-project" />}

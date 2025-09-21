@@ -34,6 +34,7 @@ const Preview = () => {
       return
     }
 
+    console.log('🎮 updatePreview: iframeRef.current exists, proceeding...')
     setIsLoading(true)
     setPreviewError(null)
 
@@ -69,6 +70,11 @@ const Preview = () => {
         createReactPreview()
         return
       }
+
+      console.log('🎮 Preview Debug - No game files detected, using regular HTML preview')
+      console.log('🎮 Preview Debug - HTML content length:', htmlContent.length)
+      console.log('🎮 Preview Debug - CSS content length:', cssContent.length)
+      console.log('🎮 Preview Debug - JS content length:', jsContent.length)
 
       if (!htmlContent.trim()) {
         showPlaceholder()

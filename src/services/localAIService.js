@@ -318,9 +318,8 @@ class LocalAIService {
       const isWebDomain = typeof window !== 'undefined' && 
         window.location.hostname !== 'localhost' && 
         window.location.hostname !== '127.0.0.1' &&
-        !window.location.hostname.includes('dreambuild') &&
-        !window.location.hostname.includes('vercel') &&
-        !window.location.hostname.includes('netlify')
+        !window.location.hostname.includes('localhost') &&
+        !window.location.hostname.includes('127.0.0.1')
       
       if (isWebDomain) {
         console.log('🌐 Running on external domain - using dynamic file generation (demo mode)')

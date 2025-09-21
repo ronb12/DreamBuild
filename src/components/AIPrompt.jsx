@@ -504,9 +504,8 @@ Please implement this suggestion in my current project.`
     >
       {/* AI Prompt Header */}
       <div className="p-3 border-b border-border bg-muted/50">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-sm flex items-center gap-2">
-            <Sparkles className="h-4 w-4" />
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-medium text-sm text-foreground">
             AI Assistant
           </h3>
           <div className="flex items-center gap-2">
@@ -514,23 +513,23 @@ Please implement this suggestion in my current project.`
             <div className="relative model-selector">
               <button
                 onClick={() => setShowModelSelector(!showModelSelector)}
-                className="flex items-center gap-2 px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md border border-blue-200 dark:border-blue-700 transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-muted hover:bg-muted/80 text-foreground rounded border border-border transition-colors"
                 title="Select AI Model"
               >
                 <Bot className="h-3 w-3" />
                 <span className="font-medium">{getModelDisplayName(aiModel)}</span>
-                <span className="text-blue-500">▼</span>
+                <span className="text-muted-foreground text-xs">▼</span>
               </button>
               
               {/* Model Dropdown */}
               {showModelSelector && (
-                <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-border rounded-lg shadow-lg z-50">
-                  <div className="p-2 border-b border-border">
-                    <h4 className="text-sm font-medium">Select AI Model</h4>
-                    <p className="text-xs text-muted-foreground">Choose the AI model for code generation</p>
+                <div className="absolute top-full right-0 mt-1 w-72 bg-background border border-border rounded-lg shadow-lg z-50">
+                  <div className="p-3 border-b border-border">
+                    <h4 className="text-sm font-medium text-foreground">AI Model</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">Choose the AI model for code generation</p>
                   </div>
                   
-                  <div className="max-h-60 overflow-y-auto">
+                  <div className="max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                     {getAvailableModels().map((model) => (
                       <button
                         key={model.id}
@@ -548,30 +547,31 @@ Please implement this suggestion in my current project.`
                             toast.success(`Switched to ${model.name}`)
                           }
                         }}
-                        className={`w-full flex items-center justify-between p-2 text-xs hover:bg-muted transition-colors ${
+                        className={`w-full flex items-center justify-between p-2.5 text-xs hover:bg-muted transition-colors ${
                           aiModel === model.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                         }`}
                       >
                         <div className="flex flex-col items-start">
-                          <span className="font-medium">{model.name}</span>
-                          <span className="text-muted-foreground">{model.description}</span>
+                          <span className="font-medium text-foreground">{model.name}</span>
+                          <span className="text-muted-foreground text-xs mt-0.5">{model.description}</span>
                         </div>
                         <div className="flex flex-col items-end text-xs text-muted-foreground">
                           <span>{model.ram}</span>
-                          <span className={`px-1 py-0.5 rounded text-xs ${
+                          <span className={`px-1.5 py-0.5 rounded text-xs mt-0.5 ${
                             model.type === 'Code Generation' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300' :
                             model.type === 'Code Completion' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300' :
                             model.type === 'High Performance' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300' :
+                            model.type === 'Auto Selection' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300' :
                             'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
                           }`}>
                             {model.type}
-                          </span>
+            </span>
                         </div>
                       </button>
                     ))}
                   </div>
                   
-                  <div className="p-2 border-t border-border bg-muted/30">
+                  <div className="p-2.5 border-t border-border bg-muted/30">
                     <p className="text-xs text-muted-foreground">
                       💡 <strong>Auto</strong> selects the best model based on your request complexity
                     </p>
@@ -579,55 +579,51 @@ Please implement this suggestion in my current project.`
                 </div>
               )}
             </div>
-            
-            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-              {simpleAIService?.currentService || 'local-ai'}
-            </span>
             <button
               onClick={() => setShowChatHistory(!showChatHistory)}
-              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              className="p-1.5 hover:bg-muted rounded transition-colors"
               title={showChatHistory ? "Hide Chat History" : "Show Chat History"}
             >
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
             </button>
             <button
               onClick={() => setShowAIAgent(!showAIAgent)}
-              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              className="p-1.5 hover:bg-muted rounded transition-colors"
               title={showAIAgent ? "Hide AI Agent" : "Show AI Agent"}
             >
-              <Bot className="h-4 w-4" />
+              <Bot className="h-4 w-4 text-muted-foreground" />
             </button>
             <button
               onClick={() => setShowTemplateBrowser(true)}
-              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              className="p-1.5 hover:bg-muted rounded transition-colors"
               title="Browse Templates (1000+)"
             >
               <Code className="h-4 w-4" />
             </button>
             <button
               onClick={() => setShowRecommendations(true)}
-              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              className="p-1.5 hover:bg-muted rounded transition-colors"
               title="AI Recommendations & Production Analysis"
             >
               <Sparkles className="h-4 w-4" />
             </button>
             <button
               onClick={() => setShowWebSearch(true)}
-              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              className="p-1.5 hover:bg-muted rounded transition-colors"
               title="Web Knowledge Search"
             >
               <Search className="h-4 w-4" />
             </button>
             <button
               onClick={() => setShowServiceStatus(true)}
-              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              className="p-1.5 hover:bg-muted rounded transition-colors"
               title="AI Service Status"
             >
               <BarChart3 className="h-4 w-4" />
             </button>
             <button
               onClick={() => setShowAISettings(true)}
-              className="p-1 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+              className="p-1.5 hover:bg-muted rounded transition-colors"
               title="AI Settings"
             >
               <Settings className="h-4 w-4" />
@@ -678,45 +674,51 @@ Please implement this suggestion in my current project.`
 
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Chat Messages Area */}
-        <div className="flex-1 overflow-y-auto">
-          {messages.length === 0 ? (
-            <div className="h-full flex items-center justify-center">
-              <div className="text-center max-w-md">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="h-8 w-8 text-blue-500" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Ask me anything</h3>
-                <p className="text-sm text-muted-foreground">
-                  I can help you build applications, fix bugs, explain code, and much more.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-0">
-              <AnimatePresence>
-                {messages.map((message, index) => (
-                  <div key={message.id} className="border-b border-border/50 last:border-b-0">
-                    <CursorMessageBubble
-                      message={message}
-                      onCopy={handleCopyMessage}
-                      onFeedback={handleFeedback}
-                    />
+          {/* Chat Messages Area */}
+          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+            {messages.length === 0 ? (
+              <div className="h-full flex items-center justify-center p-8">
+                <div className="text-center max-w-md">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="h-8 w-8 text-blue-500" />
                   </div>
-                ))}
-              </AnimatePresence>
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Ask me anything</h3>
+                  <p className="text-sm text-muted-foreground">
+                    I can help you build applications, fix bugs, explain code, and much more.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 space-y-4">
+                <AnimatePresence>
+                  {messages.map((message, index) => (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full"
+                    >
+                      <CursorMessageBubble
+                        message={message}
+                        onCopy={handleCopyMessage}
+                        onFeedback={handleFeedback}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
 
-        {/* AI Recommendations - Cursor Style */}
-        {aiRecommendations.length > 0 && (
-          <div className="border-t border-border/50 bg-muted/30">
-            <div className="p-3">
-              <div className="flex items-center gap-2 mb-2">
+          {/* AI Recommendations - Cursor Style */}
+          {aiRecommendations.length > 0 && (
+            <div className="border-t border-border/50 bg-muted/30 p-3">
+              <div className="flex items-center gap-2 mb-3">
                 <Lightbulb className="h-4 w-4 text-yellow-500" />
-                <span className="text-sm font-medium">Suggestions</span>
+                <span className="text-sm font-medium text-foreground">Suggestions</span>
               </div>
               <div className="flex flex-wrap gap-2">
                 {aiRecommendations.slice(0, 4).map((recommendation) => (
@@ -730,23 +732,23 @@ Please implement this suggestion in my current project.`
                 ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Cursor-Style Input Area */}
         <div className="border-t border-border/50 bg-background">
           <div className="relative">
             <div className="flex items-end gap-2 p-3">
               <div className="flex-1 relative">
-                <textarea
-                  ref={textareaRef}
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onKeyPress={handleKeyPress}
+            <textarea
+              ref={textareaRef}
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              onKeyPress={handleKeyPress}
                   placeholder="Ask me anything..."
                   className="w-full resize-y bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground text-sm leading-relaxed"
                   style={{ minHeight: '120px', maxHeight: '300px' }}
-                  disabled={isGenerating}
+              disabled={isGenerating}
                   rows={4}
                 />
               </div>
@@ -778,9 +780,7 @@ Please implement this suggestion in my current project.`
             </div>
           </div>
         </div>
-        </div>
       </div>
-
 
       {/* Template Browser */}
       <TemplateBrowser 

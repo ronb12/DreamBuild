@@ -8874,6 +8874,159 @@ export const useApp = () => {
 
 export default AppContext`
   }
+
+  // Generate Helper Utils
+  generateHelperUtils(prompt, context) {
+    return `// Helper utilities for the application
+
+// Format currency
+export const formatCurrency = (amount, currency = 'USD') => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency
+  }).format(amount)
+}
+
+// Format date
+export const formatDate = (date, options = {}) => {
+  const defaultOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }
+  return new Intl.DateTimeFormat('en-US', { ...defaultOptions, ...options }).format(new Date(date))
+}
+
+// Debounce function
+export const debounce = (func, wait) => {
+  let timeout
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout)
+      func(...args)
+    }
+    clearTimeout(timeout)
+    timeout = setTimeout(later, wait)
+  }
+}
+
+// Throttle function
+export const throttle = (func, limit) => {
+  let inThrottle
+  return function() {
+    const args = arguments
+    const context = this
+    if (!inThrottle) {
+      func.apply(context, args)
+      inThrottle = true
+      setTimeout(() => inThrottle = false, limit)
+    }
+  }
+}
+
+// Generate random ID
+export const generateId = () => {
+  return Math.random().toString(36).substr(2, 9)
+}
+
+// Validate email
+export const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+// Validate URL
+export const isValidUrl = (string) => {
+  try {
+    new URL(string)
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+// Local storage helpers
+export const storage = {
+  get: (key) => {
+    try {
+      const item = localStorage.getItem(key)
+      return item ? JSON.parse(item) : null
+    } catch (error) {
+      console.error('Error getting from localStorage:', error)
+      return null
+    }
+  },
+  
+  set: (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value))
+    } catch (error) {
+      console.error('Error setting to localStorage:', error)
+    }
+  },
+  
+  remove: (key) => {
+    try {
+      localStorage.removeItem(key)
+    } catch (error) {
+      console.error('Error removing from localStorage:', error)
+    }
+  }
+}
+
+// API helpers
+export const api = {
+  get: async (url) => {
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(\`HTTP error! status: \${response.status}\`)
+    }
+    return response.json()
+  },
+  
+  post: async (url, data) => {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    if (!response.ok) {
+      throw new Error(\`HTTP error! status: \${response.status}\`)
+    }
+    return response.json()
+  }
+}
+
+// Array helpers
+export const arrayUtils = {
+  unique: (arr) => [...new Set(arr)],
+  shuffle: (arr) => arr.sort(() => Math.random() - 0.5),
+  chunk: (arr, size) => {
+    const chunks = []
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size))
+    }
+    return chunks
+  }
+}
+
+// Object helpers
+export const objectUtils = {
+  deepClone: (obj) => JSON.parse(JSON.stringify(obj)),
+  isEmpty: (obj) => Object.keys(obj).length === 0,
+  pick: (obj, keys) => {
+    const result = {}
+    keys.forEach(key => {
+      if (key in obj) {
+        result[key] = obj[key]
+      }
+    })
+    return result
+  }
+}`
+  }
 }
 
 // Export singleton instance

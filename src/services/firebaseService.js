@@ -37,6 +37,9 @@ class FirebaseService {
         if (error.code === 'app/duplicate-app') {
           // App already exists, get the existing instance
           this.app = initializeApp()
+        } else if (error.code === 'app/no-options') {
+          // No options provided, use default config
+          this.app = initializeApp(firebaseConfig)
         } else {
           throw error
         }

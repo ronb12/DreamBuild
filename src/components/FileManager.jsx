@@ -493,52 +493,60 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="h-full flex flex-col bg-gray-800 overflow-hidden"
+      className="h-full flex flex-col bg-background overflow-hidden"
     >
-      {/* Cursor-Style File Manager Header */}
-      <div className="p-3 border-b border-gray-700 bg-gray-800">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-900/30 rounded flex items-center justify-center">
-              <Folder className="h-4 w-4 text-blue-400" />
+      {/* Modern File Manager Header */}
+      <div className="p-4 border-b border-border/50 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-blue-900/10 dark:to-purple-900/10">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
+                <Folder className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">Explorer</h3>
+                <p className="text-xs text-muted-foreground">Files</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-100">Explorer</h3>
-              <p className="text-xs text-gray-400">Files</p>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-muted-foreground">Active</span>
             </div>
           </div>
+          
+          {/* Modern Action Buttons */}
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowNewFileDialog(true)}
-              className="p-1.5 hover:bg-gray-700 rounded transition-colors"
+              className="p-2 hover:bg-muted/50 rounded-lg transition-colors group"
               title="New File"
             >
-              <Plus className="h-4 w-4 text-gray-400" />
+              <Plus className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
             </button>
             <button
               onClick={() => setShowProjectDialog(true)}
-              className="p-1.5 hover:bg-gray-700 rounded transition-colors"
+              className="p-2 hover:bg-muted/50 rounded-lg transition-colors group"
               title="Project Settings"
             >
-              <Settings className="h-4 w-4 text-gray-400" />
+              <Settings className="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
             </button>
           </div>
         </div>
 
-        {/* Cursor-Style Project Actions */}
-        <div className="flex gap-1 flex-wrap">
+        {/* Modern Action Bar */}
+        <div className="flex gap-2">
           <button
             onClick={() => saveProject()}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-            title="Save"
+            className="flex items-center gap-2 px-3 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+            title="Save Project"
           >
             <Save className="h-3 w-3" />
             Save
           </button>
           <button
             onClick={() => setShowDeployDialog(true)}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-            title="Deploy"
+            className="flex items-center gap-2 px-3 py-2 text-xs font-medium bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+            title="Deploy Project"
             disabled={Object.keys(currentProject.files).length === 0}
           >
             <Rocket className="h-3 w-3" />
@@ -546,8 +554,8 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
           </button>
           <button
             onClick={handleDownloadProject}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-            title="Export"
+            className="flex items-center gap-2 px-3 py-2 text-xs font-medium bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+            title="Export Project"
           >
             <Download className="h-3 w-3" />
             Export
@@ -555,80 +563,96 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
         </div>
       </div>
 
-      {/* Cursor-Style File Tree */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Modern File Tree */}
+      <div className="flex-1 overflow-y-auto bg-background">
         {Object.keys(currentProject.files).length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-center px-4">
-            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center mb-3">
-              <FileText className="h-6 w-6 text-gray-400 dark:text-gray-500" />
+          <div className="flex flex-col items-center justify-center py-12 text-center px-6">
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 flex items-center justify-center mb-4">
+              <File className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">No files</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 text-center">
-              Generate code with AI to get started
+            <h3 className="text-base font-semibold text-foreground mb-2">No files yet</h3>
+            <p className="text-sm text-muted-foreground mb-4 text-center max-w-xs">
+              Generate code with AI or create your first file to get started
             </p>
             <button
               onClick={() => setShowNewFileDialog(true)}
-              className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
             >
-              New File
+              Create File
             </button>
           </div>
         ) : (
-          <div className="py-1">
-            {/* Project Root */}
-            <div className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700 mb-1">
-              <Folder className="h-3 w-3" />
-              <span>{currentProject.name || 'Project'}</span>
+          <div className="py-2">
+            {/* Modern Project Root */}
+            <div className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-foreground bg-muted/30 border-b border-border/50 mb-2">
+              <div className="w-5 h-5 rounded-md bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                <Folder className="h-3 w-3 text-white" />
+              </div>
+              <span>{currentProject.name || 'Untitled Project'}</span>
+              <div className="ml-auto text-xs text-muted-foreground">
+                {Object.keys(currentProject.files).length} files
+              </div>
             </div>
             
-            {/* File Tree */}
+            {/* Modern File Tree */}
             {Object.keys(currentProject.files).map((filename) => (
               <motion.div
                 key={filename}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className={`group relative flex items-center gap-1 px-2 py-1 cursor-pointer transition-colors ${
+                className={`group relative flex items-center gap-3 px-4 py-2 cursor-pointer transition-all duration-200 rounded-lg mx-2 ${
                   currentProject.activeFile === filename
-                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-800/50 text-gray-700 dark:text-gray-300'
+                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
+                    : 'hover:bg-muted/50 text-foreground'
                 }`}
                 onClick={() => handleFileClick(filename)}
                 onContextMenu={(e) => handleContextMenu(e, filename)}
               >
                 {/* Tree Indentation */}
                 <div className="w-4 flex items-center justify-center">
-                  <div className="w-px h-3 bg-gray-300 dark:bg-gray-600"></div>
+                  <div className="w-px h-4 bg-border"></div>
                 </div>
                 
                 {/* File Icon */}
-                <div className="flex items-center justify-center w-4 h-4 mr-1">
-                  <span className="text-sm">{getFileIcon(filename)}</span>
+                <div className="flex items-center justify-center w-5 h-5">
+                  <span className="text-base">{getFileIcon(filename)}</span>
                 </div>
                 
                 {/* File Name */}
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-normal truncate">{filename}</span>
+                  <span className="text-sm font-medium truncate">{filename}</span>
                 </div>
                 
-                {/* Clean design - no action buttons */}
+                {/* Active indicator */}
+                {currentProject.activeFile === filename && (
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                )}
               </motion.div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Cursor-Style Upload Area */}
-      <div className="p-2 border-t border-gray-700 bg-gray-800">
-        <label className="flex items-center justify-center gap-2 p-2 border border-dashed border-gray-600 rounded hover:border-blue-500 hover:bg-blue-900/20 transition-colors cursor-pointer">
-          <Upload className="h-3 w-3 text-gray-400" />
-          <span className="text-xs text-gray-400">
-            Upload
-          </span>
+      {/* Modern Upload Area */}
+      <div className="p-4 border-t border-border/50 bg-muted/20">
+        <label className="flex items-center justify-center gap-3 p-4 border-2 border-dashed border-border rounded-xl hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all duration-200 cursor-pointer group">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Upload className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div className="text-center">
+            <span className="text-sm font-medium text-foreground">
+              Upload Files
+            </span>
+            <p className="text-xs text-muted-foreground mt-1">
+              Drag & drop or click to browse
+            </p>
+          </div>
           <input
             type="file"
             className="hidden"
-            accept=".html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt"
+            accept=".html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.py,.java,.cpp,.c"
             onChange={handleFileUpload}
+            multiple
           />
         </label>
       </div>
@@ -659,7 +683,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                     value={newFileName}
                     onChange={(e) => setNewFileName(e.target.value)}
                     placeholder="my-file.js"
-                    className="w-full p-2 border border-border rounded-md bg-black"
+                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
                     autoFocus
                   />
                 </div>
@@ -723,7 +747,8 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                     type="text"
                     value={currentProject.name}
                     onChange={(e) => updateConfig({ name: e.target.value })}
-                    className="w-full p-2 border border-border rounded-md bg-black"
+                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                    placeholder="Enter project name"
                   />
                 </div>
                 <div>
@@ -731,7 +756,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                   <select
                     value={currentProject.config.appType}
                     onChange={(e) => updateConfig({ appType: e.target.value })}
-                    className="w-full p-2 border border-border rounded-md bg-black"
+                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
                   >
                     <option value="frontend">Frontend</option>
                     <option value="backend">Backend</option>
@@ -744,13 +769,63 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                   <select
                     value={currentProject.config.language}
                     onChange={(e) => updateConfig({ language: e.target.value })}
-                    className="w-full p-2 border border-border rounded-md bg-black"
+                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
                   >
                     <option value="javascript">JavaScript</option>
                     <option value="typescript">TypeScript</option>
                     <option value="python">Python</option>
                     <option value="java">Java</option>
                     <option value="csharp">C#</option>
+                    <option value="cpp">C++</option>
+                    <option value="c">C</option>
+                    <option value="rust">Rust</option>
+                    <option value="go">Go</option>
+                    <option value="php">PHP</option>
+                    <option value="ruby">Ruby</option>
+                    <option value="swift">Swift</option>
+                    <option value="kotlin">Kotlin</option>
+                    <option value="dart">Dart</option>
+                    <option value="scala">Scala</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="sql">SQL</option>
+                    <option value="r">R</option>
+                    <option value="matlab">MATLAB</option>
+                    <option value="perl">Perl</option>
+                    <option value="lua">Lua</option>
+                    <option value="bash">Bash/Shell</option>
+                    <option value="powershell">PowerShell</option>
+                    <option value="yaml">YAML</option>
+                    <option value="json">JSON</option>
+                    <option value="xml">XML</option>
+                    <option value="markdown">Markdown</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Framework</label>
+                  <select
+                    value={currentProject.config.framework || 'none'}
+                    onChange={(e) => updateConfig({ framework: e.target.value })}
+                    className="w-full p-2 border border-border rounded-md bg-background text-foreground"
+                  >
+                    <option value="none">None</option>
+                    <option value="react">React</option>
+                    <option value="vue">Vue.js</option>
+                    <option value="angular">Angular</option>
+                    <option value="svelte">Svelte</option>
+                    <option value="nextjs">Next.js</option>
+                    <option value="nuxtjs">Nuxt.js</option>
+                    <option value="express">Express.js</option>
+                    <option value="fastapi">FastAPI</option>
+                    <option value="django">Django</option>
+                    <option value="flask">Flask</option>
+                    <option value="spring">Spring Boot</option>
+                    <option value="laravel">Laravel</option>
+                    <option value="rails">Ruby on Rails</option>
+                    <option value="flutter">Flutter</option>
+                    <option value="react-native">React Native</option>
+                    <option value="ionic">Ionic</option>
+                    <option value="electron">Electron</option>
                   </select>
                 </div>
                 <div className="flex gap-2 justify-end">
@@ -758,7 +833,17 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                     onClick={() => setShowProjectDialog(false)}
                     className="px-4 py-2 text-sm border border-border rounded-md hover:bg-muted transition-colors"
                   >
-                    Close
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      saveProject()
+                      setShowProjectDialog(false)
+                      toast.success('Project settings saved!')
+                    }}
+                    className="px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-md hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md shadow-blue-500/20 border border-blue-500/20"
+                  >
+                    Save Settings
                   </button>
                 </div>
               </div>

@@ -11,6 +11,8 @@
 
 DreamBuild is the **first AI coding platform** to combine the best of Cursor and Lovable while adding unique advanced capabilities that no other platform offers:
 
+- ✅ **29 Programming Languages** (Most comprehensive language support)
+- ✅ **8 Specialized AI Models** (Optimized for different languages)
 - ✅ **Unlimited File Generation** (50-100+ files per project)
 - ✅ **Real-time Collaboration** (Multi-user co-editing)
 - ✅ **Visual Editor** (Drag-and-drop interface)
@@ -25,6 +27,8 @@ DreamBuild is the **first AI coding platform** to combine the best of Cursor and
 
 | Feature | DreamBuild | Cursor | Lovable |
 |---------|------------|--------|---------|
+| **Programming Languages** | ✅ **29 Languages** | ✅ ~15-20 Languages | ❌ ~5-8 Languages (Web Only) |
+| **AI Models** | ✅ **8 Specialized** | ✅ Multiple | ✅ Multiple |
 | **Code Generation** | ✅ Advanced | ✅ Advanced | ✅ Advanced |
 | **Multi-file Apps** | ✅ 50-100+ files | ✅ Unlimited | ✅ Unlimited |
 | **Real-time Collaboration** | ✅ Advanced | ❌ Limited | ✅ Advanced |
@@ -82,6 +86,9 @@ npm run firebase:deploy:all
 ## 🎯 **Core Features**
 
 ### **1. Advanced AI Code Generation**
+- **29 Programming Languages**: JavaScript, TypeScript, Python, Java, C#, C++, C, Rust, Go, PHP, Ruby, Swift, Kotlin, Dart, Scala, HTML, CSS, SQL, R, MATLAB, Perl, Lua, Bash, PowerShell, YAML, JSON, XML, Markdown
+- **8 Specialized AI Models**: CodeLlama (7B, 13B, 34B), StarCoder (15B), DeepSeek Coder, WizardCoder, Phi-3 Mini, Llama 3
+- **18 Frameworks**: React, Vue.js, Angular, Svelte, Next.js, Express.js, Django, Flask, Spring Boot, Laravel, Flutter, React Native, Electron, and more
 - **Multi-file Applications**: Generate 50-100+ files per project
 - **Component-Based Architecture**: Sophisticated component hierarchy
 - **Database-Driven Templates**: Firebase template database

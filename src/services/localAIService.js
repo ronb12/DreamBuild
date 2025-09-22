@@ -6,6 +6,7 @@ import mobileAppService from './mobileAppService.js'
 import webSearchService from './webSearchService.js'
 import paymentService from './paymentService.js'
 import firebaseService from './firebaseService.js'
+import gameDevelopmentService from './gameDevelopmentService.js'
 
 // Local AI Models Configuration
 const LOCAL_AI_MODELS = {
@@ -961,6 +962,19 @@ Additional context: ${searchKnowledge.summary}`
     console.log('🧩 DEBUG: Component files content preview:', Object.keys(componentFiles).map(f => ({ file: f, size: componentFiles[f]?.length || 0 })))
     Object.assign(files, componentFiles)
     console.log('🧩 Component-based files generated:', Object.keys(componentFiles).length)
+    
+    // 3.5. GAME DEVELOPMENT SERVICE - Generate proper games using Phaser.js
+    if (lowerPrompt.includes('temple run') || lowerPrompt.includes('endless runner') || 
+        lowerPrompt.includes('clone') && lowerPrompt.includes('run')) {
+      console.log('🎮 Using Game Development Service for Temple Run...')
+      try {
+        const gameData = gameDevelopmentService.generateGame('temple-run', { prompt, context })
+        Object.assign(files, gameData.files)
+        console.log('🎮 Game files generated:', Object.keys(gameData.files))
+      } catch (error) {
+        console.log('⚠️ Game development service failed, using fallback:', error.message)
+      }
+    }
     
     // Check if this is a game request - if so, skip database templates to avoid overriding
     const isGameRequest = lowerPrompt.includes('game') || 
@@ -12024,8 +12038,9 @@ export default FormField`
     console.log('🎮 Prompt:', prompt);
     
     if (gameType === 'temple-run') {
-      console.log('🎮 Generating Temple Run game...');
-      return this.generateTempleRunGame(component, prompt, context);
+      console.log('🎮 Generating Temple Run game with proper framework...');
+      const gameData = gameDevelopmentService.generateGame('temple-run', { component, prompt, context });
+      return gameData.files['game.js'] || this.generateTempleRunGame(component, prompt, context);
     }
     
     if (gameType === 'coin-collector') {

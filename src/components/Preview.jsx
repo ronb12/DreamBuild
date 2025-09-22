@@ -184,6 +184,15 @@ const Preview = () => {
     }
   }
 
+  // Function to escape code for template strings
+  const escapeCodeForTemplate = (code) => {
+    if (!code) return '';
+    return code
+      .replace(/`/g, '\\`')
+      .replace(/\${/g, '\\${')
+      .replace(/\$/g, '\\$');
+  };
+
   const createReactPreview = () => {
     console.log('🎮 Creating React preview...')
     if (!iframeRef.current) {
@@ -271,13 +280,13 @@ const Preview = () => {
             width: 100%;
             min-height: 100vh;
           }
-          ${gameAppCSS}
-          ${gameComponentCSS}
-          ${templeRunUICSS}
-          ${runnerPlayerCSS}
-          ${obstacleCSS}
-          ${coinCSS}
-          ${playerCSS}
+          ${escapeCodeForTemplate(gameAppCSS)}
+          ${escapeCodeForTemplate(gameComponentCSS)}
+          ${escapeCodeForTemplate(templeRunUICSS)}
+          ${escapeCodeForTemplate(runnerPlayerCSS)}
+          ${escapeCodeForTemplate(obstacleCSS)}
+          ${escapeCodeForTemplate(coinCSS)}
+          ${escapeCodeForTemplate(playerCSS)}
         </style>
       </head>
       <body>

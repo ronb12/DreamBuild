@@ -4080,11 +4080,12 @@ ${content}`
     if (filename.endsWith('.js') || filename.endsWith('.jsx')) {
       const errorHandling = `
 // Sophisticated error handling added by DreamBuild AI
-const handleError = (error, context = {}) => {
+function handleError(error, context) {
+  context = context || {};
   console.error('Error in ${filename}:', error);
   
   // Log error details
-  const errorDetails = {
+  var errorDetails = {
     message: error.message,
     stack: error.stack,
     context: context,
@@ -4103,18 +4104,19 @@ const handleError = (error, context = {}) => {
   }
   
   return errorDetails;
-};
+}
 
-// Wrap async functions with error handling
-const withErrorHandling = (fn) => {
-  return async (...args) => {
+// Wrap async functions with error handling (ES5 compatible)
+function withErrorHandling(fn) {
+  return function() {
+    var args = Array.prototype.slice.call(arguments);
     try {
-      return await fn(...args);
+      return fn.apply(this, args);
     } catch (error) {
-      return handleError(error, { function: fn.name, args });
+      return handleError(error, { function: fn.name, args: args });
     }
   };
-};
+}
 
 ${content}`
       
@@ -4134,32 +4136,35 @@ ${content}`
 // - Lazy loading for components
 // - Virtual scrolling for large lists
 
-// Memoization utility
-const memoize = (fn) => {
-  const cache = new Map();
-  return (...args) => {
-    const key = JSON.stringify(args);
-    if (cache.has(key)) {
-      return cache.get(key);
+// Memoization utility (ES5 compatible)
+function memoize(fn) {
+  var cache = {};
+  return function() {
+    var args = Array.prototype.slice.call(arguments);
+    var key = JSON.stringify(args);
+    if (cache.hasOwnProperty(key)) {
+      return cache[key];
     }
-    const result = fn(...args);
-    cache.set(key, result);
+    var result = fn.apply(this, args);
+    cache[key] = result;
     return result;
   };
-};
+}
 
-// Debounce utility
-const debounce = (func, wait) => {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
+// Debounce utility (ES5 compatible)
+function debounce(func, wait) {
+  var timeout;
+  return function() {
+    var context = this;
+    var args = arguments;
+    var later = function() {
       clearTimeout(timeout);
-      func(...args);
+      func.apply(context, args);
     };
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
-};
+}
 
 ${content}`
       
@@ -4179,32 +4184,32 @@ ${content}`
 // - Screen reader compatibility
 // - Focus management
 
-// Accessibility utilities
-const accessibilityUtils = {
+// Accessibility utilities (ES5 compatible)
+var accessibilityUtils = {
   // Add ARIA labels
-  addAriaLabel: (element, label) => {
+  addAriaLabel: function(element, label) {
     if (element) {
       element.setAttribute('aria-label', label);
     }
   },
   
   // Manage focus
-  manageFocus: (element) => {
+  manageFocus: function(element) {
     if (element) {
       element.focus();
     }
   },
   
   // Announce to screen readers
-  announce: (message) => {
-    const announcement = document.createElement('div');
+  announce: function(message) {
+    var announcement = document.createElement('div');
     announcement.setAttribute('aria-live', 'polite');
     announcement.setAttribute('aria-atomic', 'true');
     announcement.className = 'sr-only';
     announcement.textContent = message;
     document.body.appendChild(announcement);
     
-    setTimeout(() => {
+    setTimeout(function() {
       document.body.removeChild(announcement);
     }, 1000);
   }
@@ -4228,14 +4233,15 @@ ${content}`
 // - CSRF protection
 // - Secure data handling
 
-// Input validation
-const validateInput = (input, type = 'string') => {
+// Input validation (ES5 compatible)
+function validateInput(input, type) {
+  type = type || 'string';
   if (typeof input !== 'string') {
     throw new Error('Input must be a string');
   }
   
   // Sanitize HTML
-  const sanitized = input.replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, '');
+  var sanitized = input.replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, '');
   
   // Validate based on type
   switch (type) {
@@ -4245,20 +4251,20 @@ const validateInput = (input, type = 'string') => {
       try {
         new URL(sanitized);
         return true;
-      } catch {
+      } catch (e) {
         return false;
       }
     default:
       return sanitized.length > 0;
   }
-};
+}
 
-// XSS prevention
-const sanitizeHTML = (html) => {
-  const div = document.createElement('div');
+// XSS prevention (ES5 compatible)
+function sanitizeHTML(html) {
+  var div = document.createElement('div');
   div.textContent = html;
   return div.innerHTML;
-};
+}
 
 ${content}`
       

@@ -259,7 +259,9 @@ export default function AIPromptCursorStyle() {
       'codet5-small': 'CodeT5 Small',
       'incoder-6b': 'InCoder 6B'
     }
-    return models[modelId] || 'Auto'
+    const displayName = models[modelId] || 'Auto'
+    console.log(`🎯 getModelDisplayName: ${modelId} -> ${displayName}`)
+    return displayName
   }
 
   const getAvailableModels = () => {
@@ -500,6 +502,7 @@ export default function AIPromptCursorStyle() {
               {/* Model selector */}
               <div className="flex items-center gap-2 text-xs font-medium text-foreground relative">
                 <button
+                  key={`model-button-${aiModel}`}
                   onClick={() => setShowModelSelector(!showModelSelector)}
                   className="hover:text-blue-600 transition-colors"
                   title="Select AI Model"
@@ -612,7 +615,7 @@ export default function AIPromptCursorStyle() {
             <div className="pt-2 border-t border-border">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Model</span>
-                <span className="text-xs font-medium text-foreground">
+                <span key={`model-info-${aiModel}`} className="text-xs font-medium text-foreground">
                   {getModelDisplayName(aiModel)}
                 </span>
               </div>
@@ -753,6 +756,7 @@ export default function AIPromptCursorStyle() {
                   onClick={(e) => {
                     e.preventDefault()
                     e.stopPropagation()
+                    console.log(`🎯 Setting AI model to: ${model.id} (${model.name})`)
                     setAIModel(model.id)
                     setShowModelSelector(false)
                     toast.success(`Switched to ${model.name}`)

@@ -5,6 +5,7 @@ import { useProject } from '../contexts/ProjectContext'
 import { motion } from 'framer-motion'
 import { Copy, Download, RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
+import * as monaco from 'monaco-editor'
 
 const CodeEditor = () => {
   const { theme } = useTheme()
@@ -311,6 +312,26 @@ const CodeEditor = () => {
             value={currentProject.files[currentProject.activeFile] || ''}
             onChange={handleEditorChange}
             onMount={handleEditorDidMount}
+            beforeMount={(monaco) => {
+              // Configure Monaco Editor before mounting
+              monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+                noSemanticValidation: false,
+                noSyntaxValidation: false
+              });
+              
+              monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+                target: monaco.languages.typescript.ScriptTarget.ES2020,
+                allowNonTsExtensions: true,
+                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+                module: monaco.languages.typescript.ModuleKind.CommonJS,
+                noEmit: true,
+                esModuleInterop: true,
+                jsx: monaco.languages.typescript.JsxEmit.React,
+                reactNamespace: 'React',
+                allowJs: true,
+                typeRoots: ['node_modules/@types']
+              });
+            }}
             theme={theme === 'dark' ? 'custom-dark' : 'custom-light'}
             loading={
               <div className="flex items-center justify-center h-full">

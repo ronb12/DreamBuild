@@ -407,6 +407,8 @@ export default function AIPromptCursorStyle() {
           {/* Text input field */}
           <div className="relative">
             <textarea
+              id="ai-prompt-input"
+              data-testid="ai-prompt-input"
               ref={textareaRef}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -423,6 +425,7 @@ export default function AIPromptCursorStyle() {
               style={{ minHeight: '120px', maxHeight: '300px', wordWrap: 'break-word', overflowWrap: 'anywhere' }}
               disabled={isGenerating}
               rows={4}
+              aria-label="AI prompt input"
             />
             
             
@@ -485,11 +488,14 @@ export default function AIPromptCursorStyle() {
               </button>
               
               {/* Model selector */}
-              <button
-                onClick={() => setShowModelSelector(!showModelSelector)}
-                className="flex items-center gap-2 text-xs font-medium text-foreground hover:text-blue-600 transition-colors"
-              >
-                <span>Auto</span>
+              <div className="flex items-center gap-2 text-xs font-medium text-foreground relative">
+                <button
+                  onClick={() => setShowModelSelector(!showModelSelector)}
+                  className="hover:text-blue-600 transition-colors"
+                  title="Select AI Model"
+                >
+                  {getModelDisplayName(aiModel)}
+                </button>
                 <span className="text-muted-foreground">tab</span>
                 <button
                   onClick={(e) => {
@@ -501,16 +507,20 @@ export default function AIPromptCursorStyle() {
                 >
                   {contextUsage.percentage}% O
                 </button>
-              </button>
+              </div>
             </div>
             
             {/* Right side controls */}
             <div className="flex items-center gap-3">
               {/* Send button */}
               <button
+                id="generate-button"
+                data-testid="generate-button"
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || isGenerating}
                 className="w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center shadow-sm"
+                title="Generate Code"
+                aria-label="Generate code from prompt"
               >
                 {isGenerating ? (
                   <Loader2 className="h-4 w-4 text-white animate-spin" />
@@ -696,6 +706,54 @@ export default function AIPromptCursorStyle() {
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Model Selector Modal */}
+      {showModelSelector && (
+        <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-[9999] min-w-80">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-foreground">Select AI Model</h3>
+            <button
+              onClick={() => setShowModelSelector(false)}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ×
+            </button>
+          </div>
+          
+          <div className="space-y-2">
+            {getAvailableModels().map((model) => (
+              <button
+                key={model.id}
+                onClick={() => {
+                  setAIModel(model.id)
+                  setShowModelSelector(false)
+                  toast.success(`Switched to ${model.name}`)
+                }}
+                className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                  aiModel === model.id
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                    : 'border-border hover:bg-muted/50'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-sm">{model.name}</div>
+                    <div className="text-xs text-muted-foreground">{model.description}</div>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{model.ram_required}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          <div className="mt-3 pt-3 border-t border-border">
+            <div className="text-xs text-muted-foreground">
+              <p>• Auto selects the best available model</p>
+              <p>• Local AI models require Ollama installation</p>
             </div>
           </div>
         </div>

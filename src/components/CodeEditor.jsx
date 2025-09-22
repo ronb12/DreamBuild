@@ -5,7 +5,6 @@ import { useProject } from '../contexts/ProjectContext'
 import { motion } from 'framer-motion'
 import { Copy, Download, RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
-import * as monaco from 'monaco-editor'
 
 const CodeEditor = () => {
   const { theme } = useTheme()
@@ -54,89 +53,94 @@ const CodeEditor = () => {
         editor.setValue(content)
       }
       
-      // Configure Monaco Editor
+      // Configure Monaco Editor themes
       monaco.editor.defineTheme('custom-dark', {
-      base: 'vs-dark',
-      inherit: true,
-      rules: [
-        { token: 'comment', foreground: '6A9955' },
-        { token: 'keyword', foreground: '569CD6' },
-        { token: 'string', foreground: 'CE9178' },
-        { token: 'number', foreground: 'B5CEA8' },
-        { token: 'tag', foreground: '569CD6' },
-        { token: 'attribute.name', foreground: '92C5F8' },
-        { token: 'attribute.value', foreground: 'CE9178' }
-      ],
-      colors: {
-        'editor.background': '#1e1e1e',
-        'editor.foreground': '#d4d4d4',
-        'editor.lineHighlightBackground': '#2a2d2e',
-        'editor.selectionBackground': '#264f78',
-        'editor.inactiveSelectionBackground': '#3a3d41'
+        base: 'vs-dark',
+        inherit: true,
+        rules: [
+          { token: 'comment', foreground: '6A9955' },
+          { token: 'keyword', foreground: '569CD6' },
+          { token: 'string', foreground: 'CE9178' },
+          { token: 'number', foreground: 'B5CEA8' },
+          { token: 'tag', foreground: '569CD6' },
+          { token: 'attribute.name', foreground: '92C5F8' },
+          { token: 'attribute.value', foreground: 'CE9178' }
+        ],
+        colors: {
+          'editor.background': '#1e1e1e',
+          'editor.foreground': '#d4d4d4',
+          'editor.lineHighlightBackground': '#2a2d2e',
+          'editor.selectionBackground': '#264f78',
+          'editor.inactiveSelectionBackground': '#3a3d41'
+        }
+      })
+
+      monaco.editor.defineTheme('custom-light', {
+        base: 'vs',
+        inherit: true,
+        rules: [
+          { token: 'comment', foreground: '6A9955' },
+          { token: 'keyword', foreground: '0000FF' },
+          { token: 'string', foreground: 'A31515' },
+          { token: 'number', foreground: '098658' },
+          { token: 'tag', foreground: '800000' },
+          { token: 'attribute.name', foreground: 'FF0000' },
+          { token: 'attribute.value', foreground: '0451A5' }
+        ],
+        colors: {
+          'editor.background': '#ffffff',
+          'editor.foreground': '#000000',
+          'editor.lineHighlightBackground': '#f5f5f5',
+          'editor.selectionBackground': '#add6ff',
+          'editor.inactiveSelectionBackground': '#e5ebf1'
+        }
+      })
+
+      // Set theme
+      monaco.editor.setTheme(theme === 'dark' ? 'custom-dark' : 'custom-light')
+
+      // Configure editor options
+      editor.updateOptions({
+        fontSize: 14,
+        fontFamily: 'JetBrains Mono, Monaco, Consolas, monospace',
+        lineHeight: 22,
+        minimap: { enabled: true },
+        scrollBeyondLastLine: false,
+        automaticLayout: true,
+        wordWrap: 'on',
+        formatOnPaste: true,
+        formatOnType: true,
+        suggestOnTriggerCharacters: true,
+        acceptSuggestionOnEnter: 'on',
+        tabCompletion: 'on',
+        wrappingIndent: 'indent',
+        lineNumbers: 'on',
+        glyphMargin: true,
+        folding: true,
+        foldingStrategy: 'indentation',
+        showFoldingControls: 'always'
+      })
+
+      // Force layout update after mounting
+      setTimeout(() => {
+        editor.layout()
+      }, 100)
+
+      // Add keyboard shortcuts safely
+      try {
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+          handleSave()
+        })
+
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyC, () => {
+          if (editor.getSelection().isEmpty()) {
+            handleCopyAll()
+          }
+        })
+      } catch (keyError) {
+        console.warn('⚠️ Could not add keyboard shortcuts:', keyError)
       }
-    })
-
-    monaco.editor.defineTheme('custom-light', {
-      base: 'vs',
-      inherit: true,
-      rules: [
-        { token: 'comment', foreground: '6A9955' },
-        { token: 'keyword', foreground: '0000FF' },
-        { token: 'string', foreground: 'A31515' },
-        { token: 'number', foreground: '098658' },
-        { token: 'tag', foreground: '800000' },
-        { token: 'attribute.name', foreground: 'FF0000' },
-        { token: 'attribute.value', foreground: '0451A5' }
-      ],
-      colors: {
-        'editor.background': '#ffffff',
-        'editor.foreground': '#000000',
-        'editor.lineHighlightBackground': '#f5f5f5',
-        'editor.selectionBackground': '#add6ff',
-        'editor.inactiveSelectionBackground': '#e5ebf1'
-      }
-    })
-
-    // Set theme
-    monaco.editor.setTheme(theme === 'dark' ? 'custom-dark' : 'custom-light')
-
-    // Configure editor options
-    editor.updateOptions({
-      fontSize: 14,
-      fontFamily: 'JetBrains Mono, Monaco, Consolas, monospace',
-      lineHeight: 22,
-      minimap: { enabled: true },
-      scrollBeyondLastLine: false,
-      automaticLayout: true,
-      wordWrap: 'on',
-      formatOnPaste: true,
-      formatOnType: true,
-      suggestOnTriggerCharacters: true,
-      acceptSuggestionOnEnter: 'on',
-      tabCompletion: 'on',
-      wrappingIndent: 'indent',
-      lineNumbers: 'on',
-      glyphMargin: true,
-      folding: true,
-      foldingStrategy: 'indentation',
-      showFoldingControls: 'always'
-    })
-
-    // Force layout update after mounting
-    setTimeout(() => {
-      editor.layout()
-    }, 100)
-
-    // Add keyboard shortcuts
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-      handleSave()
-    })
-
-    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyC, () => {
-      if (editor.getSelection().isEmpty()) {
-        handleCopyAll()
-      }
-    })
+      
     } catch (error) {
       console.error('❌ Error mounting Monaco Editor:', error)
       console.error('❌ Monaco Editor error details:', error.message, error.stack)
@@ -312,27 +316,7 @@ const CodeEditor = () => {
             value={currentProject.files[currentProject.activeFile] || ''}
             onChange={handleEditorChange}
             onMount={handleEditorDidMount}
-            beforeMount={(monaco) => {
-              // Configure Monaco Editor before mounting
-              monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-                noSemanticValidation: false,
-                noSyntaxValidation: false
-              });
-              
-              monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-                target: monaco.languages.typescript.ScriptTarget.ES2020,
-                allowNonTsExtensions: true,
-                moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-                module: monaco.languages.typescript.ModuleKind.CommonJS,
-                noEmit: true,
-                esModuleInterop: true,
-                jsx: monaco.languages.typescript.JsxEmit.React,
-                reactNamespace: 'React',
-                allowJs: true,
-                typeRoots: ['node_modules/@types']
-              });
-            }}
-            theme={theme === 'dark' ? 'custom-dark' : 'custom-light'}
+            theme={theme === 'dark' ? 'vs-dark' : 'vs'}
             loading={
               <div className="flex items-center justify-center h-full">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -340,51 +324,50 @@ const CodeEditor = () => {
               </div>
             }
             options={{
-            selectOnLineNumbers: true,
-            roundedSelection: false,
-            readOnly: false,
-            cursorStyle: 'line',
-            automaticLayout: true,
-            mouseWheelZoom: true,
-            smoothScrolling: true,
-            cursorBlinking: 'blink',
-            cursorSmoothCaretAnimation: true,
-            renderLineHighlight: 'line',
-            renderWhitespace: 'selection',
-            renderIndentGuides: true,
-            highlightActiveIndentGuide: true,
-            bracketPairColorization: { enabled: true },
-            guides: {
-              bracketPairs: true,
-              indentation: true
-            },
-            scrollBeyondLastLine: false,
-            wordWrap: 'on',
-            wrappingIndent: 'indent',
-            lineNumbers: 'on',
-            glyphMargin: true,
-            folding: true,
-            foldingStrategy: 'indentation',
-            showFoldingControls: 'always',
-            unfoldOnClickAfterEnd: false,
-            contextmenu: true,
-            mouseWheelScrollSensitivity: 1,
-            fastScrollSensitivity: 5,
-            cursorSurroundingLines: 3,
-            cursorSurroundingLinesStyle: 'default',
-            scrollbar: {
-              vertical: 'auto',
-              horizontal: 'auto',
-              verticalScrollbarSize: 14,
-              horizontalScrollbarSize: 14,
-              useShadows: true,
-              verticalHasArrows: false,
-              horizontalHasArrows: false,
-              arrowSize: 11,
-              verticalSliderSize: 14,
-              horizontalSliderSize: 14
-            }
-          }}
+              selectOnLineNumbers: true,
+              roundedSelection: false,
+              readOnly: false,
+              cursorStyle: 'line',
+              automaticLayout: true,
+              mouseWheelZoom: true,
+              smoothScrolling: true,
+              cursorBlinking: 'blink',
+              renderLineHighlight: 'line',
+              renderWhitespace: 'selection',
+              renderIndentGuides: true,
+              highlightActiveIndentGuide: true,
+              bracketPairColorization: { enabled: true },
+              guides: {
+                bracketPairs: true,
+                indentation: true
+              },
+              scrollBeyondLastLine: false,
+              wordWrap: 'on',
+              wrappingIndent: 'indent',
+              lineNumbers: 'on',
+              glyphMargin: true,
+              folding: true,
+              foldingStrategy: 'indentation',
+              showFoldingControls: 'always',
+              unfoldOnClickAfterEnd: false,
+              contextmenu: true,
+              mouseWheelScrollSensitivity: 1,
+              fastScrollSensitivity: 5,
+              cursorSurroundingLines: 3,
+              cursorSurroundingLinesStyle: 'default',
+              scrollbar: {
+                vertical: 'auto',
+                horizontal: 'auto',
+                verticalScrollbarSize: 14,
+                horizontalScrollbarSize: 14,
+                useShadows: true,
+                verticalHasArrows: false,
+                horizontalHasArrows: false,
+                arrowSize: 11,
+                verticalSliderSize: 14,
+                horizontalSliderSize: 14
+              }
+            }}
           />
         )}
       </div>

@@ -277,7 +277,7 @@ class TemplateBasedGenerator {
     // Apply customizations
     const customizedApp = {
       ...baseApp,
-      files: {},
+      files: { ...baseApp.files }, // Keep the original files
       customizationLevel: customizations.level
     };
     

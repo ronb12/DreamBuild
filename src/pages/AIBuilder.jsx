@@ -5,13 +5,15 @@ import Preview from '../components/Preview'
 import PreviewSimple from '../components/PreviewSimple'
 import AIPromptCursorStyle from '../components/AIPromptCursorStyle'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
+import TemplateSelector from '../components/TemplateSelector'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText } from 'lucide-react'
 
 const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('editor')
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(false)
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
@@ -41,9 +43,19 @@ const AIBuilder = () => {
     <div className="h-screen bg-background flex flex-col pt-16">
       {/* Header Bar */}
       <div className="flex items-center justify-between px-6 py-4 bg-card/80 backdrop-blur-sm border-b border-border/50 shadow-sm">
-        {/* Left Side - Title */}
+        {/* Left Side - Title and Template Button */}
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-semibold text-foreground">AI Builder</h1>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowTemplateSelector(true)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+            title="Browse Templates"
+          >
+            <FileText className="h-4 w-4" />
+            Templates
+          </motion.button>
         </div>
 
         {/* Right Side - Tab Navigation */}
@@ -125,12 +137,7 @@ const AIBuilder = () => {
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden h-full min-h-[600px]">
                 {activeTab === 'editor' && <CodeEditor />}
-                {activeTab === 'preview' && (
-                  <>
-                    {console.log('🎮 AIBuilder: Rendering Preview component for activeTab:', activeTab)}
-                    <Preview />
-                  </>
-                )}
+                {activeTab === 'preview' && <Preview />}
                 {activeTab === 'workspace' && isWorkspaceVisible && <IntegratedWorkspace projectId="demo-project" />}
                 {activeTab === 'workspace' && !isWorkspaceVisible && (
                   <div className="h-full flex items-center justify-center bg-muted/20">
@@ -209,6 +216,16 @@ const AIBuilder = () => {
           
         </ResizablePanelGroup>
       </div>
+
+      {/* Template Selector Modal */}
+      <TemplateSelector
+        isVisible={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        onTemplateSelect={(template, files) => {
+          console.log('🎯 Template selected:', template.name)
+          setShowTemplateSelector(false)
+        }}
+      />
     </div>
   )
 }

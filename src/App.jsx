@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -59,6 +59,7 @@ function App() {
               <ConditionalMain>
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/app" element={<Navigate to="/ai-builder" replace />} />
                   <Route path="/ai-builder" element={<AIBuilder />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/login" element={<Login />} />

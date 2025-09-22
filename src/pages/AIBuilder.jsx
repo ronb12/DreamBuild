@@ -41,16 +41,24 @@ const AIBuilder = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col pt-16">
-      {/* Header Bar */}
-      <div className="flex items-center justify-between px-6 py-4 bg-card/80 backdrop-blur-sm border-b border-border/50 shadow-sm">
+      {/* Enhanced Header Bar */}
+      <div className="flex items-center justify-between px-8 py-6 bg-gradient-to-r from-card/95 to-background/95 backdrop-blur-xl border-b border-border/60 shadow-lg shadow-primary/5">
         {/* Left Side - Title and Template Button */}
-        <div className="flex items-center gap-4">
-          <h1 className="text-lg font-semibold text-foreground">AI Builder</h1>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
+              <Code className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">AI Builder</h1>
+              <p className="text-xs text-muted-foreground">Build with artificial intelligence</p>
+            </div>
+          </div>
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowTemplateSelector(true)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-primary-light text-primary-foreground rounded-xl hover:from-primary-dark hover:to-primary transition-all duration-300 text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
             title="Browse Templates"
           >
             <FileText className="h-4 w-4" />
@@ -58,38 +66,48 @@ const AIBuilder = () => {
           </motion.button>
         </div>
 
-        {/* Right Side - Tab Navigation */}
-        <div className="flex items-center gap-1 bg-background/50 p-1 rounded-lg border border-border/50">
+        {/* Right Side - Enhanced Tab Navigation */}
+        <div className="flex items-center gap-1 bg-muted/40 p-1.5 rounded-2xl border border-border/60 shadow-inner">
           {tabs.map((tab) => {
             const Icon = tab.icon
             return (
               <motion.button
                 key={tab.id}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleTabClick(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative group ${
                   activeTab === tab.id
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-background/80 hover:shadow-sm'
                 }`}
                 title={tab.description}
               >
-                <Icon className="h-4 w-4" />
-                <span>{tab.label}</span>
+                <Icon className={`h-4 w-4 transition-transform duration-300 ${activeTab === tab.id ? 'scale-110' : 'group-hover:scale-105'}`} />
+                <span className="relative">
+                  {tab.label}
+                  {activeTab === tab.id && (
+                    <motion.div
+                      layoutId="activeBuilderTab"
+                      className="absolute inset-0 bg-primary/10 rounded-xl -z-10"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </span>
               </motion.button>
             )
           })}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        <ResizablePanelGroup direction="horizontal" className="h-full gap-2">
+      {/* Enhanced Main Content */}
+      <div className="flex-1 p-8 bg-gradient-to-br from-background via-muted/20 to-background">
+        <ResizablePanelGroup direction="horizontal" className="h-full gap-4">
           
-          {/* Left Panel - File Manager */}
+          {/* Left Panel - Enhanced File Manager */}
           <ResizablePanel defaultSize={20} minSize={10} maxSize={50}>
-            <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
               {/* Panel Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
                 <div className="flex items-center gap-2">
@@ -116,9 +134,9 @@ const AIBuilder = () => {
             <div className="w-1 h-8 bg-border/50 rounded-full mx-auto group-hover:bg-primary/70 transition-colors" />
           </ResizableHandle>
           
-          {/* Center Panel - Code Editor */}
+          {/* Center Panel - Enhanced Code Editor */}
           <ResizablePanel defaultSize={50} minSize={25} maxSize={70}>
-            <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
               {/* Panel Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
                 <div className="flex items-center gap-2">
@@ -192,9 +210,9 @@ const AIBuilder = () => {
             <div className="w-1 h-8 bg-border/50 rounded-full mx-auto group-hover:bg-primary/70 transition-colors" />
           </ResizableHandle>
           
-          {/* Right Panel - AI Assistant */}
+          {/* Right Panel - Enhanced AI Assistant */}
           <ResizablePanel defaultSize={30} minSize={15} maxSize={60}>
-            <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
+            <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
               {/* Panel Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
                 <div className="flex items-center gap-2">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { Sparkles, Sun, Moon, Menu, X, Rocket, Code, Database, Users, LogOut, User, Home } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
@@ -61,21 +62,31 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-2 bg-muted/30 p-1 rounded-xl border border-border/50">
             {navigation.map((item) => {
               const Icon = item.icon
               return (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 border ${
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 relative group ${
                     isActive(item.href)
-                      ? 'bg-primary text-primary-foreground border-primary shadow-md'
-                      : 'bg-card text-foreground border-border hover:bg-muted hover:border-primary/30 shadow-sm hover:shadow-md'
+                      ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/80 hover:shadow-sm'
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
-                  {item.name}
+                  <Icon className={`h-4 w-4 transition-transform duration-300 ${isActive(item.href) ? 'scale-110' : 'group-hover:scale-105'}`} />
+                  <span className="relative">
+                    {item.name}
+                    {isActive(item.href) && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute inset-0 bg-primary/10 rounded-lg -z-10"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    )}
+                  </span>
                 </Link>
               )
             })}

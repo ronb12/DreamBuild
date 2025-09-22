@@ -725,23 +725,23 @@ export default function AIPromptCursorStyle() {
             onClick={() => setShowModelSelector(false)}
           />
           
-          {/* Modal Container */}
-          <div className="relative bg-background border border-border rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col mx-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="text-lg font-semibold text-foreground">Select AI Model</h3>
+          {/* Modal Container - Ultra Compact */}
+          <div className="relative bg-background border border-border rounded-lg shadow-2xl w-full max-w-sm max-h-[40vh] flex flex-col mx-auto">
+            {/* Header - Maximum Compact */}
+            <div className="flex items-center justify-between p-2 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">Select AI Model</h3>
               <button
                 onClick={() => setShowModelSelector(false)}
                 className="p-1 hover:bg-muted rounded-md transition-colors"
               >
-                <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             
-            {/* Models List - Vertical Layout */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {/* Models List - Super Compact Vertical Layout */}
+            <div className="flex-1 overflow-y-auto p-1 space-y-0">
               {getAvailableModels().map((model) => (
                 <button
                   key={model.id}
@@ -752,30 +752,29 @@ export default function AIPromptCursorStyle() {
                     setShowModelSelector(false)
                     toast.success(`Switched to ${model.name}`)
                   }}
-                  className={`w-full p-3 rounded-lg border transition-all duration-200 text-left hover:shadow-md ${
+                  className={`w-full p-1 rounded-sm border transition-all duration-200 text-left hover:shadow-sm ${
                     aiModel === model.id
-                      ? 'border-primary bg-primary/10 shadow-md'
+                      ? 'border-primary bg-primary/10 shadow-sm'
                       : 'border-border hover:border-primary/50 hover:bg-muted/30'
                   }`}
                 >
-                  <div className="flex flex-col space-y-1">
-                    <div className="flex items-center justify-between">
-                      <div className="font-medium text-sm text-foreground">{model.name}</div>
-                      <div className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground">
-                        {model.ram_required}
-                      </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-xs text-foreground truncate">{model.name}</div>
+                      <div className="text-xs text-muted-foreground truncate opacity-75">{model.description}</div>
                     </div>
-                    <div className="text-xs text-muted-foreground">{model.description}</div>
+                    <div className="text-xs px-1 py-0.5 bg-muted rounded text-muted-foreground ml-1 flex-shrink-0">
+                      {model.ram_required}
+                    </div>
                   </div>
                 </button>
               ))}
             </div>
             
-            {/* Footer */}
-            <div className="p-4 border-t border-border bg-muted/20">
+            {/* Footer - Maximum Compact */}
+            <div className="p-1.5 border-t border-border bg-muted/20">
               <div className="text-xs text-muted-foreground text-center">
-                <p>• Auto selects the best available model</p>
-                <p>• Local AI models require Ollama installation</p>
+                Auto selects best model • Requires Ollama
               </div>
             </div>
           </div>

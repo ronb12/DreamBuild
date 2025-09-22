@@ -25,6 +25,7 @@ import {
 import simpleAIService from '../services/simpleAIService'
 import AIServiceStatus from './AIServiceStatus'
 import TemplateBrowser from './TemplateBrowser'
+import TemplateSelector from './TemplateSelector'
 import RecommendationPanel from './RecommendationPanel'
 import WebSearchPanel from './WebSearchPanel'
 import MessageBubble from './chat/MessageBubble'
@@ -41,6 +42,7 @@ const AIPrompt = () => {
   const [showAISettings, setShowAISettings] = useState(false)
   const [showServiceStatus, setShowServiceStatus] = useState(false)
   const [showTemplateBrowser, setShowTemplateBrowser] = useState(false)
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [showRecommendations, setShowRecommendations] = useState(false)
   const [showWebSearch, setShowWebSearch] = useState(false)
   const [webSearchResults, setWebSearchResults] = useState(null)
@@ -165,133 +167,213 @@ const AIPrompt = () => {
     setSuggestions(newSuggestions.slice(0, 4))
   }
 
-  const handleGenerate = async () => {
+  const handleTemplateSelect = async (template) => {
+    console.log('Template selected:', template)
+    
+    // Set the prompt to use the template
+    setPrompt(`Create a ${template.name} using the ${template.name} template`)
+    
+    // Force template-first generation
+    const context = {
+      useTemplates: true,
+      selectedTemplate: template,
+      startTime: Date.now()
+    }
+    
+    // Generate using the template
+    await handleGenerateWithContext(context)
+  }
+
+  const handleGenerateWithContext = async (context = {}) => {
     if (!prompt.trim()) {
       toast.error('Please enter a description of what you want to build')
       return
     }
 
-    const userPrompt = prompt.trim()
-    setPrompt('')
     setIsGenerating(true)
-    
-    // Add user message to conversation
-    const userMessage = {
-      id: Date.now(),
-      type: 'user',
-      content: userPrompt,
-      timestamp: new Date(),
-      status: 'sent'
-    }
-    setMessages(prev => [...prev, userMessage])
-    
-    // Add AI response placeholder
-    const aiMessage = {
-      id: Date.now() + 1,
-      type: 'ai',
-      content: '',
-      timestamp: new Date(),
-      status: 'generating'
-    }
-    setMessages(prev => [...prev, aiMessage])
-    
+    setShowAIAgent(false)
+
     try {
-      // Update generation history
-      setGenerationHistory(prev => [userPrompt, ...prev.slice(0, 4)])
-
-      // Debug: Check if simpleAIService and generateCode method exist
-      console.log('AI Service object:', simpleAIService)
-      console.log('AI Service generateCode method:', typeof simpleAIService?.generateCode)
-      
-      if (!simpleAIService || typeof simpleAIService.generateCode !== 'function') {
-        throw new Error('AI Service not properly initialized. generateCode method not found.')
-      }
-
-      // Generate AI recommendations based on the prompt
-      generateRecommendations(userPrompt)
-
-      // Check if Auto Mode is enabled and task is complex enough
-      const agentStatus = aiAgentService.getStatus()
-      if (agentStatus.isAutoModeEnabled) {
-        const taskBreakdown = aiAgentService.breakdownTask(userPrompt, currentProject.config)
-        
-        // Add system message about auto mode
-        const systemMessage = {
-          id: Date.now() + 2,
-          type: 'system',
-          content: `🤖 Auto Mode: I'll break this down into ${taskBreakdown.tasks.length} tasks and work autonomously.`,
-          timestamp: new Date(),
-          status: 'sent'
-        }
-        setMessages(prev => [...prev, systemMessage])
-        
-        // Start autonomous operation
-        setTimeout(() => {
-          aiAgentService.startContinuousIteration(userPrompt, currentProject.config)
-        }, 2000)
-      }
-
-      // Generate code using AI service (now includes web search)
-      const contextWithPrompt = {
-        ...currentProject.config,
-        prompt: userPrompt
-      };
-      const generatedFiles = await simpleAIService.generateCode(userPrompt, contextWithPrompt)
-      
-      // Store web search results if available
-      if (generatedFiles._webSearchResults) {
-        setWebSearchResults(generatedFiles._webSearchResults)
-        delete generatedFiles._webSearchResults // Remove from files
-      }
-      
-      // Update project files
-      console.log('📁 Generated files received:', Object.keys(generatedFiles))
-      console.log('📁 Generated files count:', Object.keys(generatedFiles).length)
-      
-      Object.entries(generatedFiles).forEach(([filename, content]) => {
-        console.log(`📄 Adding file: ${filename} (${content?.length || 0} chars)`)
-        updateFile(filename, content)
+      const result = await simpleAIService.generateCode(prompt, {
+        ...context,
+        projectType: currentProject?.type || 'web',
+        existingFiles: currentProject?.files || {}
       })
-      
-      console.log('📁 Files after update:', Object.keys(currentProject.files))
 
-      // Auto-configure project based on prompt
-      autoConfigureProject(userPrompt)
+      if (result.success) {
+        // Update project files
+        Object.entries(result.files).forEach(([filename, content]) => {
+          updateFile(filename, content)
+        })
 
-      // Update AI message with response
-      const responseContent = `I've generated your ${Object.keys(generatedFiles).length} files! Here's what I created:
-
-${Object.keys(generatedFiles).map(file => `• ${file}`).join('\n')}
-
-The code has been added to your project. You can view and edit the files in the file manager.`
-      
-      setMessages(prev => prev.map(msg => 
-        msg.id === aiMessage.id 
-          ? { ...msg, content: responseContent, status: 'generated', metadata: { files: Object.keys(generatedFiles) } }
-          : msg
-      ))
-
-      toast.success('Code generated successfully!')
-
+        // Show success message
+        const method = result.metadata?.method || 'ai'
+        const fileCount = Object.keys(result.files).length
+        toast.success(`Generated ${fileCount} files using ${method === 'template-first' ? 'Template-First' : 'AI'} approach!`)
+        
+        // Add to conversation history
+        addToConversationHistory(prompt, result.files, 'user')
+        addToConversationHistory('Generated successfully!', result.files, 'assistant')
+      } else {
+        toast.error(result.error || 'Generation failed')
+      }
     } catch (error) {
-      console.error('AI generation error:', error)
-      
-      // Update AI message with error
-      setMessages(prev => prev.map(msg => 
-        msg.id === aiMessage.id 
-          ? { 
-              ...msg, 
-              content: `I encountered an error while generating your code: ${error.message}\n\nPlease try again or modify your request.`,
-              status: 'error',
-              metadata: { error: error.message }
-            }
-          : msg
-      ))
-      
-      toast.error('Failed to generate code: ' + error.message)
+      console.error('Generation error:', error)
+      toast.error('Generation failed. Please try again.')
     } finally {
       setIsGenerating(false)
     }
+  }
+
+  const handleGenerate = async () => {
+    await handleGenerateWithContext()
+  }
+
+  const autoConfigureProject = (promptText) => {
+    const lowerPrompt = promptText.toLowerCase()
+    const config = { ...currentProject.config }
+
+    // Auto-detect app type
+    if (lowerPrompt.includes('mobile') || lowerPrompt.includes('app')) {
+      config.appType = 'mobile'
+    } else if (lowerPrompt.includes('api') || lowerPrompt.includes('backend')) {
+      config.appType = 'backend'
+    } else if (lowerPrompt.includes('frontend') || lowerPrompt.includes('website')) {
+      config.appType = 'frontend'
+    }
+
+    // Auto-detect language
+    if (lowerPrompt.includes('typescript') || lowerPrompt.includes('ts')) {
+      config.language = 'typescript'
+    } else if (lowerPrompt.includes('python')) {
+      config.language = 'python'
+    } else if (lowerPrompt.includes('java')) {
+      config.language = 'java'
+    } else if (lowerPrompt.includes('react')) {
+      config.language = 'javascript'
+    }
+
+    // Auto-detect framework
+    if (lowerPrompt.includes('react')) {
+      config.framework = 'react'
+    } else if (lowerPrompt.includes('vue')) {
+      config.framework = 'vue'
+    } else if (lowerPrompt.includes('angular')) {
+      config.framework = 'angular'
+    } else if (lowerPrompt.includes('next')) {
+      config.framework = 'nextjs'
+    }
+
+    // Update project config
+    updateConfig(config)
+  }
+
+  // Generate AI recommendations based on conversation
+  const generateRecommendations = (promptText) => {
+    const recommendations = []
+    const lowerPrompt = promptText.toLowerCase()
+
+    // Technology recommendations
+    if (lowerPrompt.includes('react') || lowerPrompt.includes('frontend')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'technology',
+        title: 'Add State Management',
+        description: 'Consider Redux or Zustand for complex state management',
+        action: 'Implement state management for better data flow',
+        priority: 'medium'
+      })
+    }
+
+    if (lowerPrompt.includes('database') || lowerPrompt.includes('backend')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'technology',
+        title: 'Add Database Integration',
+        description: 'Integrate with PostgreSQL, MongoDB, or Firebase',
+        action: 'Set up database connection and models',
+        priority: 'high'
+      })
+    }
+
+    if (lowerPrompt.includes('auth') || lowerPrompt.includes('login')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'security',
+        title: 'Implement Authentication',
+        description: 'Add secure user authentication and authorization',
+        action: 'Set up JWT tokens and protected routes',
+        priority: 'high'
+      })
+    }
+
+    if (lowerPrompt.includes('payment') || lowerPrompt.includes('stripe')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'integration',
+        title: 'Add Payment Processing',
+        description: 'Integrate Stripe or PayPal for secure payments',
+        action: 'Set up payment gateway and webhooks',
+        priority: 'high'
+      })
+    }
+
+    if (lowerPrompt.includes('mobile') || lowerPrompt.includes('responsive')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'ui',
+        title: 'Optimize for Mobile',
+        description: 'Ensure responsive design and mobile performance',
+        action: 'Test on various devices and screen sizes',
+        priority: 'medium'
+      })
+    }
+
+    if (lowerPrompt.includes('api') || lowerPrompt.includes('backend')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'architecture',
+        title: 'Add API Documentation',
+        description: 'Document your API endpoints with Swagger/OpenAPI',
+        action: 'Generate API documentation and examples',
+        priority: 'medium'
+      })
+    }
+
+    if (lowerPrompt.includes('test') || lowerPrompt.includes('testing')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'quality',
+        title: 'Add Unit Tests',
+        description: 'Write comprehensive tests for your components',
+        action: 'Set up Jest and React Testing Library',
+        priority: 'medium'
+      })
+    }
+
+    if (lowerPrompt.includes('deploy') || lowerPrompt.includes('production')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'deployment',
+        title: 'Set up CI/CD',
+        description: 'Automate testing and deployment pipeline',
+        action: 'Configure GitHub Actions or similar',
+        priority: 'high'
+      })
+    }
+
+    if (lowerPrompt.includes('security') || lowerPrompt.includes('secure')) {
+      recommendations.push({
+        id: Date.now() + Math.random(),
+        type: 'security',
+        title: 'Add Input Validation',
+        description: 'Validate all user inputs to prevent security issues',
+        action: 'Implement client and server-side validation',
+        priority: 'high'
+      })
+    }
+
+    setAiRecommendations(recommendations)
   }
 
   const autoConfigureProject = (promptText) => {
@@ -640,6 +722,13 @@ Please implement this suggestion in my current project.`
               <Code className="h-4 w-4" />
             </button>
             <button
+              onClick={() => setShowTemplateSelector(true)}
+              className="p-1.5 hover:bg-muted rounded transition-colors"
+              title="Choose Template (Template-First)"
+            >
+              <Zap className="h-4 w-4" />
+            </button>
+            <button
               onClick={() => setShowRecommendations(true)}
               className="p-1.5 hover:bg-muted rounded transition-colors"
               title="AI Recommendations & Production Analysis"
@@ -828,6 +917,13 @@ Please implement this suggestion in my current project.`
         onTemplateSelect={(template) => {
           console.log('Template selected:', template)
         }}
+      />
+
+      {/* Template Selector */}
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        onTemplateSelect={handleTemplateSelect}
       />
 
       {/* AI Service Status Dialog */}

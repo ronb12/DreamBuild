@@ -56,13 +56,44 @@ const Preview = () => {
       return
     }
 
+    // Check if we have any files to display
+    if (!currentProject.files || Object.keys(currentProject.files).length === 0) {
+      console.log('🎮 updatePreview: No files to display, showing placeholder')
+      showPlaceholder()
+      return
+    }
+
     console.log('🎮 updatePreview: iframeRef.current exists, proceeding...')
     setIsLoading(true)
     setPreviewError(null)
 
     try {
-      const htmlContent = currentProject.files['index.html'] || ''
-      const cssContent = currentProject.files['style.css'] || ''
+      let htmlContent = currentProject.files['index.html'] || ''
+      
+      // If no HTML content, try to find any HTML file
+      if (!htmlContent.trim()) {
+        const htmlFiles = Object.keys(currentProject.files).filter(key => 
+          key.endsWith('.html') && key !== 'index.html'
+        )
+        if (htmlFiles.length > 0) {
+          console.log('🎮 Preview Debug - No index.html found, using:', htmlFiles[0])
+          const altHtmlContent = currentProject.files[htmlFiles[0]] || ''
+          if (altHtmlContent.trim()) {
+            htmlContent = altHtmlContent
+          }
+        }
+      }
+      
+      // Collect all CSS files (both root and src CSS files)
+      const cssFiles = Object.keys(currentProject.files).filter(key => 
+        key.endsWith('.css')
+      )
+      const cssContent = cssFiles.map(file => currentProject.files[file]).join('\n')
+      
+      console.log('🎮 Preview Debug - All CSS files found:', cssFiles)
+      console.log('🎮 Preview Debug - CSS content length:', cssContent.length)
+      console.log('🎮 Preview Debug - CSS content preview:', cssContent.substring(0, 200) + '...')
+      
       const jsContent = currentProject.files['script.js'] || ''
       
       // Check if we have React components (game files)
@@ -104,8 +135,29 @@ const Preview = () => {
       console.log('🎮 Preview Debug - JS content length:', jsContent.length)
 
       if (!htmlContent.trim()) {
-        showPlaceholder()
-        return
+        // If no HTML content, create a basic HTML structure from available files
+        console.log('🎮 Preview Debug - No HTML content found, creating basic structure')
+        const hasCSS = cssContent.trim().length > 0
+        const hasJS = jsContent.trim().length > 0
+        
+        htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamBuild Generated App</title>
+    ${hasCSS ? `<style>${cssContent}</style>` : ''}
+</head>
+<body>
+    <div id="app">
+        <h1>DreamBuild Generated Application</h1>
+        <p>Your application is loading...</p>
+        <div id="content"></div>
+    </div>
+    ${hasJS ? `<script>${jsContent}</script>` : ''}
+</body>
+</html>`
+        console.log('🎮 Preview Debug - Created basic HTML structure')
       }
 
       let fullHTML = htmlContent
@@ -138,20 +190,25 @@ const Preview = () => {
 
       // Inject JavaScript
       if (jsContent.trim()) {
+        // Wrap JavaScript in IIFE to prevent variable conflicts
+        const wrappedJS = `(function() {
+          ${jsContent}
+        })();`
+        
         // Replace external JS scripts
         fullHTML = fullHTML.replace(
           /<script[^>]*src=["']script\.js["'][^>]*><\/script>/gi,
-          `<script>${jsContent}</script>`
+          `<script>${wrappedJS}</script>`
         )
 
         // If no external JS script found, inject before closing body
         if (fullHTML.includes('</body>')) {
           fullHTML = fullHTML.replace(
             '</body>',
-            `<script>${jsContent}</script>\n</body>`
+            `<script>${wrappedJS}</script>\n</body>`
           )
         } else {
-          fullHTML += `\n<script>${jsContent}</script>`
+          fullHTML += `\n<script>${wrappedJS}</script>`
         }
       }
 
@@ -159,6 +216,12 @@ const Preview = () => {
       if (!fullHTML.includes('<!DOCTYPE html>')) {
         fullHTML = `<!DOCTYPE html>\n${fullHTML}`
       }
+
+      // Debug: Log final HTML structure
+      console.log('🎮 Preview Debug - Final HTML length:', fullHTML.length)
+      console.log('🎮 Preview Debug - HTML contains <style>:', fullHTML.includes('<style>'))
+      console.log('🎮 Preview Debug - HTML contains <script>:', fullHTML.includes('<script>'))
+      console.log('🎮 Preview Debug - HTML preview:', fullHTML.substring(0, 500) + '...')
 
       // Update iframe content using srcdoc (CORS-safe)
       const iframe = iframeRef.current

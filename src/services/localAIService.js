@@ -274,13 +274,103 @@ class LocalAIService {
       return modelId
     }
 
-    // Fallback to first healthy model
-    return healthyModels[0].id
+  // Fallback to first healthy model
+  return healthyModels[0].id
+}
+
+// Template-First Architecture Methods
+shouldUseTemplateFirst(prompt, context) {
+  const lowerPrompt = prompt.toLowerCase()
+  
+  // Use template-first for common app types
+  const templateKeywords = [
+    'dashboard', 'ecommerce', 'portfolio', 'blog', 'landing page',
+    'website', 'app', 'application', 'store', 'shop', 'cms',
+    'admin panel', 'analytics', 'game', 'mobile app', 'todo',
+    'task manager', 'calendar', 'chat', 'social media'
+  ]
+  
+  const hasTemplateKeyword = templateKeywords.some(keyword => 
+    lowerPrompt.includes(keyword)
+  )
+  
+  // Use template-first if prompt is specific enough
+  const isSpecificPrompt = prompt.length > 20 && hasTemplateKeyword
+  
+  // Use template-first if context indicates template preference
+  const prefersTemplates = context.useTemplates === true
+  
+  return isSpecificPrompt || prefersTemplates
+}
+
+// Template-First generation
+async generateWithTemplates(prompt, context = {}) {
+  try {
+    // Import template-based generator
+    const { default: TemplateBasedGenerator } = await import('./templateBasedGenerator.js')
+    
+    // Create generator instance
+    const templateGenerator = new TemplateBasedGenerator()
+    
+    // Generate using templates
+    const result = await templateGenerator.generateApp(prompt, {
+      ...context,
+      startTime: Date.now()
+    })
+    
+    console.log('✅ Template-based generation completed')
+    return result
+    
+  } catch (error) {
+    console.error('❌ Template generation failed, falling back to AI:', error)
+    return await this.generateWithAI(prompt, context)
   }
+}
+
+// AI-First generation (fallback)
+async generateWithAI(prompt, context = {}) {
+  console.log('🤖 Using AI-First approach...')
+  
+  try {
+    // Enhanced prompt with current best practices
+    const enhancedPrompt = await this.enhancePromptWithBestPractices(prompt)
+    console.log('🎯 Enhanced prompt:', enhancedPrompt)
+    
+    // Generate files using the enhanced prompt
+    const files = await this.generateFiles(enhancedPrompt, context)
+    
+    return {
+      success: true,
+      files,
+      message: 'Code generated successfully using AI!',
+      metadata: {
+        prompt: enhancedPrompt,
+        fileCount: Object.keys(files).length,
+        generationTime: Date.now() - (context.startTime || Date.now()),
+        method: 'ai-first'
+      }
+    }
+  } catch (error) {
+    console.error('❌ AI generation failed:', error)
+    return {
+      success: false,
+      error: error.message,
+      files: {}
+    }
+  }
+}
 
   // Generate code using local AI with web search enhancement
   async generateCode(prompt, context = {}) {
     try {
+      // Check if we should use template-first approach
+      const useTemplateFirst = this.shouldUseTemplateFirst(prompt, context)
+      
+      if (useTemplateFirst) {
+        console.log('📋 Using Template-First approach...')
+        return await this.generateWithTemplates(prompt, context)
+      }
+
       // Use conversation history if available
       if (context.conversationHistory && context.conversationHistory.length > 0) {
         console.log('💬 Using conversation history for context-aware generation')
@@ -4240,8 +4330,8 @@ function validateInput(input, type) {
     throw new Error('Input must be a string');
   }
   
-  // Sanitize HTML
-  var sanitized = input.replace(/<script\\b[^<]*(?:(?!<\\/script>)<[^<]*)*<\\/script>/gi, '');
+  // Simple HTML sanitization
+  var sanitized = input.replace(/<script[^>]*>.*?<\\/script>/gi, '');
   
   // Validate based on type
   switch (type) {

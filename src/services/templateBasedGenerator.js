@@ -161,6 +161,12 @@ class TemplateBasedGenerator {
     console.log('🎯 Starting Template-First generation...');
     
     try {
+      // Ensure templates are loaded before proceeding
+      if (this.templates.size === 0) {
+        console.log('📚 No templates loaded, initializing...');
+        await this.initialize();
+      }
+      
       // Step 1: Template Selection (Instant)
       const selectedTemplate = await this.selectTemplate(prompt, context);
       console.log(`📋 Selected template: ${selectedTemplate.name}`);
@@ -187,11 +193,8 @@ class TemplateBasedGenerator {
       
     } catch (error) {
       console.error('❌ Template generation failed:', error);
-      return {
-        success: false,
-        error: error.message,
-        fallback: await this.generateFallback(prompt, context)
-      };
+      const fallbackResult = await this.generateFallback(prompt, context);
+      return fallbackResult;
     }
   }
 
@@ -204,6 +207,7 @@ class TemplateBasedGenerator {
       console.log('⚠️ Template matcher not available, using fallback selection');
       const templates = Array.from(this.templates.values());
       if (templates.length === 0) {
+        console.log('⚠️ No templates available, will use fallback generation');
         throw new Error('No templates available');
       }
       return templates[0];
@@ -515,14 +519,19 @@ if (typeof module !== 'undefined' && module.exports) {
     const appName = this.extractAppName(prompt);
     const appType = this.detectAppType(prompt);
     
+    const files = {
+      'index.html': this.generateFallbackHTML(appName, prompt, appType),
+      'styles.css': this.generateFallbackCSS(appType),
+      'script.js': this.generateFallbackJS(appName, appType),
+      'package.json': this.generateFallbackPackageJson(appName)
+    };
+    
+    console.log(`✅ Fallback generation completed: ${Object.keys(files).length} files`);
+    console.log('📁 Generated files:', Object.keys(files));
+    
     return {
       success: true,
-      files: {
-        'index.html': this.generateFallbackHTML(appName, prompt, appType),
-        'styles.css': this.generateFallbackCSS(appType),
-        'script.js': this.generateFallbackJS(appName, appType),
-        'package.json': this.generateFallbackPackageJson(appName)
-      },
+      files: files,
       metadata: {
         generationMethod: 'fallback',
         reason: 'Template selection failed',

@@ -71,6 +71,17 @@ class LocalAIService {
     this.availableModels = Object.keys(LOCAL_AI_MODELS)
     this.baseURL = 'http://localhost:11434/api'
     
+    // Check if we're in production (HTTPS) or development (HTTP)
+    this.isProduction = window.location.protocol === 'https:'
+    this.isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    
+    if (this.isProduction && !this.isLocalhost) {
+      // In production, don't try to connect to local AI to avoid CORS errors
+      console.log('🌐 Production environment detected - skipping local AI detection')
+      this.isHealthy = false
+      return
+    }
+    
     console.log('🔍 Initializing local AI health monitoring...')
     this.checkHealth()
     
@@ -82,9 +93,14 @@ class LocalAIService {
 
   // Check if local AI service is healthy
   async checkHealth() {
+    // Skip health check in production to avoid CORS errors
+    if (this.isProduction && !this.isLocalhost) {
+      return
+    }
+    
     try {
       const response = await axios.get(`${this.baseURL}/tags`, {
-        timeout: 5000
+        timeout: 3000
       })
       
       if (response.status === 200) {
@@ -114,14 +130,34 @@ class LocalAIService {
     } catch (error) {
       const wasHealthy = this.isHealthy
       this.isHealthy = false
-      if (wasHealthy) {
-        console.log('⚠️ Local AI service not available:', error.message)
+      
+      // Handle different types of errors more gracefully
+      if (error.code === 'ERR_NETWORK' || error.message.includes('CORS')) {
+        // CORS or network error - expected in production
+        if (!wasHealthy) {
+          console.log('🔒 Local AI not accessible (CORS/Network) - using cloud AI')
+        }
+      } else if (error.code === 'ECONNREFUSED') {
+        // Connection refused - Ollama not running
+        if (!wasHealthy) {
+          console.log('💻 Ollama not running locally - using cloud AI')
+        }
+      } else {
+        // Other errors
+        if (!wasHealthy) {
+          console.log('⚠️ Local AI service not available:', error.message)
+        }
       }
     }
   }
 
   // Quiet health check (only logs on status change)
   async checkHealthQuiet() {
+    // Skip health check in production to avoid CORS errors
+    if (this.isProduction && !this.isLocalhost) {
+      return
+    }
+    
     try {
       const response = await axios.get(`${this.baseURL}/tags`, {
         timeout: 3000
@@ -146,6 +182,7 @@ class LocalAIService {
       }
     } catch (error) {
       this.isHealthy = false
+      // Silent fail for quiet check - no logging
     }
   }
 
@@ -526,6 +563,12 @@ export const styles = StyleSheet.create({
     console.log('🚀 Starting code generation for prompt:', prompt)
     
     try {
+      // In production, skip local AI and use fallback directly
+      if (this.isProduction && !this.isLocalhost) {
+        console.log('🌐 Production environment - using template fallback')
+        return this.createFallbackResponse(prompt, context)
+      }
+      
       // Try to use local AI if available
       if (this.isHealthy) {
         return await this.generateWithLocalAI(prompt, context)

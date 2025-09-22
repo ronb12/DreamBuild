@@ -438,7 +438,7 @@ const Preview = () => {
               }
             }, [gameLoop, gameState.isPlaying, gameState.isPaused]);
             
-            if (isTempleRun) {
+            if (${isTempleRun}) {
               // Temple Run Game
               return (
                 <div style={{ 
@@ -585,8 +585,8 @@ const Preview = () => {
                   )}
                 </div>
               );
-            } else {
-              // Coin Collector Game (fallback)
+            } else if (${isCoinCollector}) {
+              // Coin Collector Game
               return (
                 <div style={{ 
                   width: '400px', 
@@ -662,6 +662,41 @@ const Preview = () => {
                       </button>
                     </>
                   )}
+                </div>
+              );
+            } else {
+              // Default Game
+              return (
+                <div style={{ 
+                  width: '400px', 
+                  height: '300px', 
+                  border: '2px solid #333', 
+                  position: 'relative',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '18px',
+                  fontWeight: 'bold'
+                }}>
+                  <div style={{ textAlign: 'center' }}>
+                    <h2>Game Preview</h2>
+                    <p>No specific game type detected</p>
+                    <button onClick={startGame} style={{
+                      padding: '10px 20px',
+                      fontSize: '16px',
+                      background: '#4CAF50',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '5px',
+                      cursor: 'pointer'
+                    }}>
+                      Start Game
+                    </button>
+                  </div>
                 </div>
               );
             }

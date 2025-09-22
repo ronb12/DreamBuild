@@ -34,6 +34,11 @@ class TemplateBasedGenerator {
       // Load templates from the existing localAIService
       const { default: localAIService } = await import('./localAIService.js');
       
+      // Check if localAIService is a constructor
+      if (typeof localAIService !== 'function') {
+        throw new Error('localAIService is not a constructor');
+      }
+      
       // Create a new instance to avoid circular dependencies
       const aiService = new localAIService();
       
@@ -194,6 +199,16 @@ class TemplateBasedGenerator {
   async selectTemplate(prompt, context) {
     const startTime = Date.now();
     
+    // Check if template matcher is available
+    if (!this.templateMatcher) {
+      console.log('⚠️ Template matcher not available, using fallback selection');
+      const templates = Array.from(this.templates.values());
+      if (templates.length === 0) {
+        throw new Error('No templates available');
+      }
+      return templates[0];
+    }
+    
     // Use template matcher to find best template
     const matches = await this.templateMatcher.findBestMatches(prompt, {
       category: context.category,
@@ -202,7 +217,12 @@ class TemplateBasedGenerator {
     });
     
     if (matches.length === 0) {
-      throw new Error('No suitable template found');
+      console.log('⚠️ No matches found, using first available template');
+      const templates = Array.from(this.templates.values());
+      if (templates.length === 0) {
+        throw new Error('No suitable template found');
+      }
+      return templates[0];
     }
     
     const selectedTemplate = matches[0];
@@ -491,36 +511,314 @@ if (typeof module !== 'undefined' && module.exports) {
   async generateFallback(prompt, context) {
     console.log('🔄 Generating fallback application...');
     
+    // Create a basic application based on the prompt
+    const appName = this.extractAppName(prompt);
+    const appType = this.detectAppType(prompt);
+    
     return {
       success: true,
       files: {
-        'index.html': `<!DOCTYPE html>
+        'index.html': this.generateFallbackHTML(appName, prompt, appType),
+        'styles.css': this.generateFallbackCSS(appType),
+        'script.js': this.generateFallbackJS(appName, appType),
+        'package.json': this.generateFallbackPackageJson(appName)
+      },
+      metadata: {
+        generationMethod: 'fallback',
+        reason: 'Template selection failed',
+        appName: appName,
+        appType: appType
+      }
+    };
+  }
+
+  // Helper methods for fallback generation
+  extractAppName(prompt) {
+    const words = prompt.toLowerCase().split(' ');
+    const appKeywords = ['app', 'application', 'website', 'site', 'dashboard', 'platform'];
+    const nameIndex = words.findIndex(word => appKeywords.includes(word));
+    
+    if (nameIndex > 0) {
+      return words[nameIndex - 1].charAt(0).toUpperCase() + words[nameIndex - 1].slice(1) + ' ' + words[nameIndex];
+    }
+    
+    return 'DreamBuild App';
+  }
+
+  detectAppType(prompt) {
+    const lowerPrompt = prompt.toLowerCase();
+    if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('admin')) return 'dashboard';
+    if (lowerPrompt.includes('ecommerce') || lowerPrompt.includes('store')) return 'ecommerce';
+    if (lowerPrompt.includes('portfolio') || lowerPrompt.includes('personal')) return 'portfolio';
+    if (lowerPrompt.includes('blog') || lowerPrompt.includes('content')) return 'blog';
+    return 'web';
+  }
+
+  generateFallbackHTML(appName, prompt, appType) {
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamBuild App</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: 0 auto; }
-        h1 { color: #333; }
-        p { color: #666; margin: 20px 0; }
-    </style>
+    <title>${appName}</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to DreamBuild</h1>
-        <p>Your application is being generated...</p>
-        <p>Prompt: ${prompt}</p>
+        <header>
+            <h1>${appName}</h1>
+            <nav>
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </header>
+        <main>
+            <section id="home">
+                <h2>Welcome to ${appName}</h2>
+                <p>Generated from: "${prompt}"</p>
+                <div class="features">
+                    <div class="feature">
+                        <h3>Responsive Design</h3>
+                        <p>Works on all devices</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Modern UI</h3>
+                        <p>Clean and professional</p>
+                    </div>
+                    <div class="feature">
+                        <h3>Fast Loading</h3>
+                        <p>Optimized performance</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2024 ${appName}. Generated by DreamBuild.</p>
+        </footer>
     </div>
+    <script src="script.js"></script>
 </body>
-</html>`
-      },
-      metadata: {
-        generationMethod: 'fallback',
-        reason: 'Template selection failed'
-      }
+</html>`;
+  }
+
+  generateFallbackCSS(appType) {
+    const colorScheme = {
+      dashboard: '#2563eb',
+      ecommerce: '#059669',
+      portfolio: '#7c3aed',
+      blog: '#dc2626',
+      web: '#0891b2'
     };
+    
+    const primaryColor = colorScheme[appType] || colorScheme.web;
+    
+    return `/* ${appType} Application Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, ${primaryColor} 0%, #1e40af 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    color: ${primaryColor};
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+nav a {
+    color: #666;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+nav a:hover {
+    background: ${primaryColor};
+    color: white;
+}
+
+main {
+    background: white;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+h2 {
+    color: ${primaryColor};
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.feature {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid ${primaryColor};
+    text-align: center;
+}
+
+.feature h3 {
+    color: ${primaryColor};
+    margin-bottom: 10px;
+}
+
+footer {
+    text-align: center;
+    color: white;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    nav {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .features {
+        grid-template-columns: 1fr;
+    }
+}`;
+  }
+
+  generateFallbackJS(appName, appType) {
+    return `// ${appName} JavaScript
+console.log('${appName} loaded successfully!');
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing ${appType} app...');
+    
+    // Initialize app
+    initializeApp();
+    
+    // Add smooth scrolling for navigation
+    setupNavigation();
+    
+    // Add any app-specific functionality
+    setupAppFeatures();
+});
+
+function initializeApp() {
+    console.log('Initializing ${appName}...');
+    
+    // Add loading animation
+    const container = document.querySelector('.container');
+    if (container) {
+        container.style.opacity = '0';
+        container.style.transition = 'opacity 0.5s ease-in';
+        
+        setTimeout(() => {
+            container.style.opacity = '1';
+        }, 100);
+    }
+}
+
+function setupNavigation() {
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+}
+
+function setupAppFeatures() {
+    // Add interactive features based on app type
+    const features = document.querySelectorAll('.feature');
+    features.forEach((feature, index) => {
+        feature.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        feature.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    console.log('App features initialized');
+}
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { initializeApp, setupNavigation, setupAppFeatures };
+}`;
+  }
+
+  generateFallbackPackageJson(appName) {
+    const packageName = appName.toLowerCase().replace(/\s+/g, '-');
+    
+    return JSON.stringify({
+      name: packageName,
+      version: "1.0.0",
+      description: `Generated ${appName} application`,
+      main: "script.js",
+      scripts: {
+        start: "python -m http.server 8000",
+        build: "echo 'Build complete'",
+        dev: "python -m http.server 8000"
+      },
+      keywords: ["dreambuild", "generated", "web", "app"],
+      author: "DreamBuild",
+      license: "MIT",
+      dependencies: {
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0"
+      }
+    }, null, 2);
   }
 
   // Utility methods

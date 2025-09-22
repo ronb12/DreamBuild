@@ -31,6 +31,7 @@ export default function AIPromptCursorStyle() {
   
   // AI Model selection
   const [aiModel, setAIModel] = useState('auto')
+  const [modelUpdateKey, setModelUpdateKey] = useState(0)
   const [showModelSelector, setShowModelSelector] = useState(false)
   const [showContextUsage, setShowContextUsage] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
@@ -56,6 +57,11 @@ export default function AIPromptCursorStyle() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Debug AI model changes
+  useEffect(() => {
+    console.log(`🎯 AI Model state changed to: ${aiModel}`)
+  }, [aiModel])
 
   // Close model selector when clicking outside
   useEffect(() => {
@@ -502,7 +508,7 @@ export default function AIPromptCursorStyle() {
               {/* Model selector */}
               <div className="flex items-center gap-2 text-xs font-medium text-foreground relative">
                 <button
-                  key={`model-button-${aiModel}`}
+                  key={`model-button-${aiModel}-${modelUpdateKey}`}
                   onClick={() => setShowModelSelector(!showModelSelector)}
                   className="hover:text-blue-600 transition-colors"
                   title="Select AI Model"
@@ -615,7 +621,7 @@ export default function AIPromptCursorStyle() {
             <div className="pt-2 border-t border-border">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">Model</span>
-                <span key={`model-info-${aiModel}`} className="text-xs font-medium text-foreground">
+                <span key={`model-info-${aiModel}-${modelUpdateKey}`} className="text-xs font-medium text-foreground">
                   {getModelDisplayName(aiModel)}
                 </span>
               </div>
@@ -758,6 +764,7 @@ export default function AIPromptCursorStyle() {
                     e.stopPropagation()
                     console.log(`🎯 Setting AI model to: ${model.id} (${model.name})`)
                     setAIModel(model.id)
+                    setModelUpdateKey(prev => prev + 1) // Force re-render
                     setShowModelSelector(false)
                     toast.success(`Switched to ${model.name}`)
                   }}

@@ -718,7 +718,15 @@ export default function AIPromptCursorStyle() {
 
       {/* Model Selector Modal */}
       {showModelSelector && (
-        <div className="fixed bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 min-w-80 max-w-96 flex flex-col" style={{ height: '120px', zIndex: 999999 }}>
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/20 backdrop-blur-sm" 
+            style={{ zIndex: 2147483646 }}
+            onClick={() => setShowModelSelector(false)}
+          />
+          {/* Modal */}
+          <div className="fixed bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 min-w-80 max-w-96 flex flex-col" style={{ height: '120px', zIndex: 2147483647 }}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-foreground">Select AI Model</h3>
             <button
@@ -766,6 +774,7 @@ export default function AIPromptCursorStyle() {
             </div>
           </div>
         </div>
+        </>
       )}
     </div>
   )

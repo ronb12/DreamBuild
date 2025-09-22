@@ -267,7 +267,12 @@ export default function AIPromptCursorStyle() {
       { id: 'deepseek-coder', name: 'DeepSeek Coder', description: 'High-performance generation', ram_required: '12GB' },
       { id: 'wizardcoder-7b', name: 'WizardCoder 7B', description: 'Great at following instructions', ram_required: '10GB' },
       { id: 'phi3-mini', name: 'Phi-3 Mini', description: 'Lightweight but powerful', ram_required: '6GB' },
-      { id: 'llama3-8b', name: 'Llama 3 8B', description: 'General purpose model', ram_required: '10GB' }
+      { id: 'llama3-8b', name: 'Llama 3 8B', description: 'General purpose model', ram_required: '10GB' },
+      { id: 'mistral-7b', name: 'Mistral 7B', description: 'Fast and efficient coding assistant', ram_required: '8GB' },
+      { id: 'gemma-7b', name: 'Gemma 7B', description: 'Google\'s lightweight model', ram_required: '9GB' },
+      { id: 'qwen-7b', name: 'Qwen 7B', description: 'Alibaba\'s coding model', ram_required: '8GB' },
+      { id: 'codet5-small', name: 'CodeT5 Small', description: 'Salesforce\'s code generation model', ram_required: '4GB' },
+      { id: 'incoder-6b', name: 'InCoder 6B', description: 'Code completion specialist', ram_required: '6GB' }
     ]
   }
 
@@ -713,7 +718,7 @@ export default function AIPromptCursorStyle() {
 
       {/* Model Selector Modal */}
       {showModelSelector && (
-        <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-[9999] min-w-80 max-w-96">
+        <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-[9999] min-w-80 max-w-96 flex flex-col" style={{ height: '120px' }}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-foreground">Select AI Model</h3>
             <button
@@ -724,7 +729,7 @@ export default function AIPromptCursorStyle() {
             </button>
           </div>
           
-          <div className="max-h-80 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+          <div className="overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent" style={{ height: '80px' }}>
             {getAvailableModels().map((model) => (
               <button
                 key={model.id}

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useProject } from '../contexts/ProjectContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -717,7 +718,7 @@ export default function AIPromptCursorStyle() {
       )}
 
       {/* Model Selector Modal */}
-      {showModelSelector && (
+      {showModelSelector && createPortal(
         <>
           {/* Backdrop */}
           <div 
@@ -726,7 +727,7 @@ export default function AIPromptCursorStyle() {
             onClick={() => setShowModelSelector(false)}
           />
           {/* Modal */}
-          <div className="fixed bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 min-w-80 max-w-96 flex flex-col" style={{ height: '120px', zIndex: 2147483647 }}>
+          <div className="fixed bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 min-w-80 max-w-96 flex flex-col" style={{ height: '120px', zIndex: 2147483647, position: 'fixed', bottom: '80px', left: '16px' }}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-foreground">Select AI Model</h3>
             <button
@@ -774,7 +775,8 @@ export default function AIPromptCursorStyle() {
             </div>
           </div>
         </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   )

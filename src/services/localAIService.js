@@ -12019,8 +12019,12 @@ export default FormField`
     const gameType = component.gameType || this.detectGameType(prompt);
     
     console.log('🎮 Game type for component generation:', gameType);
+    console.log('🎮 Component name:', component.name);
+    console.log('🎮 Component gameType:', component.gameType);
+    console.log('🎮 Prompt:', prompt);
     
     if (gameType === 'temple-run') {
+      console.log('🎮 Generating Temple Run game...');
       return this.generateTempleRunGame(component, prompt, context);
     }
     
@@ -12040,6 +12044,8 @@ export default FormField`
 import './${component.name}.css';
 
 const ${component.name} = () => {
+  // Game type flag - generic game
+  const isTempleRun = false;
   const canvasRef = useRef(null);
   const [gameState, setGameState] = useState({
     score: 0,

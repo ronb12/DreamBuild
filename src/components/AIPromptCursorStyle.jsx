@@ -244,6 +244,7 @@ export default function AIPromptCursorStyle() {
   // Helper functions for AI model selection
   const getModelDisplayName = (modelId) => {
     const models = {
+      'auto': 'Auto',
       'codellama-7b': 'CodeLlama 7B',
       'codellama-13b': 'CodeLlama 13B',
       'codellama-34b': 'CodeLlama 34B',
@@ -252,7 +253,11 @@ export default function AIPromptCursorStyle() {
       'wizardcoder-7b': 'WizardCoder 7B',
       'phi3-mini': 'Phi-3 Mini',
       'llama3-8b': 'Llama 3 8B',
-      'auto': 'Auto'
+      'mistral-7b': 'Mistral 7B',
+      'gemma-7b': 'Gemma 7B',
+      'qwen-7b': 'Qwen 7B',
+      'codet5-small': 'CodeT5 Small',
+      'incoder-6b': 'InCoder 6B'
     }
     return models[modelId] || 'Auto'
   }

@@ -40,9 +40,9 @@ const AIBuilder = () => {
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col pt-16">
+    <div className="h-screen bg-background flex flex-col">
       {/* Enhanced Header Bar */}
-      <div className="flex items-center justify-between px-8 py-6 bg-gradient-to-r from-card/95 to-background/95 backdrop-blur-xl border-b border-border/60 shadow-lg shadow-primary/5">
+      <div className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-card/95 to-background/95 backdrop-blur-xl border-b border-border/60 shadow-lg shadow-primary/5" style={{ marginTop: '45px' }}>
         {/* Left Side - Title and Template Button */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">

@@ -259,15 +259,15 @@ export default function AIPromptCursorStyle() {
 
   const getAvailableModels = () => {
     return [
-      { id: 'auto', name: 'Auto', description: 'Automatically selects the best model', ram: 'Smart' },
-      { id: 'codellama-7b', name: 'CodeLlama 7B', description: 'Fast and efficient code generation', ram: '8GB' },
-      { id: 'codellama-13b', name: 'CodeLlama 13B', description: 'Higher quality code generation', ram: '16GB' },
-      { id: 'codellama-34b', name: 'CodeLlama 34B', description: 'Best quality code generation', ram: '32GB' },
-      { id: 'starcoder-15b', name: 'StarCoder 15B', description: 'Excellent code completion', ram: '24GB' },
-      { id: 'deepseek-coder', name: 'DeepSeek Coder', description: 'High-performance generation', ram: '12GB' },
-      { id: 'wizardcoder-7b', name: 'WizardCoder 7B', description: 'Great at following instructions', ram: '10GB' },
-      { id: 'phi3-mini', name: 'Phi-3 Mini', description: 'Lightweight but powerful', ram: '6GB' },
-      { id: 'llama3-8b', name: 'Llama 3 8B', description: 'General purpose model', ram: '10GB' }
+      { id: 'auto', name: 'Auto', description: 'Automatically selects the best model', ram_required: 'Smart' },
+      { id: 'codellama-7b', name: 'CodeLlama 7B', description: 'Fast and efficient code generation', ram_required: '8GB' },
+      { id: 'codellama-13b', name: 'CodeLlama 13B', description: 'Higher quality code generation', ram_required: '16GB' },
+      { id: 'codellama-34b', name: 'CodeLlama 34B', description: 'Best quality code generation', ram_required: '32GB' },
+      { id: 'starcoder-15b', name: 'StarCoder 15B', description: 'Excellent code completion', ram_required: '24GB' },
+      { id: 'deepseek-coder', name: 'DeepSeek Coder', description: 'High-performance generation', ram_required: '12GB' },
+      { id: 'wizardcoder-7b', name: 'WizardCoder 7B', description: 'Great at following instructions', ram_required: '10GB' },
+      { id: 'phi3-mini', name: 'Phi-3 Mini', description: 'Lightweight but powerful', ram_required: '6GB' },
+      { id: 'llama3-8b', name: 'Llama 3 8B', description: 'General purpose model', ram_required: '10GB' }
     ]
   }
 
@@ -713,7 +713,7 @@ export default function AIPromptCursorStyle() {
 
       {/* Model Selector Modal */}
       {showModelSelector && (
-        <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-[9999] min-w-80">
+        <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-[9999] min-w-80 max-w-96">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-foreground">Select AI Model</h3>
             <button
@@ -724,13 +724,17 @@ export default function AIPromptCursorStyle() {
             </button>
           </div>
           
-          <div className="space-y-2">
+          <div className="max-h-80 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
             {getAvailableModels().map((model) => (
               <button
                 key={model.id}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
                   setAIModel(model.id)
-                  setShowModelSelector(false)
+                  setTimeout(() => {
+                    setShowModelSelector(false)
+                  }, 100)
                   toast.success(`Switched to ${model.name}`)
                 }}
                 className={`w-full p-3 rounded-lg border transition-colors text-left ${
@@ -740,11 +744,11 @@ export default function AIPromptCursorStyle() {
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex-1">
                     <div className="font-medium text-sm">{model.name}</div>
                     <div className="text-xs text-muted-foreground">{model.description}</div>
                   </div>
-                  <div className="text-xs text-muted-foreground">{model.ram_required}</div>
+                  <div className="text-xs text-muted-foreground ml-2">{model.ram_required}</div>
                 </div>
               </button>
             ))}

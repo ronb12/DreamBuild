@@ -718,7 +718,7 @@ export default function AIPromptCursorStyle() {
 
       {/* Model Selector Modal */}
       {showModelSelector && (
-        <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-[9999] min-w-80 max-w-96 flex flex-col" style={{ height: '120px' }}>
+        <div className="fixed bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-[99999] min-w-80 max-w-96 flex flex-col" style={{ height: '120px' }}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-foreground">Select AI Model</h3>
             <button

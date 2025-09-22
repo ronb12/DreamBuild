@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { useProject } from '../contexts/ProjectContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -717,66 +716,70 @@ export default function AIPromptCursorStyle() {
         </div>
       )}
 
-      {/* Model Selector Modal */}
-      {showModelSelector && createPortal(
-        <>
+      {/* Model Selector Modal - Rebuilt with Vertical Layout */}
+      {showModelSelector && (
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4" style={{ zIndex: 999999 }}>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm" 
-            style={{ zIndex: 2147483646 }}
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowModelSelector(false)}
           />
-          {/* Modal */}
-          <div className="fixed bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 min-w-80 max-w-96 flex flex-col" style={{ height: '120px', zIndex: 2147483647, position: 'fixed', bottom: '80px', left: '16px' }}>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium text-foreground">Select AI Model</h3>
-            <button
-              onClick={() => setShowModelSelector(false)}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              ×
-            </button>
-          </div>
           
-          <div className="overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent" style={{ height: '80px' }}>
-            {getAvailableModels().map((model) => (
+          {/* Modal Container */}
+          <div className="relative bg-background border border-border rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col mx-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground">Select AI Model</h3>
               <button
-                key={model.id}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setAIModel(model.id)
-                  setTimeout(() => {
-                    setShowModelSelector(false)
-                  }, 100)
-                  toast.success(`Switched to ${model.name}`)
-                }}
-                className={`w-full p-3 rounded-lg border transition-colors text-left ${
-                  aiModel === model.id
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-border hover:bg-muted/50'
-                }`}
+                onClick={() => setShowModelSelector(false)}
+                className="p-1 hover:bg-muted rounded-md transition-colors"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="font-medium text-sm">{model.name}</div>
+                <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Models List - Vertical Layout */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {getAvailableModels().map((model) => (
+                <button
+                  key={model.id}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setAIModel(model.id)
+                    setShowModelSelector(false)
+                    toast.success(`Switched to ${model.name}`)
+                  }}
+                  className={`w-full p-3 rounded-lg border transition-all duration-200 text-left hover:shadow-md ${
+                    aiModel === model.id
+                      ? 'border-primary bg-primary/10 shadow-md'
+                      : 'border-border hover:border-primary/50 hover:bg-muted/30'
+                  }`}
+                >
+                  <div className="flex flex-col space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="font-medium text-sm text-foreground">{model.name}</div>
+                      <div className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground">
+                        {model.ram_required}
+                      </div>
+                    </div>
                     <div className="text-xs text-muted-foreground">{model.description}</div>
                   </div>
-                  <div className="text-xs text-muted-foreground ml-2">{model.ram_required}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-          
-          <div className="mt-3 pt-3 border-t border-border">
-            <div className="text-xs text-muted-foreground">
-              <p>• Auto selects the best available model</p>
-              <p>• Local AI models require Ollama installation</p>
+                </button>
+              ))}
+            </div>
+            
+            {/* Footer */}
+            <div className="p-4 border-t border-border bg-muted/20">
+              <div className="text-xs text-muted-foreground text-center">
+                <p>• Auto selects the best available model</p>
+                <p>• Local AI models require Ollama installation</p>
+              </div>
             </div>
           </div>
         </div>
-        </>,
-        document.body
       )}
     </div>
   )

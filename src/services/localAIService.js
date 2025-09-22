@@ -12045,8 +12045,8 @@ export default FormField`
     
     if (gameType === 'temple-run') {
       console.log('🎮 Generating Temple Run game with proper framework...');
-      const gameData = gameDevelopmentService.generateGame('temple-run', { component, prompt, context });
-      return gameData.files['game.js'] || this.generateTempleRunGame(component, prompt, context);
+      // Always return React component, not standalone game.js
+      return this.generateTempleRunGame(component, prompt, context);
     }
     
     if (gameType === 'coin-collector') {

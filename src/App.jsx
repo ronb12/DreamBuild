@@ -68,6 +68,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/projects" element={<Projects />} />
+                  <Route path="/auth/github/callback" element={<GitHubCallback />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/documentation" element={<Documentation />} />
                   <Route path="/examples" element={<Examples />} />

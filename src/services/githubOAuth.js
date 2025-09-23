@@ -35,8 +35,11 @@ class GitHubOAuth {
   // Open GitHub OAuth popup
   async authenticate() {
     return new Promise((resolve, reject) => {
+      const authUrl = this.getAuthUrl();
+      console.log('Opening GitHub OAuth URL:', authUrl);
+      
       const popup = window.open(
-        this.getAuthUrl(),
+        authUrl,
         'github-auth',
         'width=600,height=700,scrollbars=yes,resizable=yes'
       );

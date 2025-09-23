@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Github, Twitter, Mail, Heart, Send } from 'lucide-react'
+import { Github, Twitter, Mail, Heart, Send, Sparkles, Code, Database, Users, ExternalLink } from 'lucide-react'
 
 const Footer = () => {
   const [email, setEmail] = useState('')

@@ -127,6 +127,47 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Social Proof Section */}
+      <section className="py-16 bg-muted/20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              Trusted by Developers Worldwide
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Join thousands of developers building amazing applications with DreamBuild
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary mb-2">10K+</div>
+              <div className="text-sm text-muted-foreground">Active Developers</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary mb-2">50K+</div>
+              <div className="text-sm text-muted-foreground">Projects Created</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-primary mb-2">99.9%</div>
+              <div className="text-sm text-muted-foreground">Uptime</div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20 bg-muted/30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -148,13 +189,14 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 hover:shadow-lg hover:bg-card/70 transition-all duration-200"
+                whileHover={{ y: -5 }}
+                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 hover:shadow-xl hover:bg-card/70 transition-all duration-300 group cursor-pointer"
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors duration-300">
+                  <feature.icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-foreground">{feature.description}</p>
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors duration-300">{feature.title}</h3>
+                <p className="text-foreground leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -162,29 +204,39 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to start building?
-          </h2>
-          <p className="text-lg text-foreground mb-8">
-            Join thousands of developers who are already using DreamBuild to create amazing applications.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/ai-builder"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors text-lg font-semibold"
-            >
-              Get Started Free
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-colors text-lg font-semibold"
-            >
-              View Dashboard
-            </Link>
-          </div>
+      <section className="py-20 relative">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary-light/5"></div>
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to start building?
+            </h2>
+            <p className="text-lg text-foreground mb-8 max-w-2xl mx-auto">
+              Join thousands of developers who are already using DreamBuild to create amazing applications.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/ai-builder"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-all duration-200 text-lg font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              >
+                Get Started Free
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-all duration-200 text-lg font-semibold hover:border-primary/50"
+              >
+                View Dashboard
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

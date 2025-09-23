@@ -1,5 +1,5 @@
-import React from 'react'
-import { Github, Twitter, Mail, Heart } from 'lucide-react'
+import React, { useState } from 'react'
+import { Github, Twitter, Mail, Heart, Send } from 'lucide-react'
 
 const Footer = () => {
   return (

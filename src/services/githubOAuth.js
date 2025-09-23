@@ -86,6 +86,13 @@ class GitHubOAuth {
     });
   }
 
+  // Fallback method: redirect current window (if popups are blocked)
+  authenticateWithRedirect() {
+    const authUrl = this.getAuthUrl();
+    console.log('Redirecting to GitHub OAuth URL:', authUrl);
+    window.location.href = authUrl;
+  }
+
   // Get current user
   getCurrentUser() {
     const userStr = localStorage.getItem('github_user');

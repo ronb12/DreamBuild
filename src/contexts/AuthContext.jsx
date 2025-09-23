@@ -143,6 +143,16 @@ export function AuthProvider({ children }) {
       console.log('Successfully signed in with GitHub!')
     } catch (error) {
       console.error('GitHub OAuth error:', error.message)
+      
+      // If popup is blocked, offer redirect option
+      if (error.message.includes('Popup blocked')) {
+        const useRedirect = confirm('Popups are blocked. Would you like to redirect to GitHub for authentication?')
+        if (useRedirect) {
+          githubOAuth.authenticateWithRedirect()
+          return
+        }
+      }
+      
       throw error
     }
   }

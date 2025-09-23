@@ -730,18 +730,18 @@ export default function AIPromptCursorStyle() {
         </div>
       )}
 
-      {/* Model Selector Modal - Rebuilt with Vertical Layout */}
+      {/* Model Selector Modal - Cursor Style Positioning */}
       {showModelSelector && (
-        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4" style={{ zIndex: 999999 }}>
+        <div className="fixed inset-0 z-[999999]" style={{ zIndex: 999999 }}>
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowModelSelector(false)}
           />
           
-          {/* Modal Container - Ultra Compact */}
-          <div className="relative bg-background border border-border rounded-lg shadow-2xl w-full max-w-sm max-h-[40vh] flex flex-col mx-auto">
-            {/* Header - Maximum Compact */}
+          {/* Modal Container - Positioned near Auto button */}
+          <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-2xl w-80 max-h-96 flex flex-col">
+            {/* Header - Compact */}
             <div className="flex items-center justify-between p-2 border-b border-border">
               <h3 className="text-sm font-semibold text-foreground">Select AI Model</h3>
               <button
@@ -754,8 +754,8 @@ export default function AIPromptCursorStyle() {
               </button>
             </div>
             
-            {/* Models List - Super Compact Vertical Layout */}
-            <div className="flex-1 overflow-y-auto p-1 space-y-0">
+            {/* Models List - Scrollable with all models */}
+            <div className="flex-1 overflow-y-auto max-h-80 p-2 space-y-1">
               {getAvailableModels().map((model) => (
                 <button
                   key={model.id}
@@ -768,18 +768,38 @@ export default function AIPromptCursorStyle() {
                     setShowModelSelector(false)
                     toast.success(`Switched to ${model.name}`)
                   }}
-                  className={`w-full p-1 rounded-sm border transition-all duration-200 text-left hover:shadow-sm ${
+                  className={`w-full p-3 rounded-md border transition-all duration-200 text-left hover:shadow-sm ${
                     aiModel === model.id
                       ? 'border-primary bg-primary/10 shadow-sm'
                       : 'border-border hover:border-primary/50 hover:bg-muted/30'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-xs text-foreground truncate">{model.name}</div>
-                      <div className="text-xs text-muted-foreground truncate opacity-75">{model.description}</div>
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      {/* Checkbox for model selection */}
+                      <div className="flex-shrink-0">
+                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                          aiModel === model.id
+                            ? 'border-primary bg-primary'
+                            : 'border-border bg-background'
+                        }`}>
+                          {aiModel === model.id && (
+                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Model info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm text-foreground">{model.name}</div>
+                        <div className="text-xs text-muted-foreground">{model.description}</div>
+                      </div>
                     </div>
-                    <div className="text-xs px-1 py-0.5 bg-muted rounded text-muted-foreground ml-1 flex-shrink-0">
+                    
+                    {/* RAM requirement */}
+                    <div className="text-xs px-2 py-1 bg-muted rounded text-muted-foreground ml-2 flex-shrink-0">
                       {model.ram_required}
                     </div>
                   </div>
@@ -787,7 +807,7 @@ export default function AIPromptCursorStyle() {
               ))}
             </div>
             
-            {/* Footer - Maximum Compact */}
+            {/* Footer - Compact */}
             <div className="p-1.5 border-t border-border bg-muted/20">
               <div className="text-xs text-muted-foreground text-center">
                 Auto selects best model • Requires Ollama

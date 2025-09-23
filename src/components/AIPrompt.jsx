@@ -668,14 +668,33 @@ Please implement this suggestion in my current project.`
                             toast.success(`Switched to ${model.name}`)
                           }
                         }}
-                        className={`w-full flex items-center justify-between p-2.5 text-xs hover:bg-muted transition-colors ${
+                        className={`w-full flex items-center justify-between p-3 text-xs hover:bg-muted transition-colors ${
                           aiModel === model.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                         }`}
                       >
-                        <div className="flex flex-col items-start">
-                          <span className="font-medium text-foreground">{model.name}</span>
-                          <span className="text-muted-foreground text-xs mt-0.5">{model.description}</span>
+                        <div className="flex items-center gap-3 flex-1">
+                          {/* Checkbox for model selection */}
+                          <div className="flex-shrink-0">
+                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                              aiModel === model.id
+                                ? 'border-blue-500 bg-blue-500'
+                                : 'border-border bg-background'
+                            }`}>
+                              {aiModel === model.id && (
+                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Model info */}
+                          <div className="flex flex-col items-start flex-1">
+                            <span className="font-medium text-foreground">{model.name}</span>
+                            <span className="text-muted-foreground text-xs mt-0.5">{model.description}</span>
+                          </div>
                         </div>
+                        
                         <div className="flex flex-col items-end text-xs text-muted-foreground">
                           <span>{model.ram}</span>
                           <span className={`px-1.5 py-0.5 rounded text-xs mt-0.5 ${
@@ -686,7 +705,7 @@ Please implement this suggestion in my current project.`
                             'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300'
                           }`}>
                             {model.type}
-            </span>
+                          </span>
                         </div>
                       </button>
                     ))}

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { useAuth } from './AuthContext'
 import toast from 'react-hot-toast'
 
@@ -32,6 +32,17 @@ export function ProjectProvider({ children }) {
 
   const [projects, setProjects] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+
+  // Automatically load projects when user authenticates
+  useEffect(() => {
+    if (user) {
+      console.log('🔄 User authenticated, loading projects automatically...')
+      loadProjects()
+    } else {
+      console.log('⚠️ No user, clearing projects')
+      setProjects([])
+    }
+  }, [user, loadProjects])
 
   const switchFile = useCallback((filename) => {
     setCurrentProject(prev => ({

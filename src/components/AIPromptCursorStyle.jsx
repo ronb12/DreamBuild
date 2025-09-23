@@ -730,29 +730,32 @@ export default function AIPromptCursorStyle() {
         </div>
       )}
 
-      {/* Model Selector Modal - Compact Dropdown Style */}
+      {/* Model Selector Modal - Ultra Compact Dropdown */}
       {showModelSelector && (
-        <div className="fixed inset-0 z-50" onClick={() => setShowModelSelector(false)}>
-          {/* Modal Container - Positioned near Auto button */}
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 z-40" onClick={() => setShowModelSelector(false)}></div>
+          
+          {/* Compact Dropdown Container */}
           <div 
-            className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-2xl w-80 max-h-96 flex flex-col"
+            className="fixed bottom-16 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl w-60 max-h-40 flex flex-col z-50"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header - Compact */}
-            <div className="flex items-center justify-between p-2 border-b border-border">
-              <h3 className="text-sm font-semibold text-foreground">Select AI Model</h3>
+            {/* Header - Ultra Compact */}
+            <div className="flex items-center justify-between p-1.5 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-xs font-semibold text-gray-900 dark:text-white">AI Model</h3>
               <button
                 onClick={() => setShowModelSelector(false)}
-                className="p-1 hover:bg-muted rounded-md transition-colors"
+                className="p-0.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
               >
-                <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             
-            {/* Models List - Scrollable with all models */}
-            <div className="flex-1 overflow-y-auto max-h-80 p-2 space-y-1">
+            {/* Models List - Ultra compact scrollable list */}
+            <div className="flex-1 overflow-y-auto max-h-28 p-1 space-y-0.5">
               {getAvailableModels().map((model) => (
                 <button
                   key={model.id}
@@ -765,38 +768,38 @@ export default function AIPromptCursorStyle() {
                     setShowModelSelector(false)
                     toast.success(`Switched to ${model.name}`)
                   }}
-                  className={`w-full p-3 rounded-md border transition-all duration-200 text-left hover:shadow-sm ${
+                  className={`w-full p-1 rounded border transition-all duration-200 text-left hover:bg-gray-50 dark:hover:bg-gray-700 ${
                     aiModel === model.id
-                      ? 'border-primary bg-primary/10 shadow-sm'
-                      : 'border-border hover:border-primary/50 hover:bg-muted/30'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-600'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {/* Checkbox for model selection */}
+                      {/* Checkbox for model selection - Ultra compact */}
                       <div className="flex-shrink-0">
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                        <div className={`w-3 h-3 rounded border-2 flex items-center justify-center transition-all duration-200 ${
                           aiModel === model.id
-                            ? 'border-blue-500 bg-blue-500 shadow-sm'
-                            : 'border-gray-300 bg-white hover:border-blue-400'
+                            ? 'border-blue-500 bg-blue-500'
+                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
                         }`}>
                           {aiModel === model.id && (
-                            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
                           )}
                         </div>
                       </div>
                       
-                      {/* Model info */}
+                      {/* Model info - Ultra compact */}
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm text-foreground">{model.name}</div>
-                        <div className="text-xs text-muted-foreground">{model.description}</div>
+                        <div className="font-medium text-xs text-gray-900 dark:text-white truncate">{model.name}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{model.description}</div>
                       </div>
                     </div>
                     
-                    {/* RAM requirement */}
-                    <div className="text-xs px-2 py-1 bg-muted rounded text-muted-foreground ml-2 flex-shrink-0">
+                    {/* RAM requirement - Ultra compact */}
+                    <div className="text-xs px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300 ml-1 flex-shrink-0">
                       {model.ram_required}
                     </div>
                   </div>
@@ -804,14 +807,14 @@ export default function AIPromptCursorStyle() {
               ))}
             </div>
             
-            {/* Footer - Compact */}
-            <div className="p-1.5 border-t border-border bg-muted/20">
-              <div className="text-xs text-muted-foreground text-center">
-                Auto selects best model • Requires Ollama
+            {/* Footer - Ultra Compact */}
+            <div className="p-1 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+              <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                Auto selects best model
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

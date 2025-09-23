@@ -15,7 +15,7 @@
     "firebase:deploy": "firebase deploy",
     "firebase:serve": "firebase serve",
     "deploy": "./auto-deploy.sh",
-    "watch:deploy": "node watch-and-deploy.js",
+    "watch:deploy": "node watch-and-deploy.cjs",
     "dev:auto": "concurrently \"npm run dev\" \"npm run watch:deploy\""
   },
   "dependencies": {

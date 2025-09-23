@@ -88,7 +88,7 @@ else
 fi
 
 # Get Firebase hosting URL
-HOSTING_URL=$(firebase hosting:channel:list --format=json | jq -r '.channels[] | select(.channelId=="live") | .url')
+HOSTING_URL="https://dreambuild-2024-app.web.app"
 
 print_success "🎉 Auto Deploy Complete!"
 print_success "📊 GitHub: Updated main branch"

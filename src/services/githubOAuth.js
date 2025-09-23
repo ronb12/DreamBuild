@@ -3,7 +3,7 @@ class GitHubOAuth {
   constructor() {
     // You need to replace this with your actual GitHub OAuth App Client ID
     this.clientId = 'Ov23li43edsNUX2sjV6g'; // Replace with your GitHub OAuth App Client ID
-    this.redirectUri = `https://dreambuild-2024-app.web.app/auth/github/callback`;
+    this.redirectUri = `https://dreambuild-2024-app.firebaseapp.com/__/auth/handler`;
     this.scope = 'user:email,read:user';
     
     console.log('GitHub OAuth initialized with:', {

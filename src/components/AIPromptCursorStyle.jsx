@@ -266,7 +266,7 @@ export default function AIPromptCursorStyle() {
       'incoder-6b': 'InCoder 6B'
     }
     const displayName = models[modelId] || 'Auto'
-    console.log(`🎯 getModelDisplayName: ${modelId} -> ${displayName}`)
+    console.log(`🎯 getModelDisplayName called with: ${modelId} -> ${displayName}`)
     return displayName
   }
 
@@ -804,7 +804,7 @@ export default function AIPromptCursorStyle() {
                       </div>
                       
                       {/* Model info - Ultra compact */}
-                      <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0">
                         <div className="font-medium text-xs text-gray-900 dark:text-white truncate">{model.name}</div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{model.description}</div>
                       </div>

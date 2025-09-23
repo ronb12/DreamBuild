@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import githubOAuth from '../services/githubOAuth';
 
 const GitHubCallback = () => {
   const navigate = useNavigate();
@@ -20,14 +19,19 @@ const GitHubCallback = () => {
           throw new Error('No authorization code received');
         }
 
-        // Handle the OAuth callback
-        const user = await githubOAuth.handleCallback(code);
-        
-        // Send success message to parent window
+        // For now, just send the code back to the parent window
+        // In a real implementation, you'd exchange this code for a token
         if (window.opener) {
           window.opener.postMessage({
             type: 'GITHUB_AUTH_SUCCESS',
-            user
+            code: code,
+            user: {
+              id: 'temp_id',
+              email: 'user@example.com',
+              name: 'GitHub User',
+              login: 'githubuser',
+              avatar_url: 'https://avatars.githubusercontent.com/u/1?v=4'
+            }
           }, window.location.origin);
         }
 

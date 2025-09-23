@@ -40,6 +40,7 @@ const Navbar = () => {
   const navigation = [
     { name: 'Home', href: '/', icon: Rocket },
     { name: 'AI Builder', href: '/ai-builder', icon: Code },
+    { name: 'Templates', href: '/templates', icon: Sparkles },
     { name: 'Projects', href: '/projects', icon: Database },
     { name: 'Dashboard', href: '/dashboard', icon: Users }
   ]

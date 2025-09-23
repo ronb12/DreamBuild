@@ -8,6 +8,7 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
 import AIBuilder from './pages/AIBuilder'
+import Templates from './pages/Templates'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -61,6 +62,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/app" element={<Navigate to="/ai-builder" replace />} />
                   <Route path="/ai-builder" element={<AIBuilder />} />
+                  <Route path="/templates" element={<Templates />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />

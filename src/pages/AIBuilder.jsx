@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import FileManager from '../components/FileManager'
 import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
@@ -54,16 +55,14 @@ const AIBuilder = () => {
               <p className="text-xs text-muted-foreground">Build with artificial intelligence</p>
             </div>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05, y: -1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowTemplateSelector(true)}
+          <Link
+            to="/templates"
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-primary-light text-primary-foreground rounded-xl hover:from-primary-dark hover:to-primary transition-all duration-300 text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
             title="Browse Templates"
           >
             <FileText className="h-4 w-4" />
             Templates
-          </motion.button>
+          </Link>
         </div>
 
         {/* Right Side - Enhanced Tab Navigation */}

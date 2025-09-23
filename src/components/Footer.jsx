@@ -16,62 +16,94 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-muted/30 border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center">
-                <span className="text-black font-bold">D</span>
+    <footer className="bg-background border-t border-border">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Brand Section */}
+          <div className="lg:col-span-1 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center shadow-lg">
+                <Sparkles className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">DreamBuild</span>
+              <div>
+                <span className="text-xl font-bold text-foreground">DreamBuild</span>
+                <p className="text-xs text-muted-foreground -mt-1">AI Development Platform</p>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Universal AI Development Platform supporting 100+ programming languages. 
-              Build, code, and deploy with the power of AI.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Build amazing projects with AI-powered code generation. Simple, fast, and effective development tools for modern developers.
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <a
                 href="https://github.com/ronb12/DreamBuild"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 hover:bg-muted rounded-md transition-colors"
+                className="p-2 hover:bg-muted rounded-lg transition-colors group"
+                title="GitHub"
               >
-                <Github className="h-4 w-4" />
+                <Github className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 hover:bg-muted rounded-lg transition-colors group"
+                title="Twitter"
+              >
+                <Twitter className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+              </a>
+              <a
+                href="mailto:contact@dreambuild.ai"
+                className="p-2 hover:bg-muted rounded-lg transition-colors group"
+                title="Email"
+              >
+                <Mail className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
               </a>
             </div>
           </div>
 
           {/* Newsletter Signup */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Stay Updated</h3>
-            <p className="text-sm text-muted-foreground">
-              Get the latest updates and features delivered to your inbox.
+            <div className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Stay Updated</h3>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Get the latest updates, new features, and development tips delivered to your inbox.
             </p>
-            <form onSubmit={handleNewsletterSubmit} className="space-y-2">
+            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
               <div className="flex gap-2">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  placeholder="Enter your email address"
+                  className="flex-1 px-4 py-3 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-colors"
                   required
                 />
                 <button
                   type="submit"
                   disabled={isSubscribed}
-                  className="px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {isSubscribed ? (
-                    <Mail className="h-4 w-4" />
+                    <>
+                      <Mail className="h-4 w-4" />
+                      <span className="text-sm">Subscribed!</span>
+                    </>
                   ) : (
-                    <Send className="h-4 w-4" />
+                    <>
+                      <Send className="h-4 w-4" />
+                      <span className="text-sm">Subscribe</span>
+                    </>
                   )}
                 </button>
               </div>
               {isSubscribed && (
-                <p className="text-xs text-green-600">Thanks for subscribing!</p>
+                <p className="text-sm text-green-600 flex items-center gap-2">
+                  <Heart className="h-4 w-4" />
+                  Thanks for subscribing! We'll keep you updated.
+                </p>
               )}
             </form>
           </div>

@@ -96,14 +96,14 @@ const Home = () => {
             >
               <Link
                 to="/ai-builder"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-all duration-200 text-lg font-semibold"
+                className="inline-flex items-center gap-3 px-10 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary-dark transition-all duration-300 text-lg font-semibold shadow-lg hover:shadow-xl"
               >
                 <Rocket className="h-5 w-5" />
                 Start Building
               </Link>
               <Link
                 to="/templates"
-                className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-all duration-200 text-lg font-semibold"
+                className="inline-flex items-center gap-3 px-10 py-4 border-2 border-primary/20 text-primary rounded-xl hover:bg-primary/5 hover:border-primary/40 transition-all duration-300 text-lg font-semibold"
               >
                 <Code className="h-5 w-5" />
                 Browse Templates
@@ -188,22 +188,22 @@ const Home = () => {
             className="max-w-3xl mx-auto"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Start?
+              Ready to Build?
             </h2>
-            <p className="text-lg text-foreground mb-8">
-              Join thousands of developers building amazing projects with AI.
+            <p className="text-lg text-muted-foreground mb-8">
+              Start creating amazing projects with AI-powered development tools.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/ai-builder"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-all duration-200 text-lg font-semibold"
+                className="inline-flex items-center gap-3 px-10 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary-dark transition-all duration-300 text-lg font-semibold shadow-lg hover:shadow-xl"
               >
                 <Rocket className="h-5 w-5" />
                 Get Started
               </Link>
               <Link
                 to="/templates"
-                className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-all duration-200 text-lg font-semibold"
+                className="inline-flex items-center gap-3 px-10 py-4 border-2 border-primary/20 text-primary rounded-xl hover:bg-primary/5 hover:border-primary/40 transition-all duration-300 text-lg font-semibold"
               >
                 <Code className="h-5 w-5" />
                 View Templates

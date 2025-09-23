@@ -199,21 +199,33 @@ const Projects = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background" style={{ paddingTop: '80px' }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20" style={{ paddingTop: '80px' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Projects</h1>
-            <p className="text-muted-foreground">Manage your AI-generated projects</p>
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+              Projects
+            </h1>
+            <p className="text-lg text-muted-foreground">Manage and organize your AI-generated projects</p>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Folder className="h-4 w-4" />
+                {allProjects.length} Total Projects
+              </span>
+              <span className="flex items-center gap-1">
+                <Star className="h-4 w-4" />
+                {allProjects.filter(p => p.source === 'github').length} GitHub
+              </span>
+            </div>
           </div>
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowCreateDialog(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 font-medium"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-5 w-5" />
             New Project
           </motion.button>
         </div>

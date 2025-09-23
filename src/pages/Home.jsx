@@ -110,7 +110,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl text-foreground mb-12 max-w-3xl mx-auto leading-relaxed"
+              className="text-lg sm:text-xl text-foreground mb-12 max-w-2xl mx-auto leading-relaxed"
             >
               Experience the next generation of development with DreamBuild - the revolutionary AI platform 
               that's changing how developers build, create, and innovate. Be among the first to discover what's possible.
@@ -121,7 +121,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 max-w-md mx-auto"
             >
               <Link
                 to="/ai-builder"
@@ -145,7 +145,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto"
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto"
             >
               {stats.map((stat, index) => {
                 const Icon = stat.icon
@@ -169,11 +169,11 @@ const Home = () => {
       {/* Social Proof Section */}
       <section className="py-16 bg-muted/20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
               Join the AI Development Revolution
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground">
               Be part of the next generation of developers shaping the future with cutting-edge AI tools
             </p>
           </div>

@@ -205,13 +205,13 @@ const Projects = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100" style={{ paddingTop: '100px' }}>
         <div className="w-full px-1 sm:px-2 lg:px-3 py-8">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
-          <div className="space-y-3 flex-1">
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="space-y-3 max-w-4xl">
             <h1 className="text-5xl font-bold text-gray-900">
               Projects
             </h1>
             <p className="text-lg text-gray-600">Manage and organize your AI-generated projects</p>
-            <div className="flex flex-wrap items-center gap-6 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
               <span className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
                 <Folder className="h-4 w-4" />
                 {allProjects.length} Total Projects
@@ -222,7 +222,7 @@ const Projects = () => {
               </span>
             </div>
           </div>
-          <div className="flex-shrink-0">
+          <div className="mt-6">
             <motion.button
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -236,7 +236,7 @@ const Projects = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap items-center gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 p-2 rounded-2xl mb-8 shadow-sm overflow-x-auto">
+        <div className="flex flex-wrap items-center justify-center gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 p-2 rounded-2xl mb-8 shadow-sm overflow-x-auto max-w-4xl mx-auto">
           {tabs.map((tab) => {
             const IconComponent = tab.icon
             const isActive = activeTab === tab.id
@@ -265,7 +265,7 @@ const Projects = () => {
         </div>
 
         {/* Project Dropdown */}
-        <div className="flex items-center gap-3 mb-8 w-full">
+        <div className="flex items-center gap-3 mb-8 w-full max-w-4xl mx-auto">
           <select
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

@@ -90,17 +90,25 @@ const GitHubIntegration = () => {
 
     setIsLoading(true)
     try {
+      console.log('🔄 Starting GitHub repository sync for:', repo.name)
+      
       const project = await githubService.syncRepository(repo)
+      console.log('📦 Converted repository to project:', project)
+      
       // Add user ID to the project
       project.userId = user.uid
       project.createdAt = new Date()
       
+      console.log('💾 Saving project to Firestore...')
       await saveExternalProject(project)
+      console.log('✅ Project saved successfully!')
       
       setSyncedRepos(prev => new Set([...prev, repo.githubData.id]))
       toast.success(`Repository "${repo.name}" synced successfully!`)
+      
+      console.log('🎉 GitHub sync completed successfully!')
     } catch (error) {
-      console.error('Failed to sync repository:', error)
+      console.error('❌ Failed to sync repository:', error)
       toast.error('Failed to sync repository. Please try again.')
     } finally {
       setIsLoading(false)

@@ -30,6 +30,9 @@ const Projects = () => {
   const [newProjectType, setNewProjectType] = useState('web')
   const [showProjectMenu, setShowProjectMenu] = useState(null)
 
+  // Debug logging
+  console.log('Projects page rendering, projects:', projects)
+
   // Use real projects from context
   const allProjects = projects.map(project => ({
     id: project.id,
@@ -198,9 +201,11 @@ const Projects = () => {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100" style={{ paddingTop: '100px' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  // Error boundary for debugging
+  try {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100" style={{ paddingTop: '100px' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
           <div className="space-y-3 flex-1">
@@ -250,7 +255,7 @@ const Projects = () => {
                 }`}
               >
                 <IconComponent className="h-4 w-4 flex-shrink-0" />
-                <span className="hidden sm:inline">{tab.name}</span>
+                <span className="text-sm font-medium">{tab.name}</span>
                 <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
                   isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
                 }`}>
@@ -262,15 +267,15 @@ const Projects = () => {
         </div>
 
         {/* Search */}
-        <div className="relative mb-8 max-w-lg">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <div className="flex items-center gap-3 mb-8 max-w-4xl">
           <input
             type="text"
             placeholder="Search projects by name, description, or tags..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-200 text-gray-900 placeholder:text-gray-400 text-sm shadow-sm hover:shadow-md"
+            className="flex-1 pl-6 pr-6 py-4 border border-gray-200 rounded-xl bg-white/90 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-200 text-gray-900 placeholder:text-gray-400 text-base shadow-sm hover:shadow-md focus:shadow-lg"
           />
+          <Search className="h-6 w-6 text-gray-400 flex-shrink-0" />
         </div>
 
         {/* Projects List */}
@@ -300,9 +305,14 @@ const Projects = () => {
                         <h3 className="font-semibold text-lg text-foreground truncate group-hover:text-primary transition-colors duration-200">
                           {project.name}
                         </h3>
-                        <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border mt-1 ${getStatusColor(project.status)}`}>
-                          {project.status}
-                        </span>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-gray-500 font-medium capitalize">
+                            {project.type} Project
+                          </span>
+                          <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full border ${getStatusColor(project.status)}`}>
+                            {project.status}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     
@@ -517,6 +527,20 @@ const Projects = () => {
       )}
     </div>
   )
+  } catch (error) {
+    console.error('Error in Projects component:', error)
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100" style={{ paddingTop: '100px' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Projects</h1>
+            <p className="text-gray-600 mb-4">There was an error loading the projects page.</p>
+            <p className="text-sm text-gray-500">Error: {error.message}</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 }
 
 export default Projects

@@ -773,9 +773,14 @@ export default function AIPromptCursorStyle() {
                     e.stopPropagation()
                     console.log(`🎯 Clicking model: ${model.id} (${model.name})`)
                     console.log(`🎯 Current aiModel before: ${aiModel}`)
-                    setAIModel(model.id)
-                    console.log(`🎯 setAIModel called with: ${model.id}`)
-                    setModelUpdateKey(prev => prev + 1)
+                    
+                    // Try to set the model with a delay to see if it's a timing issue
+                    setTimeout(() => {
+                      console.log(`🎯 Setting model after timeout: ${model.id}`)
+                      setAIModel(model.id)
+                      setModelUpdateKey(prev => prev + 1)
+                    }, 100)
+                    
                     setShowModelSelector(false)
                     toast.success(`Switched to ${model.name}`)
                     console.log(`🎯 Click handler completed for: ${model.name}`)

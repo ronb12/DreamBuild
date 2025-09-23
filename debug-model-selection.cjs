@@ -76,13 +76,79 @@ async function debugModelSelection() {
         
         console.log('📊 Button details:', buttonDetails);
         
-        // Try clicking the button
+        // Try clicking the button with different methods
         try {
+          // Method 1: Regular click
           await modelButtons[1].click();
-          console.log('✅ Click executed successfully');
+          console.log('✅ Regular click executed');
         } catch (error) {
-          console.log('❌ Click failed:', error.message);
+          console.log('❌ Regular click failed:', error.message);
         }
+        
+        // Wait a bit
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Method 2: Force click
+        try {
+          await modelButtons[1].click({ force: true });
+          console.log('✅ Force click executed');
+        } catch (error) {
+          console.log('❌ Force click failed:', error.message);
+        }
+        
+        // Wait a bit
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Method 3: Dispatch event
+        try {
+          await page.evaluate((index) => {
+            const buttons = document.querySelectorAll('button[class*="w-full p-2 rounded"]');
+            if (buttons[index]) {
+              const event = new MouseEvent('click', { bubbles: true, cancelable: true });
+              buttons[index].dispatchEvent(event);
+            }
+          }, 1);
+          console.log('✅ Dispatch event executed');
+        } catch (error) {
+          console.log('❌ Dispatch event failed:', error.message);
+        }
+        
+        // Check if there are any overlays or z-index issues
+        const overlayInfo = await page.evaluate(() => {
+          const dropdown = document.querySelector('div[class*="fixed bottom-16"]');
+          if (dropdown) {
+            const rect = dropdown.getBoundingClientRect();
+            const style = window.getComputedStyle(dropdown);
+            return {
+              zIndex: style.zIndex,
+              position: style.position,
+              pointerEvents: style.pointerEvents,
+              rect: rect
+            };
+          }
+          return null;
+        });
+        console.log('📊 Dropdown overlay info:', overlayInfo);
+        
+        // Check if the button is actually clickable
+        const clickabilityInfo = await page.evaluate((index) => {
+          const buttons = document.querySelectorAll('button[class*="w-full p-2 rounded"]');
+          if (buttons[index]) {
+            const button = buttons[index];
+            const rect = button.getBoundingClientRect();
+            const style = window.getComputedStyle(button);
+            return {
+              zIndex: style.zIndex,
+              position: style.position,
+              pointerEvents: style.pointerEvents,
+              rect: rect,
+              isClickable: button.offsetParent !== null,
+              hasOnClick: button.onclick !== null
+            };
+          }
+          return null;
+        }, 1);
+        console.log('📊 Button clickability info:', clickabilityInfo);
         
         await new Promise(resolve => setTimeout(resolve, 3000));
         

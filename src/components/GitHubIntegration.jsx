@@ -95,8 +95,7 @@ const GitHubIntegration = () => {
       project.userId = user.uid
       project.createdAt = new Date()
       
-      await saveProject(project)
-      await loadProjects()
+      await saveExternalProject(project)
       
       setSyncedRepos(prev => new Set([...prev, repo.githubData.id]))
       toast.success(`Repository "${repo.name}" synced successfully!`)

@@ -63,31 +63,21 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2 bg-muted/30 p-1 rounded-xl border border-border/50">
+          <div className="hidden md:flex items-center gap-1">
             {navigation.map((item) => {
               const Icon = item.icon
               return (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 relative group ${
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive(item.href)
-                      ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background/80 hover:shadow-sm'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                   }`}
                 >
-                  <Icon className={`h-4 w-4 transition-transform duration-300 ${isActive(item.href) ? 'scale-110' : 'group-hover:scale-105'}`} />
-                  <span className="relative">
-                    {item.name}
-                    {isActive(item.href) && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute inset-0 bg-primary/10 rounded-lg -z-10"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                      />
-                    )}
-                  </span>
+                  <Icon className="h-4 w-4" />
+                  {item.name}
                 </Link>
               )
             })}
@@ -98,13 +88,13 @@ const Navbar = () => {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-muted/50 transition-all duration-200 border border-border/50 hover:border-primary/30 group"
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
               title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
               {theme === 'light' ? (
-                <Moon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                <Moon className="h-4 w-4 text-muted-foreground" />
               ) : (
-                <Sun className="h-4 w-4 text-warning group-hover:text-primary transition-colors" />
+                <Sun className="h-4 w-4 text-muted-foreground" />
               )}
             </button>
 
@@ -113,7 +103,7 @@ const Navbar = () => {
               <div className="relative user-menu">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors border border-border/50 hover:border-primary/30"
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors"
                 >
                   <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                     <span className="text-sm font-semibold text-primary">
@@ -169,10 +159,10 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-lg hover:from-primary-dark hover:to-primary transition-all duration-200 text-xs sm:text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors text-sm font-medium"
               >
-                <Rocket className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden xs:inline">Sign In</span>
+                <Rocket className="h-4 w-4" />
+                Sign In
               </Link>
             )}
 

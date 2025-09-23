@@ -236,7 +236,7 @@ const Projects = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap items-center justify-center gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 p-2 rounded-2xl mb-8 shadow-sm overflow-x-auto max-w-4xl mx-auto">
+        <div className="flex flex-wrap items-center justify-end gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 p-2 rounded-2xl mb-8 shadow-sm overflow-x-auto max-w-4xl mx-auto">
           {tabs.map((tab) => {
             const IconComponent = tab.icon
             const isActive = activeTab === tab.id

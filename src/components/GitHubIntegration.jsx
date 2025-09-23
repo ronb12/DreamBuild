@@ -108,14 +108,14 @@ const GitHubIntegration = () => {
     window.open(repo.githubData.htmlUrl, '_blank')
   }
 
-  if (!user || user.provider !== 'github') {
+  if (!user) {
     return (
       <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
         <div className="text-center py-8">
           <Github className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">GitHub Integration</h3>
           <p className="text-muted-foreground mb-4">
-            Sign in with GitHub to sync your repositories with DreamBuild projects.
+            Sign in to sync your GitHub repositories with DreamBuild projects.
           </p>
         </div>
       </div>

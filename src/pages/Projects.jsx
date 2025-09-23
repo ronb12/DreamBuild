@@ -365,35 +365,35 @@ const Projects = () => {
                 <AnimatePresence>
                   {showProjectMenu === project.id && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-4 mt-1 bg-card border border-border rounded-lg shadow-lg z-10 min-w-[150px]"
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      className="absolute right-4 top-16 bg-card/95 backdrop-blur-sm border border-border/50 rounded-xl shadow-xl z-20 min-w-[180px] overflow-hidden"
                     >
                       <div className="p-1">
-                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md transition-colors">
+                        <button className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-primary/10 rounded-lg transition-colors">
                           <Eye className="h-4 w-4" />
-                          View
+                          View Project
                         </button>
-                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md transition-colors">
+                        <button className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-primary/10 rounded-lg transition-colors">
                           <Edit className="h-4 w-4" />
-                          Edit
+                          Edit Details
                         </button>
-                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md transition-colors">
+                        <button className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-primary/10 rounded-lg transition-colors">
                           <Download className="h-4 w-4" />
                           Download
                         </button>
-                        <button className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted rounded-md transition-colors">
+                        <button className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-primary/10 rounded-lg transition-colors">
                           <Share className="h-4 w-4" />
-                          Share
+                          Share Project
                         </button>
-                        <hr className="my-1" />
+                        <div className="h-px bg-border/50 my-2 mx-2" />
                         <button 
                           onClick={() => handleDeleteProject(project.id)}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
-                          Delete
+                          Delete Project
                         </button>
                       </div>
                     </motion.div>

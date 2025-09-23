@@ -778,13 +778,16 @@ export default function AIPromptCursorStyle() {
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {/* Checkbox for model selection - Ultra compact */}
                       <div className="flex-shrink-0">
-                        <div className={`w-3 h-3 rounded border-2 flex items-center justify-center transition-all duration-200 ${
-                          aiModel === model.id
-                            ? 'border-blue-500 bg-blue-500'
-                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                        }`}>
+                        <div 
+                          className={`rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                            aiModel === model.id
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+                          }`}
+                          style={{ width: '12px', height: '12px', minWidth: '12px', minHeight: '12px' }}
+                        >
                           {aiModel === model.id && (
-                            <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="text-white" fill="currentColor" viewBox="0 0 20 20" style={{ width: '8px', height: '8px' }}>
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
                           )}

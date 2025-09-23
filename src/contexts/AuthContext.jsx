@@ -104,12 +104,15 @@ export function AuthProvider({ children }) {
 
   const signInWithGitHub = async () => {
     try {
+      // Create a fresh auth instance for GitHub only
+      const githubAuth = getAuth()
+      
       // Only use GitHub provider - no Google APIs
       const provider = new GithubAuthProvider()
       provider.addScope('user:email')
       
       console.log('Using GitHub provider only:', provider.providerId)
-      const result = await signInWithPopup(auth, provider)
+      const result = await signInWithPopup(githubAuth, provider)
       
       // Save user data to Firestore with error handling
       try {

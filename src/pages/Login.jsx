@@ -43,6 +43,8 @@ const Login = () => {
               alert('An account with this email already exists. Please sign in with your existing method instead.')
             } else if (error.message.includes('couldn\'t determine the sign-in method')) {
               alert('An account with this email already exists. Please try signing in with Google first, then you can link your GitHub account.')
+            } else if (error.message.includes('not properly configured')) {
+              alert('GitHub authentication is not properly configured. Please check Firebase Console settings or try signing in with Google instead.')
             } else {
               alert('Failed to sign in with GitHub. Please try again.')
             }

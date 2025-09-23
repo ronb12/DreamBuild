@@ -166,6 +166,9 @@ export function AuthProvider({ children }) {
         } else {
           throw new Error('An account with this email already exists. Please sign in with your existing method instead.')
         }
+      } else if (error.code === 'auth/internal-error') {
+        console.error('GitHub authentication internal error:', error.message)
+        throw new Error('GitHub authentication is not properly configured. Please check Firebase Console settings.')
       } else {
         console.error('Failed to sign in with GitHub:', error.message)
         throw error // Re-throw to let the component handle it

@@ -108,6 +108,7 @@ export function ProjectProvider({ children }) {
       return
     }
 
+    console.log('💾 saveExternalProject called with:', project)
     setIsLoading(true)
     try {
       // Ensure project has required fields
@@ -118,21 +119,29 @@ export function ProjectProvider({ children }) {
         createdAt: project.createdAt || new Date()
       }
 
+      console.log('📝 Project to save:', projectToSave)
+
       // Save to Firestore
       const { doc, setDoc, collection } = await import('firebase/firestore')
       const projectRef = doc(collection(db, 'projects'))
       
-      await setDoc(projectRef, {
+      const savedProject = {
         ...projectToSave,
         id: projectRef.id
-      })
+      }
+      
+      console.log('🔥 Saving to Firestore:', savedProject)
+      await setDoc(projectRef, savedProject)
+      console.log('✅ Project saved to Firestore with ID:', projectRef.id)
 
       toast.success(`Project "${project.name}" saved successfully!`)
       
       // Refresh projects list
-      loadProjects()
+      console.log('🔄 Refreshing projects list...')
+      await loadProjects()
+      console.log('✅ Projects list refreshed')
     } catch (error) {
-      console.error('Failed to save external project:', error)
+      console.error('❌ Failed to save external project:', error)
       toast.error('Failed to save project')
     } finally {
       setIsLoading(false)

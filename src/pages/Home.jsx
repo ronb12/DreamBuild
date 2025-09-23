@@ -43,26 +43,6 @@ const Home = () => {
     { label: 'Templates', value: '25+', icon: TrendingUp }
   ]
 
-  const testimonials = [
-    {
-      name: 'Alex Chen',
-      role: 'Developer',
-      content: 'DreamBuild makes coding so much easier. Highly recommended!',
-      rating: 5
-    },
-    {
-      name: 'Maria Santos',
-      role: 'Developer',
-      content: 'Great tool for building projects quickly.',
-      rating: 5
-    },
-    {
-      name: 'David Kim',
-      role: 'Developer',
-      content: 'Simple and effective. Perfect for my workflow.',
-      rating: 5
-    }
-  ]
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -78,10 +58,10 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium mb-8"
             >
               <Sparkles className="h-4 w-4" />
-              New AI Platform
+              AI-Powered Development Platform
             </motion.div>
 
             {/* Main Heading */}
@@ -89,10 +69,10 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
             >
               Build with{' '}
-              <span className="text-primary">
+              <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
                 AI
               </span>
             </motion.h1>
@@ -102,7 +82,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg sm:text-xl text-foreground mb-12 max-w-2xl mx-auto leading-relaxed"
+              className="text-xl sm:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed"
             >
               Create amazing projects with AI-powered code generation. Simple, fast, and effective.
             </motion.p>
@@ -156,45 +136,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Social Proof Section */}
-      <section className="py-16 bg-muted/20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              What Users Say
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              See what developers are saying about DreamBuild
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 hover:shadow-xl hover:bg-card/70 transition-all duration-300"
-              >
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                <p className="text-foreground leading-relaxed mb-4">
-                  "{testimonial.content}"
-                </p>
-                <div>
-                  <div className="font-semibold text-foreground">{testimonial.name}</div>
-                  <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Features Section */}
       <section className="py-20 bg-background">

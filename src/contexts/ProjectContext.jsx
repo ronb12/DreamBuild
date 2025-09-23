@@ -102,6 +102,43 @@ export function ProjectProvider({ children }) {
     }
   }, [currentProject, user, db])
 
+  const saveExternalProject = useCallback(async (project) => {
+    if (!user) {
+      toast.error('Please sign in to save projects')
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      // Ensure project has required fields
+      const projectToSave = {
+        ...project,
+        userId: user.uid,
+        lastModified: new Date(),
+        createdAt: project.createdAt || new Date()
+      }
+
+      // Save to Firestore
+      const { doc, setDoc, collection } = await import('firebase/firestore')
+      const projectRef = doc(collection(db, 'projects'))
+      
+      await setDoc(projectRef, {
+        ...projectToSave,
+        id: projectRef.id
+      })
+
+      toast.success(`Project "${project.name}" saved successfully!`)
+      
+      // Refresh projects list
+      loadProjects()
+    } catch (error) {
+      console.error('Failed to save external project:', error)
+      toast.error('Failed to save project')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user, db])
+
   const loadProjects = useCallback(async () => {
     if (!user) return
 

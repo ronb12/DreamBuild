@@ -35,7 +35,11 @@ const Login = () => {
       // Success toast will be handled by AuthContext
     } catch (error) {
       console.error('GitHub sign in error:', error)
-      // Error toast will be handled by AuthContext
+      if (error.message.includes('account with this email already exists')) {
+        alert('An account with this email already exists. Please sign in with Google first, then you can link your GitHub account.')
+      } else {
+        alert('Failed to sign in with GitHub. Please try again.')
+      }
     } finally {
       setIsSigningIn(false)
     }

@@ -36,7 +36,11 @@ const Signup = () => {
       toast.success('Welcome to DreamBuild!')
     } catch (error) {
       console.error('GitHub sign in error:', error)
-      toast.error('Failed to sign in with GitHub. Please try again.')
+      if (error.message.includes('account with this email already exists')) {
+        toast.error('An account with this email already exists. Please sign in with Google first, then you can link your GitHub account.')
+      } else {
+        toast.error('Failed to sign in with GitHub. Please try again.')
+      }
     } finally {
       setIsSigningIn(false)
     }

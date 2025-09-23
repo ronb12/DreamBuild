@@ -128,8 +128,38 @@ export function AuthProvider({ children }) {
       
       console.log('Successfully signed in with GitHub!')
     } catch (error) {
-      console.error('Failed to sign in with GitHub:', error.message)
-      throw error // Re-throw to let the component handle it
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        // Handle account linking
+        const email = error.customData?.email
+        if (email) {
+          try {
+            // Try to sign in with existing provider first
+            const signInMethods = await fetchSignInMethodsForEmail(auth, email)
+            if (signInMethods.includes('google.com')) {
+              // Link GitHub to existing Google account
+              const googleProvider = new GoogleAuthProvider()
+              const googleResult = await signInWithPopup(auth, googleProvider)
+              const githubCredential = GithubAuthProvider.credentialFromError(error)
+              if (githubCredential) {
+                await linkWithCredential(googleResult.user, githubCredential)
+                console.log('Successfully linked GitHub account!')
+              } else {
+                throw new Error('Unable to link GitHub account. Please try signing in with Google first.')
+              }
+            } else {
+              throw new Error('An account with this email already exists. Please sign in with your existing method first, then link your GitHub account in your profile settings.')
+            }
+          } catch (linkError) {
+            console.error('Failed to link accounts:', linkError.message)
+            throw new Error('An account with this email already exists. Please sign in with your existing method first.')
+          }
+        } else {
+          throw new Error('An account with this email already exists. Please sign in with your existing method first.')
+        }
+      } else {
+        console.error('Failed to sign in with GitHub:', error.message)
+        throw error // Re-throw to let the component handle it
+      }
     }
   }
 

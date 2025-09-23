@@ -150,6 +150,40 @@ async function debugModelSelection() {
         }, 1);
         console.log('📊 Button clickability info:', clickabilityInfo);
         
+        // Check if the React component is actually rendering
+        const reactInfo = await page.evaluate(() => {
+          const dropdown = document.querySelector('div[class*="fixed bottom-16"]');
+          if (dropdown) {
+            return {
+              hasReactProps: dropdown._reactInternalFiber !== undefined,
+              hasReactInstance: dropdown.__reactInternalInstance !== undefined,
+              innerHTML: dropdown.innerHTML.substring(0, 200) + '...'
+            };
+          }
+          return null;
+        });
+        console.log('📊 React component info:', reactInfo);
+        
+        // Try to manually trigger the click handler
+        const manualClickResult = await page.evaluate((index) => {
+          const buttons = document.querySelectorAll('button[class*="w-full p-2 rounded"]');
+          if (buttons[index]) {
+            const button = buttons[index];
+            
+            // Try to find the React fiber
+            const fiber = button._reactInternalFiber || button.__reactInternalInstance;
+            if (fiber) {
+              console.log('Found React fiber');
+              return { hasReactFiber: true };
+            } else {
+              console.log('No React fiber found');
+              return { hasReactFiber: false };
+            }
+          }
+          return { error: 'Button not found' };
+        }, 1);
+        console.log('📊 Manual click result:', manualClickResult);
+        
         await new Promise(resolve => setTimeout(resolve, 3000));
         
         // Take screenshot after click

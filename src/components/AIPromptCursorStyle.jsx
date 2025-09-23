@@ -739,7 +739,15 @@ export default function AIPromptCursorStyle() {
       {showModelSelector && (
         <>
           {/* Backdrop */}
-          <div className="fixed inset-0 z-40" onClick={() => setShowModelSelector(false)}></div>
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={(e) => {
+              // Only close if clicking on the backdrop itself, not on child elements
+              if (e.target === e.currentTarget) {
+                setShowModelSelector(false)
+              }
+            }}
+          ></div>
           
           {/* Compact Dropdown Container */}
           <div 

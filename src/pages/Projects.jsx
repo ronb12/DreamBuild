@@ -223,7 +223,7 @@ const Projects = () => {
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowCreateDialog(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 font-medium"
+            className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 font-medium"
           >
             <Plus className="h-5 w-5" />
             New Project

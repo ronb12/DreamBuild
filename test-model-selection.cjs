@@ -44,54 +44,71 @@ async function testModelSelection() {
       for (let i = 0; i < Math.min(3, modelButtons.length); i++) {
         console.log(`🖱️ Testing click on model ${i + 1}...`);
         
-        // Get model info before clicking
-        const modelInfo = await page.evaluate((index) => {
-          const buttons = document.querySelectorAll('button[class*="w-full p-2 rounded"]');
-          if (buttons[index]) {
-            const button = buttons[index];
-            const nameElement = button.querySelector('div[class*="font-medium"]');
-            const descElement = button.querySelector('div[class*="text-gray-500"]');
-            return {
-              name: nameElement ? nameElement.textContent.trim() : '',
-              description: descElement ? descElement.textContent.trim() : '',
-              hasCheckbox: button.querySelector('div[class*="border-2"]') !== null,
-              isClickable: !button.disabled
-            };
-          }
-          return null;
-        }, i);
-        
-        console.log(`📊 Model ${i + 1} info:`, modelInfo);
-        
-        if (modelInfo && modelInfo.isClickable) {
-          // Click the model
-          await modelButtons[i].click();
-          await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+          // Get model info before clicking
+          const modelInfo = await page.evaluate((index) => {
+            const buttons = document.querySelectorAll('button[class*="w-full p-2 rounded"]');
+            if (buttons[index]) {
+              const button = buttons[index];
+              const nameElement = button.querySelector('div[class*="font-medium"]');
+              const descElement = button.querySelector('div[class*="text-gray-500"]');
+              return {
+                name: nameElement ? nameElement.textContent.trim() : '',
+                description: descElement ? descElement.textContent.trim() : '',
+                hasCheckbox: button.querySelector('div[class*="border-2"]') !== null,
+                isClickable: !button.disabled
+              };
+            }
+            return null;
+          }, i);
           
-          // Check if dropdown closed
-          const dropdownVisible = await page.evaluate(() => {
-            const dropdown = document.querySelector('div[class*="fixed bottom-16"]');
-            return dropdown && dropdown.offsetParent !== null;
-          });
+          console.log(`📊 Model ${i + 1} info:`, modelInfo);
           
-          console.log(`📊 Dropdown visible after click: ${dropdownVisible}`);
-          
-          if (!dropdownVisible) {
-            // Get current model
-            const currentModel = await page.evaluate(() => {
-              const button = document.querySelector('button[title*="Model"]');
-              return button ? button.textContent.trim() : '';
-            });
-            console.log(`✅ Model changed to: "${currentModel}"`);
+          if (modelInfo && modelInfo.isClickable) {
+            // Click the model
+            await modelButtons[i].click();
+            await new Promise(resolve => setTimeout(resolve, 2000));
             
-            // Reopen dropdown for next test
+            // Check if dropdown closed
+            const dropdownVisible = await page.evaluate(() => {
+              const dropdown = document.querySelector('div[class*="fixed bottom-16"]');
+              return dropdown && dropdown.offsetParent !== null;
+            });
+            
+            console.log(`📊 Dropdown visible after click: ${dropdownVisible}`);
+            
+            if (!dropdownVisible) {
+              // Get current model
+              const currentModel = await page.evaluate(() => {
+                const button = document.querySelector('button[title*="Model"]');
+                return button ? button.textContent.trim() : '';
+              });
+              console.log(`✅ Model changed to: "${currentModel}"`);
+              
+              // Reopen dropdown for next test
+              await modelButton.click();
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              
+              // Re-get model buttons after reopening
+              const newModelButtons = await page.$$('button[class*="w-full p-2 rounded"]');
+              console.log(`🔄 Reopened dropdown, found ${newModelButtons.length} model buttons`);
+            } else {
+              console.log('⚠️ Dropdown did not close after click');
+            }
+          } else {
+            console.log(`⚠️ Model ${i + 1} is not clickable`);
+          }
+        } catch (error) {
+          console.log(`⚠️ Error with model ${i + 1}: ${error.message}`);
+          
+          // Try to reopen dropdown
+          try {
             await modelButton.click();
             await new Promise(resolve => setTimeout(resolve, 1000));
-          } else {
-            console.log('⚠️ Dropdown did not close after click');
+          } catch (reopenError) {
+            console.log(`❌ Could not reopen dropdown: ${reopenError.message}`);
+            break;
           }
-        } else {
-          console.log(`⚠️ Model ${i + 1} is not clickable`);
         }
       }
       

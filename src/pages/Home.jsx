@@ -51,8 +51,8 @@ const Home = () => {
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary-light/5"></div>
         
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative flex justify-center">
-          <div className="text-center max-w-4xl w-full">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center max-w-4xl mx-auto">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

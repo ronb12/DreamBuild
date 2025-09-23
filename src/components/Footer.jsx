@@ -93,104 +93,28 @@ const Footer = () => {
             </form>
           </div>
 
-          {/* Product Links */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Code className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-foreground">Product</h3>
-                <p className="text-xs text-muted-foreground">Platform Features</p>
-              </div>
-            </div>
-            <ul className="space-y-3">
-              <li>
-                <a href="/ai-builder" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
-                  <span className="text-sm font-medium">AI Builder</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
-                </a>
-              </li>
-              <li>
-                <a href="/templates" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
-                  <span className="text-sm font-medium">Templates</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
-                </a>
-              </li>
-              <li>
-                <a href="/projects" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
-                  <span className="text-sm font-medium">Projects</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
-                </a>
-              </li>
-              <li>
-                <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
-                  <span className="text-sm font-medium">Dashboard</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Resources Links */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Database className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-foreground">Resources</h3>
-                <p className="text-xs text-muted-foreground">Help & Support</p>
-              </div>
-            </div>
-            <ul className="space-y-3">
-              <li>
-                <a href="/documentation" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
-                  <span className="text-sm font-medium">Documentation</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
-                </a>
-              </li>
-              <li>
-                <a href="/examples" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
-                  <span className="text-sm font-medium">Code Examples</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
-                </a>
-              </li>
-              <li>
-                <a href="/community" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
-                  <span className="text-sm font-medium">Community</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
-                </a>
-              </li>
-              <li>
-                <a href="/support" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
-                  <span className="text-sm font-medium">Support</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
-                </a>
-              </li>
+          {/* Links */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground">Quick Links</h3>
+            <ul className="space-y-2 text-sm">
+              <li><a href="/ai-builder" className="text-muted-foreground hover:text-foreground transition-colors">AI Builder</a></li>
+              <li><a href="/templates" className="text-muted-foreground hover:text-foreground transition-colors">Templates</a></li>
+              <li><a href="/documentation" className="text-muted-foreground hover:text-foreground transition-colors">Documentation</a></li>
+              <li><a href="/support" className="text-muted-foreground hover:text-foreground transition-colors">Support</a></li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-border/50 pt-12 mt-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex flex-col lg:flex-row items-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-3">
-                <span className="font-medium">&copy; 2024 Bradley Virtual Solutions, LLC</span>
-                <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
-                <span>All rights reserved</span>
-              </div>
-              <div className="flex items-center gap-6">
-                <a href="/privacy" className="hover:text-foreground transition-colors duration-200 font-medium">Privacy Policy</a>
-                <a href="/terms" className="hover:text-foreground transition-colors duration-200 font-medium">Terms of Service</a>
-                <a href="/cookies" className="hover:text-foreground transition-colors duration-200 font-medium">Cookie Policy</a>
-              </div>
+        <div className="border-t border-border pt-8 mt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-sm text-muted-foreground">
+              <span>&copy; 2024 Bradley Virtual Solutions, LLC</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="font-medium">Made with</span>
-              <Heart className="h-4 w-4 text-red-500 animate-pulse" />
-              <span className="font-medium">for developers worldwide</span>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
+              <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
+              <a href="/contact" className="hover:text-foreground transition-colors">Contact</a>
             </div>
           </div>
         </div>

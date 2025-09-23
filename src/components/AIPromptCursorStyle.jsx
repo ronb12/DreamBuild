@@ -730,17 +730,14 @@ export default function AIPromptCursorStyle() {
         </div>
       )}
 
-      {/* Model Selector Modal - Cursor Style Positioning */}
+      {/* Model Selector Modal - Compact Dropdown Style */}
       {showModelSelector && (
-        <div className="fixed inset-0 z-[999999]" style={{ zIndex: 999999 }}>
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setShowModelSelector(false)}
-          />
-          
+        <div className="fixed inset-0 z-50" onClick={() => setShowModelSelector(false)}>
           {/* Modal Container - Positioned near Auto button */}
-          <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-2xl w-80 max-h-96 flex flex-col">
+          <div 
+            className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-2xl w-80 max-h-96 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header - Compact */}
             <div className="flex items-center justify-between p-2 border-b border-border">
               <h3 className="text-sm font-semibold text-foreground">Select AI Model</h3>
@@ -778,10 +775,10 @@ export default function AIPromptCursorStyle() {
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {/* Checkbox for model selection */}
                       <div className="flex-shrink-0">
-                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
                           aiModel === model.id
-                            ? 'border-primary bg-primary'
-                            : 'border-border bg-background'
+                            ? 'border-blue-500 bg-blue-500 shadow-sm'
+                            : 'border-gray-300 bg-white hover:border-blue-400'
                         }`}>
                           {aiModel === model.id && (
                             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">

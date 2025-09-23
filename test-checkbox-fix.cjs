@@ -1,0 +1,76 @@
+const puppeteer = require('puppeteer');
+
+async function testCheckboxFix() {
+  console.log('🚀 Testing checkbox fix...');
+  
+  const browser = await puppeteer.launch({
+    headless: false,
+    defaultViewport: { width: 1920, height: 1080 }
+  });
+
+  const page = await browser.newPage();
+  
+  try {
+    // Navigate to AI Builder
+    await page.goto('http://localhost:3001/ai-builder', { 
+      waitUntil: 'networkidle2',
+      timeout: 30000 
+    });
+    
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    // Take screenshot of initial state
+    await page.screenshot({ path: 'checkbox-fix-1.png', fullPage: true });
+    console.log('📸 Screenshot 1 saved (initial state)');
+    
+    // Click model selector
+    const modelButton = await page.$('button[title*="Model"]');
+    if (modelButton) {
+      await modelButton.click();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Take screenshot of dropdown
+      await page.screenshot({ path: 'checkbox-fix-2.png', fullPage: true });
+      console.log('📸 Screenshot 2 saved (dropdown open)');
+      
+      // Check for checkboxes
+      const checkboxes = await page.$$('div[class*="w-5 h-5 rounded border-2"], div[class*="w-4 h-4 rounded border-2"]');
+      console.log(`🔍 Found ${checkboxes.length} checkboxes`);
+      
+      // Check for model buttons
+      const modelButtons = await page.$$('button[class*="w-full p-3 rounded-md"], button[class*="w-full flex items-center"]');
+      console.log(`🔍 Found ${modelButtons.length} model buttons`);
+      
+      // Try to click first model
+      if (modelButtons.length > 0) {
+        console.log('🖱️ Clicking first model...');
+        await modelButtons[0].click();
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Take screenshot after selection
+        await page.screenshot({ path: 'checkbox-fix-3.png', fullPage: true });
+        console.log('📸 Screenshot 3 saved (after selection)');
+        
+        // Check current model
+        const currentModel = await page.evaluate(() => {
+          const button = document.querySelector('button[title*="Model"]');
+          return button ? button.textContent.trim() : '';
+        });
+        console.log(`📝 Current model: "${currentModel}"`);
+      }
+      
+      // Close dropdown
+      await page.keyboard.press('Escape');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    
+    console.log('✅ Checkbox fix test completed');
+    
+  } catch (error) {
+    console.error('❌ Checkbox fix test failed:', error.message);
+  } finally {
+    await browser.close();
+  }
+}
+
+testCheckboxFix();

@@ -618,7 +618,23 @@ Please implement this suggestion in my current project.`
                           aiModel === model.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
                         }`}
                       >
-                        <span className="font-medium">{model.name}</span>
+                        <div className="flex items-center gap-2">
+                          {/* Checkbox for model selection */}
+                          <div className="flex-shrink-0">
+                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                              aiModel === model.id
+                                ? 'border-blue-500 bg-blue-500'
+                                : 'border-gray-300 bg-white'
+                            }`}>
+                              {aiModel === model.id && (
+                                <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
+                          <span className="font-medium">{model.name}</span>
+                        </div>
                         <span className="text-xs text-muted-foreground">{model.ram}</span>
                       </button>
                     ))}
@@ -675,10 +691,10 @@ Please implement this suggestion in my current project.`
                         <div className="flex items-center gap-3 flex-1">
                           {/* Checkbox for model selection */}
                           <div className="flex-shrink-0">
-                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
                               aiModel === model.id
-                                ? 'border-blue-500 bg-blue-500'
-                                : 'border-border bg-background'
+                                ? 'border-blue-500 bg-blue-500 shadow-sm'
+                                : 'border-gray-300 bg-white hover:border-blue-400'
                             }`}>
                               {aiModel === model.id && (
                                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">

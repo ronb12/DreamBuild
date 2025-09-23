@@ -38,9 +38,9 @@ const Home = () => {
   ]
 
   const stats = [
-    { label: 'Users', value: '500+', icon: Users },
-    { label: 'Projects', value: '1K+', icon: Code },
-    { label: 'Success Rate', value: '100%', icon: TrendingUp }
+    { label: 'AI Models', value: '10+', icon: Code },
+    { label: 'Languages', value: '50+', icon: Database },
+    { label: 'Templates', value: '25+', icon: TrendingUp }
   ]
 
   const testimonials = [

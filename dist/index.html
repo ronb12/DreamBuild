@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DreamBuild - Universal AI Development Platform</title>
+    <meta name="description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json?v=2.0.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DreamBuild" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="DreamBuild - Universal AI Development Platform" />
+    <meta property="og:description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dreambuild-2024-app.web.app" />
+    <meta property="og:image" content="/icons/icon-512x512.png" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DreamBuild - Universal AI Development Platform" />
+    <meta name="twitter:description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    <meta name="twitter:image" content="/icons/icon-512x512.png" />
+    
+    <!-- Preload critical resources -->
+    <!-- <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin /> -->
+    
+    <!-- Critical CSS inline -->
+    <style>
+      /* Critical CSS for initial render */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #f8fafc;
+      }
+      
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* Loading spinner */
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f8fafc;
+      }
+      
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e2e8f0;
+        border-top: 4px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-BweWtD5D.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-DWvC8KHc.js">
+    <link rel="modulepreload" crossorigin href="/assets/firebase-C3tU7F8Z.js">
+    <link rel="modulepreload" crossorigin href="/assets/monaco-editor-BWpThiUx.js">
+    <link rel="modulepreload" crossorigin href="/assets/ui-vendor-BnPivyb4.js">
+    <link rel="stylesheet" crossorigin href="/assets/monaco-editor-DgbvVKni.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-DPhfAaUT.css">
+  </head>
+  <body>
+    <div id="root">
+      <div class="loading">
+        <div class="spinner"></div>
+      </div>
+    </div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('DreamBuild SW registered:', registration);
+            })
+            .catch(error => {
+              console.log('DreamBuild SW registration failed:', error);
+            });
+        });
+      }
+    </script>
+    
+  </body>
+</html>

@@ -127,7 +127,7 @@ export function AuthProvider({ children }) {
       }
       
       console.log('Successfully signed in with GitHub!')
-        } catch (error) {
+    } catch (error) {
           if (error.code === 'auth/account-exists-with-different-credential') {
             // Handle account linking - simplified approach
             const email = error.customData?.email

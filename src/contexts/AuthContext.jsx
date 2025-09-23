@@ -150,7 +150,8 @@ export function AuthProvider({ children }) {
                   }
                 } else {
                   // No sign-in methods found, but account exists - this might be a Firebase config issue
-                  throw new Error(`An account with ${email} already exists but we couldn't determine the sign-in method. Please try signing in with Google or email/password first, or contact support.`)
+                  // Most likely the account was created with Google, so suggest that first
+                  throw new Error(`An account with ${email} already exists. Please try signing in with Google first, then you can link your GitHub account.`)
                 }
               } catch (linkError) {
                 console.error('Failed to check sign-in methods:', linkError.message)

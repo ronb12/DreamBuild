@@ -37,9 +37,17 @@ const puppeteer = require('puppeteer');
     if (githubButton) {
       console.log('✅ GitHub button found');
       
-      // Click GitHub button
+      // Click GitHub button using a more reliable selector
       console.log('🖱️ Clicking GitHub button...');
-      await page.click('button:has-text("Continue with GitHub")');
+      await page.evaluate(() => {
+        const buttons = document.querySelectorAll('button');
+        const githubBtn = Array.from(buttons).find(btn => 
+          btn.textContent.includes('Continue with GitHub')
+        );
+        if (githubBtn) {
+          githubBtn.click();
+        }
+      });
       
       // Wait for popup or error
       await new Promise(resolve => setTimeout(resolve, 3000));

@@ -170,7 +170,7 @@ const Navbar = () => {
             {!isDesktop && (
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-lg hover:bg-muted/50 transition-colors border border-border/50 hover:border-primary/30 ml-2"
+                className="p-2 rounded-lg hover:bg-muted transition-colors ml-2"
               >
                 {isMobileMenuOpen ? (
                   <X className="h-4 w-4" />
@@ -184,7 +184,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {!isDesktop && isMobileMenuOpen && (
-          <div className="border-t border-border/50 bg-background/95 backdrop-blur-lg relative z-[100]">
+          <div className="border-t border-border bg-background">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon

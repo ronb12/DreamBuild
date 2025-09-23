@@ -47,7 +47,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Hero Section */}
-      <section className="relative pt-24 pb-20">
+      <section className="relative pt-20 pb-20">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary-light/5"></div>
         

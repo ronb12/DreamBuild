@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import { 
   Code, 
   Folder, 
@@ -22,7 +23,8 @@ import {
   Github,
   ExternalLink,
   GitBranch,
-  Eye
+  Eye,
+  Plus
 } from 'lucide-react'
 import { useProject } from '../contexts/ProjectContext'
 import { useAuth } from '../contexts/AuthContext'
@@ -263,27 +265,44 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="space-y-4">
-              {recentActivity.map((activity, index) => {
-                const Icon = activity.icon
-                return (
-                  <motion.div
-                    key={activity.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity, index) => {
+                  const Icon = activity.icon
+                  return (
+                    <motion.div
+                      key={activity.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activity.color.replace('text-', 'bg-').replace('-600', '-100')}`}>
+                        <Icon className={`h-4 w-4 ${activity.color}`} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-foreground">{activity.action}</p>
+                        <p className="text-xs text-muted-foreground">{activity.project}</p>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{activity.time}</span>
+                    </motion.div>
+                  )
+                })
+              ) : (
+                <div className="text-center py-8">
+                  <Brain className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No activity yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Start creating projects to see your activity here.
+                  </p>
+                  <Link
+                    to="/ai-builder"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors"
                   >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activity.color.replace('text-', 'bg-').replace('-600', '-100')}`}>
-                      <Icon className={`h-4 w-4 ${activity.color}`} />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">{activity.action}</p>
-                      <p className="text-xs text-muted-foreground">{activity.project}</p>
-                    </div>
-                    <span className="text-xs text-muted-foreground">{activity.time}</span>
-                  </motion.div>
-                )
-              })}
+                    <Plus className="h-4 w-4" />
+                    Create Project
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 

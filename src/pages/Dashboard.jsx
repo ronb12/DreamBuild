@@ -18,20 +18,106 @@ import {
   Settings,
   ChevronRight,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Github,
+  ExternalLink,
+  GitBranch,
+  Eye
 } from 'lucide-react'
 import { useProject } from '../contexts/ProjectContext'
+import { useAuth } from '../contexts/AuthContext'
 
 const Dashboard = () => {
   const { currentProject, projects } = useProject()
+  const { user } = useAuth()
   const [timeRange, setTimeRange] = useState('7d')
   const [isLoading, setIsLoading] = useState(true)
+  const [githubRepos, setGithubRepos] = useState([])
+  const [githubLoading, setGithubLoading] = useState(false)
 
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000)
     return () => clearTimeout(timer)
   }, [])
+
+  // Fetch GitHub repositories
+  const fetchGitHubRepos = async () => {
+    if (!user || user.provider !== 'github') {
+      return
+    }
+    
+    setGithubLoading(true)
+    try {
+      // In a real app, you would fetch from GitHub API
+      // For now, we'll use mock data
+      const mockRepos = [
+        {
+          id: 1,
+          name: 'dreambuild-ai-platform',
+          full_name: 'ronb12/dreambuild-ai-platform',
+          description: 'AI-powered development platform for building web applications',
+          language: 'JavaScript',
+          stargazers_count: 42,
+          forks_count: 8,
+          updated_at: '2024-01-15T10:30:00Z',
+          html_url: 'https://github.com/ronb12/dreambuild-ai-platform',
+          private: false
+        },
+        {
+          id: 2,
+          name: 'react-dashboard',
+          full_name: 'ronb12/react-dashboard',
+          description: 'Modern React dashboard with analytics and charts',
+          language: 'TypeScript',
+          stargazers_count: 28,
+          forks_count: 5,
+          updated_at: '2024-01-12T14:20:00Z',
+          html_url: 'https://github.com/ronb12/react-dashboard',
+          private: false
+        },
+        {
+          id: 3,
+          name: 'ai-code-generator',
+          full_name: 'ronb12/ai-code-generator',
+          description: 'AI-powered code generation tool using OpenAI API',
+          language: 'Python',
+          stargazers_count: 15,
+          forks_count: 3,
+          updated_at: '2024-01-10T09:15:00Z',
+          html_url: 'https://github.com/ronb12/ai-code-generator',
+          private: false
+        },
+        {
+          id: 4,
+          name: 'portfolio-v2',
+          full_name: 'ronb12/portfolio-v2',
+          description: 'Personal portfolio website built with Next.js',
+          language: 'JavaScript',
+          stargazers_count: 7,
+          forks_count: 2,
+          updated_at: '2024-01-08T16:45:00Z',
+          html_url: 'https://github.com/ronb12/portfolio-v2',
+          private: false
+        }
+      ]
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      setGithubRepos(mockRepos)
+    } catch (error) {
+      console.error('Failed to fetch GitHub repositories:', error)
+    } finally {
+      setGithubLoading(false)
+    }
+  }
+
+  // Fetch GitHub repos when user is available
+  useEffect(() => {
+    if (user && user.provider === 'github') {
+      fetchGitHubRepos()
+    }
+  }, [user])
 
   // Mock data - in real app, this would come from API
   const stats = {
@@ -131,7 +217,7 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>

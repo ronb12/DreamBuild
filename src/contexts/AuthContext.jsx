@@ -105,21 +105,30 @@ export function AuthProvider({ children }) {
 
   const signInWithGitHub = async () => {
     try {
-      // Only use GitHub provider - no Google APIs
-      const provider = new GithubAuthProvider()
-      provider.addScope('user:email')
+      console.log('Using direct GitHub OAuth (like Cursor IDE)')
       
-      console.log('Using GitHub provider only:', provider.providerId)
-      const result = await signInWithPopup(auth, provider)
+      // Use direct GitHub OAuth instead of Firebase
+      const user = await githubOAuth.authenticate()
+      
+      // Create a Firebase-compatible user object
+      const firebaseUser = {
+        uid: `github_${user.id}`,
+        email: user.email,
+        displayName: user.name || user.login,
+        photoURL: user.avatar_url,
+        provider: 'github'
+      }
       
       // Save user data to Firestore with error handling
       try {
-        await setDoc(doc(db, 'users', result.user.uid), {
-          uid: result.user.uid,
-          email: result.user.email,
-          displayName: result.user.displayName || result.user.email?.split('@')[0] || 'GitHub User',
-          photoURL: result.user.photoURL,
+        await setDoc(doc(db, 'users', firebaseUser.uid), {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
           provider: 'github',
+          githubId: user.id,
+          githubLogin: user.login,
           createdAt: new Date(),
           lastLogin: new Date()
         }, { merge: true })
@@ -128,47 +137,13 @@ export function AuthProvider({ children }) {
         // Continue with authentication even if Firestore fails
       }
       
+      // Set user in context
+      setUser(firebaseUser)
+      
       console.log('Successfully signed in with GitHub!')
     } catch (error) {
-      if (error.code === 'auth/account-exists-with-different-credential') {
-        // Handle account linking - simplified approach
-        const email = error.customData?.email
-        if (email) {
-          // Check what providers are available for this email
-          try {
-            const signInMethods = await fetchSignInMethodsForEmail(auth, email)
-            console.log('Available sign-in methods for', email, ':', signInMethods)
-            
-            if (signInMethods && signInMethods.length > 0) {
-              if (signInMethods.includes('google.com')) {
-                // User already has a Google account, suggest they use that
-                throw new Error(`An account with ${email} already exists using Google. Please sign in with Google instead, or use a different email for GitHub.`)
-              } else if (signInMethods.includes('password')) {
-                // User has email/password account
-                throw new Error(`An account with ${email} already exists using email/password. Please sign in with your existing method instead.`)
-              } else {
-                // Unknown provider
-                throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
-              }
-            } else {
-              // No sign-in methods found, but account exists - this might be a Firebase config issue
-              // Most likely the account was created with Google, so suggest that first
-              throw new Error(`An account with ${email} already exists. Please try signing in with Google first, then you can link your GitHub account.`)
-            }
-          } catch (linkError) {
-            console.error('Failed to check sign-in methods:', linkError.message)
-            throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
-          }
-        } else {
-          throw new Error('An account with this email already exists. Please sign in with your existing method instead.')
-        }
-      } else if (error.code === 'auth/internal-error') {
-        console.error('GitHub authentication internal error:', error.message)
-        throw new Error('GitHub authentication is not properly configured. Please check Firebase Console settings.')
-      } else {
-        console.error('Failed to sign in with GitHub:', error.message)
-        throw error // Re-throw to let the component handle it
-      }
+      console.error('GitHub OAuth error:', error.message)
+      throw error
     }
   }
 

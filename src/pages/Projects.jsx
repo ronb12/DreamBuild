@@ -231,26 +231,26 @@ const Projects = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg mb-6">
+        <div className="flex items-center gap-1 bg-card/50 backdrop-blur-sm border border-border/50 p-1.5 rounded-xl mb-8 shadow-sm">
           {tabs.map((tab) => {
             const IconComponent = tab.icon
             const isActive = activeTab === tab.id
             return (
               <motion.button
                 key={tab.id}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive 
-                    ? 'bg-primary text-primary-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 }`}
               >
                 <IconComponent className="h-4 w-4" />
                 {tab.name}
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  isActive ? 'bg-primary-foreground/20' : 'bg-muted'
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-muted text-muted-foreground'
                 }`}>
                   {tab.count}
                 </span>

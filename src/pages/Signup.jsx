@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
 const Signup = () => {
-  const { user, signInWithGoogle, loading } = useAuth()
+  const { user, signInWithGoogle, signInWithGitHub, loading } = useAuth()
   const navigate = useNavigate()
   const [isSigningIn, setIsSigningIn] = useState(false)
 
@@ -29,8 +29,17 @@ const Signup = () => {
     }
   }
 
-  const handleGitHubSignIn = () => {
-    toast.info('GitHub authentication coming soon!')
+  const handleGitHubSignIn = async () => {
+    try {
+      setIsSigningIn(true)
+      await signInWithGitHub()
+      toast.success('Welcome to DreamBuild!')
+    } catch (error) {
+      console.error('GitHub sign in error:', error)
+      toast.error('Failed to sign in with GitHub. Please try again.')
+    } finally {
+      setIsSigningIn(false)
+    }
   }
 
   if (loading) {

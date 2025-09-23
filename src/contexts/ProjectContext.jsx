@@ -137,7 +137,7 @@ export function ProjectProvider({ children }) {
     } finally {
       setIsLoading(false)
     }
-  }, [user, db])
+  }, [user, db, loadProjects])
 
   const loadProjects = useCallback(async () => {
     if (!user) return

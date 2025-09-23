@@ -237,6 +237,7 @@ export function ProjectProvider({ children }) {
     updateFile,
     updateConfig,
     saveProject,
+    saveExternalProject,
     loadProjects,
     loadProject,
     deleteProject,

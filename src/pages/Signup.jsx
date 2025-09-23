@@ -38,13 +38,15 @@ const Signup = () => {
       console.error('GitHub sign in error:', error)
       if (error.message.includes('already exists using Google')) {
         toast.error('An account with this email already exists using Google. Please sign in with Google instead, or use a different email for GitHub.')
-      } else if (error.message.includes('already exists using email/password')) {
-        toast.error('An account with this email already exists using email/password. Please sign in with your existing method instead.')
-      } else if (error.message.includes('account with this email already exists')) {
-        toast.error('An account with this email already exists. Please sign in with your existing method instead.')
-      } else {
-        toast.error('Failed to sign in with GitHub. Please try again.')
-      }
+            } else if (error.message.includes('already exists using email/password')) {
+              toast.error('An account with this email already exists using email/password. Please sign in with your existing method instead.')
+            } else if (error.message.includes('account with this email already exists')) {
+              toast.error('An account with this email already exists. Please sign in with your existing method instead.')
+            } else if (error.message.includes('couldn\'t determine the sign-in method')) {
+              toast.error('An account with this email already exists but we couldn\'t determine the sign-in method. Please try signing in with Google or email/password first, or contact support.')
+            } else {
+              toast.error('Failed to sign in with GitHub. Please try again.')
+            }
     } finally {
       setIsSigningIn(false)
     }

@@ -438,6 +438,112 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* GitHub Repositories Section */}
+        {user && user.provider === 'github' && (
+          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+                <Github className="h-5 w-5 text-white" />
+                GitHub Repositories
+              </h2>
+              <button 
+                onClick={fetchGitHubRepos}
+                disabled={githubLoading}
+                className="text-sm text-white hover:text-gray-300 transition-colors disabled:opacity-50"
+              >
+                {githubLoading ? 'Refreshing...' : 'Refresh'}
+              </button>
+            </div>
+            
+            {githubLoading ? (
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="flex items-center justify-between p-4 rounded-lg bg-muted/20">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-muted rounded"></div>
+                        <div>
+                          <div className="h-4 bg-muted rounded w-32 mb-2"></div>
+                          <div className="h-3 bg-muted rounded w-48"></div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="h-6 bg-muted rounded w-12"></div>
+                        <div className="h-6 bg-muted rounded w-12"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : githubRepos.length > 0 ? (
+              <div className="space-y-3">
+                {githubRepos.map((repo, index) => (
+                  <motion.div
+                    key={repo.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center justify-between p-4 rounded-lg hover:bg-muted/30 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                        <Github className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-medium text-foreground text-sm truncate">{repo.name}</h3>
+                          {repo.private && (
+                            <span className="text-xs bg-yellow-500/20 text-yellow-600 px-2 py-0.5 rounded">Private</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">{repo.description}</p>
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="text-xs text-muted-foreground">{repo.language}</span>
+                          <span className="text-xs text-muted-foreground">
+                            Updated {new Date(repo.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Star className="h-3 w-3" />
+                        {repo.stargazers_count}
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <GitBranch className="h-3 w-3" />
+                        {repo.forks_count}
+                      </div>
+                      <a
+                        href={repo.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg hover:bg-muted/50 transition-colors group-hover:bg-white/10"
+                      >
+                        <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-white" />
+                      </a>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Github className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">No GitHub repositories found</h3>
+                <p className="text-muted-foreground mb-4">
+                  Make sure you're signed in with GitHub to see your repositories.
+                </p>
+                <button
+                  onClick={fetchGitHubRepos}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors"
+                >
+                  Load Repositories
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

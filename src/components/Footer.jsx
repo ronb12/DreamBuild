@@ -114,68 +114,78 @@ const Footer = () => {
           </div>
 
           {/* Product Links */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Code className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Product</h3>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Code className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-foreground">Product</h3>
+                <p className="text-xs text-muted-foreground">Platform Features</p>
+              </div>
             </div>
-            <ul className="space-y-3 text-sm">
+            <ul className="space-y-3">
               <li>
-                <a href="/ai-builder" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
-                  <span>AI Builder</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a href="/ai-builder" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
+                  <span className="text-sm font-medium">AI Builder</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </a>
               </li>
               <li>
-                <a href="/templates" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
-                  <span>Templates</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a href="/templates" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
+                  <span className="text-sm font-medium">Templates</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </a>
               </li>
               <li>
-                <a href="/projects" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
-                  <span>Projects</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a href="/projects" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
+                  <span className="text-sm font-medium">Projects</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </a>
               </li>
               <li>
-                <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
-                  <span>Dashboard</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
+                  <span className="text-sm font-medium">Dashboard</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </a>
               </li>
             </ul>
           </div>
 
           {/* Resources Links */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Database className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Resources</h3>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Database className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-foreground">Resources</h3>
+                <p className="text-xs text-muted-foreground">Help & Support</p>
+              </div>
             </div>
-            <ul className="space-y-3 text-sm">
+            <ul className="space-y-3">
               <li>
-                <a href="/documentation" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
-                  <span>Documentation</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a href="/documentation" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
+                  <span className="text-sm font-medium">Documentation</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </a>
               </li>
               <li>
-                <a href="/examples" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
-                  <span>Code Examples</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a href="/examples" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
+                  <span className="text-sm font-medium">Code Examples</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </a>
               </li>
               <li>
-                <a href="/community" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
-                  <span>Community</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a href="/community" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
+                  <span className="text-sm font-medium">Community</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </a>
               </li>
               <li>
-                <a href="/support" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
-                  <span>Support</span>
-                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <a href="/support" className="text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center gap-3 group p-2 rounded-lg hover:bg-muted/50">
+                  <span className="text-sm font-medium">Support</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all duration-200" />
                 </a>
               </li>
             </ul>

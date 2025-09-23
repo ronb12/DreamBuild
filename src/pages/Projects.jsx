@@ -267,7 +267,7 @@ const Projects = () => {
         </div>
 
         {/* Search */}
-        <div className="flex items-center gap-3 mb-8 max-w-4xl">
+        <div className="flex items-center gap-3 mb-8 w-full max-w-none">
           <input
             type="text"
             placeholder="Search projects by name, description, or tags..."

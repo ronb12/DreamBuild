@@ -304,46 +304,60 @@ const Projects = () => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-1">
-                      <div className="flex gap-1">
-                        {project.tags.slice(0, 2).map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 py-1 text-xs bg-muted text-muted-foreground rounded-md"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {project.tags.length > 2 && (
-                          <span className="px-2 py-1 text-xs bg-muted text-muted-foreground rounded-md">
-                            +{project.tags.length - 2}
-                          </span>
-                        )}
-                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                        onClick={() => switchProject(project.id)}
+                      >
+                        <Eye className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </motion.button>
+                      <button
+                        onClick={() => setShowProjectMenu(showProjectMenu === project.id ? null : project.id)}
+                        className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                      >
+                        <MoreVertical className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 ml-4">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 hover:bg-muted rounded-md transition-colors"
-                      onClick={() => switchProject(project.id)}
-                    >
-                      <Eye className="h-4 w-4 text-muted-foreground" />
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 hover:bg-muted rounded-md transition-colors"
-                    >
-                      <Edit className="h-4 w-4 text-muted-foreground" />
-                    </motion.button>
-                    <button
-                      onClick={() => setShowProjectMenu(showProjectMenu === project.id ? null : project.id)}
-                      className="p-2 hover:bg-muted rounded-md transition-colors"
-                    >
-                      <MoreVertical className="h-4 w-4 text-muted-foreground" />
-                    </button>
+
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                    {project.description}
+                  </p>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {project.tags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-2.5 py-1 text-xs bg-muted/50 text-muted-foreground rounded-lg border border-border/50"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {project.tags.length > 3 && (
+                      <span className="px-2.5 py-1 text-xs bg-muted/50 text-muted-foreground rounded-lg border border-border/50">
+                        +{project.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1.5">
+                        <FileText className="h-3.5 w-3.5" />
+                        {project.files} files
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="h-3.5 w-3.5" />
+                        {project.lastModified}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground font-medium">
+                      {project.size}
+                    </div>
                   </div>
                 </div>
 

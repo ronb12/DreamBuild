@@ -43,9 +43,9 @@ const Home = () => {
   ]
 
   const stats = [
-    { label: 'Active Developers', value: '10K+', icon: Users },
-    { label: 'Projects Created', value: '50K+', icon: Code },
-    { label: 'Uptime', value: '99.9%', icon: Clock }
+    { label: 'Early Adopters', value: '500+', icon: Users },
+    { label: 'Beta Projects', value: '1K+', icon: Code },
+    { label: 'Innovation Score', value: '100%', icon: TrendingUp }
   ]
 
   const testimonials = [
@@ -98,10 +98,11 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
             >
-              Build the Future with{' '}
+              The Future of{' '}
               <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-                AI-Powered Development
+                AI Development
               </span>
+              {' '}is Here
             </motion.h1>
 
             {/* Subheading */}
@@ -111,8 +112,8 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl text-foreground mb-12 max-w-3xl mx-auto leading-relaxed"
             >
-              Transform your ideas into reality with our cutting-edge AI development platform. 
-              Generate code, collaborate seamlessly, and ship faster than ever before.
+              Experience the next generation of development with DreamBuild - the revolutionary AI platform 
+              that's changing how developers build, create, and innovate. Be among the first to discover what's possible.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -127,7 +128,7 @@ const Home = () => {
                 className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-all duration-200 text-lg font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
                 <Rocket className="h-5 w-5" />
-                Start Building
+                Try DreamBuild Now
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -135,7 +136,7 @@ const Home = () => {
                 className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-all duration-200 text-lg font-semibold hover:border-primary/50"
               >
                 <Code className="h-5 w-5" />
-                Browse Templates
+                See What's New
               </Link>
             </motion.div>
 

@@ -266,7 +266,7 @@ export default function AIPromptCursorStyle() {
       'incoder-6b': 'InCoder 6B'
     }
     const displayName = models[modelId] || 'Auto'
-    console.log(`🎯 getModelDisplayName called with: ${modelId} -> ${displayName}`)
+    // console.log(`🎯 getModelDisplayName called with: ${modelId} -> ${displayName}`)
     return displayName
   }
 

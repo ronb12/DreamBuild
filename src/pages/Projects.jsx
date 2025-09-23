@@ -22,7 +22,7 @@ import { useProject } from '../contexts/ProjectContext'
 import toast from 'react-hot-toast'
 
 const Projects = () => {
-  const { currentProject, createNewProject, projects, switchProject } = useProject()
+  const { currentProject, createNewProject, projects, switchProject, saveProject, deleteProject } = useProject()
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState('all')
   const [showCreateDialog, setShowCreateDialog] = useState(false)
@@ -126,36 +126,58 @@ const Projects = () => {
     return matchesSearch && matchesTab
   })
 
-  const handleCreateProject = () => {
+  const handleCreateProject = async () => {
     if (!newProjectName.trim()) {
       toast.error('Please enter a project name')
       return
     }
 
-    const newProject = {
-      id: Date.now().toString(),
-      name: newProjectName,
-      type: newProjectType,
-      description: `New ${newProjectType} project`,
-      status: 'active',
-      lastModified: new Date().toISOString().split('T')[0],
-      files: 0,
-      size: '0 MB',
-      tags: [newProjectType],
-      preview: 'https://via.placeholder.com/300x200/6c757d/ffffff?text=New+Project'
-    }
+    try {
+      // Create new project using the context
+      const newProject = {
+        id: null,
+        name: newProjectName,
+        files: {
+          'index.html': '',
+          'style.css': '',
+          'script.js': ''
+        },
+        activeFile: 'index.html',
+        config: {
+          appType: newProjectType,
+          language: 'javascript',
+          styling: 'tailwind',
+          database: 'none',
+          auth: 'none'
+        },
+        lastModified: new Date(),
+        description: `New ${newProjectType} project`,
+        status: 'active',
+        source: 'dreambuild'
+      }
 
-    setAllProjects([newProject, ...allProjects])
-    setNewProjectName('')
-    setNewProjectType('web')
-    setShowCreateDialog(false)
-    toast.success('Project created successfully!')
+      // Save the project using the context
+      await saveProject(newProjectName)
+      
+      setNewProjectName('')
+      setNewProjectType('web')
+      setShowCreateDialog(false)
+      toast.success('Project created successfully!')
+    } catch (error) {
+      console.error('Failed to create project:', error)
+      toast.error('Failed to create project. Please try again.')
+    }
   }
 
-  const handleDeleteProject = (projectId) => {
-    setAllProjects(allProjects.filter(p => p.id !== projectId))
-    setShowProjectMenu(null)
-    toast.success('Project deleted successfully!')
+  const handleDeleteProject = async (projectId) => {
+    try {
+      await deleteProject(projectId)
+      setShowProjectMenu(null)
+      toast.success('Project deleted successfully!')
+    } catch (error) {
+      console.error('Failed to delete project:', error)
+      toast.error('Failed to delete project. Please try again.')
+    }
   }
 
   const getStatusColor = (status) => {

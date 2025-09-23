@@ -33,16 +33,6 @@ export function ProjectProvider({ children }) {
   const [projects, setProjects] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
-  // Automatically load projects when user authenticates
-  useEffect(() => {
-    if (user) {
-      console.log('🔄 User authenticated, loading projects automatically...')
-      loadProjects()
-    } else {
-      console.log('⚠️ No user, clearing projects')
-      setProjects([])
-    }
-  }, [user, loadProjects])
 
   const switchFile = useCallback((filename) => {
     setCurrentProject(prev => ({
@@ -110,6 +100,17 @@ export function ProjectProvider({ children }) {
       setIsLoading(false)
     }
   }, [user, db])
+
+  // Automatically load projects when user authenticates
+  useEffect(() => {
+    if (user) {
+      console.log('🔄 User authenticated, loading projects automatically...')
+      loadProjects()
+    } else {
+      console.log('⚠️ No user, clearing projects')
+      setProjects([])
+    }
+  }, [user, loadProjects])
 
   const saveProject = useCallback(async (projectName = null) => {
     if (!user) {

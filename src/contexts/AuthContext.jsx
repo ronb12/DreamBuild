@@ -129,32 +129,30 @@ export function AuthProvider({ children }) {
       console.log('Successfully signed in with GitHub!')
     } catch (error) {
       if (error.code === 'auth/account-exists-with-different-credential') {
-        // Handle account linking
+        // Handle account linking - simplified approach
         const email = error.customData?.email
         if (email) {
+          // Check what providers are available for this email
           try {
-            // Try to sign in with existing provider first
             const signInMethods = await fetchSignInMethodsForEmail(auth, email)
+            console.log('Available sign-in methods for', email, ':', signInMethods)
+            
             if (signInMethods.includes('google.com')) {
-              // Link GitHub to existing Google account
-              const googleProvider = new GoogleAuthProvider()
-              const googleResult = await signInWithPopup(auth, googleProvider)
-              const githubCredential = GithubAuthProvider.credentialFromError(error)
-              if (githubCredential) {
-                await linkWithCredential(googleResult.user, githubCredential)
-                console.log('Successfully linked GitHub account!')
-              } else {
-                throw new Error('Unable to link GitHub account. Please try signing in with Google first.')
-              }
+              // User already has a Google account, suggest they use that
+              throw new Error(`An account with ${email} already exists using Google. Please sign in with Google instead, or use a different email for GitHub.`)
+            } else if (signInMethods.includes('password')) {
+              // User has email/password account
+              throw new Error(`An account with ${email} already exists using email/password. Please sign in with your existing method instead.`)
             } else {
-              throw new Error('An account with this email already exists. Please sign in with your existing method first, then link your GitHub account in your profile settings.')
+              // Unknown provider
+              throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
             }
           } catch (linkError) {
-            console.error('Failed to link accounts:', linkError.message)
-            throw new Error('An account with this email already exists. Please sign in with your existing method first.')
+            console.error('Failed to check sign-in methods:', linkError.message)
+            throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
           }
         } else {
-          throw new Error('An account with this email already exists. Please sign in with your existing method first.')
+          throw new Error('An account with this email already exists. Please sign in with your existing method instead.')
         }
       } else {
         console.error('Failed to sign in with GitHub:', error.message)

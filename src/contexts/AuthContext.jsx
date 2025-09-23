@@ -108,7 +108,15 @@ export function AuthProvider({ children }) {
       console.log('Using direct GitHub OAuth (like Cursor IDE)')
       
       // Use direct GitHub OAuth instead of Firebase
-      const user = await githubOAuth.authenticate()
+      // Try popup first, fallback to redirect if popup fails
+      let user;
+      try {
+        user = await githubOAuth.authenticate()
+      } catch (popupError) {
+        console.log('Popup failed, using redirect method:', popupError.message)
+        githubOAuth.authenticateWithRedirect()
+        return // Will redirect, so don't continue
+      }
       
       // Create a Firebase-compatible user object
       const firebaseUser = {

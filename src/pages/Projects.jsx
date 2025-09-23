@@ -30,105 +30,78 @@ const Projects = () => {
   const [newProjectType, setNewProjectType] = useState('web')
   const [showProjectMenu, setShowProjectMenu] = useState(null)
 
-  // Sample project data - in real app, this would come from context/API
-  const [allProjects, setAllProjects] = useState([
-    {
-      id: '1',
-      name: 'E-commerce Store',
-      type: 'ecommerce',
-      description: 'Modern e-commerce platform with React and Node.js',
-      status: 'active',
-      lastModified: '2024-01-15',
-      files: 12,
-      size: '2.4 MB',
-      tags: ['React', 'Node.js', 'E-commerce'],
-      preview: 'https://via.placeholder.com/300x200/007acc/ffffff?text=E-commerce+Store'
-    },
-    {
-      id: '2',
-      name: 'Portfolio Website',
-      type: 'web',
-      description: 'Personal portfolio website with modern design',
-      status: 'completed',
-      lastModified: '2024-01-10',
-      files: 8,
-      size: '1.2 MB',
-      tags: ['HTML', 'CSS', 'JavaScript'],
-      preview: 'https://via.placeholder.com/300x200/28a745/ffffff?text=Portfolio+Website'
-    },
-    {
-      id: '3',
-      name: 'Task Manager App',
-      type: 'mobile',
-      description: 'Mobile task management application',
-      status: 'development',
-      lastModified: '2024-01-12',
-      files: 15,
-      size: '3.1 MB',
-      tags: ['React Native', 'Firebase'],
-      preview: 'https://via.placeholder.com/300x200/ffc107/000000?text=Task+Manager'
-    },
-    {
-      id: '4',
-      name: 'Analytics Dashboard',
-      type: 'dashboard',
-      description: 'Business analytics dashboard with charts',
-      status: 'active',
-      lastModified: '2024-01-14',
-      files: 20,
-      size: '4.2 MB',
-      tags: ['Vue.js', 'D3.js', 'Charts'],
-      preview: 'https://via.placeholder.com/300x200/6f42c1/ffffff?text=Analytics+Dashboard'
-    },
-    {
-      id: '5',
-      name: 'REST API Service',
-      type: 'api',
-      description: 'Node.js REST API with authentication and database',
-      status: 'active',
-      lastModified: '2024-01-16',
-      files: 25,
-      size: '1.8 MB',
-      tags: ['Node.js', 'Express', 'MongoDB'],
-      preview: 'https://via.placeholder.com/300x200/17a2b8/ffffff?text=REST+API'
-    },
-    {
-      id: '6',
-      name: 'Space Adventure Game',
-      type: 'game',
-      description: '2D space shooter game built with JavaScript',
-      status: 'development',
-      lastModified: '2024-01-13',
-      files: 18,
-      size: '2.9 MB',
-      tags: ['JavaScript', 'Canvas', 'Game'],
-      preview: 'https://via.placeholder.com/300x200/e83e8c/ffffff?text=Space+Game'
-    },
-    {
-      id: '7',
-      name: 'Social Media App',
-      type: 'mobile',
-      description: 'Social networking app with real-time chat',
-      status: 'active',
-      lastModified: '2024-01-17',
-      files: 22,
-      size: '4.1 MB',
-      tags: ['Flutter', 'Firebase', 'Chat'],
-      preview: 'https://via.placeholder.com/300x200/20c997/ffffff?text=Social+App'
-    },
-    {
-      id: '8',
-      name: 'Admin Dashboard',
-      type: 'dashboard',
-      description: 'Administrative interface for managing users and content',
-      status: 'completed',
-      lastModified: '2024-01-11',
-      files: 16,
-      size: '3.3 MB',
-      tags: ['React', 'Material-UI', 'Admin'],
-      preview: 'https://via.placeholder.com/300x200/6c757d/ffffff?text=Admin+Dashboard'
+  // Use real projects from context
+  const allProjects = projects.map(project => ({
+    id: project.id,
+    name: project.name,
+    type: project.config?.appType || 'web',
+    description: project.description || 'No description available',
+    status: project.status || 'active',
+    lastModified: project.lastModified ? new Date(project.lastModified).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    files: Object.keys(project.files || {}).length,
+    size: calculateProjectSize(project),
+    tags: extractTags(project),
+    preview: getProjectPreview(project),
+    source: project.source || 'dreambuild',
+    githubData: project.githubData
+  }))
+
+  // Helper functions
+  const calculateProjectSize = (project) => {
+    const files = project.files || {}
+    const totalChars = Object.values(files).reduce((sum, content) => sum + (content?.length || 0), 0)
+    const sizeInMB = (totalChars / 1024 / 1024).toFixed(1)
+    return `${sizeInMB} MB`
+  }
+
+  const extractTags = (project) => {
+    const tags = []
+    
+    // Add language
+    if (project.config?.language) {
+      tags.push(project.config.language)
     }
-  ])
+    
+    // Add framework/technology
+    if (project.config?.styling) {
+      tags.push(project.config.styling)
+    }
+    
+    // Add database
+    if (project.config?.database && project.config.database !== 'none') {
+      tags.push(project.config.database)
+    }
+    
+    // Add auth
+    if (project.config?.auth && project.config.auth !== 'none') {
+      tags.push(project.config.auth)
+    }
+    
+    // Add GitHub tags if available
+    if (project.githubData?.language) {
+      tags.push(project.githubData.language)
+    }
+    
+    return [...new Set(tags)].slice(0, 4) // Remove duplicates and limit to 4
+  }
+
+  const getProjectPreview = (project) => {
+    if (project.githubData?.owner?.avatar_url) {
+      return project.githubData.owner.avatar_url
+    }
+    
+    // Generate preview based on project type
+    const typeColors = {
+      'web': '007acc',
+      'mobile': 'ffc107',
+      'api': '17a2b8',
+      'dashboard': '6f42c1',
+      'ecommerce': '28a745'
+    }
+    
+    const color = typeColors[project.config?.appType] || '6c757d'
+    return `https://via.placeholder.com/300x200/${color}/ffffff?text=${encodeURIComponent(project.name)}`
+  }
 
   const tabs = [
     { id: 'all', name: 'All', icon: Folder, count: allProjects.length },

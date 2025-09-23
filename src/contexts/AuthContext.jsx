@@ -102,6 +102,37 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const signInWithGitHub = async () => {
+    try {
+      const provider = new GithubAuthProvider()
+      // Add custom parameters
+      provider.addScope('user:email')
+      
+      const result = await signInWithPopup(auth, provider)
+      
+      // Save user data to Firestore with error handling
+      try {
+        await setDoc(doc(db, 'users', result.user.uid), {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName || result.user.email?.split('@')[0] || 'GitHub User',
+          photoURL: result.user.photoURL,
+          provider: 'github',
+          createdAt: new Date(),
+          lastLogin: new Date()
+        }, { merge: true })
+      } catch (firestoreError) {
+        console.warn('Failed to save user data to Firestore:', firestoreError)
+        // Continue with authentication even if Firestore fails
+      }
+      
+      console.log('Successfully signed in with GitHub!')
+    } catch (error) {
+      console.error('Failed to sign in with GitHub:', error.message)
+      throw error // Re-throw to let the component handle it
+    }
+  }
+
   const logout = async () => {
     try {
       await signOut(auth)
@@ -115,6 +146,7 @@ export function AuthProvider({ children }) {
     user,
     loading,
     signInWithGoogle,
+    signInWithGitHub,
     logout,
     auth,
     db

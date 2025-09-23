@@ -5,7 +5,7 @@ import { Github, ArrowRight, Loader2 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const Login = () => {
-  const { user, signInWithGoogle, loading } = useAuth()
+  const { user, signInWithGoogle, signInWithGitHub, loading } = useAuth()
   const navigate = useNavigate()
   const [isSigningIn, setIsSigningIn] = useState(false)
 
@@ -28,8 +28,17 @@ const Login = () => {
     }
   }
 
-  const handleGitHubSignIn = () => {
-    console.log('GitHub authentication coming soon!')
+  const handleGitHubSignIn = async () => {
+    try {
+      setIsSigningIn(true)
+      await signInWithGitHub()
+      // Success toast will be handled by AuthContext
+    } catch (error) {
+      console.error('GitHub sign in error:', error)
+      // Error toast will be handled by AuthContext
+    } finally {
+      setIsSigningIn(false)
+    }
   }
 
   if (loading) {

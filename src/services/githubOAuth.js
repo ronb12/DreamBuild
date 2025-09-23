@@ -1,7 +1,8 @@
 // Direct GitHub OAuth implementation (like Cursor IDE)
 class GitHubOAuth {
   constructor() {
-    this.clientId = 'your_github_oauth_client_id'; // Replace with your GitHub OAuth App Client ID
+    // You need to replace this with your actual GitHub OAuth App Client ID
+    this.clientId = 'Ov23liA1234567890abcdef'; // Replace with your GitHub OAuth App Client ID
     this.redirectUri = `${window.location.origin}/auth/github/callback`;
     this.scope = 'user:email,read:user';
   }
@@ -62,35 +63,6 @@ class GitHubOAuth {
     });
   }
 
-  // Handle OAuth callback
-  async handleCallback(code) {
-    try {
-      // Exchange code for access token
-      const response = await fetch('/api/auth/github', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to exchange code for token');
-      }
-
-      const { access_token, user } = await response.json();
-      
-      // Store token and user info
-      localStorage.setItem('github_token', access_token);
-      localStorage.setItem('github_user', JSON.stringify(user));
-      
-      return user;
-    } catch (error) {
-      console.error('GitHub OAuth callback error:', error);
-      throw error;
-    }
-  }
-
   // Get current user
   getCurrentUser() {
     const userStr = localStorage.getItem('github_user');
@@ -99,12 +71,11 @@ class GitHubOAuth {
 
   // Check if user is authenticated
   isAuthenticated() {
-    return !!localStorage.getItem('github_token');
+    return !!localStorage.getItem('github_user');
   }
 
   // Sign out
   signOut() {
-    localStorage.removeItem('github_token');
     localStorage.removeItem('github_user');
   }
 }

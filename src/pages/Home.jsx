@@ -41,12 +41,15 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-32 pb-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Subtle background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary-light/5"></div>
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-8 border border-primary/20"
           >
             <Sparkles className="h-4 w-4" />
             AI Development Platform
@@ -68,7 +71,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xl text-foreground mb-12 max-w-2xl mx-auto"
+            className="text-xl text-foreground mb-12 max-w-2xl mx-auto leading-relaxed"
           >
             The universal AI development platform supporting 170+ programming languages. 
             Generate, edit, and deploy code with artificial intelligence.
@@ -82,7 +85,7 @@ const Home = () => {
           >
             <Link
               to="/ai-builder"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors text-lg font-semibold"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-all duration-200 text-lg font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
             >
               <Rocket className="h-5 w-5" />
               Start Building
@@ -91,7 +94,7 @@ const Home = () => {
               href="https://github.com/ronb12/DreamBuild"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-colors text-lg font-semibold"
+              className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-all duration-200 text-lg font-semibold hover:border-primary/50"
             >
               <Github className="h-5 w-5" />
               View on GitHub
@@ -99,7 +102,7 @@ const Home = () => {
             </a>
           </motion.div>
 
-          {/* Stats */}
+          {/* Enhanced Stats */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -107,13 +110,18 @@ const Home = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
           >
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
+              <motion.div 
+                key={index} 
+                className="text-center group"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <stat.icon className="h-5 w-5 text-primary" />
-                  <div className="text-2xl font-bold text-primary">{stat.value}</div>
+                  <stat.icon className="h-5 w-5 text-primary group-hover:text-primary-light transition-colors" />
+                  <div className="text-2xl font-bold text-primary group-hover:text-primary-light transition-colors">{stat.value}</div>
                 </div>
-                <div className="text-sm text-foreground">{stat.label}</div>
-              </div>
+                <div className="text-sm text-foreground group-hover:text-primary transition-colors">{stat.label}</div>
+              </motion.div>
             ))}
           </motion.div>
         </div>

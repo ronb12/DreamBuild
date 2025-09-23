@@ -5,6 +5,12 @@ class GitHubOAuth {
     this.clientId = 'Ov23liA1234567890abcdef'; // Replace with your GitHub OAuth App Client ID
     this.redirectUri = `${window.location.origin}/auth/github/callback`;
     this.scope = 'user:email,read:user';
+    
+    console.log('GitHub OAuth initialized with:', {
+      clientId: this.clientId,
+      redirectUri: this.redirectUri,
+      scope: this.scope
+    });
   }
 
   // Generate GitHub OAuth URL

@@ -85,10 +85,10 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-8 border border-primary/20"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-primary-light/10 rounded-full text-primary text-sm font-medium mb-8 border border-primary/20"
             >
               <Sparkles className="h-4 w-4" />
-              AI Development Platform
+              🚀 New AI Development Platform
             </motion.div>
 
             {/* Main Heading */}

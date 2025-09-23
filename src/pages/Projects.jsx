@@ -406,29 +406,33 @@ const Projects = () => {
 
         {/* Empty State */}
         {filteredProjects.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Folder className="h-8 w-8 text-primary" />
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-16"
+          >
+            <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Folder className="h-12 w-12 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
+            <h3 className="text-2xl font-bold text-foreground mb-3">
               {searchTerm || activeTab !== 'all' ? 'No projects found' : 'No projects yet'}
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
               {searchTerm || activeTab !== 'all' 
-                ? 'Try adjusting your search or filter criteria.'
-                : 'Create your first project to get started!'
+                ? 'Try adjusting your search or filter criteria to find what you\'re looking for.'
+                : 'Start building amazing projects with AI-powered code generation!'
               }
             </p>
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowCreateDialog(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 font-medium"
             >
-              <Plus className="h-4 w-4" />
-              Create Project
+              <Plus className="h-5 w-5" />
+              Create Your First Project
             </motion.button>
-          </div>
+          </motion.div>
         )}
       </div>
 

@@ -21,7 +21,7 @@ import toast from 'react-hot-toast'
 
 const GitHubIntegration = () => {
   const { user } = useAuth()
-  const { projects, saveProject, loadProjects } = useProject()
+  const { projects, saveExternalProject, loadProjects } = useProject()
   const [repositories, setRepositories] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [syncedRepos, setSyncedRepos] = useState(new Set())

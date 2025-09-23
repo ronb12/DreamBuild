@@ -49,7 +49,7 @@ const Dashboard = () => {
     totalFiles: projects.reduce((sum, p) => sum + Object.keys(p.files || {}).length, 0),
     aiGenerations: projects.reduce((sum, p) => sum + (p.generations || 0), 0),
     linesOfCode: projects.reduce((sum, p) => sum + (p.linesOfCode || 0), 0),
-    languagesUsed: new Set(projects.map(p => p.config?.language || 'javascript')).size,
+    languagesUsed: projects.length > 0 ? new Set(projects.map(p => p.config?.language || 'javascript')).size : 0,
     hoursSpent: projects.reduce((sum, p) => sum + (p.hoursSpent || 0), 0)
   }
 

@@ -220,33 +220,33 @@ const Dashboard = () => {
             title="Total Projects"
             value={stats.totalProjects}
             icon={Folder}
-            change="+2"
+            change={stats.totalProjects > 0 ? "+2" : undefined}
             changeType="increase"
-            description="This week"
+            description={stats.totalProjects > 0 ? "This week" : "Create your first project"}
           />
           <StatCard
             title="AI Generations"
             value={stats.aiGenerations}
             icon={Brain}
-            change="+12"
+            change={stats.aiGenerations > 0 ? "+12" : undefined}
             changeType="increase"
-            description="This week"
+            description={stats.aiGenerations > 0 ? "This week" : "Start generating code"}
           />
           <StatCard
             title="Lines of Code"
             value={stats.linesOfCode.toLocaleString()}
             icon={Code}
-            change="+1.2k"
+            change={stats.linesOfCode > 0 ? "+1.2k" : undefined}
             changeType="increase"
-            description="This week"
+            description={stats.linesOfCode > 0 ? "This week" : "Begin coding"}
           />
           <StatCard
             title="Hours Spent"
             value={stats.hoursSpent}
             icon={Clock}
-            change="+5.2h"
+            change={stats.hoursSpent > 0 ? "+5.2h" : undefined}
             changeType="increase"
-            description="This week"
+            description={stats.hoursSpent > 0 ? "This week" : "Start building"}
           />
         </div>
 

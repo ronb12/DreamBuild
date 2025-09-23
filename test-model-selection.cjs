@@ -1,184 +1,146 @@
 const puppeteer = require('puppeteer');
 
 async function testModelSelection() {
-  console.log('🔍 Testing AI Model Selection Functionality');
-  console.log('==========================================');
+  console.log('🎯 Testing AI model selection functionality...');
   
-  let browser;
+  const browser = await puppeteer.launch({
+    headless: false,
+    defaultViewport: { width: 1920, height: 1080 }
+  });
+
+  const page = await browser.newPage();
+  
   try {
-    browser = await puppeteer.launch({
-      headless: false,
-      defaultViewport: { width: 1400, height: 900 },
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-
-    const page = await browser.newPage();
-    
-    // Enable console logging
-    page.on('console', msg => {
-      const type = msg.type();
-      if (type === 'error') {
-        console.log('❌ Browser Error:', msg.text());
-      } else if (type === 'warn') {
-        console.log('⚠️ Browser Warning:', msg.text());
-      } else {
-        console.log('📝 Browser Log:', msg.text());
-      }
-    });
-
-    // Navigate to the application
-    console.log('🌐 Navigating to AI Builder...');
-    await page.goto('http://localhost:3001/ai-builder', { 
+    // Navigate to AI Builder
+    await page.goto('http://localhost:3000/ai-builder', { 
       waitUntil: 'networkidle2',
       timeout: 30000 
     });
-
-    // Wait for the page to fully load
-    await page.waitForTimeout(5000);
-
-    console.log('\n📋 Test: AI Model Selection');
-    try {
-      // Find and click the Auto button
-      const autoButton = await page.evaluateHandle(() => {
-        const buttons = Array.from(document.querySelectorAll('button'));
-        return buttons.find(btn => btn.textContent.includes('Auto'));
+    
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Get initial model
+    const initialModel = await page.evaluate(() => {
+      const button = document.querySelector('button[title*="Model"]');
+      return button ? button.textContent.trim() : '';
+    });
+    console.log(`📝 Initial model: "${initialModel}"`);
+    
+    // Click model selector
+    const modelButton = await page.$('button[title*="Model"]');
+    if (modelButton) {
+      await modelButton.click();
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Take screenshot of dropdown
+      await page.screenshot({ path: 'model-selection-1.png', fullPage: true });
+      console.log('📸 Screenshot 1 saved (dropdown open)');
+      
+      // Get all model buttons
+      const modelButtons = await page.$$('button[class*="w-full p-2 rounded"]');
+      console.log(`🔍 Found ${modelButtons.length} model buttons`);
+      
+      // Test clicking different models
+      for (let i = 0; i < Math.min(3, modelButtons.length); i++) {
+        console.log(`🖱️ Testing click on model ${i + 1}...`);
+        
+        // Get model info before clicking
+        const modelInfo = await page.evaluate((index) => {
+          const buttons = document.querySelectorAll('button[class*="w-full p-2 rounded"]');
+          if (buttons[index]) {
+            const button = buttons[index];
+            const nameElement = button.querySelector('div[class*="font-medium"]');
+            const descElement = button.querySelector('div[class*="text-gray-500"]');
+            return {
+              name: nameElement ? nameElement.textContent.trim() : '',
+              description: descElement ? descElement.textContent.trim() : '',
+              hasCheckbox: button.querySelector('div[class*="border-2"]') !== null,
+              isClickable: !button.disabled
+            };
+          }
+          return null;
+        }, i);
+        
+        console.log(`📊 Model ${i + 1} info:`, modelInfo);
+        
+        if (modelInfo && modelInfo.isClickable) {
+          // Click the model
+          await modelButtons[i].click();
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          // Check if dropdown closed
+          const dropdownVisible = await page.evaluate(() => {
+            const dropdown = document.querySelector('div[class*="fixed bottom-16"]');
+            return dropdown && dropdown.offsetParent !== null;
+          });
+          
+          console.log(`📊 Dropdown visible after click: ${dropdownVisible}`);
+          
+          if (!dropdownVisible) {
+            // Get current model
+            const currentModel = await page.evaluate(() => {
+              const button = document.querySelector('button[title*="Model"]');
+              return button ? button.textContent.trim() : '';
+            });
+            console.log(`✅ Model changed to: "${currentModel}"`);
+            
+            // Reopen dropdown for next test
+            await modelButton.click();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } else {
+            console.log('⚠️ Dropdown did not close after click');
+          }
+        } else {
+          console.log(`⚠️ Model ${i + 1} is not clickable`);
+        }
+      }
+      
+      // Test scrolling if needed
+      const scrollInfo = await page.evaluate(() => {
+        const containers = document.querySelectorAll('div[class*="overflow-y-auto"]');
+        if (containers.length > 0) {
+          const container = containers[0];
+          return {
+            scrollHeight: container.scrollHeight,
+            clientHeight: container.clientHeight,
+            canScroll: container.scrollHeight > container.clientHeight
+          };
+        }
+        return null;
       });
       
-      if (autoButton) {
-        console.log('✅ Found Auto button');
+      console.log('📊 Scroll info:', scrollInfo);
+      
+      if (scrollInfo && scrollInfo.canScroll) {
+        console.log('🔄 Testing scroll functionality...');
         
-        // Click the Auto button
-        await autoButton.click();
-        console.log('✅ Clicked Auto button');
-        
-        // Wait for modal to appear
-        await page.waitForTimeout(3000);
-        
-        // Check if modal exists
-        const modalExists = await page.evaluate(() => {
-          const elements = Array.from(document.querySelectorAll('*'));
-          return elements.some(el => el.textContent && el.textContent.includes('Select AI Model'));
+        // Scroll down
+        await page.evaluate(() => {
+          const containers = document.querySelectorAll('div[class*="overflow-y-auto"]');
+          if (containers.length > 0) {
+            containers[0].scrollTop = 50;
+          }
         });
         
-        if (modalExists) {
-          console.log('✅ Modal exists');
-          
-          // Find all model buttons
-          const modelButtons = await page.evaluate(() => {
-            const buttons = Array.from(document.querySelectorAll('button'));
-            return buttons.filter(btn => 
-              btn.textContent.includes('CodeLlama') || 
-              btn.textContent.includes('StarCoder') || 
-              btn.textContent.includes('DeepSeek') ||
-              btn.textContent.includes('WizardCoder') ||
-              btn.textContent.includes('Phi-3') ||
-              btn.textContent.includes('Llama') ||
-              btn.textContent.includes('Auto')
-            ).map(btn => ({
-              text: btn.textContent,
-              id: btn.id || 'no-id',
-              className: btn.className
-            }));
-          });
-          
-          console.log(`✅ Found ${modelButtons.length} model buttons:`);
-          modelButtons.forEach((btn, index) => {
-            console.log(`   ${index + 1}. ${btn.text}`);
-          });
-          
-          // Try to click on CodeLlama 7B
-          const codellamaButton = await page.evaluateHandle(() => {
-            const buttons = Array.from(document.querySelectorAll('button'));
-            return buttons.find(btn => btn.textContent.includes('CodeLlama 7B'));
-          });
-          
-          if (codellamaButton) {
-            console.log('✅ Found CodeLlama 7B button');
-            
-            // Get button position and size
-            const buttonInfo = await page.evaluateHandle((btn) => {
-              const rect = btn.getBoundingClientRect();
-              return {
-                x: rect.x,
-                y: rect.y,
-                width: rect.width,
-                height: rect.height,
-                visible: rect.width > 0 && rect.height > 0
-              };
-            }, codellamaButton);
-            
-            const info = await buttonInfo.jsonValue();
-            console.log('✅ Button info:', info);
-            
-            if (info.visible) {
-              // Try clicking
-              await codellamaButton.click();
-              console.log('✅ Clicked CodeLlama 7B button');
-              
-              // Wait a moment
-              await page.waitForTimeout(2000);
-              
-              // Check if the modal closed and button text changed
-              const newButtonText = await page.evaluate(() => {
-                const buttons = Array.from(document.querySelectorAll('button'));
-                const autoButton = buttons.find(btn => btn.textContent.includes('Auto') || btn.textContent.includes('CodeLlama'));
-                return autoButton ? autoButton.textContent : 'Button not found';
-              });
-              
-              console.log(`✅ New button text: "${newButtonText}"`);
-              
-              if (newButtonText.includes('CodeLlama')) {
-                console.log('✅ Model selection successful!');
-              } else {
-                console.log('❌ Model selection failed - button text did not change');
-              }
-            } else {
-              console.log('❌ Button is not visible');
-            }
-          } else {
-            console.log('❌ CodeLlama 7B button not found');
-          }
-          
-        } else {
-          console.log('❌ Modal does not exist');
-          
-          // Debug: Check what elements are on the page
-          const pageElements = await page.evaluate(() => {
-            const elements = Array.from(document.querySelectorAll('*'));
-            return elements
-              .filter(el => el.textContent && el.textContent.trim().length > 0)
-              .map(el => el.textContent.trim())
-              .filter(text => text.length < 50)
-              .slice(0, 20);
-          });
-          
-          console.log('📋 Page elements:', pageElements);
-        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-      } else {
-        console.log('❌ Auto button not found');
+        // Take screenshot after scrolling
+        await page.screenshot({ path: 'model-selection-2.png', fullPage: true });
+        console.log('📸 Screenshot 2 saved (after scrolling)');
       }
-    } catch (error) {
-      console.log('❌ Model selection test failed:', error.message);
+      
+      // Close dropdown
+      await page.keyboard.press('Escape');
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
-
-    // Take a screenshot
-    await page.screenshot({ 
-      path: 'dreambuild-model-selection-test.png',
-      fullPage: true 
-    });
-    console.log('\n📸 Screenshot saved as dreambuild-model-selection-test.png');
-
-    console.log('\n🎯 MODEL SELECTION TEST COMPLETE!');
-
+    
+    console.log('✅ Model selection test completed');
+    
   } catch (error) {
-    console.error('❌ Model selection test failed:', error);
+    console.error('❌ Model selection test failed:', error.message);
   } finally {
-    if (browser) {
-      await browser.close();
-    }
+    await browser.close();
   }
 }
 
-// Run the model selection test
-testModelSelection().catch(console.error);
+testModelSelection();

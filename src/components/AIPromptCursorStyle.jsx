@@ -756,8 +756,8 @@ export default function AIPromptCursorStyle() {
             
             {/* Models List - Scrollable list with proper height */}
             <div 
-              className="flex-1 overflow-y-auto p-1 space-y-0.5 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent" 
-              style={{ maxHeight: '256px', minHeight: '120px' }}
+              className="flex-1 overflow-y-auto p-1 space-y-0.5" 
+              style={{ maxHeight: '200px', minHeight: '120px' }}
             >
               {getAvailableModels().map((model) => (
                 <button

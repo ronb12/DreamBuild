@@ -91,7 +91,11 @@ const GitHubIntegration = () => {
     setIsLoading(true)
     try {
       const project = await githubService.syncRepository(repo)
-      await saveProject(project.name)
+      // Add user ID to the project
+      project.userId = user.uid
+      project.createdAt = new Date()
+      
+      await saveProject(project)
       await loadProjects()
       
       setSyncedRepos(prev => new Set([...prev, repo.githubData.id]))

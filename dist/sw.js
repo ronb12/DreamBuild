@@ -1,5 +1,5 @@
 // DreamBuild Service Worker for PWA functionality
-const CACHE_NAME = 'dreambuild-v2.6.0';
+const CACHE_NAME = 'dreambuild-v2.7.0';
 const urlsToCache = [
   '/',
   '/ai-builder',

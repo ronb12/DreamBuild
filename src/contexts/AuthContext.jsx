@@ -104,16 +104,11 @@ export function AuthProvider({ children }) {
 
   const signInWithGitHub = async () => {
     try {
-      // Check if GitHub provider is available
-      if (!GithubAuthProvider) {
-        throw new Error('GitHub authentication is not available. Please check Firebase configuration.')
-      }
-      
+      // Only use GitHub provider - no Google APIs
       const provider = new GithubAuthProvider()
-      // Add custom parameters
       provider.addScope('user:email')
       
-      console.log('Attempting GitHub sign-in with provider:', provider)
+      console.log('Using GitHub provider only:', provider.providerId)
       const result = await signInWithPopup(auth, provider)
       
       // Save user data to Firestore with error handling

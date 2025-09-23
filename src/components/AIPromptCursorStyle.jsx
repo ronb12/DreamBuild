@@ -33,10 +33,10 @@ export default function AIPromptCursorStyle() {
   const [aiModel, setAIModel] = useState('auto')
   const [modelUpdateKey, setModelUpdateKey] = useState(0)
   
-  // Debug: Log when aiModel changes
-  useEffect(() => {
-    console.log(`🎯 AI Model state changed to: ${aiModel}`)
-  }, [aiModel])
+  // Debug: Log when aiModel changes (commented out for production)
+  // useEffect(() => {
+  //   console.log(`🎯 AI Model state changed to: ${aiModel}`)
+  // }, [aiModel])
   const [showModelSelector, setShowModelSelector] = useState(false)
   const [showContextUsage, setShowContextUsage] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)

@@ -313,30 +313,47 @@ const Dashboard = () => {
               Top Projects
             </h2>
             <div className="space-y-4">
-              {topProjects.map((project, index) => (
-                <motion.div
-                  key={project.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-foreground text-sm">{project.name}</h3>
-                    <span className="text-xs text-muted-foreground">{project.files} files</span>
-                  </div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex-1 bg-muted rounded-full h-2 mr-3">
-                      <div 
-                        className="bg-white h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${project.progress}%` }}
-                      ></div>
+              {topProjects.length > 0 ? (
+                topProjects.map((project, index) => (
+                  <motion.div
+                    key={project.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium text-foreground text-sm">{project.name}</h3>
+                      <span className="text-xs text-muted-foreground">{project.files} files</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">{project.progress}%</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{project.lastModified}</p>
-                </motion.div>
-              ))}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex-1 bg-muted rounded-full h-2 mr-3">
+                        <div 
+                          className="bg-white h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${project.progress}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{project.progress}%</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{project.lastModified}</p>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <Folder className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">No projects yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Create your first project to get started.
+                  </p>
+                  <Link
+                    to="/ai-builder"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Create Project
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -738,7 +738,7 @@ export default function AIPromptCursorStyle() {
           
           {/* Compact Dropdown Container */}
           <div 
-            className="fixed bottom-16 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl w-60 max-h-40 flex flex-col z-50"
+            className="fixed bottom-16 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl w-64 max-h-80 flex flex-col z-50"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header - Ultra Compact */}

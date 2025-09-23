@@ -65,6 +65,41 @@ export function ProjectProvider({ children }) {
     }))
   }, [])
 
+  const loadProjects = useCallback(async () => {
+    if (!user) {
+      console.log('⚠️ loadProjects: No user found')
+      return
+    }
+
+    console.log('🔄 Loading projects for user:', user.uid)
+    setIsLoading(true)
+    try {
+      const { collection, query, where, getDocs, orderBy } = await import('firebase/firestore')
+      const projectsRef = collection(db, 'projects')
+      const q = query(
+        projectsRef,
+        where('userId', '==', user.uid),
+        orderBy('lastModified', 'desc')
+      )
+      
+      console.log('🔥 Querying Firestore for projects...')
+      const snapshot = await getDocs(q)
+      const projectsList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      
+      console.log('📦 Loaded projects:', projectsList.length, 'projects')
+      console.log('📋 Projects list:', projectsList)
+      setProjects(projectsList)
+    } catch (error) {
+      console.error('❌ Failed to load projects:', error)
+      toast.error('Failed to load projects: ' + error.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user, db])
+
   const saveProject = useCallback(async (projectName = null) => {
     if (!user) {
       toast.error('Please sign in to save projects')
@@ -94,13 +129,13 @@ export function ProjectProvider({ children }) {
       toast.success('Project saved successfully!')
       
       // Refresh projects list
-      loadProjects()
+      await loadProjects()
     } catch (error) {
       toast.error('Failed to save project: ' + error.message)
     } finally {
       setIsLoading(false)
     }
-  }, [currentProject, user, db])
+  }, [currentProject, user, db, loadProjects])
 
   const saveExternalProject = useCallback(async (project) => {
     if (!user) {
@@ -147,41 +182,6 @@ export function ProjectProvider({ children }) {
       setIsLoading(false)
     }
   }, [user, db, loadProjects])
-
-  const loadProjects = useCallback(async () => {
-    if (!user) {
-      console.log('⚠️ loadProjects: No user found')
-      return
-    }
-
-    console.log('🔄 Loading projects for user:', user.uid)
-    setIsLoading(true)
-    try {
-      const { collection, query, where, getDocs, orderBy } = await import('firebase/firestore')
-      const projectsRef = collection(db, 'projects')
-      const q = query(
-        projectsRef,
-        where('userId', '==', user.uid),
-        orderBy('lastModified', 'desc')
-      )
-      
-      console.log('🔥 Querying Firestore for projects...')
-      const snapshot = await getDocs(q)
-      const projectsList = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      
-      console.log('📦 Loaded projects:', projectsList.length, 'projects')
-      console.log('📋 Projects list:', projectsList)
-      setProjects(projectsList)
-    } catch (error) {
-      console.error('❌ Failed to load projects:', error)
-      toast.error('Failed to load projects: ' + error.message)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [user, db, setProjects])
 
   const loadProject = useCallback(async (projectId) => {
     if (!user) return

@@ -199,39 +199,41 @@ const Projects = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20" style={{ paddingTop: '100px' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100" style={{ paddingTop: '100px' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+          <div className="space-y-3 flex-1">
+            <h1 className="text-5xl font-bold text-gray-900">
               Projects
             </h1>
-            <p className="text-lg text-muted-foreground">Manage and organize your AI-generated projects</p>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
+            <p className="text-lg text-gray-600">Manage and organize your AI-generated projects</p>
+            <div className="flex flex-wrap items-center gap-6 text-sm">
+              <span className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg border border-blue-200">
                 <Folder className="h-4 w-4" />
                 {allProjects.length} Total Projects
               </span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-lg border border-purple-200">
                 <Star className="h-4 w-4" />
                 {allProjects.filter(p => p.source === 'github').length} GitHub
               </span>
             </div>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowCreateDialog(true)}
-            className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 font-medium"
-          >
-            <Plus className="h-5 w-5" />
-            New Project
-          </motion.button>
+          <div className="flex-shrink-0">
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowCreateDialog(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 font-semibold text-sm border border-primary/20"
+            >
+              <Plus className="h-4 w-4" />
+              Create New Project
+            </motion.button>
+          </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 bg-card/50 backdrop-blur-sm border border-border/50 p-1.5 rounded-xl mb-8 shadow-sm">
+        <div className="flex flex-wrap items-center gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 p-2 rounded-2xl mb-8 shadow-sm overflow-x-auto">
           {tabs.map((tab) => {
             const IconComponent = tab.icon
             const isActive = activeTab === tab.id
@@ -241,16 +243,16 @@ const Projects = () => {
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                   isActive 
-                    ? 'bg-gradient-to-r from-primary to-primary-dark text-primary-foreground shadow-lg shadow-primary/25' 
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/25 border border-primary/20' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-transparent hover:border-gray-200'
                 }`}
               >
-                <IconComponent className="h-4 w-4" />
-                {tab.name}
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                  isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-muted text-muted-foreground'
+                <IconComponent className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">{tab.name}</span>
+                <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                  isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
                 }`}>
                   {tab.count}
                 </span>
@@ -260,19 +262,19 @@ const Projects = () => {
         </div>
 
         {/* Search */}
-        <div className="relative mb-8">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <div className="relative mb-8 max-w-lg">
+          <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search projects by name, description, or tags..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 border border-border/50 rounded-xl bg-card/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200 text-foreground placeholder:text-muted-foreground"
+            className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-200 text-gray-900 placeholder:text-gray-400 text-sm shadow-sm hover:shadow-md"
           />
         </div>
 
         {/* Projects List */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
           {filteredProjects.map((project, index) => {
             const TypeIcon = getTypeIcon(project.type)
             return (
@@ -290,9 +292,9 @@ const Projects = () => {
                 <div className="relative z-10">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                        <TypeIcon className="h-6 w-6 text-primary" />
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 flex-shrink-0 border border-blue-200">
+                        <TypeIcon className="h-6 w-6 text-blue-600" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-lg text-foreground truncate group-hover:text-primary transition-colors duration-200">
@@ -304,19 +306,24 @@ const Projects = () => {
                       </div>
                     </div>
                     
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                       <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                        whileHover={{ scale: 1.05, y: -1 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-1.5 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
                         onClick={() => switchProject(project.id)}
+                        title="Open Project"
                       >
-                        <Eye className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <ArrowRight className="h-3.5 w-3.5" />
+                        Open Project
                       </motion.button>
                       <button
                         onClick={() => setShowProjectMenu(showProjectMenu === project.id ? null : project.id)}
-                        className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800"
+                        title="More Options"
                       >
-                        <MoreVertical className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                        <MoreVertical className="h-4 w-4" />
+                        <span className="text-xs font-medium">Menu</span>
                       </button>
                     </div>
                   </div>
@@ -368,29 +375,25 @@ const Projects = () => {
                       initial={{ opacity: 0, y: -10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      className="absolute right-4 top-16 bg-card/95 backdrop-blur-sm border border-border/50 rounded-xl shadow-xl z-20 min-w-[180px] overflow-hidden"
+                      className="absolute right-2 top-14 bg-card/95 backdrop-blur-sm border border-border/50 rounded-xl shadow-xl z-20 min-w-[180px] overflow-hidden"
                     >
                       <div className="p-1">
-                        <button className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-primary/10 rounded-lg transition-colors">
-                          <Eye className="h-4 w-4" />
-                          View Project
-                        </button>
-                        <button className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-primary/10 rounded-lg transition-colors">
-                          <Edit className="h-4 w-4" />
+                        <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-blue-50 rounded-lg transition-colors text-gray-700 hover:text-blue-700">
+                          <Edit className="h-4 w-4 text-blue-500" />
                           Edit Details
                         </button>
-                        <button className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-primary/10 rounded-lg transition-colors">
-                          <Download className="h-4 w-4" />
+                        <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-green-50 rounded-lg transition-colors text-gray-700 hover:text-green-700">
+                          <Download className="h-4 w-4 text-green-500" />
                           Download
                         </button>
-                        <button className="w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-primary/10 rounded-lg transition-colors">
-                          <Share className="h-4 w-4" />
+                        <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-purple-50 rounded-lg transition-colors text-gray-700 hover:text-purple-700">
+                          <Share className="h-4 w-4 text-purple-500" />
                           Share Project
                         </button>
-                        <div className="h-px bg-border/50 my-2 mx-2" />
+                        <div className="h-px bg-gray-200 my-2 mx-2" />
                         <button 
                           onClick={() => handleDeleteProject(project.id)}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors hover:text-red-700"
                         >
                           <Trash2 className="h-4 w-4" />
                           Delete Project
@@ -427,10 +430,10 @@ const Projects = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowCreateDialog(true)}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 font-medium"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl hover:shadow-xl hover:shadow-primary/30 transition-all duration-200 font-semibold text-base border border-primary/20"
             >
               <Plus className="h-5 w-5" />
-              Create Your First Project
+              Get Started - Create Your First Project
             </motion.button>
           </motion.div>
         )}
@@ -487,7 +490,7 @@ const Projects = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setShowCreateDialog(false)}
-                  className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-muted transition-colors"
+                  className="flex-1 px-4 py-2.5 border border-border rounded-lg text-foreground hover:bg-muted transition-colors text-sm font-medium"
                 >
                   Cancel
                 </motion.button>
@@ -495,7 +498,7 @@ const Projects = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleCreateProject}
-                  className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors"
+                  className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors text-sm font-medium"
                 >
                   Create
                 </motion.button>

@@ -23,22 +23,17 @@ const Home = () => {
     {
       icon: Code,
       title: 'AI Code Generation',
-      description: 'Generate high-quality code in multiple languages with advanced AI models.'
+      description: 'Generate code with AI assistance.'
     },
     {
       icon: Database,
       title: 'Smart Templates',
-      description: 'Access a library of pre-built templates for rapid development.'
+      description: 'Pre-built templates for quick start.'
     },
     {
       icon: Zap,
       title: 'Real-time Collaboration',
-      description: 'Work together with your team in real-time on projects.'
-    },
-    {
-      icon: Shield,
-      title: 'Enterprise Security',
-      description: 'Bank-level security with end-to-end encryption for all projects.'
+      description: 'Work together with your team.'
     }
   ]
 

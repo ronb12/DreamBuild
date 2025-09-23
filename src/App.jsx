@@ -39,8 +39,8 @@ function ConditionalFooter() {
 function ConditionalMain({ children }) {
   const location = useLocation()
   
-  // Don't apply pt-16 on AI Builder and Dashboard pages as they handle their own spacing
-  const noPaddingRoutes = ['/ai-builder', '/dashboard']
+  // Don't apply pt-16 on AI Builder, Dashboard, and Projects pages as they handle their own spacing
+  const noPaddingRoutes = ['/ai-builder', '/dashboard', '/projects']
   
   if (noPaddingRoutes.includes(location.pathname)) {
     return <main>{children}</main>

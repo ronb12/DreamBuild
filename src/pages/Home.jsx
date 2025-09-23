@@ -45,14 +45,14 @@ const Home = () => {
 
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative pt-20 pb-20">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary-light/5"></div>
         
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative flex justify-center">
+          <div className="text-center max-w-4xl w-full">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -149,7 +149,8 @@ const Home = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="flex justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -171,6 +172,7 @@ const Home = () => {
                 </p>
               </motion.div>
             ))}
+            </div>
           </div>
         </div>
       </section>

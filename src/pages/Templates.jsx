@@ -235,11 +235,12 @@ const Templates = () => {
       <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border-b border-border/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
+            {/* Title Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="flex items-center justify-center gap-3 mb-6"
+              className="flex items-center justify-center gap-3 mb-8"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
                 <FileText className="h-6 w-6 text-primary-foreground" />
@@ -247,31 +248,34 @@ const Templates = () => {
               <h1 className="text-4xl font-bold text-high-contrast">Template Library</h1>
             </motion.div>
             
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
-            >
-              Choose from our collection of professionally designed templates to jumpstart your next project
-            </motion.p>
+            {/* Description and Search Section */}
+            <div className="flex flex-col items-center space-y-6">
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-xl text-muted-foreground max-w-2xl mx-auto text-center"
+              >
+                Choose from our collection of professionally designed templates to jumpstart your next project
+              </motion.p>
 
-            {/* Search Bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="max-w-md mx-auto relative"
-            >
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search templates..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
-              />
-            </motion.div>
+              {/* Search Bar */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="max-w-md mx-auto relative"
+              >
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search templates..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                />
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

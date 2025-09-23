@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 
-class SimpleGitHubTest {
+class GitHubLoginDebugTester {
   constructor() {
     this.browser = null;
     this.page = null;
@@ -8,7 +8,7 @@ class SimpleGitHubTest {
   }
 
   async init() {
-    console.log('🚀 Starting Simple GitHub Test...');
+    console.log('🚀 Starting GitHub Login Debug Test...');
     this.browser = await puppeteer.launch({
       headless: false,
       defaultViewport: { width: 1280, height: 720 },
@@ -18,7 +18,11 @@ class SimpleGitHubTest {
     
     // Enable console logging
     this.page.on('console', msg => {
-      console.log(`🔗 ${msg.type().toUpperCase()}:`, msg.text());
+      if (msg.type() === 'error') {
+        console.log('❌ Console Error:', msg.text());
+      } else if (msg.text().includes('GitHub') || msg.text().includes('auth') || msg.text().includes('Firebase')) {
+        console.log('🔗 Auth Log:', msg.text());
+      }
     });
   }
 
@@ -26,87 +30,97 @@ class SimpleGitHubTest {
     try {
       console.log('\n📱 Step 1: Navigate to login page');
       await this.page.goto(`${this.baseUrl}/login`, { waitUntil: 'networkidle2', timeout: 30000 });
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Take screenshot
-      await this.page.screenshot({ path: 'github-simple-test.png' });
-      console.log('📸 Screenshot saved: github-simple-test.png');
+      await this.page.screenshot({ path: 'github-login-debug.png' });
+      console.log('📸 Screenshot saved: github-login-debug.png');
 
-      console.log('\n🔍 Step 2: Check page content');
-      const pageContent = await this.page.evaluate(() => {
-        const body = document.body;
-        return {
-          hasGitHubButton: body.textContent.includes('Continue with GitHub'),
-          hasGoogleButton: body.textContent.includes('Continue with Google'),
-          hasGuestButton: body.textContent.includes('Continue as Guest'),
-          allText: body.textContent.substring(0, 2000)
-        };
+      console.log('\n🔍 Step 2: Look for GitHub login button');
+      const githubButton = await this.page.evaluate(() => {
+        const buttons = document.querySelectorAll('button');
+        return Array.from(buttons).find(btn => 
+          btn.textContent.includes('GitHub') || btn.textContent.includes('Continue with GitHub')
+        );
       });
-
-      console.log('📄 Page Content Analysis:');
-      console.log(`  Has GitHub Button: ${pageContent.hasGitHubButton}`);
-      console.log(`  Has Google Button: ${pageContent.hasGoogleButton}`);
-      console.log(`  Has Guest Button: ${pageContent.hasGuestButton}`);
-      console.log(`  Content Preview: ${pageContent.allText}`);
-
-      if (!pageContent.hasGitHubButton) {
-        console.log('❌ GitHub button not found on page');
-        return { success: false, message: 'GitHub button not found' };
+      if (!githubButton) {
+        console.log('❌ GitHub login button not found');
+        return { success: false, message: 'GitHub login button not found' };
       }
 
-      console.log('\n🔍 Step 3: Click GitHub button');
+      console.log('✅ GitHub login button found');
+
+      console.log('\n🔍 Step 3: Click GitHub login button');
       await this.page.evaluate(() => {
         const buttons = document.querySelectorAll('button');
         const githubBtn = Array.from(buttons).find(btn => 
-          btn.textContent.includes('Continue with GitHub')
+          btn.textContent.includes('GitHub') || btn.textContent.includes('Continue with GitHub')
         );
         if (githubBtn) {
           githubBtn.click();
         }
       });
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Wait for any response
-      await new Promise(resolve => setTimeout(resolve, 5000));
-
-      // Check for errors or popups
+      // Check for popup or error
       const pages = await this.browser.pages();
       console.log(`📄 Number of pages after click: ${pages.length}`);
 
       if (pages.length > 1) {
-        console.log('✅ Popup opened');
+        console.log('✅ GitHub popup opened');
         const popup = pages[pages.length - 1];
         
+        // Wait for popup to load
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Check popup content
         const popupContent = await popup.evaluate(() => {
           return {
             title: document.title,
             url: window.location.href,
-            content: document.body.textContent.substring(0, 1000)
+            hasError: document.body.textContent.includes('error') || document.body.textContent.includes('Error'),
+            content: document.body.textContent.substring(0, 500)
           };
         });
 
-        console.log('📄 Popup Content:');
+        console.log('📄 Popup Analysis:');
         console.log(`  Title: ${popupContent.title}`);
         console.log(`  URL: ${popupContent.url}`);
+        console.log(`  Has Error: ${popupContent.hasError}`);
         console.log(`  Content: ${popupContent.content}`);
 
+        if (popupContent.hasError) {
+          console.log('❌ Error detected in GitHub popup');
+          return { success: false, message: 'Error in GitHub popup: ' + popupContent.content };
+        }
+
+        // Close popup
         await popup.close();
         return { success: true, message: 'GitHub popup opened successfully' };
+
       } else {
-        // Check for error messages
+        console.log('❌ No popup opened - checking for errors');
+        
+        // Check for error messages on the main page
         const errorCheck = await this.page.evaluate(() => {
           const body = document.body.textContent;
           return {
             hasError: body.includes('error') || body.includes('Error') || body.includes('failed'),
+            hasAuthError: body.includes('auth/') || body.includes('Firebase'),
             content: body.substring(0, 1000)
           };
         });
 
+        console.log('📄 Error Analysis:');
+        console.log(`  Has Error: ${errorCheck.hasError}`);
+        console.log(`  Has Auth Error: ${errorCheck.hasAuthError}`);
+        console.log(`  Content: ${errorCheck.content}`);
+
         if (errorCheck.hasError) {
-          console.log('❌ Error detected:', errorCheck.content);
-          return { success: false, message: 'Error: ' + errorCheck.content };
+          return { success: false, message: 'Error detected: ' + errorCheck.content };
         }
 
-        return { success: false, message: 'No popup opened and no error detected' };
+        return { success: false, message: 'No popup opened and no clear error message' };
       }
 
     } catch (error) {
@@ -140,7 +154,7 @@ class SimpleGitHubTest {
 }
 
 // Run the test
-const tester = new SimpleGitHubTest();
+const tester = new GitHubLoginDebugTester();
 tester.runTest().then(result => {
   console.log('\n🏁 Test completed!');
   process.exit(result.success ? 0 : 1);

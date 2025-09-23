@@ -127,38 +127,43 @@ export function AuthProvider({ children }) {
       }
       
       console.log('Successfully signed in with GitHub!')
-    } catch (error) {
-      if (error.code === 'auth/account-exists-with-different-credential') {
-        // Handle account linking - simplified approach
-        const email = error.customData?.email
-        if (email) {
-          // Check what providers are available for this email
-          try {
-            const signInMethods = await fetchSignInMethodsForEmail(auth, email)
-            console.log('Available sign-in methods for', email, ':', signInMethods)
-            
-            if (signInMethods.includes('google.com')) {
-              // User already has a Google account, suggest they use that
-              throw new Error(`An account with ${email} already exists using Google. Please sign in with Google instead, or use a different email for GitHub.`)
-            } else if (signInMethods.includes('password')) {
-              // User has email/password account
-              throw new Error(`An account with ${email} already exists using email/password. Please sign in with your existing method instead.`)
+        } catch (error) {
+          if (error.code === 'auth/account-exists-with-different-credential') {
+            // Handle account linking - simplified approach
+            const email = error.customData?.email
+            if (email) {
+              // Check what providers are available for this email
+              try {
+                const signInMethods = await fetchSignInMethodsForEmail(auth, email)
+                console.log('Available sign-in methods for', email, ':', signInMethods)
+                
+                if (signInMethods && signInMethods.length > 0) {
+                  if (signInMethods.includes('google.com')) {
+                    // User already has a Google account, suggest they use that
+                    throw new Error(`An account with ${email} already exists using Google. Please sign in with Google instead, or use a different email for GitHub.`)
+                  } else if (signInMethods.includes('password')) {
+                    // User has email/password account
+                    throw new Error(`An account with ${email} already exists using email/password. Please sign in with your existing method instead.`)
+                  } else {
+                    // Unknown provider
+                    throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
+                  }
+                } else {
+                  // No sign-in methods found, but account exists - this might be a Firebase config issue
+                  throw new Error(`An account with ${email} already exists but we couldn't determine the sign-in method. Please try signing in with Google or email/password first, or contact support.`)
+                }
+              } catch (linkError) {
+                console.error('Failed to check sign-in methods:', linkError.message)
+                throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
+              }
             } else {
-              // Unknown provider
-              throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
+              throw new Error('An account with this email already exists. Please sign in with your existing method instead.')
             }
-          } catch (linkError) {
-            console.error('Failed to check sign-in methods:', linkError.message)
-            throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
+          } else {
+            console.error('Failed to sign in with GitHub:', error.message)
+            throw error // Re-throw to let the component handle it
           }
-        } else {
-          throw new Error('An account with this email already exists. Please sign in with your existing method instead.')
         }
-      } else {
-        console.error('Failed to sign in with GitHub:', error.message)
-        throw error // Re-throw to let the component handle it
-      }
-    }
   }
 
   const logout = async () => {

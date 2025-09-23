@@ -41,16 +41,16 @@ const Dashboard = () => {
   }, [])
 
 
-  // Mock data - in real app, this would come from API
+  // Real data from projects and GitHub
   const stats = {
-    totalProjects: 12,
-    activeProjects: 8,
-    completedProjects: 4,
-    totalFiles: 156,
-    aiGenerations: 89,
-    linesOfCode: 12450,
-    languagesUsed: 8,
-    hoursSpent: 42.5
+    totalProjects: projects.length,
+    activeProjects: projects.filter(p => p.status === 'active' || p.status === 'development').length,
+    completedProjects: projects.filter(p => p.status === 'completed').length,
+    totalFiles: projects.reduce((sum, p) => sum + Object.keys(p.files || {}).length, 0),
+    aiGenerations: projects.reduce((sum, p) => sum + (p.generations || 0), 0),
+    linesOfCode: projects.reduce((sum, p) => sum + (p.linesOfCode || 0), 0),
+    languagesUsed: new Set(projects.map(p => p.config?.language || 'javascript')).size,
+    hoursSpent: projects.reduce((sum, p) => sum + (p.hoursSpent || 0), 0)
   }
 
   const recentActivity = [

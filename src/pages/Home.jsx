@@ -118,18 +118,17 @@ const Home = () => {
             >
               <Link
                 to="/ai-builder"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-all duration-200 text-lg font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-all duration-200 text-lg font-semibold"
               >
                 <Rocket className="h-5 w-5" />
-                Try DreamBuild Now
-                <ArrowRight className="h-4 w-4" />
+                Start Building
               </Link>
               <Link
                 to="/templates"
-                className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-all duration-200 text-lg font-semibold hover:border-primary/50"
+                className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-all duration-200 text-lg font-semibold"
               >
                 <Code className="h-5 w-5" />
-                See What's New
+                Browse Templates
               </Link>
             </motion.div>
 
@@ -164,10 +163,10 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Join the AI Development Revolution
+              What Users Say
             </h2>
             <p className="text-lg text-muted-foreground">
-              Be part of the next generation of developers shaping the future with cutting-edge AI tools
+              See what developers are saying about DreamBuild
             </p>
           </div>
           
@@ -204,10 +203,10 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Revolutionary Features That Change Everything
+              Key Features
             </h2>
             <p className="text-lg text-foreground">
-              Discover the groundbreaking capabilities that make DreamBuild the most advanced AI development platform ever created
+              Everything you need to build amazing projects
             </p>
           </div>
           

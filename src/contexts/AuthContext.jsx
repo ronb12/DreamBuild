@@ -104,38 +104,22 @@ export function AuthProvider({ children }) {
 
   const signInWithGitHub = async () => {
     try {
-      console.log('Using direct GitHub OAuth (like Cursor IDE)')
+      console.log('Using Firebase GitHub authentication')
       
-      // Use direct GitHub OAuth instead of Firebase
-      // Try popup first, fallback to redirect if popup fails
-      let user;
-      try {
-        user = await githubOAuth.authenticate()
-      } catch (popupError) {
-        console.log('Popup failed, using redirect method:', popupError.message)
-        githubOAuth.authenticateWithRedirect()
-        return // Will redirect, so don't continue
-      }
+      // Use Firebase's built-in GitHub authentication
+      const provider = new GithubAuthProvider()
+      provider.addScope('user:email')
       
-      // Create a Firebase-compatible user object
-      const firebaseUser = {
-        uid: `github_${user.id}`,
-        email: user.email,
-        displayName: user.name || user.login,
-        photoURL: user.avatar_url,
-        provider: 'github'
-      }
+      const result = await signInWithPopup(auth, provider)
       
       // Save user data to Firestore with error handling
       try {
-        await setDoc(doc(db, 'users', firebaseUser.uid), {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
+        await setDoc(doc(db, 'users', result.user.uid), {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName || result.user.email?.split('@')[0] || 'GitHub User',
+          photoURL: result.user.photoURL,
           provider: 'github',
-          githubId: user.id,
-          githubLogin: user.login,
           createdAt: new Date(),
           lastLogin: new Date()
         }, { merge: true })
@@ -144,19 +128,25 @@ export function AuthProvider({ children }) {
         // Continue with authentication even if Firestore fails
       }
       
-      // Set user in context
-      setUser(firebaseUser)
-      
       console.log('Successfully signed in with GitHub!')
     } catch (error) {
-      console.error('GitHub OAuth error:', error.message)
+      console.error('GitHub authentication error:', error.message)
       
-      // If popup is blocked, offer redirect option
-      if (error.message.includes('Popup blocked')) {
-        const useRedirect = confirm('Popups are blocked. Would you like to redirect to GitHub for authentication?')
-        if (useRedirect) {
-          githubOAuth.authenticateWithRedirect()
-          return
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        const email = error.customData?.email
+        if (email) {
+          try {
+            const signInMethods = await fetchSignInMethodsForEmail(auth, email)
+            if (signInMethods && signInMethods.length > 0) {
+              if (signInMethods.includes('google.com')) {
+                throw new Error(`An account with ${email} already exists using Google. Please sign in with Google instead.`)
+              } else {
+                throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
+              }
+            }
+          } catch (linkError) {
+            throw new Error(`An account with ${email} already exists. Please sign in with your existing method instead.`)
+          }
         }
       }
       

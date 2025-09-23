@@ -766,16 +766,10 @@ export default function AIPromptCursorStyle() {
                   onClick={(e) => {
                     e.preventDefault()
                     e.stopPropagation()
-                    console.log(`🎯 Setting AI model to: ${model.id} (${model.name})`)
-                    console.log(`🎯 Current aiModel before update: ${aiModel}`)
                     setAIModel(model.id)
-                    setModelUpdateKey(prev => {
-                      console.log(`🎯 ModelUpdateKey updating from ${prev} to ${prev + 1}`)
-                      return prev + 1
-                    })
+                    setModelUpdateKey(prev => prev + 1)
                     setShowModelSelector(false)
                     toast.success(`Switched to ${model.name}`)
-                    console.log(`🎯 AI model set to: ${model.id}`)
                   }}
                   className={`w-full p-2 rounded border transition-all duration-200 text-left hover:bg-gray-50 dark:hover:bg-gray-700 ${
                     aiModel === model.id

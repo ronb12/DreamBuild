@@ -33,36 +33,56 @@ async function testScrollFunctionality() {
       await page.screenshot({ path: 'scroll-test-2.png', fullPage: true });
       console.log('📸 Screenshot 2 saved (dropdown open)');
       
-      // Check scrollable container
-      const scrollContainer = await page.$('div[style*="maxHeight: 256px"]');
-      if (scrollContainer) {
-        console.log('✅ Found scrollable container');
+      // Check scrollable container with multiple selectors
+      const scrollContainer1 = await page.$('div[style*="maxHeight: 256px"]');
+      const scrollContainer2 = await page.$('div[class*="overflow-y-auto"]');
+      const scrollContainer3 = await page.$('div[class*="flex-1 overflow-y-auto"]');
+      
+      console.log(`🔍 Scroll containers found: ${scrollContainer1 ? '1' : '0'} (maxHeight), ${scrollContainer2 ? '1' : '0'} (overflow-y-auto), ${scrollContainer3 ? '1' : '0'} (flex-1)`);
+      
+      // Check scroll properties
+      const scrollInfo = await page.evaluate(() => {
+        const containers = document.querySelectorAll('div[class*="overflow-y-auto"]');
+        console.log('Found containers:', containers.length);
         
-        // Check scroll properties
-        const scrollInfo = await page.evaluate(() => {
-          const container = document.querySelector('div[style*="maxHeight: 256px"]');
-          if (container) {
-            return {
-              scrollHeight: container.scrollHeight,
-              clientHeight: container.clientHeight,
-              scrollTop: container.scrollTop,
-              canScroll: container.scrollHeight > container.clientHeight,
-              overflowY: getComputedStyle(container).overflowY
-            };
+        for (let i = 0; i < containers.length; i++) {
+          const container = containers[i];
+          const info = {
+            index: i,
+            scrollHeight: container.scrollHeight,
+            clientHeight: container.clientHeight,
+            scrollTop: container.scrollTop,
+            canScroll: container.scrollHeight > container.clientHeight,
+            overflowY: getComputedStyle(container).overflowY,
+            maxHeight: container.style.maxHeight,
+            className: container.className
+          };
+          console.log(`Container ${i}:`, info);
+        }
+        
+        return containers.length > 0 ? {
+          totalContainers: containers.length,
+          firstContainer: {
+            scrollHeight: containers[0].scrollHeight,
+            clientHeight: containers[0].clientHeight,
+            scrollTop: containers[0].scrollTop,
+            canScroll: containers[0].scrollHeight > containers[0].clientHeight,
+            overflowY: getComputedStyle(containers[0]).overflowY
           }
-          return null;
-        });
+        } : null;
+      });
+      
+      console.log('📊 Scroll container info:', scrollInfo);
         
-        console.log('📊 Scroll container info:', scrollInfo);
-        
-        if (scrollInfo && scrollInfo.canScroll) {
+      if (scrollInfo && scrollInfo.firstContainer) {
+        if (scrollInfo.firstContainer.canScroll) {
           console.log('✅ Container is scrollable');
           
           // Try to scroll down
           await page.evaluate(() => {
-            const container = document.querySelector('div[style*="maxHeight: 256px"]');
-            if (container) {
-              container.scrollTop = 100;
+            const containers = document.querySelectorAll('div[class*="overflow-y-auto"]');
+            if (containers.length > 0) {
+              containers[0].scrollTop = 100;
             }
           });
           
@@ -74,8 +94,8 @@ async function testScrollFunctionality() {
           
           // Check if scroll worked
           const scrollAfter = await page.evaluate(() => {
-            const container = document.querySelector('div[style*="maxHeight: 256px"]');
-            return container ? container.scrollTop : 0;
+            const containers = document.querySelectorAll('div[class*="overflow-y-auto"]');
+            return containers.length > 0 ? containers[0].scrollTop : 0;
           });
           
           console.log(`📊 Scroll position after: ${scrollAfter}px`);
@@ -89,7 +109,7 @@ async function testScrollFunctionality() {
           console.log('⚠️ Container is not scrollable or all models fit');
         }
       } else {
-        console.log('❌ Scrollable container not found');
+        console.log('❌ No scrollable containers found');
       }
       
       // Count total models

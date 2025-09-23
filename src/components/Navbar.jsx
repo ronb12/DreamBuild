@@ -120,14 +120,14 @@ const Navbar = () => {
                       {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="hidden sm:inline text-sm font-medium text-foreground">
                     {user.displayName || user.email}
                   </span>
                 </button>
 
                 {/* User Dropdown Menu */}
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-[60]">
                     <div className="p-3 border-b border-border">
                       <p className="text-sm font-medium text-foreground">
                         {user.displayName || 'User'}
@@ -169,10 +169,10 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/login"
-                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-lg hover:from-primary-dark hover:to-primary transition-all duration-200 text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-primary to-primary-dark text-primary-foreground rounded-lg hover:from-primary-dark hover:to-primary transition-all duration-200 text-xs sm:text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
-                <Rocket className="h-4 w-4" />
-                Sign In
+                <Rocket className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Sign In</span>
               </Link>
             )}
 

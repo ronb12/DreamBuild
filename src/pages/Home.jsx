@@ -38,28 +38,28 @@ const Home = () => {
   ]
 
   const stats = [
-    { label: 'Early Adopters', value: '500+', icon: Users },
-    { label: 'Beta Projects', value: '1K+', icon: Code },
-    { label: 'Innovation Score', value: '100%', icon: TrendingUp }
+    { label: 'Users', value: '500+', icon: Users },
+    { label: 'Projects', value: '1K+', icon: Code },
+    { label: 'Success Rate', value: '100%', icon: TrendingUp }
   ]
 
   const testimonials = [
     {
       name: 'Alex Chen',
-      role: 'Beta Tester',
-      content: 'I was skeptical about AI development tools, but DreamBuild blew my mind. This is the future!',
+      role: 'Developer',
+      content: 'DreamBuild makes coding so much easier. Highly recommended!',
       rating: 5
     },
     {
       name: 'Maria Santos',
-      role: 'Early Adopter',
-      content: 'Being part of the DreamBuild beta has been incredible. The innovation is unmatched.',
+      role: 'Developer',
+      content: 'Great tool for building projects quickly.',
       rating: 5
     },
     {
       name: 'David Kim',
-      role: 'Tech Innovator',
-      content: 'DreamBuild is rewriting the rules of development. I feel like I\'m using technology from 2030!',
+      role: 'Developer',
+      content: 'Simple and effective. Perfect for my workflow.',
       rating: 5
     }
   ]
@@ -80,10 +80,10 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-primary-light/10 rounded-full text-primary text-sm font-medium mb-8 border border-primary/20"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-8"
             >
               <Sparkles className="h-4 w-4" />
-              🚀 New AI Development Platform
+              New AI Platform
             </motion.div>
 
             {/* Main Heading */}
@@ -93,11 +93,10 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
             >
-              The Future of{' '}
-              <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-                AI Development
+              Build with{' '}
+              <span className="text-primary">
+                AI
               </span>
-              {' '}is Here
             </motion.h1>
 
             {/* Subheading */}
@@ -107,8 +106,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg sm:text-xl text-foreground mb-12 max-w-2xl mx-auto leading-relaxed"
             >
-              Experience the next generation of development with DreamBuild - the revolutionary AI platform 
-              that's changing how developers build, create, and innovate. Be among the first to discover what's possible.
+              Create amazing projects with AI-powered code generation. Simple, fast, and effective.
             </motion.p>
 
             {/* CTA Buttons */}

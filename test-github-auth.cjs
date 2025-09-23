@@ -33,12 +33,12 @@ class GitHubAuthTester {
     try {
       console.log('\n📱 Step 1: Navigate to home page');
       await this.page.goto(this.baseUrl, { waitUntil: 'networkidle2', timeout: 30000 });
-      await this.page.waitForTimeout(2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       console.log('\n🔍 Step 2: Click Sign In button');
       const signInButton = await this.page.waitForSelector('button:has-text("Sign In")', { timeout: 10000 });
       await signInButton.click();
-      await this.page.waitForTimeout(2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       console.log('\n🔍 Step 3: Look for GitHub sign-in button');
       const githubButton = await this.page.waitForSelector('button:has-text("Continue with GitHub")', { timeout: 10000 });
@@ -50,7 +50,7 @@ class GitHubAuthTester {
 
       console.log('\n🔐 Step 4: Click GitHub sign-in button');
       await githubButton.click();
-      await this.page.waitForTimeout(3000);
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       // Check if popup opened
       const pages = await this.browser.pages();

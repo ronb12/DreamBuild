@@ -193,24 +193,24 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-border pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <span>&copy; 2024 Bradley Virtual Solutions, LLC</span>
-                <span>•</span>
+        <div className="border-t border-border/50 pt-12 mt-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div className="flex flex-col lg:flex-row items-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3">
+                <span className="font-medium">&copy; 2024 Bradley Virtual Solutions, LLC</span>
+                <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
                 <span>All rights reserved</span>
               </div>
-              <div className="flex items-center gap-4">
-                <a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a>
-                <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
-                <a href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</a>
+              <div className="flex items-center gap-6">
+                <a href="/privacy" className="hover:text-foreground transition-colors duration-200 font-medium">Privacy Policy</a>
+                <a href="/terms" className="hover:text-foreground transition-colors duration-200 font-medium">Terms of Service</a>
+                <a href="/cookies" className="hover:text-foreground transition-colors duration-200 font-medium">Cookie Policy</a>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Made with</span>
-              <Heart className="h-4 w-4 text-red-500" />
-              <span>for developers worldwide</span>
+              <span className="font-medium">Made with</span>
+              <Heart className="h-4 w-4 text-red-500 animate-pulse" />
+              <span className="font-medium">for developers worldwide</span>
             </div>
           </div>
         </div>

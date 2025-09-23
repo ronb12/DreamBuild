@@ -241,9 +241,9 @@ const Projects = () => {
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive 
-                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25' 
+                    ? 'bg-gradient-to-r from-primary to-primary-dark text-primary-foreground shadow-lg shadow-primary/25' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 }`}
               >

@@ -2,7 +2,7 @@
 class GitHubOAuth {
   constructor() {
     // You need to replace this with your actual GitHub OAuth App Client ID
-    this.clientId = 'YOUR_GITHUB_CLIENT_ID_HERE'; // Replace with your GitHub OAuth App Client ID
+    this.clientId = 'Ov23li43edsNUX2sjV6g'; // Replace with your GitHub OAuth App Client ID
     this.redirectUri = `${window.location.origin}/auth/github/callback`;
     this.scope = 'user:email,read:user';
     

@@ -738,7 +738,8 @@ export default function AIPromptCursorStyle() {
           
           {/* Compact Dropdown Container */}
           <div 
-            className="fixed bottom-16 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl w-72 max-h-96 flex flex-col z-50"
+            className="fixed bottom-16 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl w-72 z-50"
+            style={{ height: '300px', display: 'flex', flexDirection: 'column' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header - Ultra Compact */}
@@ -757,7 +758,7 @@ export default function AIPromptCursorStyle() {
             {/* Models List - Scrollable list with proper height */}
             <div 
               className="overflow-y-auto p-1 space-y-0.5" 
-              style={{ height: '180px', maxHeight: '180px' }}
+              style={{ height: '200px', flex: '1 1 0' }}
             >
               {getAvailableModels().map((model) => (
                 <button

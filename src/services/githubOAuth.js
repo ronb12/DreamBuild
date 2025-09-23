@@ -38,11 +38,25 @@ class GitHubOAuth {
       const authUrl = this.getAuthUrl();
       console.log('Opening GitHub OAuth URL:', authUrl);
       
-      const popup = window.open(
-        authUrl,
-        'github-auth',
-        'width=600,height=700,scrollbars=yes,resizable=yes'
-      );
+      // Try to open popup
+      let popup;
+      try {
+        popup = window.open(
+          authUrl,
+          'github-auth',
+          'width=600,height=700,scrollbars=yes,resizable=yes,location=yes,menubar=no,toolbar=no,status=no'
+        );
+        
+        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+          throw new Error('Popup blocked or failed to open');
+        }
+        
+        console.log('Popup opened successfully');
+      } catch (error) {
+        console.error('Failed to open popup:', error);
+        reject(new Error('Popup blocked. Please allow popups for this site.'));
+        return;
+      }
 
       // Listen for popup messages
       const messageListener = (event) => {

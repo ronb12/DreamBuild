@@ -150,7 +150,7 @@ const Home = () => {
           </div>
           
           <div className="flex justify-center">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl ml-8">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -187,7 +187,7 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
+            className="max-w-4xl mx-auto ml-8"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Ready to Build?

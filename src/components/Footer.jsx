@@ -108,43 +108,95 @@ const Footer = () => {
             </form>
           </div>
 
+          {/* Product Links */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Product</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="/ai-builder" className="hover:text-foreground transition-colors">AI Builder</a></li>
-              <li><a href="/projects" className="hover:text-foreground transition-colors">Projects</a></li>
-              <li><a href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</a></li>
+            <div className="flex items-center gap-2">
+              <Code className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Product</h3>
+            </div>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <a href="/ai-builder" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
+                  <span>AI Builder</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </li>
+              <li>
+                <a href="/templates" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
+                  <span>Templates</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </li>
+              <li>
+                <a href="/projects" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
+                  <span>Projects</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </li>
+              <li>
+                <a href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
+                  <span>Dashboard</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </li>
             </ul>
           </div>
 
+          {/* Resources Links */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Resources</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="/documentation" className="hover:text-foreground transition-colors">Documentation</a></li>
-              <li><a href="/examples" className="hover:text-foreground transition-colors">Examples</a></li>
-              <li><a href="/community" className="hover:text-foreground transition-colors">Community</a></li>
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold">Company</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="/about" className="hover:text-foreground transition-colors">About</a></li>
-              <li><a href="/blog" className="hover:text-foreground transition-colors">Blog</a></li>
-              <li><a href="/contact" className="hover:text-foreground transition-colors">Contact</a></li>
+            <div className="flex items-center gap-2">
+              <Database className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Resources</h3>
+            </div>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <a href="/documentation" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
+                  <span>Documentation</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </li>
+              <li>
+                <a href="/examples" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
+                  <span>Code Examples</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </li>
+              <li>
+                <a href="/community" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
+                  <span>Community</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </li>
+              <li>
+                <a href="/support" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group">
+                  <span>Support</span>
+                  <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
-        <hr className="my-8 border-border" />
-
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>&copy; 2024 Bradley Virtual Solutions, LLC</span>
-            <span>•</span>
-            <span>Made with</span>
-            <Heart className="h-4 w-4 text-red-500" />
-            <span>for developers</span>
+        {/* Bottom Section */}
+        <div className="border-t border-border pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <span>&copy; 2024 Bradley Virtual Solutions, LLC</span>
+                <span>•</span>
+                <span>All rights reserved</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a>
+                <a href="/terms" className="hover:text-foreground transition-colors">Terms of Service</a>
+                <a href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</a>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Made with</span>
+              <Heart className="h-4 w-4 text-red-500" />
+              <span>for developers worldwide</span>
+            </div>
           </div>
         </div>
       </div>

@@ -30,5 +30,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['monaco-editor', 'firebase/app', 'firebase/firestore', 'firebase/auth']
-  }
+  },
+  envPrefix: [],
+  envDir: undefined
 })

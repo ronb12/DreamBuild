@@ -267,13 +267,13 @@ const Projects = () => {
         </div>
 
         {/* Search */}
-        <div className="flex items-center gap-3 mb-8 w-full max-w-none">
+        <div className="flex items-center gap-3 mb-8 w-full">
           <input
             type="text"
             placeholder="Search projects by name, description, or tags..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 pl-6 pr-6 py-4 border border-gray-200 rounded-xl bg-white/90 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-200 text-gray-900 placeholder:text-gray-400 text-base shadow-sm hover:shadow-md focus:shadow-lg"
+            className="w-full pl-6 pr-6 py-4 border border-gray-200 rounded-xl bg-white/90 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-200 text-gray-900 placeholder:text-gray-400 text-base shadow-sm hover:shadow-md focus:shadow-lg"
           />
           <Search className="h-6 w-6 text-gray-400 flex-shrink-0" />
         </div>

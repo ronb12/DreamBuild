@@ -43,7 +43,7 @@ const Signup = () => {
             } else if (error.message.includes('account with this email already exists')) {
               toast.error('An account with this email already exists. Please sign in with your existing method instead.')
             } else if (error.message.includes('couldn\'t determine the sign-in method')) {
-              toast.error('An account with this email already exists but we couldn\'t determine the sign-in method. Please try signing in with Google or email/password first, or contact support.')
+              toast.error('An account with this email already exists. Please try signing in with Google first, then you can link your GitHub account.')
             } else {
               toast.error('Failed to sign in with GitHub. Please try again.')
             }

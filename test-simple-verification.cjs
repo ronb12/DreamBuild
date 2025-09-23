@@ -48,13 +48,29 @@ async function simpleVerification() {
       // Check scrollable area
       const scrollInfo = await page.evaluate(() => {
         const containers = document.querySelectorAll('div[class*="overflow-y-auto"]');
+        console.log('Found containers:', containers.length);
+        
+        for (let i = 0; i < containers.length; i++) {
+          const container = containers[i];
+          console.log(`Container ${i}:`, {
+            scrollHeight: container.scrollHeight,
+            clientHeight: container.clientHeight,
+            offsetHeight: container.offsetHeight,
+            style: container.style.cssText,
+            className: container.className,
+            canScroll: container.scrollHeight > container.clientHeight
+          });
+        }
+        
         if (containers.length > 0) {
           const container = containers[0];
           return {
             scrollHeight: container.scrollHeight,
             clientHeight: container.clientHeight,
+            offsetHeight: container.offsetHeight,
             canScroll: container.scrollHeight > container.clientHeight,
-            maxHeight: container.style.maxHeight
+            maxHeight: container.style.maxHeight,
+            height: container.style.height
           };
         }
         return null;

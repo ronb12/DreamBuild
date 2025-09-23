@@ -149,8 +149,12 @@ export function ProjectProvider({ children }) {
   }, [user, db, loadProjects])
 
   const loadProjects = useCallback(async () => {
-    if (!user) return
+    if (!user) {
+      console.log('⚠️ loadProjects: No user found')
+      return
+    }
 
+    console.log('🔄 Loading projects for user:', user.uid)
     setIsLoading(true)
     try {
       const { collection, query, where, getDocs, orderBy } = await import('firebase/firestore')
@@ -161,14 +165,18 @@ export function ProjectProvider({ children }) {
         orderBy('lastModified', 'desc')
       )
       
+      console.log('🔥 Querying Firestore for projects...')
       const snapshot = await getDocs(q)
       const projectsList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }))
       
+      console.log('📦 Loaded projects:', projectsList.length, 'projects')
+      console.log('📋 Projects list:', projectsList)
       setProjects(projectsList)
     } catch (error) {
+      console.error('❌ Failed to load projects:', error)
       toast.error('Failed to load projects: ' + error.message)
     } finally {
       setIsLoading(false)

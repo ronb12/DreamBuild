@@ -53,58 +53,88 @@ const Dashboard = () => {
     hoursSpent: projects.reduce((sum, p) => sum + (p.hoursSpent || 0), 0)
   }
 
-  const recentActivity = [
-    {
-      id: 1,
-      type: 'ai_generation',
-      project: 'E-commerce Store',
-      action: 'Generated React component',
-      time: '2 minutes ago',
-      icon: Brain,
-      color: 'text-white'
-    },
-    {
-      id: 2,
-      type: 'file_created',
-      project: 'Portfolio Website',
-      action: 'Created new CSS file',
-      time: '15 minutes ago',
-      icon: FileText,
-      color: 'text-green-600'
-    },
-    {
-      id: 3,
-      type: 'project_completed',
-      project: 'Task Manager App',
-      action: 'Project marked as completed',
-      time: '1 hour ago',
-      icon: Star,
-      color: 'text-yellow-600'
-    },
-    {
-      id: 4,
-      type: 'deployment',
-      project: 'Analytics Dashboard',
-      action: 'Deployed to Firebase',
-      time: '3 hours ago',
-      icon: Rocket,
-      color: 'text-purple-600'
+  // Helper function to get time ago
+  const getTimeAgo = (date) => {
+    const now = new Date()
+    const diff = now - new Date(date)
+    const minutes = Math.floor(diff / 60000)
+    const hours = Math.floor(diff / 3600000)
+    const days = Math.floor(diff / 86400000)
+    
+    if (minutes < 60) return `${minutes} min ago`
+    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+    return `${days} day${days > 1 ? 's' : ''} ago`
+  }
+
+  const recentActivity = projects
+    .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
+    .slice(0, 4)
+    .map((project, index) => ({
+      id: project.id,
+      type: project.source === 'github' ? 'github_sync' : 'ai_generation',
+      project: project.name,
+      action: project.source === 'github' ? 'Synced from GitHub' : 'Generated with AI',
+      time: getTimeAgo(project.lastModified),
+      icon: project.source === 'github' ? Github : Brain,
+      color: project.source === 'github' ? 'text-blue-600' : 'text-white'
+    }))
+
+  const topProjects = projects
+    .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified))
+    .slice(0, 4)
+    .map(project => ({
+      name: project.name,
+      files: Object.keys(project.files || {}).length,
+      lastModified: getTimeAgo(project.lastModified),
+      type: project.config?.appType || 'web',
+      progress: project.progress || 0,
+      source: project.source || 'dreambuild'
+    }))
+
+  // Calculate language usage from real projects
+  const getLanguageUsage = (projects) => {
+    const languages = {}
+    
+    projects.forEach(project => {
+      const lang = project.config?.language || 'javascript'
+      const fileCount = Object.keys(project.files || {}).length
+      
+      if (languages[lang]) {
+        languages[lang].files += fileCount
+      } else {
+        languages[lang] = { language: lang, files: fileCount }
+      }
+    })
+    
+    const totalFiles = Object.values(languages).reduce((sum, lang) => sum + lang.files, 0)
+    
+    return Object.values(languages)
+      .map(lang => ({
+        ...lang,
+        percentage: totalFiles > 0 ? Math.round((lang.files / totalFiles) * 100) : 0,
+        color: getLanguageColor(lang.language)
+      }))
+      .sort((a, b) => b.files - a.files)
+      .slice(0, 4)
+  }
+
+  const getLanguageColor = (language) => {
+    const colors = {
+      'javascript': 'bg-yellow-500',
+      'typescript': 'bg-blue-500',
+      'html': 'bg-orange-500',
+      'css': 'bg-white',
+      'python': 'bg-green-500',
+      'java': 'bg-red-500',
+      'php': 'bg-purple-500',
+      'ruby': 'bg-red-600',
+      'go': 'bg-cyan-500',
+      'rust': 'bg-orange-600'
     }
-  ]
+    return colors[language.toLowerCase()] || 'bg-gray-500'
+  }
 
-  const topProjects = [
-    { name: 'E-commerce Store', files: 24, lastModified: '2 min ago', type: 'web', progress: 85 },
-    { name: 'Portfolio Website', files: 12, lastModified: '15 min ago', type: 'web', progress: 100 },
-    { name: 'Task Manager App', files: 18, lastModified: '1 hour ago', type: 'mobile', progress: 100 },
-    { name: 'Analytics Dashboard', files: 31, lastModified: '3 hours ago', type: 'dashboard', progress: 75 }
-  ]
-
-  const languageUsage = [
-    { language: 'JavaScript', percentage: 45, files: 70, color: 'bg-yellow-500' },
-    { language: 'HTML', percentage: 25, files: 39, color: 'bg-orange-500' },
-    { language: 'CSS', percentage: 20, files: 31, color: 'bg-white' },
-    { language: 'Python', percentage: 10, files: 16, color: 'bg-green-500' }
-  ]
+  const languageUsage = getLanguageUsage(projects)
 
   const StatCard = ({ title, value, icon: Icon, change, changeType, description }) => (
     <motion.div

@@ -70,7 +70,7 @@ const Home = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Hero Section */}
       <section className="relative pt-24 pb-20 overflow-hidden">
         {/* Background Elements */}
@@ -78,8 +78,8 @@ const Home = () => {
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary-light/10 rounded-full blur-3xl"></div>
         
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative flex justify-center">
+          <div className="text-center max-w-4xl w-full">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

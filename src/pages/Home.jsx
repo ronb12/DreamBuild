@@ -209,11 +209,11 @@ const Home = () => {
       {/* Features Section */}
       <section className="py-20 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Revolutionary Features That Change Everything
             </h2>
-            <p className="text-lg text-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-foreground">
               Discover the groundbreaking capabilities that make DreamBuild the most advanced AI development platform ever created
             </p>
           </div>
@@ -254,11 +254,12 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            className="max-w-3xl mx-auto"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Ready to Be a Pioneer?
             </h2>
-            <p className="text-lg text-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-foreground mb-8">
               Join the exclusive group of forward-thinking developers who are already experiencing the future of AI development with DreamBuild.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

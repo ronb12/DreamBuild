@@ -50,21 +50,21 @@ const Home = () => {
 
   const testimonials = [
     {
-      name: 'Sarah Johnson',
-      role: 'Full Stack Developer',
-      content: 'DreamBuild has revolutionized how I approach development. The AI assistance is incredible.',
+      name: 'Alex Chen',
+      role: 'Beta Tester',
+      content: 'I was skeptical about AI development tools, but DreamBuild blew my mind. This is the future!',
       rating: 5
     },
     {
-      name: 'Mike Chen',
-      role: 'Tech Lead',
-      content: 'The collaboration features and code generation capabilities are game-changing.',
+      name: 'Maria Santos',
+      role: 'Early Adopter',
+      content: 'Being part of the DreamBuild beta has been incredible. The innovation is unmatched.',
       rating: 5
     },
     {
-      name: 'Emily Rodriguez',
-      role: 'Startup Founder',
-      content: 'We built our MVP 3x faster with DreamBuild. Highly recommended!',
+      name: 'David Kim',
+      role: 'Tech Innovator',
+      content: 'DreamBuild is rewriting the rules of development. I feel like I\'m using technology from 2030!',
       rating: 5
     }
   ]
@@ -171,10 +171,10 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Trusted by Developers Worldwide
+              Join the AI Development Revolution
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join thousands of developers who are building the future with AI
+              Be part of the next generation of developers shaping the future with cutting-edge AI tools
             </p>
           </div>
           
@@ -211,10 +211,10 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Powerful Features for Modern Development
+              Revolutionary Features That Change Everything
             </h2>
             <p className="text-lg text-foreground max-w-2xl mx-auto">
-              Everything you need to build, deploy, and scale your applications with AI assistance
+              Discover the groundbreaking capabilities that make DreamBuild the most advanced AI development platform ever created
             </p>
           </div>
           
@@ -256,10 +256,10 @@ const Home = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Transform Your Development?
+              Ready to Be a Pioneer?
             </h2>
             <p className="text-lg text-foreground mb-8 max-w-2xl mx-auto">
-              Join thousands of developers who are already building the future with AI-powered development tools.
+              Join the exclusive group of forward-thinking developers who are already experiencing the future of AI development with DreamBuild.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -267,7 +267,7 @@ const Home = () => {
                 className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-all duration-200 text-lg font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
                 <Rocket className="h-5 w-5" />
-                Get Started Free
+                Start Your Journey
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -275,7 +275,7 @@ const Home = () => {
                 className="inline-flex items-center gap-2 px-8 py-4 border border-border rounded-lg hover:bg-muted transition-all duration-200 text-lg font-semibold hover:border-primary/50"
               >
                 <Code className="h-5 w-5" />
-                Explore Templates
+                Discover Features
               </Link>
             </div>
           </motion.div>

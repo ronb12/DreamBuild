@@ -231,104 +231,49 @@ const Templates = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Enhanced Header Section */}
-      <div className="relative bg-gradient-to-br from-primary/5 via-background to-primary/10 border-b border-border/50 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }} />
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border-b border-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="flex flex-col items-center gap-6 mb-8"
+              transition={{ duration: 0.6 }}
+              className="flex items-center justify-center gap-3 mb-6"
             >
-              {/* Icon with enhanced styling */}
-              <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary via-primary-light to-primary-dark rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/30">
-                  <FileText className="h-8 w-8 text-primary-foreground" />
-                </div>
-                <div className="absolute -inset-2 bg-gradient-to-br from-primary/20 to-primary-light/20 rounded-3xl blur-lg -z-10"></div>
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-light rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
+                <FileText className="h-6 w-6 text-primary-foreground" />
               </div>
-              
-              {/* Enhanced title with gradient text */}
-              <div className="space-y-2">
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
-                  Template Library
-                </h1>
-                <div className="w-24 h-1 bg-gradient-to-r from-primary to-primary-light rounded-full mx-auto"></div>
-              </div>
+              <h1 className="text-4xl font-bold text-high-contrast">Template Library</h1>
             </motion.div>
             
-            <motion.div
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="max-w-3xl mx-auto mb-12"
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
             >
-              <p className="text-xl text-muted-foreground leading-relaxed mb-4">
-                Choose from our collection of professionally designed templates to jumpstart your next project
-              </p>
-              <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Ready to use</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>Modern design</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  <span>Fully customizable</span>
-                </div>
-              </div>
-            </motion.div>
+              Choose from our collection of professionally designed templates to jumpstart your next project
+            </motion.p>
 
-            {/* Enhanced Search Bar */}
+            {/* Search Bar */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="max-w-lg mx-auto relative"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="max-w-md mx-auto relative"
             >
-              <div className="relative group">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                <input
-                  type="text"
-                  placeholder="Search templates by name, technology, or category..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all duration-300 shadow-lg hover:shadow-xl text-base placeholder:text-muted-foreground"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-primary-light/5 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10"></div>
-              </div>
-              
-              {/* Search suggestions */}
-              {searchQuery === '' && (
-                <div className="mt-3 flex flex-wrap gap-2 justify-center">
-                  {['React', 'Vue', 'Next.js', 'Mobile App', 'Dashboard', 'Landing Page'].map((suggestion) => (
-                    <button
-                      key={suggestion}
-                      onClick={() => setSearchQuery(suggestion)}
-                      className="px-3 py-1 text-xs bg-muted/50 hover:bg-primary/10 text-muted-foreground hover:text-primary rounded-full transition-colors duration-200"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search templates..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+              />
             </motion.div>
           </div>
         </div>
-        
-        {/* Bottom wave effect */}
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-background to-transparent"></div>
       </div>
 
       {/* Main Content */}

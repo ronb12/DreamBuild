@@ -771,7 +771,7 @@ export default function AIPromptCursorStyle() {
                     setShowModelSelector(false)
                     toast.success(`Switched to ${model.name}`)
                   }}
-                  className={`w-full p-1 rounded border transition-all duration-200 text-left hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                  className={`w-full p-2 rounded border transition-all duration-200 text-left hover:bg-gray-50 dark:hover:bg-gray-700 ${
                     aiModel === model.id
                       ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                       : 'border-gray-200 dark:border-gray-600'

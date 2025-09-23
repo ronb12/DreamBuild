@@ -71,7 +71,9 @@ export default function AIPromptCursorStyle() {
   // Close model selector when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showModelSelector && !event.target.closest('.model-selector')) {
+      if (showModelSelector && 
+          !event.target.closest('.model-selector') && 
+          !event.target.closest('button[class*="w-full p-2 rounded"]')) {
         setShowModelSelector(false)
       }
     }

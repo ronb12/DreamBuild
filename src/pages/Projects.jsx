@@ -205,7 +205,7 @@ const Projects = () => {
   try {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100" style={{ paddingTop: '100px' }}>
-        <div className="max-w-none mx-auto px-2 sm:px-4 lg:px-6 py-8">
+        <div className="w-full px-1 sm:px-2 lg:px-3 py-8">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
           <div className="space-y-3 flex-1">
@@ -273,7 +273,7 @@ const Projects = () => {
             placeholder="Search projects by name, description, or tags..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-6 pr-6 py-4 border border-gray-200 rounded-xl bg-white/90 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-200 text-gray-900 placeholder:text-gray-400 text-base shadow-sm hover:shadow-md focus:shadow-lg"
+            className="w-full pl-4 pr-4 py-4 border border-gray-200 rounded-xl bg-white/90 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-200 text-gray-900 placeholder:text-gray-400 text-base shadow-sm hover:shadow-md focus:shadow-lg"
           />
           <Search className="h-6 w-6 text-gray-400 flex-shrink-0" />
         </div>

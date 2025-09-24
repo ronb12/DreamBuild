@@ -107,85 +107,91 @@ const CourseSelection = ({ onSelectCourse, courseProgress }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">Choose Your Learning Path</h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto text-center">
-          Explore our comprehensive collection of 50+ courses across multiple categories. 
-          Each course includes structured lessons, interactive exercises, and hands-on projects.
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Enhanced Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
+            <BookOpen className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-5xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Choose Your Learning Path
+          </h1>
+          <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            Explore our comprehensive collection of 50+ courses across multiple categories. 
+            Each course includes structured lessons, interactive exercises, and hands-on projects.
+          </p>
+        </div>
 
-      {/* Search and Filters */}
-      <div className="mb-8 bg-white rounded-xl shadow-sm border p-6">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Search */}
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search courses, topics, or instructors..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+        {/* Enhanced Search and Filters */}
+        <div className="mb-12 bg-white rounded-2xl shadow-lg border p-8">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Search */}
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search courses, topics, or instructors..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-lg"
+                />
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="lg:w-56">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-lg font-medium"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Difficulty Filter */}
+            <div className="lg:w-56">
+              <select
+                value={selectedDifficulty}
+                onChange={(e) => setSelectedDifficulty(e.target.value)}
+                className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-lg font-medium"
+              >
+                <option value="All">All Levels</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+              </select>
             </div>
           </div>
 
-          {/* Category Filter */}
-          <div className="lg:w-48">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Difficulty Filter */}
-          <div className="lg:w-48">
-            <select
-              value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="All">All Levels</option>
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
-            </select>
+          {/* Enhanced Results Count */}
+          <div className="mt-6 flex items-center justify-between bg-gray-50 rounded-lg p-4">
+            <p className="text-lg font-medium text-gray-700">
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredCourses.length)} of {filteredCourses.length} courses
+            </p>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="text-blue-600 hover:text-blue-800 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                Clear search
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Results Count */}
-        <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-gray-600">
-            Showing {startIndex + 1}-{Math.min(endIndex, filteredCourses.length)} of {filteredCourses.length} courses
-          </p>
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              Clear search
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Course Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Enhanced Course Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {currentCourses.map((course) => {
           const progress = getProgressPercentage(course.id);
           const isStarted = progress > 0;
           
           return (
-            <div key={course.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+            <div key={course.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
               {/* Course Header */}
               <div className={`bg-gradient-to-r ${getColorClasses(course.color)} p-6 text-white`}>
                 <div className="flex items-start justify-between mb-4">
@@ -303,85 +309,91 @@ const CourseSelection = ({ onSelectCourse, courseProgress }) => {
         })}
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="mt-12 flex justify-center">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </button>
+        {/* Enhanced Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-16 flex justify-center">
+            <div className="bg-white rounded-2xl shadow-lg p-4">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-2 px-6 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </button>
             
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const page = i + 1;
-                return (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                      currentPage === page
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                );
-              })}
-              {totalPages > 5 && (
-                <>
-                  <span className="px-2 text-gray-500">...</span>
-                  <button
-                    onClick={() => setCurrentPage(totalPages)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                      currentPage === totalPages
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    {totalPages}
-                  </button>
-                </>
-              )}
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const page = i + 1;
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                          currentPage === page
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                            : 'text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                  {totalPages > 5 && (
+                    <>
+                      <span className="px-2 text-gray-500">...</span>
+                      <button
+                        onClick={() => setCurrentPage(totalPages)}
+                        className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                          currentPage === totalPages
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                            : 'text-gray-700 hover:bg-gray-100 border-2 border-gray-200'
+                        }`}
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
+                </div>
+                
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-2 px-6 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium"
+                >
+                  Next
+                  <ChevronRightIcon className="h-4 w-4" />
+                </button>
+              </div>
             </div>
-            
-            <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-              <ChevronRightIcon className="h-4 w-4" />
-            </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Additional Info */}
-      <div className="mt-12 bg-gray-50 rounded-xl p-8">
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">Not sure where to start?</h3>
-          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Browse our 50+ courses across 13 categories. If you're new to programming, start with beginner courses. 
-            If you have experience, explore intermediate and advanced topics.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm">
-              <Award className="h-5 w-5 text-blue-500" />
-              <span className="text-sm font-medium">50+ Courses</span>
+        {/* Enhanced Additional Info */}
+        <div className="mt-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-12">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
+              <Target className="h-8 w-8 text-white" />
             </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm">
-              <Users className="h-5 w-5 text-green-500" />
-              <span className="text-sm font-medium">13 Categories</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm">
-              <BookOpen className="h-5 w-5 text-purple-500" />
-              <span className="text-sm font-medium">Hands-on Projects</span>
+            <h3 className="text-3xl font-bold text-gray-900 mb-6">Not sure where to start?</h3>
+            <p className="text-gray-600 mb-8 max-w-3xl mx-auto text-lg leading-relaxed">
+              Browse our 50+ courses across 13 categories. If you're new to programming, start with beginner courses. 
+              If you have experience, explore intermediate and advanced topics.
+            </p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="flex items-center gap-3 px-6 py-4 bg-white rounded-xl shadow-lg">
+                <Award className="h-6 w-6 text-blue-500" />
+                <span className="text-lg font-semibold">50+ Courses</span>
+              </div>
+              <div className="flex items-center gap-3 px-6 py-4 bg-white rounded-xl shadow-lg">
+                <Users className="h-6 w-6 text-green-500" />
+                <span className="text-lg font-semibold">13 Categories</span>
+              </div>
+              <div className="flex items-center gap-3 px-6 py-4 bg-white rounded-xl shadow-lg">
+                <BookOpen className="h-6 w-6 text-purple-500" />
+                <span className="text-lg font-semibold">Hands-on Projects</span>
+              </div>
             </div>
           </div>
         </div>

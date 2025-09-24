@@ -29,6 +29,7 @@ import CodingChallenges from '../components/CodingChallenges'
 import LearningProgress from '../components/LearningProgress'
 import LiveTutorial from '../components/LiveTutorial'
 import CourseViewer from '../components/CourseViewer'
+import CourseSelection from '../components/CourseSelection'
 import tutorialService from '../services/tutorialService'
 import { codingTutorials, codingChallenges, learningPaths } from '../data/codingTutorials'
 import { courseModules, courseProgress } from '../data/courseContent'
@@ -274,28 +275,9 @@ const Education = () => {
   }
 
   const handleStartLearning = () => {
-    console.log('Start Learning clicked')
-    // Start with the first structured course if available, otherwise first tutorial
-    const firstCourse = courseModules['html-css-basics']
-    console.log('First course:', firstCourse)
-    
-    if (firstCourse) {
-      console.log('Setting current course and switching to course tab')
-      setCurrentCourse(firstCourse)
-      setActiveTab('course')
-    } else {
-      console.log('No course found, trying tutorial')
-      // Fallback to interactive tutorial
-      const firstTutorial = codingTutorials[0]
-      console.log('First tutorial:', firstTutorial)
-      if (firstTutorial) {
-        setCurrentTutorial(firstTutorial)
-        setActiveTab('tutorial')
-      } else {
-        // If no tutorials available, go to tutorials tab
-        setActiveTab('tutorials')
-      }
-    }
+    console.log('Start Learning clicked - showing course selection')
+    // Show course selection interface
+    setActiveTab('course-selection')
   }
 
   const handleBrowseCourses = () => {
@@ -544,6 +526,14 @@ const Education = () => {
 
         {/* Progress Tab */}
         {activeTab === 'progress' && <LearningProgress />}
+
+        {/* Course Selection Tab */}
+        {activeTab === 'course-selection' && (
+          <CourseSelection
+            onSelectCourse={handleStartCourse}
+            courseProgress={courseProgressData}
+          />
+        )}
 
         {/* Course Tab */}
         {activeTab === 'course' && currentCourse && (

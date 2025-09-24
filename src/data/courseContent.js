@@ -21,7 +21,7 @@ export const courseModules = {
             type: 'video',
             content: {
               videoUrl: 'https://example.com/html-intro',
-              transcript: 'HTML stands for HyperText Markup Language. It is the standard markup language for creating web pages...',
+              transcript: 'HTML stands for HyperText Markup Language. It is the standard markup language for creating web pages. In this lesson, we will explore the fundamental concepts of HTML, including its structure, elements, and how it forms the backbone of every website you visit.',
               objectives: [
                 'Understand what HTML is and its purpose',
                 'Learn the basic structure of an HTML document',

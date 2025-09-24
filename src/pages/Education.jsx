@@ -274,10 +274,28 @@ const Education = () => {
   }
 
   const handleStartLearning = () => {
-    // Start with the first tutorial
-    const firstTutorial = codingTutorials[0]
-    setCurrentTutorial(firstTutorial)
-    setActiveTab('tutorial')
+    console.log('Start Learning clicked')
+    // Start with the first structured course if available, otherwise first tutorial
+    const firstCourse = courseModules['html-css-basics']
+    console.log('First course:', firstCourse)
+    
+    if (firstCourse) {
+      console.log('Setting current course and switching to course tab')
+      setCurrentCourse(firstCourse)
+      setActiveTab('course')
+    } else {
+      console.log('No course found, trying tutorial')
+      // Fallback to interactive tutorial
+      const firstTutorial = codingTutorials[0]
+      console.log('First tutorial:', firstTutorial)
+      if (firstTutorial) {
+        setCurrentTutorial(firstTutorial)
+        setActiveTab('tutorial')
+      } else {
+        // If no tutorials available, go to tutorials tab
+        setActiveTab('tutorials')
+      }
+    }
   }
 
   const handleBrowseCourses = () => {

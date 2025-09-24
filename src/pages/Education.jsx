@@ -348,13 +348,13 @@ const Education = () => {
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full mb-6 mx-auto">
               <BookOpen className="h-10 w-10 text-white" />
             </div>
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent text-center">
               Master Programming Skills
             </h1>
-            <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed text-center">
               Join thousands of students learning to code with our comprehensive educational platform. 
               From beginner to advanced, we have courses for every skill level.
             </p>

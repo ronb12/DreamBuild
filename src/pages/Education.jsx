@@ -28,8 +28,10 @@ import InteractiveTutorial from '../components/InteractiveTutorial'
 import CodingChallenges from '../components/CodingChallenges'
 import LearningProgress from '../components/LearningProgress'
 import LiveTutorial from '../components/LiveTutorial'
+import CourseViewer from '../components/CourseViewer'
 import tutorialService from '../services/tutorialService'
 import { codingTutorials, codingChallenges, learningPaths } from '../data/codingTutorials'
+import { courseModules, courseProgress } from '../data/courseContent'
 
 const Education = () => {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -37,9 +39,11 @@ const Education = () => {
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedTutorial, setSelectedTutorial] = useState(null)
   const [currentTutorial, setCurrentTutorial] = useState(null)
+  const [currentCourse, setCurrentCourse] = useState(null)
   const [progress, setProgress] = useState({})
   const [tutorialProgress, setTutorialProgress] = useState([])
   const [completedLessons, setCompletedLessons] = useState(new Set())
+  const [courseProgressData, setCourseProgressData] = useState(courseProgress)
 
   // Course categories and content
   const categories = {
@@ -241,9 +245,6 @@ const Education = () => {
     { title: 'Data Wizard', description: 'Complete data science course', icon: Database, unlocked: false }
   ]
 
-  const handleStartCourse = (courseId) => {
-    setSelectedCourse(courseId)
-  }
 
   const handleStartTutorial = (tutorialId) => {
     const tutorial = tutorialService.getTutorial(tutorialId)
@@ -302,6 +303,34 @@ const Education = () => {
       setCurrentTutorial(challenge)
       setActiveTab('tutorial')
     }
+  }
+
+  const handleStartCourse = (courseId) => {
+    const course = courseModules[courseId]
+    if (course) {
+      setCurrentCourse(course)
+      setActiveTab('course')
+    }
+  }
+
+  const handleCourseComplete = (result) => {
+    setCourseProgressData(prev => ({
+      ...prev,
+      [result.courseId]: {
+        ...prev[result.courseId],
+        progress: result.progress,
+        timeSpent: result.timeSpent,
+        completedLessons: result.completedLessons,
+        lastAccessed: new Date().toISOString()
+      }
+    }))
+    setCurrentCourse(null)
+    setActiveTab('dashboard')
+  }
+
+  const handleBackToCourses = () => {
+    setCurrentCourse(null)
+    setActiveTab('tutorials')
   }
 
   return (
@@ -498,6 +527,16 @@ const Education = () => {
         {/* Progress Tab */}
         {activeTab === 'progress' && <LearningProgress />}
 
+        {/* Course Tab */}
+        {activeTab === 'course' && currentCourse && (
+          <CourseViewer
+            courseId={currentCourse.id}
+            courseData={currentCourse}
+            onComplete={handleCourseComplete}
+            onBack={handleBackToCourses}
+          />
+        )}
+
         {/* Tutorials Tab */}
         {activeTab === 'tutorials' && (
           <div className="space-y-6">
@@ -606,18 +645,25 @@ const Education = () => {
 
                      <button
                        onClick={() => {
-                         const tutorial = codingTutorials.find(t => t.title.includes(course.title.split(' ')[0]))
-                         if (tutorial) {
-                           setCurrentTutorial(tutorial)
-                           setActiveTab('tutorial')
+                         // Check if there's a structured course available
+                         const structuredCourse = courseModules[course.id]
+                         if (structuredCourse) {
+                           handleStartCourse(course.id)
                          } else {
-                           handleStartTutorial(course.id)
+                           // Fallback to interactive tutorial
+                           const tutorial = codingTutorials.find(t => t.title.includes(course.title.split(' ')[0]))
+                           if (tutorial) {
+                             setCurrentTutorial(tutorial)
+                             setActiveTab('tutorial')
+                           } else {
+                             handleStartTutorial(course.id)
+                           }
                          }
                        }}
                        className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
                      >
                        <Play className="h-4 w-4" />
-                       {getProgressPercentage(course.id) > 0 ? 'Continue' : 'Start Course'}
+                       {getProgressPercentage(course.id) > 0 ? 'Continue Course' : 'Start Course'}
                      </button>
                     </div>
                   </div>

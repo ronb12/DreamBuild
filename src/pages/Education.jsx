@@ -27,14 +27,18 @@ import EducationDashboard from '../components/EducationDashboard'
 import InteractiveTutorial from '../components/InteractiveTutorial'
 import CodingChallenges from '../components/CodingChallenges'
 import LearningProgress from '../components/LearningProgress'
+import LiveTutorial from '../components/LiveTutorial'
 import tutorialService from '../services/tutorialService'
+import { codingTutorials, codingChallenges, learningPaths } from '../data/codingTutorials'
 
 const Education = () => {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [activeCategory, setActiveCategory] = useState('web-development')
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedTutorial, setSelectedTutorial] = useState(null)
+  const [currentTutorial, setCurrentTutorial] = useState(null)
   const [progress, setProgress] = useState({})
+  const [tutorialProgress, setTutorialProgress] = useState([])
   const [completedLessons, setCompletedLessons] = useState(new Set())
 
   // Course categories and content
@@ -268,6 +272,38 @@ const Education = () => {
     return (completedCount / course.lessons.length) * 100
   }
 
+  const handleStartLearning = () => {
+    // Start with the first tutorial
+    const firstTutorial = codingTutorials[0]
+    setCurrentTutorial(firstTutorial)
+    setActiveTab('tutorial')
+  }
+
+  const handleBrowseCourses = () => {
+    setActiveTab('tutorials')
+  }
+
+  const handleTutorialComplete = (result) => {
+    setTutorialProgress(prev => [...prev, result])
+    // Move to next tutorial
+    const currentIndex = codingTutorials.findIndex(t => t.id === currentTutorial.id)
+    if (currentIndex < codingTutorials.length - 1) {
+      setCurrentTutorial(codingTutorials[currentIndex + 1])
+    } else {
+      // All tutorials completed
+      setCurrentTutorial(null)
+      setActiveTab('dashboard')
+    }
+  }
+
+  const handleStartChallenge = (challengeId) => {
+    const challenge = codingChallenges.find(c => c.id === challengeId)
+    if (challenge) {
+      setCurrentTutorial(challenge)
+      setActiveTab('tutorial')
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -279,10 +315,16 @@ const Education = () => {
               Master programming skills with our comprehensive educational platform
             </p>
             <div className="flex justify-center gap-4">
-              <button className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+              <button 
+                onClick={handleStartLearning}
+                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+              >
                 Start Learning
               </button>
-              <button className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+              <button 
+                onClick={handleBrowseCourses}
+                className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
+              >
                 Browse Courses
               </button>
             </div>
@@ -315,7 +357,73 @@ const Education = () => {
         </div>
 
         {/* Dashboard Tab */}
-        {activeTab === 'dashboard' && <EducationDashboard />}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-6">
+            <EducationDashboard />
+            
+            {/* Learning Progress Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Learning Progress</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">75%</div>
+                  <div className="text-gray-600">Overall Progress</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-600 mb-2">12</div>
+                  <div className="text-gray-600">Courses Completed</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-purple-600 mb-2">45</div>
+                  <div className="text-gray-600">Challenges Solved</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Achievements Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Recent Achievements</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                    <Trophy className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">First Steps</div>
+                    <div className="text-sm text-gray-600">Completed first tutorial</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                    <Code className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Code Warrior</div>
+                    <div className="text-sm text-gray-600">Solved 10 challenges</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                    <Star className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Streak Master</div>
+                    <div className="text-sm text-gray-600">7-day learning streak</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg">
+                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                    <Target className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Goal Achiever</div>
+                    <div className="text-sm text-gray-600">Met weekly goal</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tutorial Tab */}
         {activeTab === 'tutorial' && selectedTutorial && (
@@ -325,8 +433,67 @@ const Education = () => {
           />
         )}
 
+        {/* Live Tutorial */}
+        {activeTab === 'tutorial' && currentTutorial && (
+          <LiveTutorial
+            tutorial={currentTutorial}
+            onComplete={handleTutorialComplete}
+            onNext={() => {
+              const currentIndex = codingTutorials.findIndex(t => t.id === currentTutorial.id)
+              if (currentIndex < codingTutorials.length - 1) {
+                setCurrentTutorial(codingTutorials[currentIndex + 1])
+              }
+            }}
+            onPrevious={() => {
+              const currentIndex = codingTutorials.findIndex(t => t.id === currentTutorial.id)
+              if (currentIndex > 0) {
+                setCurrentTutorial(codingTutorials[currentIndex - 1])
+              }
+            }}
+          />
+        )}
+
         {/* Challenges Tab */}
-        {activeTab === 'challenges' && <CodingChallenges />}
+        {activeTab === 'challenges' && (
+          <div className="space-y-6">
+            <CodingChallenges />
+            
+            {/* Interactive Challenges */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {codingChallenges.map((challenge) => (
+                <div key={challenge.id} className="bg-white rounded-lg shadow-lg p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-gray-900">{challenge.title}</h3>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        challenge.difficulty === 'Easy' ? 'bg-green-100 text-green-700' :
+                        challenge.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {challenge.difficulty}
+                      </span>
+                      <span className="text-sm text-gray-500">{challenge.points} pts</span>
+                    </div>
+                  </div>
+                  
+                  <p className="text-gray-600 mb-4">{challenge.description}</p>
+                  
+                  <div className="flex items-center gap-2 mb-4">
+                    <Code className="h-4 w-4 text-blue-500" />
+                    <span className="text-sm text-gray-600">{challenge.language}</span>
+                  </div>
+                  
+                  <button
+                    onClick={() => handleStartChallenge(challenge.id)}
+                    className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Start Challenge
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Progress Tab */}
         {activeTab === 'progress' && <LearningProgress />}
@@ -420,13 +587,21 @@ const Education = () => {
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => handleStartTutorial(course.id)}
-                        className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
-                      >
-                        <Play className="h-4 w-4" />
-                        {getProgressPercentage(course.id) > 0 ? 'Continue' : 'Start Course'}
-                      </button>
+                     <button
+                       onClick={() => {
+                         const tutorial = codingTutorials.find(t => t.title.includes(course.title.split(' ')[0]))
+                         if (tutorial) {
+                           setCurrentTutorial(tutorial)
+                           setActiveTab('tutorial')
+                         } else {
+                           handleStartTutorial(course.id)
+                         }
+                       }}
+                       className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                     >
+                       <Play className="h-4 w-4" />
+                       {getProgressPercentage(course.id) > 0 ? 'Continue' : 'Start Course'}
+                     </button>
                     </div>
                   </div>
                 ))}

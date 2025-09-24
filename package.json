@@ -61,7 +61,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
     "firebase-tools": "^13.0.2",
-    "puppeteer": "^24.22.0",
+    "puppeteer": "^24.22.2",
     "vite": "^5.0.8"
   },
   "keywords": [

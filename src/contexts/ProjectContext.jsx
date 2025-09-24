@@ -258,6 +258,19 @@ export function ProjectProvider({ children }) {
     toast.success('New project created!')
   }, [])
 
+  const addFilesToProject = useCallback((newFiles) => {
+    console.log('📁 Adding files to project:', Object.keys(newFiles))
+    setCurrentProject(prev => ({
+      ...prev,
+      files: {
+        ...prev.files,
+        ...newFiles
+      },
+      lastModified: new Date()
+    }))
+    toast.success(`${Object.keys(newFiles).length} files added to project!`)
+  }, [])
+
   const value = {
     currentProject,
     projects,
@@ -270,7 +283,8 @@ export function ProjectProvider({ children }) {
     loadProjects,
     loadProject,
     deleteProject,
-    createNewProject
+    createNewProject,
+    addFilesToProject
   }
 
   return (

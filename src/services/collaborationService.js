@@ -43,15 +43,15 @@ class CollaborationService {
   // Set up presence listener for online users
   async setupPresenceListener(projectId) {
     const presenceRef = collection(firebaseService.db, 'projectPresence')
-    const q = query(
-      presenceRef,
-      where('projectId', '==', projectId),
-      where('isOnline', '==', true)
-    )
+      const q = query(
+        presenceRef,
+        where('projectId', '==', projectId),
+        where('isOnline', '==', true)
+      )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const unsubscribe = onSnapshot(q, (snapshot) => {
       const onlineUsers = []
-      snapshot.forEach(doc => {
+          snapshot.forEach(doc => {
         const data = doc.data()
         onlineUsers.push({
           id: doc.id,
@@ -74,19 +74,19 @@ class CollaborationService {
   // Set up cursors listener for real-time cursor tracking
   async setupCursorsListener(projectId) {
     const cursorsRef = collection(firebaseService.db, 'cursors')
-    const q = query(
-      cursorsRef,
-      where('projectId', '==', projectId),
+      const q = query(
+        cursorsRef,
+        where('projectId', '==', projectId),
       orderBy('updatedAt', 'desc')
-    )
+      )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const cursors = []
-      snapshot.forEach(doc => {
-        const data = doc.data()
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const cursors = []
+        snapshot.forEach(doc => {
+          const data = doc.data()
         if (data.userId !== this.currentUser?.uid) {
-          cursors.push({
-            id: doc.id,
+            cursors.push({
+              id: doc.id,
             userId: data.userId,
             userName: data.userName,
             userAvatar: data.userAvatar,
@@ -109,19 +109,19 @@ class CollaborationService {
   // Set up comments listener for real-time comments
   async setupCommentsListener(projectId) {
     const commentsRef = collection(firebaseService.db, 'comments')
-    const q = query(
-      commentsRef,
-      where('projectId', '==', projectId),
+      const q = query(
+        commentsRef,
+        where('projectId', '==', projectId),
       orderBy('createdAt', 'desc'),
       limit(50)
-    )
+      )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const comments = []
-      snapshot.forEach(doc => {
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const comments = []
+          snapshot.forEach(doc => {
         const data = doc.data()
-        comments.push({
-          id: doc.id,
+            comments.push({
+              id: doc.id,
           userId: data.userId,
           userName: data.userName,
           userAvatar: data.userAvatar,
@@ -143,19 +143,19 @@ class CollaborationService {
   // Set up file changes listener for real-time file updates
   async setupFileChangesListener(projectId) {
     const changesRef = collection(firebaseService.db, 'fileChanges')
-    const q = query(
+      const q = query(
       changesRef,
-      where('projectId', '==', projectId),
+        where('projectId', '==', projectId),
       orderBy('timestamp', 'desc'),
       limit(20)
-    )
+      )
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const unsubscribe = onSnapshot(q, (snapshot) => {
       const changes = []
-      snapshot.forEach(doc => {
+          snapshot.forEach(doc => {
         const data = doc.data()
         changes.push({
-          id: doc.id,
+              id: doc.id,
           userId: data.userId,
           userName: data.userName,
           fileId: data.fileId,
@@ -243,15 +243,15 @@ class CollaborationService {
     if (!this.currentUser) return
 
     const changesRef = collection(firebaseService.db, 'fileChanges')
-    const change = {
+      const change = {
       userId: this.currentUser.uid,
       userName: this.currentUser.displayName || this.currentUser.email,
       projectId: projectId,
       fileId: fileId,
       changeType: changeType, // 'create', 'update', 'delete'
       content: content,
-      timestamp: serverTimestamp()
-    }
+        timestamp: serverTimestamp()
+      }
 
     await setDoc(doc(changesRef), change)
   }
@@ -299,7 +299,7 @@ class CollaborationService {
   // Get shared projects
   async getSharedProjects() {
     const sharesRef = collection(firebaseService.db, 'projectShares')
-    const q = query(
+      const q = query(
       sharesRef,
       where('sharedWith', '==', this.currentUser.email),
       where('accepted', '==', true)
@@ -307,11 +307,11 @@ class CollaborationService {
 
     const snapshot = await getDocs(q)
     const sharedProjects = []
-    snapshot.forEach(doc => {
+        snapshot.forEach(doc => {
       sharedProjects.push({
-        id: doc.id,
-        ...doc.data()
-      })
+            id: doc.id,
+            ...doc.data()
+          })
     })
 
     return sharedProjects

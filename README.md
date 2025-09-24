@@ -100,6 +100,12 @@ npm run firebase:deploy:all
 - **Database-Driven Templates**: Firebase template database
 - **Progressive Enhancement**: 6-phase development roadmap
 - **Context Persistence**: Firebase-based unlimited storage
+- **Context-Aware Generation**: Analyzes existing project files, dependencies, and coding standards
+- **Enhanced Feature Detection**: Automatically detects and displays app features and tech stack
+- **Intelligent Code Analysis**: Extracts features like Interactive Elements, Data Persistence, API Integration
+- **Tech Stack Recognition**: Identifies frameworks, databases, and technologies used
+- **Build Instructions**: Generates platform-specific build and run commands
+- **App Name Generation**: Creates creative and relevant app names based on prompts
 
 ### **2. Real-time Collaboration**
 - **Multi-user Co-editing**: Work together in real-time

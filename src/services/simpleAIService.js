@@ -39,23 +39,23 @@ class SimpleAIService {
   }
 
   // Get all available templates
-  getAllTemplates() {
-    return localAIService.getAllTemplates()
+  async getAllTemplates() {
+    return await localAIService.getAllTemplates()
   }
 
   // Generate template by ID
-  generateTemplateById(templateId, customizations = {}) {
-    return localAIService.generateTemplateById(templateId, customizations)
+  async generateTemplateById(templateId, customizations = {}) {
+    return await localAIService.generateTemplateById(templateId, customizations)
   }
 
   // Search templates
-  searchTemplates(query) {
-    return localAIService.searchTemplates(query)
+  async searchTemplates(query) {
+    return await localAIService.searchTemplates(query)
   }
 
   // Get popular templates
-  getPopularTemplates() {
-    return localAIService.getPopularTemplates()
+  async getPopularTemplates() {
+    return await localAIService.getPopularTemplates()
   }
 
   // Generate code using local AI

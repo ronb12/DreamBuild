@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Sparkles, 
@@ -31,8 +31,33 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
     { id: 'tools', name: 'Tools', icon: Code, color: 'text-gray-500' }
   ]
 
-  const templates = simpleAIService.getAllTemplates()
-  const popularTemplates = simpleAIService.getPopularTemplates()
+  const [templates, setTemplates] = useState([])
+  const [popularTemplates, setPopularTemplates] = useState([])
+  const [isLoadingTemplates, setIsLoadingTemplates] = useState(true)
+
+  // Load templates on component mount
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        setIsLoadingTemplates(true)
+        const [allTemplates, popular] = await Promise.all([
+          simpleAIService.getAllTemplates(),
+          simpleAIService.getPopularTemplates()
+        ])
+        setTemplates(allTemplates)
+        setPopularTemplates(popular)
+      } catch (error) {
+        console.error('Failed to load templates:', error)
+        toast.error('Failed to load templates')
+      } finally {
+        setIsLoadingTemplates(false)
+      }
+    }
+
+    if (isVisible) {
+      loadTemplates()
+    }
+  }, [isVisible])
 
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -46,7 +71,7 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
     try {
       console.log('🎯 Generating template:', template.id)
       
-      const files = simpleAIService.generateTemplateById(template.id)
+      const files = await simpleAIService.generateTemplateById(template.id)
       
       // Add files to project
       Object.entries(files).forEach(([filename, content]) => {
@@ -176,7 +201,25 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
                   <h3 className="text-lg font-semibold text-foreground">Popular Templates</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {popularTemplates.map((template) => {
+                  {isLoadingTemplates ? (
+                    // Loading skeleton for popular templates
+                    Array.from({ length: 3 }).map((_, index) => (
+                      <div key={index} className="bg-card border border-border rounded-lg p-4 animate-pulse">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-8 h-8 bg-muted rounded-lg"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-muted rounded mb-2"></div>
+                            <div className="h-3 bg-muted rounded w-1/2"></div>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-3 bg-muted rounded"></div>
+                          <div className="h-3 bg-muted rounded w-3/4"></div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    popularTemplates.map((template) => {
                     const Icon = getCategoryIcon(template.category)
                     const colorClass = getCategoryColor(template.category)
                     return (
@@ -206,7 +249,8 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
                         </p>
                       </motion.button>
                     )
-                  })}
+                    })
+                  )}
                 </div>
               </div>
             )}
@@ -229,6 +273,25 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
                   </div>
                   <h4 className="text-lg font-medium text-foreground mb-2">No templates found</h4>
                   <p className="text-muted-foreground">Try adjusting your search or filters</p>
+                </div>
+              ) : isLoadingTemplates ? (
+                // Loading skeleton
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <div key={index} className="bg-card border border-border rounded-lg p-4 animate-pulse">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-muted rounded-lg"></div>
+                        <div className="flex-1">
+                          <div className="h-4 bg-muted rounded mb-2"></div>
+                          <div className="h-3 bg-muted rounded w-1/2"></div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-3 bg-muted rounded"></div>
+                        <div className="h-3 bg-muted rounded w-3/4"></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

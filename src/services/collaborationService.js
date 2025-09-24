@@ -1,502 +1,339 @@
-// Real-time Collaboration Service for DreamBuild
-// Enables multi-user co-editing, comments, and version history
-
-import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp } from 'firebase/firestore'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { db } from '../firebase'
+import { 
+  collection, 
+  doc, 
+  onSnapshot, 
+  setDoc, 
+  deleteDoc, 
+  updateDoc,
+  serverTimestamp,
+  query,
+  where,
+  orderBy,
+  limit
+} from 'firebase/firestore'
 
 class CollaborationService {
   constructor() {
-    this.app = null
-    this.db = null
-    this.auth = null
-    this.user = null
-    this.listeners = new Map()
+    this.activeUsers = new Map()
     this.cursors = new Map()
     this.comments = new Map()
-    this.isInitialized = false
+    this.listeners = new Map()
+    this.currentUser = null
+    this.currentProject = null
   }
 
-  // Initialize collaboration service
-  async initialize() {
-    try {
-      if (this.isInitialized) return
-
-      const firebaseConfig = {
-        apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "your-api-key",
-        authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "your-project.firebaseapp.com",
-        projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "your-project-id",
-        storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "your-project.appspot.com",
-        messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-        appId: process.env.REACT_APP_FIREBASE_APP_ID || "your-app-id"
-      }
-
-      this.app = initializeApp(firebaseConfig)
-      this.db = getFirestore(this.app)
-      this.auth = getAuth(this.app)
-
-      // Set up auth state listener
-      onAuthStateChanged(this.auth, (user) => {
-        this.user = user
-        console.log('Collaboration auth state changed:', user ? 'authenticated' : 'not authenticated')
-      })
-
-      this.isInitialized = true
-      console.log('🤝 Collaboration service initialized successfully')
-    } catch (error) {
-      console.error('❌ Failed to initialize collaboration service:', error)
-      throw error
-    }
+  // Initialize collaboration for a project
+  async initializeCollaboration(user, projectId) {
+    this.currentUser = user
+    this.currentProject = projectId
+    
+    console.log('🤝 Initializing collaboration for project:', projectId)
+    
+    // Set up real-time listeners
+    await this.setupPresenceListener(projectId)
+    await this.setupCursorsListener(projectId)
+    await this.setupCommentsListener(projectId)
+    await this.setupFileChangesListener(projectId)
+    
+    // Set user as online
+    await this.setUserPresence(projectId, true)
   }
 
-  // ===== REAL-TIME COLLABORATION =====
+  // Set up presence listener for online users
+  async setupPresenceListener(projectId) {
+    const presenceRef = collection(db, 'projectPresence')
+    const q = query(
+      presenceRef,
+      where('projectId', '==', projectId),
+      where('isOnline', '==', true)
+    )
 
-  // Join project collaboration
-  async joinProject(projectId, userInfo) {
-    try {
-      await this.initialize()
-      
-      const user = {
-        id: this.user?.uid || 'anonymous',
-        name: userInfo.name || 'Anonymous User',
-        email: userInfo.email || '',
-        avatar: userInfo.avatar || '',
-        color: userInfo.color || this.generateUserColor(),
-        joinedAt: new Date().toISOString(),
-        isOnline: true
-      }
-
-      // Store user presence
-      const presenceRef = doc(this.db, 'projectPresence', `${projectId}_${user.id}`)
-      await updateDoc(presenceRef, user).catch(() => {
-        // Create if doesn't exist
-        return addDoc(collection(this.db, 'projectPresence'), {
-          projectId,
-          userId: user.id,
-          ...user
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const onlineUsers = []
+      snapshot.forEach(doc => {
+        const data = doc.data()
+        onlineUsers.push({
+          id: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          userEmail: data.userEmail,
+          userAvatar: data.userAvatar,
+          lastSeen: data.lastSeen,
+          cursorPosition: data.cursorPosition
         })
       })
+      
+      this.activeUsers.set(projectId, onlineUsers)
+      console.log('👥 Active users:', onlineUsers.length)
+    })
 
-      console.log('✅ User joined project collaboration')
-      return user
-    } catch (error) {
-      console.error('❌ Failed to join project:', error)
-      throw error
-    }
+    this.listeners.set(`presence_${projectId}`, unsubscribe)
   }
 
-  // Leave project collaboration
-  async leaveProject(projectId) {
-    try {
-      await this.initialize()
-      
-      const presenceRef = doc(this.db, 'projectPresence', `${projectId}_${this.user?.uid}`)
-      await updateDoc(presenceRef, {
-        isOnline: false,
-        leftAt: new Date().toISOString()
-      })
+  // Set up cursors listener for real-time cursor tracking
+  async setupCursorsListener(projectId) {
+    const cursorsRef = collection(db, 'cursors')
+    const q = query(
+      cursorsRef,
+      where('projectId', '==', projectId),
+      orderBy('updatedAt', 'desc')
+    )
 
-      console.log('✅ User left project collaboration')
-    } catch (error) {
-      console.error('❌ Failed to leave project:', error)
-    }
-  }
-
-  // Get online users
-  async getOnlineUsers(projectId) {
-    try {
-      await this.initialize()
-      
-      const presenceRef = collection(this.db, 'projectPresence')
-      const q = query(
-        presenceRef,
-        where('projectId', '==', projectId),
-        where('isOnline', '==', true)
-      )
-
-      return new Promise((resolve) => {
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-          const users = []
-          snapshot.forEach(doc => {
-            users.push(doc.data())
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const cursors = []
+      snapshot.forEach(doc => {
+        const data = doc.data()
+        if (data.userId !== this.currentUser?.uid) {
+          cursors.push({
+            id: doc.id,
+            userId: data.userId,
+            userName: data.userName,
+            userAvatar: data.userAvatar,
+            fileId: data.fileId,
+            line: data.line,
+            column: data.column,
+            selection: data.selection,
+            updatedAt: data.updatedAt
           })
-          resolve(users)
-        })
-
-        // Store listener for cleanup
-        this.listeners.set(`onlineUsers_${projectId}`, unsubscribe)
+        }
       })
-    } catch (error) {
-      console.error('❌ Failed to get online users:', error)
-      return []
-    }
+      
+      this.cursors.set(projectId, cursors)
+      console.log('🖱️ Active cursors:', cursors.length)
+    })
+
+    this.listeners.set(`cursors_${projectId}`, unsubscribe)
   }
 
-  // ===== REAL-TIME CURSOR TRACKING =====
+  // Set up comments listener for real-time comments
+  async setupCommentsListener(projectId) {
+    const commentsRef = collection(db, 'comments')
+    const q = query(
+      commentsRef,
+      where('projectId', '==', projectId),
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    )
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const comments = []
+      snapshot.forEach(doc => {
+        const data = doc.data()
+        comments.push({
+          id: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          userAvatar: data.userAvatar,
+          fileId: data.fileId,
+          lineNumber: data.lineNumber,
+          content: data.content,
+          createdAt: data.createdAt,
+          resolved: data.resolved || false
+        })
+      })
+      
+      this.comments.set(projectId, comments)
+      console.log('💬 Comments:', comments.length)
+    })
+
+    this.listeners.set(`comments_${projectId}`, unsubscribe)
+  }
+
+  // Set up file changes listener for real-time file updates
+  async setupFileChangesListener(projectId) {
+    const changesRef = collection(db, 'fileChanges')
+    const q = query(
+      changesRef,
+      where('projectId', '==', projectId),
+      orderBy('timestamp', 'desc'),
+      limit(20)
+    )
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const changes = []
+      snapshot.forEach(doc => {
+        const data = doc.data()
+        changes.push({
+          id: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          fileId: data.fileId,
+          changeType: data.changeType,
+          content: data.content,
+          timestamp: data.timestamp
+        })
+      })
+      
+      console.log('📝 File changes:', changes.length)
+    })
+
+    this.listeners.set(`changes_${projectId}`, unsubscribe)
+  }
+
+  // Set user presence (online/offline)
+  async setUserPresence(projectId, isOnline) {
+    if (!this.currentUser) return
+
+    const presenceRef = doc(db, 'projectPresence', `${this.currentUser.uid}_${projectId}`)
+    
+    await setDoc(presenceRef, {
+      userId: this.currentUser.uid,
+      userName: this.currentUser.displayName || this.currentUser.email,
+      userEmail: this.currentUser.email,
+      userAvatar: this.currentUser.photoURL || '',
+      projectId: projectId,
+      isOnline: isOnline,
+      lastSeen: serverTimestamp(),
+      cursorPosition: null
+    }, { merge: true })
+  }
 
   // Update cursor position
-  async updateCursor(projectId, fileId, position) {
-    try {
-      await this.initialize()
-      
-      const cursorRef = doc(this.db, 'cursors', `${projectId}_${fileId}_${this.user?.uid}`)
-      await updateDoc(cursorRef, {
-        projectId,
-        fileId,
-        userId: this.user?.uid,
-        position,
-        updatedAt: serverTimestamp()
-      }).catch(() => {
-        // Create if doesn't exist
-        return addDoc(collection(this.db, 'cursors'), {
-          projectId,
-          fileId,
-          userId: this.user?.uid,
-          position,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        })
+  async updateCursor(projectId, fileId, line, column, selection = null) {
+    if (!this.currentUser) return
+
+    const cursorRef = doc(db, 'cursors', `${this.currentUser.uid}_${projectId}`)
+    
+    await setDoc(cursorRef, {
+      userId: this.currentUser.uid,
+      userName: this.currentUser.displayName || this.currentUser.email,
+      userAvatar: this.currentUser.photoURL || '',
+      projectId: projectId,
+      fileId: fileId,
+      line: line,
+      column: column,
+      selection: selection,
+      updatedAt: serverTimestamp()
+    }, { merge: true })
+  }
+
+  // Add a comment
+  async addComment(projectId, fileId, lineNumber, content) {
+    if (!this.currentUser) return
+
+    const commentsRef = collection(db, 'comments')
+    const newComment = {
+      userId: this.currentUser.uid,
+      userName: this.currentUser.displayName || this.currentUser.email,
+      userAvatar: this.currentUser.photoURL || '',
+      projectId: projectId,
+      fileId: fileId,
+      lineNumber: lineNumber,
+      content: content,
+      createdAt: serverTimestamp(),
+      resolved: false
+    }
+
+    await setDoc(doc(commentsRef), newComment)
+    console.log('💬 Comment added')
+  }
+
+  // Resolve a comment
+  async resolveComment(commentId) {
+    const commentRef = doc(db, 'comments', commentId)
+    await updateDoc(commentRef, {
+      resolved: true,
+      resolvedAt: serverTimestamp()
+    })
+  }
+
+  // Record file change
+  async recordFileChange(projectId, fileId, changeType, content) {
+    if (!this.currentUser) return
+
+    const changesRef = collection(db, 'fileChanges')
+    const change = {
+      userId: this.currentUser.uid,
+      userName: this.currentUser.displayName || this.currentUser.email,
+      projectId: projectId,
+      fileId: fileId,
+      changeType: changeType, // 'create', 'update', 'delete'
+      content: content,
+      timestamp: serverTimestamp()
+    }
+
+    await setDoc(doc(changesRef), change)
+  }
+
+  // Get active users for a project
+  getActiveUsers(projectId) {
+    return this.activeUsers.get(projectId) || []
+  }
+
+  // Get cursors for a project
+  getCursors(projectId) {
+    return this.cursors.get(projectId) || []
+  }
+
+  // Get comments for a project
+  getComments(projectId) {
+    return this.comments.get(projectId) || []
+  }
+
+  // Share project with another user
+  async shareProject(projectId, userEmail, permissions = 'read') {
+    const shareRef = collection(db, 'projectShares')
+    const share = {
+      projectId: projectId,
+      ownerId: this.currentUser.uid,
+      sharedWith: userEmail,
+      permissions: permissions, // 'read', 'write', 'admin'
+      sharedAt: serverTimestamp(),
+      accepted: false
+    }
+
+    await setDoc(doc(shareRef), share)
+    console.log('🔗 Project shared with:', userEmail)
+  }
+
+  // Accept project share
+  async acceptProjectShare(shareId) {
+    const shareRef = doc(db, 'projectShares', shareId)
+    await updateDoc(shareRef, {
+      accepted: true,
+      acceptedAt: serverTimestamp()
+    })
+  }
+
+  // Get shared projects
+  async getSharedProjects() {
+    const sharesRef = collection(db, 'projectShares')
+    const q = query(
+      sharesRef,
+      where('sharedWith', '==', this.currentUser.email),
+      where('accepted', '==', true)
+    )
+
+    const snapshot = await getDocs(q)
+    const sharedProjects = []
+    snapshot.forEach(doc => {
+      sharedProjects.push({
+        id: doc.id,
+        ...doc.data()
       })
+    })
 
-      // Store in local cache
-      this.cursors.set(`${projectId}_${fileId}_${this.user?.uid}`, {
-        position,
-        updatedAt: new Date()
-      })
-    } catch (error) {
-      console.error('❌ Failed to update cursor:', error)
-    }
+    return sharedProjects
   }
 
-  // Listen to cursor changes
-  async listenToCursors(projectId, fileId, callback) {
-    try {
-      await this.initialize()
-      
-      const cursorsRef = collection(this.db, 'cursors')
-      const q = query(
-        cursorsRef,
-        where('projectId', '==', projectId),
-        where('fileId', '==', fileId)
-      )
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const cursors = []
-        snapshot.forEach(doc => {
-          const data = doc.data()
-          if (data.userId !== this.user?.uid) { // Don't show own cursor
-            cursors.push({
-              id: doc.id,
-              ...data
-            })
-          }
-        })
-        callback(cursors)
-      })
-
-      // Store listener for cleanup
-      this.listeners.set(`cursors_${projectId}_${fileId}`, unsubscribe)
-    } catch (error) {
-      console.error('❌ Failed to listen to cursors:', error)
-    }
-  }
-
-  // ===== REAL-TIME COMMENTS =====
-
-  // Add comment
-  async addComment(projectId, fileId, lineNumber, content, parentId = null) {
-    try {
-      await this.initialize()
-      
-      const comment = {
-        projectId,
-        fileId,
-        lineNumber,
-        content,
-        parentId,
-        userId: this.user?.uid,
-        userName: this.user?.displayName || 'Anonymous',
-        userAvatar: this.user?.photoURL || '',
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        isResolved: false,
-        reactions: {}
-      }
-
-      const commentRef = await addDoc(collection(this.db, 'comments'), comment)
-      
-      console.log('✅ Comment added successfully')
-      return { id: commentRef.id, ...comment }
-    } catch (error) {
-      console.error('❌ Failed to add comment:', error)
-      throw error
-    }
-  }
-
-  // Get comments for file
-  async getComments(projectId, fileId) {
-    try {
-      await this.initialize()
-      
-      const commentsRef = collection(this.db, 'comments')
-      const q = query(
-        commentsRef,
-        where('projectId', '==', projectId),
-        where('fileId', '==', fileId),
-        orderBy('createdAt', 'asc')
-      )
-
-      return new Promise((resolve) => {
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-          const comments = []
-          snapshot.forEach(doc => {
-            comments.push({
-              id: doc.id,
-              ...doc.data()
-            })
-          })
-          resolve(comments)
-        })
-
-        // Store listener for cleanup
-        this.listeners.set(`comments_${projectId}_${fileId}`, unsubscribe)
-      })
-    } catch (error) {
-      console.error('❌ Failed to get comments:', error)
-      return []
-    }
-  }
-
-  // Update comment
-  async updateComment(commentId, updates) {
-    try {
-      await this.initialize()
-      
-      const commentRef = doc(this.db, 'comments', commentId)
-      await updateDoc(commentRef, {
-        ...updates,
-        updatedAt: serverTimestamp()
-      })
-
-      console.log('✅ Comment updated successfully')
-    } catch (error) {
-      console.error('❌ Failed to update comment:', error)
-      throw error
-    }
-  }
-
-  // Delete comment
-  async deleteComment(commentId) {
-    try {
-      await this.initialize()
-      
-      const commentRef = doc(this.db, 'comments', commentId)
-      await deleteDoc(commentRef)
-
-      console.log('✅ Comment deleted successfully')
-    } catch (error) {
-      console.error('❌ Failed to delete comment:', error)
-      throw error
-    }
-  }
-
-  // ===== VERSION HISTORY =====
-
-  // Save version
-  async saveVersion(projectId, versionData) {
-    try {
-      await this.initialize()
-      
-      const version = {
-        projectId,
-        versionNumber: versionData.versionNumber,
-        description: versionData.description || 'Auto-save',
-        files: versionData.files,
-        userId: this.user?.uid,
-        userName: this.user?.displayName || 'Anonymous',
-        createdAt: serverTimestamp(),
-        changes: versionData.changes || [],
-        isAutoSave: versionData.isAutoSave || false
-      }
-
-      const versionRef = await addDoc(collection(this.db, 'versions'), version)
-      
-      console.log('✅ Version saved successfully')
-      return { id: versionRef.id, ...version }
-    } catch (error) {
-      console.error('❌ Failed to save version:', error)
-      throw error
-    }
-  }
-
-  // Get version history
-  async getVersionHistory(projectId, limit = 50) {
-    try {
-      await this.initialize()
-      
-      const versionsRef = collection(this.db, 'versions')
-      const q = query(
-        versionsRef,
-        where('projectId', '==', projectId),
-        orderBy('createdAt', 'desc'),
-        limit(limit)
-      )
-
-      return new Promise((resolve) => {
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-          const versions = []
-          snapshot.forEach(doc => {
-            versions.push({
-              id: doc.id,
-              ...doc.data()
-            })
-          })
-          resolve(versions)
-        })
-
-        // Store listener for cleanup
-        this.listeners.set(`versions_${projectId}`, unsubscribe)
-      })
-    } catch (error) {
-      console.error('❌ Failed to get version history:', error)
-      return []
-    }
-  }
-
-  // Restore version
-  async restoreVersion(projectId, versionId) {
-    try {
-      await this.initialize()
-      
-      const versionRef = doc(this.db, 'versions', versionId)
-      const versionDoc = await getDoc(versionRef)
-      
-      if (versionDoc.exists()) {
-        const version = versionDoc.data()
-        
-        // Create new version with restored data
-        await this.saveVersion(projectId, {
-          versionNumber: `Restored from ${version.versionNumber}`,
-          description: `Restored from version ${version.versionNumber}`,
-          files: version.files,
-          isAutoSave: false
-        })
-
-        console.log('✅ Version restored successfully')
-        return version.files
-      } else {
-        throw new Error('Version not found')
-      }
-    } catch (error) {
-      console.error('❌ Failed to restore version:', error)
-      throw error
-    }
-  }
-
-  // ===== REAL-TIME FILE SYNC =====
-
-  // Sync file changes
-  async syncFileChanges(projectId, fileId, changes) {
-    try {
-      await this.initialize()
-      
-      const change = {
-        projectId,
-        fileId,
-        userId: this.user?.uid,
-        userName: this.user?.displayName || 'Anonymous',
-        changes,
-        timestamp: serverTimestamp()
-      }
-
-      await addDoc(collection(this.db, 'fileChanges'), change)
-      
-      console.log('✅ File changes synced successfully')
-    } catch (error) {
-      console.error('❌ Failed to sync file changes:', error)
-    }
-  }
-
-  // Listen to file changes
-  async listenToFileChanges(projectId, fileId, callback) {
-    try {
-      await this.initialize()
-      
-      const changesRef = collection(this.db, 'fileChanges')
-      const q = query(
-        changesRef,
-        where('projectId', '==', projectId),
-        where('fileId', '==', fileId),
-        orderBy('timestamp', 'desc'),
-        limit(10)
-      )
-
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const changes = []
-        snapshot.forEach(doc => {
-          changes.push({
-            id: doc.id,
-            ...doc.data()
-          })
-        })
-        callback(changes)
-      })
-
-      // Store listener for cleanup
-      this.listeners.set(`fileChanges_${projectId}_${fileId}`, unsubscribe)
-    } catch (error) {
-      console.error('❌ Failed to listen to file changes:', error)
-    }
-  }
-
-  // ===== UTILITY FUNCTIONS =====
-
-  // Generate user color
-  generateUserColor() {
-    const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-      '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'
-    ]
-    return colors[Math.floor(Math.random() * colors.length)]
-  }
-
-  // Cleanup listeners
+  // Clean up listeners
   cleanup() {
-    this.listeners.forEach((unsubscribe) => {
+    this.listeners.forEach((unsubscribe, key) => {
       unsubscribe()
     })
     this.listeners.clear()
-    console.log('🧹 Collaboration listeners cleaned up')
+    this.activeUsers.clear()
+    this.cursors.clear()
+    this.comments.clear()
   }
 
-  // Get collaboration stats
-  async getCollaborationStats(projectId) {
-    try {
-      await this.initialize()
-      
-      const [users, comments, versions] = await Promise.all([
-        this.getOnlineUsers(projectId),
-        this.getComments(projectId, 'all'),
-        this.getVersionHistory(projectId, 10)
-      ])
-
-      return {
-        onlineUsers: users.length,
-        totalComments: comments.length,
-        totalVersions: versions.length,
-        lastActivity: versions[0]?.createdAt || null
-      }
-    } catch (error) {
-      console.error('❌ Failed to get collaboration stats:', error)
-      return {
-        onlineUsers: 0,
-        totalComments: 0,
-        totalVersions: 0,
-        lastActivity: null
-      }
+  // Set user offline when leaving
+  async setUserOffline(projectId) {
+    if (this.currentUser && projectId) {
+      await this.setUserPresence(projectId, false)
     }
   }
 }
 
-// Export singleton instance
 export default new CollaborationService()

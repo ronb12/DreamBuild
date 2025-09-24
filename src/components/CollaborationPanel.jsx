@@ -1,555 +1,328 @@
-// Real-time Collaboration Panel for DreamBuild
-// Provides multi-user co-editing, comments, and version history
+import React, { useState, useEffect } from 'react'
+import { useCollaboration } from '../contexts/CollaborationContext'
+import { useAuth } from '../contexts/AuthContext'
+import { 
+  Users, 
+  MessageSquare, 
+  Share2, 
+  Eye, 
+  EyeOff, 
+  UserPlus,
+  X,
+  CheckCircle,
+  Clock,
+  AlertCircle
+} from 'lucide-react'
+import toast from 'react-hot-toast'
 
-import React, { useState, useEffect, useRef } from 'react'
-import collaborationService from '../services/collaborationService'
-
-const CollaborationPanel = ({ projectId, fileId, onFileChange, onVersionRestore }) => {
-  const [onlineUsers, setOnlineUsers] = useState([])
-  const [comments, setComments] = useState([])
-  const [versions, setVersions] = useState([])
-  const [newComment, setNewComment] = useState('')
-  const [selectedLine, setSelectedLine] = useState(null)
-  const [showComments, setShowComments] = useState(false)
-  const [showVersions, setShowVersions] = useState(false)
-  const [isCollaborating, setIsCollaborating] = useState(false)
-  const [userInfo, setUserInfo] = useState({
-    name: 'Anonymous User',
-    email: '',
-    avatar: ''
-  })
+const CollaborationPanel = ({ isOpen, onClose }) => {
+  const { 
+    isCollaborationActive,
+    activeUsers,
+    cursors,
+    comments,
+    sharedProjects,
+    isLoading,
+    shareProject,
+    getSharedProjects,
+    toggleCollaboration
+  } = useCollaboration()
+  
+  const { user } = useAuth()
+  const [shareEmail, setShareEmail] = useState('')
+  const [sharePermissions, setSharePermissions] = useState('read')
+  const [activeTab, setActiveTab] = useState('users')
 
   useEffect(() => {
-    if (projectId) {
-      initializeCollaboration()
+    if (isOpen && isCollaborationActive) {
+      getSharedProjects()
     }
+  }, [isOpen, isCollaborationActive, getSharedProjects])
 
-    return () => {
-      collaborationService.cleanup()
+  const handleShareProject = async (e) => {
+    e.preventDefault()
+    if (!shareEmail.trim()) {
+      toast.error('Please enter an email address')
+      return
     }
-  }, [projectId])
-
-  const initializeCollaboration = async () => {
-    try {
-      // Join project collaboration
-      await collaborationService.joinProject(projectId, userInfo)
-      setIsCollaborating(true)
-
-      // Listen to online users
-      collaborationService.getOnlineUsers(projectId).then(setOnlineUsers)
-
-      // Listen to comments
-      if (fileId) {
-        collaborationService.getComments(projectId, fileId).then(setComments)
-      }
-
-      // Listen to version history
-      collaborationService.getVersionHistory(projectId).then(setVersions)
-
-      // Listen to file changes
-      if (fileId) {
-        collaborationService.listenToFileChanges(projectId, fileId, (changes) => {
-          console.log('File changes received:', changes)
-        })
-      }
-
-      console.log('🤝 Collaboration initialized successfully')
-    } catch (error) {
-      console.error('❌ Failed to initialize collaboration:', error)
-    }
-  }
-
-  const handleAddComment = async () => {
-    if (!newComment.trim() || !fileId) return
 
     try {
-      await collaborationService.addComment(
-        projectId,
-        fileId,
-        selectedLine || 1,
-        newComment
-      )
-      setNewComment('')
-      setSelectedLine(null)
+      await shareProject(shareEmail, sharePermissions)
+      toast.success(`Project shared with ${shareEmail}`)
+      setShareEmail('')
+      getSharedProjects()
     } catch (error) {
-      console.error('❌ Failed to add comment:', error)
+      toast.error('Failed to share project')
     }
   }
 
-  const handleRestoreVersion = async (versionId) => {
-    try {
-      const files = await collaborationService.restoreVersion(projectId, versionId)
-      onVersionRestore && onVersionRestore(files)
-      console.log('✅ Version restored successfully')
-    } catch (error) {
-      console.error('❌ Failed to restore version:', error)
+  const getPermissionColor = (permissions) => {
+    switch (permissions) {
+      case 'admin': return 'text-red-600 bg-red-100'
+      case 'write': return 'text-blue-600 bg-blue-100'
+      case 'read': return 'text-green-600 bg-green-100'
+      default: return 'text-gray-600 bg-gray-100'
     }
   }
 
-  const handleSaveVersion = async () => {
-    try {
-      const versionData = {
-        versionNumber: `v${versions.length + 1}`,
-        description: prompt('Version description:') || 'Manual save',
-        files: {}, // This would be populated with current files
-        isAutoSave: false
-      }
-
-      await collaborationService.saveVersion(projectId, versionData)
-      console.log('✅ Version saved successfully')
-    } catch (error) {
-      console.error('❌ Failed to save version:', error)
+  const getPermissionIcon = (permissions) => {
+    switch (permissions) {
+      case 'admin': return <AlertCircle className="h-4 w-4" />
+      case 'write': return <CheckCircle className="h-4 w-4" />
+      case 'read': return <Eye className="h-4 w-4" />
+      default: return <Clock className="h-4 w-4" />
     }
   }
 
-  const handleLineClick = (lineNumber) => {
-    setSelectedLine(lineNumber)
-    setShowComments(true)
-  }
-
-  const handleCursorUpdate = (position) => {
-    if (fileId) {
-      collaborationService.updateCursor(projectId, fileId, position)
-    }
-  }
+  if (!isOpen) return null
 
   return (
-    <div className="collaboration-panel">
-      <div className="collaboration-header">
-        <h3>🤝 Real-time Collaboration</h3>
-        <div className="collaboration-status">
-          {isCollaborating ? (
-            <span className="status-online">● Online</span>
-          ) : (
-            <span className="status-offline">● Offline</span>
-          )}
-        </div>
-      </div>
-
-      {/* Online Users */}
-      <div className="collaboration-section">
-        <h4>👥 Online Users ({onlineUsers.length})</h4>
-        <div className="users-list">
-          {onlineUsers.map((user, index) => (
-            <div key={user.id || index} className="user-item">
-              <div 
-                className="user-avatar" 
-                style={{ backgroundColor: user.color }}
-              >
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <span className="user-name">{user.name}</span>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+              <Users className="h-5 w-5 text-white" />
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Comments Section */}
-      <div className="collaboration-section">
-        <div className="section-header">
-          <h4>💬 Comments ({comments.length})</h4>
-          <button 
-            className="btn btn-sm"
-            onClick={() => setShowComments(!showComments)}
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Collaboration</h2>
+              <p className="text-sm text-gray-600">Real-time team collaboration</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            {showComments ? 'Hide' : 'Show'}
+            <X className="h-5 w-5 text-gray-600" />
           </button>
         </div>
 
-        {showComments && (
-          <div className="comments-container">
-            <div className="add-comment">
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Add a comment..."
-                rows="3"
-              />
-              <div className="comment-actions">
-                <span className="line-info">
-                  {selectedLine ? `Line ${selectedLine}` : 'Select a line to comment'}
-                </span>
-                <button 
-                  className="btn btn-primary btn-sm"
-                  onClick={handleAddComment}
-                  disabled={!newComment.trim()}
-                >
-                  Add Comment
-                </button>
+        {/* Toggle Collaboration */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">Real-time Collaboration</h3>
+              <p className="text-sm text-gray-600">
+                Enable real-time editing, cursor tracking, and comments
+              </p>
+            </div>
+            <button
+              onClick={toggleCollaboration}
+              disabled={isLoading}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                isCollaborationActive
+                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {isCollaborationActive ? (
+                <>
+                  <Eye className="h-4 w-4" />
+                  Active
+                </>
+              ) : (
+                <>
+                  <EyeOff className="h-4 w-4" />
+                  Inactive
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200">
+          {[
+            { id: 'users', label: 'Active Users', icon: Users },
+            { id: 'comments', label: 'Comments', icon: MessageSquare },
+            { id: 'sharing', label: 'Sharing', icon: Share2 }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        <div className="p-6 max-h-96 overflow-y-auto">
+          {/* Active Users Tab */}
+          {activeTab === 'users' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">Active Users ({activeUsers.length})</h3>
+              {activeUsers.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No active users</p>
+              ) : (
+                <div className="space-y-3">
+                  {activeUsers.map((user, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-medium">
+                          {user.userName?.charAt(0) || 'U'}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900">{user.userName}</p>
+                        <p className="text-sm text-gray-600">{user.userEmail}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm text-gray-600">Online</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Cursors */}
+              {cursors.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-md font-medium text-gray-900 mb-3">Active Cursors</h4>
+                  <div className="space-y-2">
+                    {cursors.map((cursor, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-blue-50 rounded">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-medium">
+                            {cursor.userName?.charAt(0) || 'U'}
+                          </span>
+                        </div>
+                        <span className="text-sm text-gray-700">{cursor.userName}</span>
+                        <span className="text-xs text-gray-500">
+                          {cursor.fileId} - Line {cursor.line}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Comments Tab */}
+          {activeTab === 'comments' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">Comments ({comments.length})</h3>
+              {comments.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">No comments yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {comments.map((comment, index) => (
+                    <div key={index} className={`p-4 rounded-lg border ${
+                      comment.resolved ? 'bg-gray-50 border-gray-200' : 'bg-yellow-50 border-yellow-200'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-sm font-medium">
+                            {comment.userName?.charAt(0) || 'U'}
+                          </span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-gray-900">{comment.userName}</span>
+                            <span className="text-xs text-gray-500">
+                              Line {comment.lineNumber} in {comment.fileId}
+                            </span>
+                            {comment.resolved && (
+                              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                                Resolved
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-gray-700">{comment.content}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sharing Tab */}
+          {activeTab === 'sharing' && (
+            <div className="space-y-6">
+              {/* Share Project Form */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Share Project</h3>
+                <form onSubmit={handleShareProject} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={shareEmail}
+                      onChange={(e) => setShareEmail(e.target.value)}
+                      placeholder="user@example.com"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Permissions
+                    </label>
+                    <select
+                      value={sharePermissions}
+                      onChange={(e) => setSharePermissions(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="read">Read Only</option>
+                      <option value="write">Read & Write</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Share Project
+                  </button>
+                </form>
+              </div>
+
+              {/* Shared Projects */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Shared Projects</h3>
+                {sharedProjects.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No shared projects</p>
+                ) : (
+                  <div className="space-y-3">
+                    {sharedProjects.map((project, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                            <UserPlus className="h-4 w-4 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{project.sharedWith}</p>
+                            <p className="text-sm text-gray-600">Project ID: {project.projectId}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getPermissionColor(project.permissions)}`}>
+                            {getPermissionIcon(project.permissions)}
+                            {project.permissions}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
-
-            <div className="comments-list">
-              {comments.map((comment) => (
-                <div key={comment.id} className="comment-item">
-                  <div className="comment-header">
-                    <div className="comment-author">
-                      <div 
-                        className="author-avatar"
-                        style={{ backgroundColor: comment.userColor || '#007bff' }}
-                      >
-                        {comment.userName.charAt(0).toUpperCase()}
-                      </div>
-                      <span className="author-name">{comment.userName}</span>
-                    </div>
-                    <span className="comment-time">
-                      {new Date(comment.createdAt?.toDate()).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="comment-content">{comment.content}</div>
-                  <div className="comment-line">Line {comment.lineNumber}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Version History */}
-      <div className="collaboration-section">
-        <div className="section-header">
-          <h4>📚 Version History ({versions.length})</h4>
-          <div className="version-actions">
-            <button 
-              className="btn btn-sm btn-secondary"
-              onClick={() => setShowVersions(!showVersions)}
-            >
-              {showVersions ? 'Hide' : 'Show'}
-            </button>
-            <button 
-              className="btn btn-sm btn-primary"
-              onClick={handleSaveVersion}
-            >
-              Save Version
-            </button>
-          </div>
-        </div>
-
-        {showVersions && (
-          <div className="versions-container">
-            <div className="versions-list">
-              {versions.map((version) => (
-                <div key={version.id} className="version-item">
-                  <div className="version-header">
-                    <span className="version-number">{version.versionNumber}</span>
-                    <span className="version-time">
-                      {new Date(version.createdAt?.toDate()).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="version-description">{version.description}</div>
-                  <div className="version-author">
-                    by {version.userName}
-                  </div>
-                  <div className="version-actions">
-                    <button 
-                      className="btn btn-sm btn-outline"
-                      onClick={() => handleRestoreVersion(version.id)}
-                    >
-                      Restore
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Collaboration Stats */}
-      <div className="collaboration-section">
-        <h4>📊 Collaboration Stats</h4>
-        <div className="stats-grid">
-          <div className="stat-item">
-            <span className="stat-label">Online Users:</span>
-            <span className="stat-value">{onlineUsers.length}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Comments:</span>
-            <span className="stat-value">{comments.length}</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">Versions:</span>
-            <span className="stat-value">{versions.length}</span>
-          </div>
+          )}
         </div>
       </div>
-
-      <style jsx>{`
-        .collaboration-panel {
-          padding: 20px;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          background: white;
-          margin: 20px 0;
-          max-height: 600px;
-          overflow-y: auto;
-        }
-
-        .collaboration-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-          padding-bottom: 10px;
-          border-bottom: 1px solid #eee;
-        }
-
-        .collaboration-status {
-          font-size: 14px;
-        }
-
-        .status-online {
-          color: #28a745;
-        }
-
-        .status-offline {
-          color: #dc3545;
-        }
-
-        .collaboration-section {
-          margin-bottom: 20px;
-          padding-bottom: 15px;
-          border-bottom: 1px solid #f0f0f0;
-        }
-
-        .collaboration-section:last-child {
-          border-bottom: none;
-        }
-
-        .section-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 10px;
-        }
-
-        .users-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-
-        .user-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 5px 10px;
-          background: #f8f9fa;
-          border-radius: 20px;
-          font-size: 14px;
-        }
-
-        .user-avatar {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 12px;
-        }
-
-        .comments-container {
-          margin-top: 10px;
-        }
-
-        .add-comment {
-          margin-bottom: 15px;
-          padding: 15px;
-          background: #f8f9fa;
-          border-radius: 8px;
-        }
-
-        .add-comment textarea {
-          width: 100%;
-          padding: 10px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          resize: vertical;
-          font-family: inherit;
-        }
-
-        .comment-actions {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 10px;
-        }
-
-        .line-info {
-          font-size: 12px;
-          color: #666;
-        }
-
-        .comments-list {
-          max-height: 200px;
-          overflow-y: auto;
-        }
-
-        .comment-item {
-          padding: 10px;
-          border: 1px solid #eee;
-          border-radius: 8px;
-          margin-bottom: 10px;
-        }
-
-        .comment-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 5px;
-        }
-
-        .comment-author {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .author-avatar {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 10px;
-        }
-
-        .comment-time {
-          font-size: 12px;
-          color: #666;
-        }
-
-        .comment-content {
-          margin: 5px 0;
-        }
-
-        .comment-line {
-          font-size: 12px;
-          color: #007bff;
-          font-weight: bold;
-        }
-
-        .versions-container {
-          margin-top: 10px;
-        }
-
-        .versions-list {
-          max-height: 200px;
-          overflow-y: auto;
-        }
-
-        .version-item {
-          padding: 10px;
-          border: 1px solid #eee;
-          border-radius: 8px;
-          margin-bottom: 10px;
-        }
-
-        .version-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 5px;
-        }
-
-        .version-number {
-          font-weight: bold;
-          color: #007bff;
-        }
-
-        .version-time {
-          font-size: 12px;
-          color: #666;
-        }
-
-        .version-description {
-          margin: 5px 0;
-          color: #333;
-        }
-
-        .version-author {
-          font-size: 12px;
-          color: #666;
-          margin-bottom: 10px;
-        }
-
-        .version-actions {
-          display: flex;
-          gap: 10px;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-          gap: 15px;
-        }
-
-        .stat-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 10px;
-          background: #f8f9fa;
-          border-radius: 8px;
-        }
-
-        .stat-label {
-          font-size: 12px;
-          color: #666;
-          margin-bottom: 5px;
-        }
-
-        .stat-value {
-          font-size: 18px;
-          font-weight: bold;
-          color: #333;
-        }
-
-        .btn {
-          padding: 6px 12px;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 12px;
-          font-weight: 500;
-        }
-
-        .btn-sm {
-          padding: 4px 8px;
-          font-size: 11px;
-        }
-
-        .btn-primary {
-          background: #007bff;
-          color: white;
-        }
-
-        .btn-secondary {
-          background: #6c757d;
-          color: white;
-        }
-
-        .btn-outline {
-          background: transparent;
-          color: #007bff;
-          border: 1px solid #007bff;
-        }
-
-        .btn:hover {
-          opacity: 0.8;
-        }
-
-        .btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      `}</style>
     </div>
   )
 }

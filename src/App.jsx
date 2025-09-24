@@ -22,6 +22,7 @@ import Blog from './pages/Blog'
 import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
+import Education from './pages/Education'
 
 // Component to conditionally render footer
 function ConditionalFooter() {
@@ -78,6 +79,7 @@ function App() {
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/terms" element={<Terms />} />
+                  <Route path="/education" element={<Education />} />
                 </Routes>
               </ConditionalMain>
               <ConditionalFooter />

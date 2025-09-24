@@ -2,6 +2,7 @@
 // No API keys required - everything runs locally
 
 import axios from 'axios'
+import githubTemplateService from './githubTemplateService.js'
 
 // Local AI Models Configuration
 const LOCAL_AI_MODELS = {
@@ -206,39 +207,620 @@ class LocalAIService {
     return TEMPLATE_CATEGORIES[category]?.templates || []
   }
 
-  // Get all templates
-  getAllTemplates() {
-    const allTemplates = []
+  // Get all templates (local + GitHub)
+  async getAllTemplates() {
+    const localTemplates = []
     Object.values(TEMPLATE_CATEGORIES).forEach(category => {
-      allTemplates.push(...category.templates)
+      localTemplates.push(...category.templates)
     })
-    return allTemplates
+    
+    // Get GitHub templates
+    const githubTemplates = await githubTemplateService.getTrendingTemplates()
+    
+    // Transform GitHub repositories to template format
+    const transformedGitHubTemplates = githubTemplates.map(repo => 
+      githubTemplateService.transformRepositoryToTemplate(repo)
+    )
+    
+    // Combine local and GitHub templates
+    return [...localTemplates, ...transformedGitHubTemplates]
   }
 
-  // Search templates
-  searchTemplates(query) {
-    const allTemplates = this.getAllTemplates()
+  // Search templates (local + GitHub)
+  async searchTemplates(query) {
+    const localTemplates = []
+    Object.values(TEMPLATE_CATEGORIES).forEach(category => {
+      localTemplates.push(...category.templates)
+    })
+    
+    // Search GitHub templates
+    const githubResults = await githubTemplateService.searchTemplates(query)
+    
+    // Transform GitHub results to template format
+    const transformedGitHubResults = githubResults.map(repo => 
+      githubTemplateService.transformRepositoryToTemplate(repo)
+    )
+    
+    // Combine results
+    const allTemplates = [...localTemplates, ...transformedGitHubResults]
+    
     return allTemplates.filter(template => 
       template.name.toLowerCase().includes(query.toLowerCase()) ||
-      template.description.toLowerCase().includes(query.toLowerCase())
+      (template.description || '').toLowerCase().includes(query.toLowerCase())
     )
   }
 
-  // Get popular templates
-  getPopularTemplates() {
-    return this.getAllTemplates().slice(0, 5)
+  // Get popular templates (local + GitHub)
+  async getPopularTemplates() {
+    const localTemplates = []
+    Object.values(TEMPLATE_CATEGORIES).forEach(category => {
+      localTemplates.push(...category.templates)
+    })
+    
+    // Get popular GitHub templates
+    const githubPopular = await githubTemplateService.getPopularTemplates(5)
+    
+    // Transform GitHub results to template format
+    const transformedGitHubPopular = githubPopular.map(repo => 
+      githubTemplateService.transformRepositoryToTemplate(repo)
+    )
+    
+    // Combine and sort by popularity
+    const allTemplates = [...localTemplates, ...transformedGitHubPopular]
+    return allTemplates
+      .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+      .slice(0, 10)
   }
 
   // Generate template by ID
-  generateTemplateById(templateId, customizations = {}) {
-    const allTemplates = this.getAllTemplates()
-    const template = allTemplates.find(t => t.id === templateId)
+  async generateTemplateById(templateId, customizations = {}) {
+    // Check if it's a GitHub template
+    if (templateId.startsWith('github_')) {
+      return await this.generateGitHubTemplate(templateId, customizations)
+    }
+    
+    // Handle local templates
+    const localTemplates = []
+    Object.values(TEMPLATE_CATEGORIES).forEach(category => {
+      localTemplates.push(...category.templates)
+    })
+    
+    const template = localTemplates.find(t => t.id === templateId)
     
     if (!template) {
       throw new Error(`Template ${templateId} not found`)
     }
 
     return this.createTemplateFiles(template, customizations)
+  }
+
+  // Generate GitHub template
+  async generateGitHubTemplate(templateId, customizations = {}) {
+    try {
+      console.log(`🚀 Generating GitHub template: ${templateId}`)
+      
+      const template = await githubTemplateService.getTemplateById(templateId)
+      
+      if (!template) {
+        throw new Error(`GitHub template ${templateId} not found`)
+      }
+
+      // Create template files from GitHub repository
+      const files = await this.createGitHubTemplateFiles(template, customizations)
+      
+      console.log(`✅ Generated ${Object.keys(files).length} files from GitHub template`)
+      return files
+      
+    } catch (error) {
+      console.error(`❌ Failed to generate GitHub template ${templateId}:`, error)
+      throw error
+    }
+  }
+
+  // Create files from GitHub template
+  async createGitHubTemplateFiles(template, customizations = {}) {
+    const files = {}
+    
+    try {
+      // For GitHub templates, we'll create a basic structure
+      // In a full implementation, you would clone the repository and extract files
+      
+      const { githubData } = template
+      
+      // Create basic project files
+      files['README.md'] = `# ${template.name}
+
+${template.description}
+
+## GitHub Repository
+- **Source**: [${githubData.fullName}](${githubData.htmlUrl})
+- **Stars**: ${githubData.stargazersCount}
+- **Language**: ${githubData.language || 'JavaScript'}
+
+## Getting Started
+
+This template is based on the GitHub repository: ${githubData.fullName}
+
+### Installation
+\`\`\`bash
+git clone ${githubData.cloneUrl}
+cd ${githubData.fullName}
+npm install
+\`\`\`
+
+### Development
+\`\`\`bash
+npm start
+\`\`\`
+
+## Template Information
+- **Type**: ${template.templateType}
+- **Category**: ${template.category}
+- **Tags**: ${template.tags.join(', ')}
+- **Files**: ${template.fileCount}
+
+## Customization
+You can customize this template by modifying the files or using the AI prompt to generate additional features.
+`
+
+      // Create package.json based on template type
+      files['package.json'] = this.createPackageJson(template, customizations)
+      
+      // Create main entry file based on template type
+      files[this.getMainFileName(template)] = this.createMainFile(template, customizations)
+      
+      // Create basic HTML file if it's a web template
+      if (template.templateType === 'react' || template.templateType === 'vue' || template.templateType === 'web') {
+        files['index.html'] = this.createIndexHtml(template, customizations)
+      }
+      
+      // Add customizations
+      Object.entries(customizations).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          files[key] = value
+        }
+      })
+      
+      return files
+      
+    } catch (error) {
+      console.error('Failed to create GitHub template files:', error)
+      throw error
+    }
+  }
+
+  // Create package.json for GitHub template
+  createPackageJson(template, customizations = {}) {
+    const basePackage = {
+      name: template.name.toLowerCase().replace(/\s+/g, '-'),
+      version: '1.0.0',
+      description: template.description,
+      main: this.getMainFileName(template),
+      scripts: {
+        start: 'npm run dev',
+        dev: this.getDevScript(template),
+        build: this.getBuildScript(template),
+        test: 'echo "No tests specified" && exit 0'
+      },
+      keywords: template.tags,
+      author: customizations.author || 'DreamBuild User',
+      license: 'MIT',
+      repository: {
+        type: 'git',
+        url: template.githubData.cloneUrl
+      }
+    }
+
+    // Add dependencies based on template type
+    basePackage.dependencies = this.getTemplateDependencies(template)
+    basePackage.devDependencies = this.getTemplateDevDependencies(template)
+
+    return JSON.stringify(basePackage, null, 2)
+  }
+
+  // Get main file name based on template type
+  getMainFileName(template) {
+    const mainFiles = {
+      'react': 'src/App.jsx',
+      'vue': 'src/main.js',
+      'angular': 'src/main.ts',
+      'nodejs': 'index.js',
+      'python': 'main.py',
+      'mobile': 'App.js',
+      'web': 'index.js'
+    }
+    
+    return mainFiles[template.templateType] || 'index.js'
+  }
+
+  // Get dev script based on template type
+  getDevScript(template) {
+    const devScripts = {
+      'react': 'react-scripts start',
+      'vue': 'vue-cli-service serve',
+      'angular': 'ng serve',
+      'nodejs': 'nodemon index.js',
+      'python': 'python main.py',
+      'mobile': 'expo start',
+      'web': 'live-server'
+    }
+    
+    return devScripts[template.templateType] || 'node index.js'
+  }
+
+  // Get build script based on template type
+  getBuildScript(template) {
+    const buildScripts = {
+      'react': 'react-scripts build',
+      'vue': 'vue-cli-service build',
+      'angular': 'ng build',
+      'nodejs': 'echo "No build step needed"',
+      'python': 'echo "No build step needed"',
+      'mobile': 'expo build',
+      'web': 'echo "No build step needed"'
+    }
+    
+    return buildScripts[template.templateType] || 'echo "No build step needed"'
+  }
+
+  // Get template dependencies
+  getTemplateDependencies(template) {
+    const dependencies = {
+      'react': {
+        'react': '^18.0.0',
+        'react-dom': '^18.0.0'
+      },
+      'vue': {
+        'vue': '^3.0.0'
+      },
+      'angular': {
+        '@angular/core': '^15.0.0',
+        '@angular/common': '^15.0.0'
+      },
+      'svelte': {
+        'svelte': '^3.0.0'
+      },
+      'nodejs': {
+        'express': '^4.18.0'
+      },
+      'python': {},
+      'php': {},
+      'go': {},
+      'rust': {},
+      'java': {},
+      'mobile': {
+        'react-native': '^0.70.0',
+        'expo': '~47.0.0'
+      },
+      'api': {
+        'express': '^4.18.0'
+      },
+      'dashboard': {
+        'react': '^18.0.0',
+        'react-dom': '^18.0.0'
+      },
+      'ecommerce': {
+        'react': '^18.0.0',
+        'react-dom': '^18.0.0'
+      },
+      'blog': {
+        'next': '^13.0.0',
+        'react': '^18.0.0'
+      },
+      'portfolio': {
+        'react': '^18.0.0',
+        'react-dom': '^18.0.0'
+      },
+      'landing': {
+        'react': '^18.0.0',
+        'react-dom': '^18.0.0'
+      },
+      'web': {}
+    }
+    
+    return dependencies[template.templateType] || {}
+  }
+
+  // Get template dev dependencies
+  getTemplateDevDependencies(template) {
+    const devDependencies = {
+      'react': {
+        'react-scripts': '5.0.1'
+      },
+      'vue': {
+        '@vue/cli-service': '^5.0.0'
+      },
+      'angular': {
+        '@angular/cli': '^15.0.0'
+      },
+      'svelte': {
+        'vite': '^4.0.0'
+      },
+      'nodejs': {
+        'nodemon': '^2.0.0'
+      },
+      'python': {},
+      'php': {},
+      'go': {},
+      'rust': {},
+      'java': {},
+      'mobile': {},
+      'api': {
+        'nodemon': '^2.0.0'
+      },
+      'dashboard': {
+        'react-scripts': '5.0.1'
+      },
+      'ecommerce': {
+        'react-scripts': '5.0.1'
+      },
+      'blog': {
+        'next': '^13.0.0'
+      },
+      'portfolio': {
+        'react-scripts': '5.0.1'
+      },
+      'landing': {
+        'react-scripts': '5.0.1'
+      },
+      'web': {
+        'live-server': '^1.2.0'
+      }
+    }
+    
+    return devDependencies[template.templateType] || {}
+  }
+
+  // Create main file content
+  createMainFile(template, customizations = {}) {
+    const mainFiles = {
+      'react': `import React from 'react';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>${template.name}</h1>
+        <p>${template.description}</p>
+        <p>
+          Template based on: <a href="${template.githubData.htmlUrl}">${template.githubData.fullName}</a>
+        </p>
+      </header>
+    </div>
+  );
+}
+
+export default App;`,
+      'vue': `import { createApp } from 'vue';
+import App from './App.vue';
+
+createApp(App).mount('#app');`,
+      'angular': `import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  template: \`
+    <div class="app">
+      <h1>${template.name}</h1>
+      <p>${template.description}</p>
+      <p>Template based on: <a href="${template.githubData.htmlUrl}">${template.githubData.fullName}</a></p>
+    </div>
+  \`,
+  styles: []
+})
+export class AppComponent {
+  title = '${template.name}';
+}`,
+      'svelte': `<script>
+  export let name = '${template.name}';
+</script>
+
+<main>
+  <h1>${template.name}</h1>
+  <p>${template.description}</p>
+  <p>Template based on: <a href="${template.githubData.htmlUrl}">${template.githubData.fullName}</a></p>
+</main>`,
+      'nodejs': `const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+  res.send(\`
+    <h1>${template.name}</h1>
+    <p>${template.description}</p>
+    <p>Template based on: <a href="${template.githubData.htmlUrl}">${template.githubData.fullName}</a></p>
+  \`);
+});
+
+app.listen(PORT, () => {
+  console.log(\`Server running on port \${PORT}\`);
+});`,
+      'python': `from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('index.html', 
+                         title='${template.name}',
+                         description='${template.description}',
+                         github_url='${template.githubData.htmlUrl}')
+
+if __name__ == '__main__':
+    app.run(debug=True)`,
+      'php': `<?php
+echo "<h1>${template.name}</h1>";
+echo "<p>${template.description}</p>";
+echo "<p>Template based on: <a href='${template.githubData.htmlUrl}'>${template.githubData.fullName}</a></p>";
+?>`,
+      'go': `package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "<h1>%s</h1><p>%s</p><p>Template based on: <a href='%s'>%s</a></p>", 
+                "${template.name}", "${template.description}", "${template.githubData.htmlUrl}", "${template.githubData.fullName}")
+}
+
+func main() {
+    http.HandleFunc("/", handler)
+    http.ListenAndServe(":8080", nil)
+}`,
+      'rust': `use std::io;
+
+fn main() {
+    println!("Hello from {}!", "${template.name}");
+    println!("{}", "${template.description}");
+    println!("Template based on: {}", "${template.githubData.fullName}");
+}`,
+      'java': `public class Main {
+    public static void main(String[] args) {
+        System.out.println("${template.name}");
+        System.out.println("${template.description}");
+        System.out.println("Template based on: ${template.githubData.fullName}");
+    }
+}`,
+      'api': `const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
+app.get('/api', (req, res) => {
+  res.json({
+    name: '${template.name}',
+    description: '${template.description}',
+    github: '${template.githubData.fullName}'
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(\`API server running on port \${PORT}\`);
+});`,
+      'dashboard': `import React from 'react';
+import './Dashboard.css';
+
+function Dashboard() {
+  return (
+    <div className="dashboard">
+      <header className="dashboard-header">
+        <h1>${template.name}</h1>
+        <p>${template.description}</p>
+      </header>
+      <main className="dashboard-content">
+        <div className="stats-grid">
+          <div className="stat-card">Users</div>
+          <div className="stat-card">Revenue</div>
+          <div className="stat-card">Orders</div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default Dashboard;`,
+      'mobile': `import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>${template.name}</Text>
+      <Text style={styles.description}>${template.description}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  description: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+});`,
+      'web': `// ${template.name}
+// ${template.description}
+
+console.log('Hello from ${template.name}!');
+
+// Template based on: ${template.githubData.fullName}
+// Repository: ${template.githubData.htmlUrl}`
+    }
+    
+    return mainFiles[template.templateType] || mainFiles['web']
+  }
+
+  // Create index.html
+  createIndexHtml(template, customizations = {}) {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${template.name}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        a {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .github-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>${template.name}</h1>
+        <p>${template.description}</p>
+        
+        <div class="github-info">
+            <h3>GitHub Repository</h3>
+            <p><strong>Source:</strong> <a href="${template.githubData.htmlUrl}">${template.githubData.fullName}</a></p>
+            <p><strong>Stars:</strong> ${template.githubData.stargazersCount}</p>
+            <p><strong>Language:</strong> ${template.githubData.language || 'JavaScript'}</p>
+            <p><strong>Template Type:</strong> ${template.templateType}</p>
+        </div>
+        
+        <p>🚀 Generated with DreamBuild's GitHub Template Integration</p>
+    </div>
+</body>
+</html>`
   }
 
   // Create template files

@@ -248,47 +248,13 @@ const CourseViewer = ({ courseId, courseData, onComplete, onBack }) => {
             <div className="p-6">
               {currentLessonData.type === 'video' && (
                 <div className="space-y-4">
-                  <div className="bg-gray-900 rounded-lg overflow-hidden">
-                    {isPlaying ? (
-                      <div className="relative">
-                        <div className="aspect-video bg-gray-800 flex items-center justify-center">
-                          <div className="text-center text-white">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                            <h3 className="text-lg font-semibold mb-2">Video Loading...</h3>
-                            <p className="text-gray-300">This would be a real video lesson</p>
-                          </div>
-                        </div>
-                        <div className="absolute bottom-4 left-4 right-4">
-                          <div className="bg-black bg-opacity-50 rounded-lg p-3">
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => setIsPlaying(false)}
-                                className="bg-white text-black px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors"
-                              >
-                                Pause
-                              </button>
-                              <div className="flex-1 bg-gray-600 rounded-full h-2">
-                                <div className="bg-white h-2 rounded-full" style={{ width: '30%' }}></div>
-                              </div>
-                              <span className="text-white text-sm">2:30 / 8:45</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="aspect-video bg-gray-800 flex items-center justify-center">
-                        <div className="text-center text-white">
-                          <Play className="h-16 w-16 mx-auto mb-4 hover:scale-110 transition-transform cursor-pointer" 
-                                onClick={() => setIsPlaying(true)} />
-                          <h3 className="text-xl font-semibold mb-2">Video Lesson</h3>
-                          <p className="text-gray-300 mb-4">Click to start the video lesson</p>
-                          <div className="text-sm text-gray-400">
-                            Duration: {currentLessonData.duration}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <VideoPlayer
+                    lesson={{
+                      ...currentLessonData,
+                      courseId: courseId
+                    }}
+                    onComplete={() => handleLessonComplete(currentLessonData.id)}
+                  />
                   
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <h4 className="font-semibold text-gray-900 mb-2">Lesson Content</h4>

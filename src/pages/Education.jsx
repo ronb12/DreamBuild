@@ -334,55 +334,88 @@ const Education = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100">
+      {/* Enhanced Header */}
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-black opacity-10"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-full h-full">
+            <div className="absolute top-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full"></div>
+            <div className="absolute top-20 right-20 w-16 h-16 bg-white opacity-5 rounded-full"></div>
+            <div className="absolute bottom-10 left-1/4 w-12 h-12 bg-white opacity-10 rounded-full"></div>
+            <div className="absolute bottom-20 right-1/3 w-8 h-8 bg-white opacity-5 rounded-full"></div>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">Learn to Code</h1>
-            <p className="text-xl text-blue-100 mb-8">
-              Master programming skills with our comprehensive educational platform
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full mb-6">
+              <BookOpen className="h-10 w-10 text-white" />
+            </div>
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+              Master Programming Skills
+            </h1>
+            <p className="text-xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+              Join thousands of students learning to code with our comprehensive educational platform. 
+              From beginner to advanced, we have courses for every skill level.
             </p>
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
               <button 
                 onClick={handleStartLearning}
-                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
+                <Play className="inline-block mr-2 h-5 w-5" />
                 Start Learning
               </button>
               <button 
                 onClick={handleBrowseCourses}
-                className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
+                className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
+                <BookOpen className="inline-block mr-2 h-5 w-5" />
                 Browse Courses
               </button>
+            </div>
+            <div className="flex justify-center items-center gap-8 text-sm text-blue-100">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                <span>50+ Courses</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Star className="h-5 w-5" />
+                <span>4.8/5 Rating</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Trophy className="h-5 w-5" />
+                <span>Certificates</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Main Navigation Tabs */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {[
-            { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-            { id: 'tutorials', label: 'Tutorials', icon: BookOpen },
-            { id: 'challenges', label: 'Challenges', icon: Code },
-            { id: 'progress', label: 'Progress', icon: TrendingUp }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === tab.id
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              <tab.icon className="h-4 w-4" />
-              {tab.label}
-            </button>
-          ))}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Enhanced Navigation Tabs */}
+        <div className="bg-white rounded-2xl shadow-lg p-2 mb-8">
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: BarChart3, color: 'blue' },
+              { id: 'tutorials', label: 'Tutorials', icon: BookOpen, color: 'green' },
+              { id: 'challenges', label: 'Challenges', icon: Code, color: 'purple' },
+              { id: 'progress', label: 'Progress', icon: TrendingUp, color: 'orange' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-3 px-6 py-4 rounded-xl font-semibold transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? `bg-gradient-to-r from-${tab.color}-500 to-${tab.color}-600 text-white shadow-lg transform scale-105`
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <tab.icon className="h-5 w-5" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Dashboard Tab */}

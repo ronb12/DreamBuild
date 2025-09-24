@@ -141,7 +141,7 @@ export function AuthProvider({ children }) {
             
             if (signInMethods && signInMethods.length > 0) {
               if (signInMethods.includes('google.com')) {
-                throw new Error(`An account with ${email} already exists using Google. Please sign in with Google instead, or use a different email for GitHub.`)
+                throw new Error(`An account with ${email} already exists using Google. Please sign in with Google instead, then you can link your GitHub account.`)
               } else if (signInMethods.includes('password')) {
                 throw new Error(`An account with ${email} already exists using email/password. Please sign in with your existing method instead.`)
               } else {

@@ -110,8 +110,8 @@ const CourseSelection = ({ onSelectCourse, courseProgress }) => {
     <div className="max-w-7xl mx-auto p-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Learning Path</h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">Choose Your Learning Path</h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto text-center">
           Explore our comprehensive collection of 50+ courses across multiple categories. 
           Each course includes structured lessons, interactive exercises, and hands-on projects.
         </p>

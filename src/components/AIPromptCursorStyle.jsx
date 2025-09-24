@@ -135,14 +135,34 @@ export default function AIPromptCursorStyle() {
         throw new Error('Invalid files response from AI service')
       }
       
-      // Update AI message with results
+      // Extract enhanced response data (like Lovable)
+      const appName = files.appName || 'Your App'
+      const generatedFiles = files.files || files
+      const fileCount = Object.keys(generatedFiles).length
+      const preview = files.preview || {}
+      const dependencies = files.dependencies || []
+      const buildInstructions = files.buildInstructions || {}
+      
+      // Enhanced success message with preview info
+      const successMessage = `🎉 Created "${appName}" with ${fileCount} files successfully!
+      
+📋 Features: ${preview.features?.join(', ') || 'Interactive Elements, Responsive Design'}
+🔧 Tech Stack: ${preview.techStack?.join(', ') || 'HTML5, CSS3, JavaScript'}
+📦 Dependencies: ${dependencies.length > 0 ? dependencies.join(', ') : 'None required'}
+🚀 Ready to deploy!`
+      
+      // Update AI message with enhanced results
       setMessages(prev => prev.map(msg => 
         msg.id === aiMessage.id 
           ? { 
               ...msg, 
-              content: `Generated ${Object.keys(files).length} files successfully!`,
+              content: successMessage,
               isLoading: false,
-              files: files,
+              files: generatedFiles,
+              appName: appName,
+              preview: preview,
+              dependencies: dependencies,
+              buildInstructions: buildInstructions,
               timestamp: new Date()
             }
           : msg
@@ -150,7 +170,7 @@ export default function AIPromptCursorStyle() {
 
       // Add files to project
       let filesAdded = 0
-      Object.entries(files).forEach(([filename, content]) => {
+      Object.entries(generatedFiles).forEach(([filename, content]) => {
         if (filename && content !== undefined) {
           console.log(`📄 Adding file: ${filename} (${typeof content})`)
           updateFile(filename, content)
@@ -160,7 +180,7 @@ export default function AIPromptCursorStyle() {
       console.log(`✅ Added ${filesAdded} files to project`)
 
       // Set first file as active
-      const firstFile = Object.keys(files)[0]
+      const firstFile = Object.keys(generatedFiles)[0]
       if (firstFile) {
         switchFile(firstFile)
         console.log(`🎯 Set active file: ${firstFile}`)

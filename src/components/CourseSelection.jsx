@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Play, 
   Clock, 
@@ -8,78 +8,79 @@ import {
   Target,
   Award,
   ChevronRight,
-  CheckCircle
+  CheckCircle,
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight as ChevronRightIcon
 } from 'lucide-react';
+import { courseModules } from '../data/courseContent50';
 
 const CourseSelection = ({ onSelectCourse, courseProgress }) => {
-  const courses = [
-    {
-      id: 'html-css-basics',
-      title: 'HTML & CSS Fundamentals',
-      description: 'Master the building blocks of web development with HTML structure and CSS styling',
-      duration: '4 hours',
-      difficulty: 'Beginner',
-      rating: 4.8,
-      students: 12500,
-      instructor: 'Sarah Johnson',
-      modules: 4,
-      lessons: 12,
-      color: 'blue',
-      icon: '🌐',
-      topics: ['HTML Structure', 'CSS Styling', 'Responsive Design', 'Layout'],
-      prerequisites: 'No prior experience required',
-      whatYoullLearn: [
-        'Create semantic HTML documents',
-        'Style pages with CSS',
-        'Build responsive layouts',
-        'Use modern CSS features'
-      ]
-    },
-    {
-      id: 'javascript-essentials',
-      title: 'JavaScript Essentials',
-      description: 'Learn JavaScript from basics to advanced concepts including DOM manipulation and async programming',
-      duration: '6 hours',
-      difficulty: 'Intermediate',
-      rating: 4.9,
-      students: 18900,
-      instructor: 'Mike Chen',
-      modules: 3,
-      lessons: 9,
-      color: 'yellow',
-      icon: '⚡',
-      topics: ['Variables & Functions', 'DOM Manipulation', 'Async JavaScript', 'ES6+ Features'],
-      prerequisites: 'Basic HTML/CSS knowledge',
-      whatYoullLearn: [
-        'Master JavaScript fundamentals',
-        'Manipulate the DOM',
-        'Handle asynchronous operations',
-        'Use modern JavaScript features'
-      ]
-    },
-    {
-      id: 'react-development',
-      title: 'React Development',
-      description: 'Build modern web applications with React, including hooks, state management, and component patterns',
-      duration: '8 hours',
-      difficulty: 'Intermediate',
-      rating: 4.7,
-      students: 15200,
-      instructor: 'Alex Rodriguez',
-      modules: 3,
-      lessons: 9,
-      color: 'purple',
-      icon: '⚛️',
-      topics: ['Components & JSX', 'State Management', 'Hooks', 'Performance'],
-      prerequisites: 'JavaScript knowledge required',
-      whatYoullLearn: [
-        'Build React components',
-        'Manage component state',
-        'Use React hooks effectively',
-        'Optimize React performance'
-      ]
-    }
-  ];
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 9;
+
+  // Get all courses from the imported data
+  const allCourses = Object.values(courseModules).map(course => ({
+    ...course,
+    modules: 4, // Default modules count
+    lessons: 12, // Default lessons count
+    color: getRandomColor(),
+    icon: getCategoryIcon(course.category),
+    topics: course.topics || [],
+    prerequisites: course.prerequisites?.join(', ') || 'None',
+    whatYoullLearn: course.outcomes || []
+  }));
+
+  // Get unique categories
+  const categories = ['All', ...new Set(allCourses.map(course => course.category))];
+
+  // Filter courses based on search and filters
+  const filteredCourses = useMemo(() => {
+    return allCourses.filter(course => {
+      const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           course.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesCategory = selectedCategory === 'All' || course.category === selectedCategory;
+      const matchesDifficulty = selectedDifficulty === 'All' || course.difficulty === selectedDifficulty;
+      
+      return matchesSearch && matchesCategory && matchesDifficulty;
+    });
+  }, [allCourses, searchTerm, selectedCategory, selectedDifficulty]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+  const startIndex = (currentPage - 1) * coursesPerPage;
+  const endIndex = startIndex + coursesPerPage;
+  const currentCourses = filteredCourses.slice(startIndex, endIndex);
+
+  // Helper functions
+  function getRandomColor() {
+    const colors = ['blue', 'yellow', 'purple', 'green', 'red', 'indigo', 'pink', 'orange'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  function getCategoryIcon(category) {
+    const icons = {
+      'Web Development': '🌐',
+      'Backend Development': '⚙️',
+      'Mobile Development': '📱',
+      'Data Science': '📊',
+      'Database': '🗄️',
+      'DevOps': '🔧',
+      'Cloud Computing': '☁️',
+      'Cybersecurity': '🔒',
+      'Programming Languages': '💻',
+      'Game Development': '🎮',
+      'Blockchain': '⛓️',
+      'Artificial Intelligence': '🤖',
+      'System Administration': '🖥️'
+    };
+    return icons[category] || '📚';
+  }
 
   const getProgressPercentage = (courseId) => {
     const progress = courseProgress[courseId];
@@ -108,17 +109,78 @@ const CourseSelection = ({ onSelectCourse, courseProgress }) => {
   return (
     <div className="max-w-7xl mx-auto p-6">
       {/* Header */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Learning Path</h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Select a course that matches your skill level and interests. Each course includes structured lessons, 
-          interactive exercises, and hands-on projects.
+          Explore our comprehensive collection of 50+ courses across multiple categories. 
+          Each course includes structured lessons, interactive exercises, and hands-on projects.
         </p>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="mb-8 bg-white rounded-xl shadow-sm border p-6">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search courses, topics, or instructors..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Category Filter */}
+          <div className="lg:w-48">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Difficulty Filter */}
+          <div className="lg:w-48">
+            <select
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="All">All Levels</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-gray-600">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredCourses.length)} of {filteredCourses.length} courses
+          </p>
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              Clear search
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Course Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {courses.map((course) => {
+        {currentCourses.map((course) => {
           const progress = getProgressPercentage(course.id);
           const isStarted = progress > 0;
           
@@ -241,26 +303,85 @@ const CourseSelection = ({ onSelectCourse, courseProgress }) => {
         })}
       </div>
 
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-12 flex justify-center">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + 1;
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                      currentPage === page
+                        ? 'bg-blue-500 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                );
+              })}
+              {totalPages > 5 && (
+                <>
+                  <span className="px-2 text-gray-500">...</span>
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                      currentPage === totalPages
+                        ? 'bg-blue-500 text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {totalPages}
+                  </button>
+                </>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+              <ChevronRightIcon className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Additional Info */}
       <div className="mt-12 bg-gray-50 rounded-xl p-8">
         <div className="text-center">
           <h3 className="text-2xl font-bold text-gray-900 mb-4">Not sure where to start?</h3>
           <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            If you're new to web development, we recommend starting with HTML & CSS Fundamentals. 
-            If you have some experience, JavaScript Essentials is a great next step.
+            Browse our 50+ courses across 13 categories. If you're new to programming, start with beginner courses. 
+            If you have experience, explore intermediate and advanced topics.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm">
               <Award className="h-5 w-5 text-blue-500" />
-              <span className="text-sm font-medium">Self-paced learning</span>
+              <span className="text-sm font-medium">50+ Courses</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm">
               <Users className="h-5 w-5 text-green-500" />
-              <span className="text-sm font-medium">Community support</span>
+              <span className="text-sm font-medium">13 Categories</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-sm">
               <BookOpen className="h-5 w-5 text-purple-500" />
-              <span className="text-sm font-medium">Hands-on projects</span>
+              <span className="text-sm font-medium">Hands-on Projects</span>
             </div>
           </div>
         </div>

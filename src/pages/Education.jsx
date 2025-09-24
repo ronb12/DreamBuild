@@ -32,7 +32,7 @@ import CourseViewer from '../components/CourseViewer'
 import CourseSelection from '../components/CourseSelection'
 import tutorialService from '../services/tutorialService'
 import { codingTutorials, codingChallenges, learningPaths } from '../data/codingTutorials'
-import { courseModules, courseProgress } from '../data/courseContent'
+import { courseModules, courseProgress } from '../data/courseContent50'
 
 const Education = () => {
   const [activeTab, setActiveTab] = useState('dashboard')

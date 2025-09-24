@@ -335,173 +335,173 @@ const Education = () => {
         {activeTab === 'tutorials' && (
           <div className="space-y-6">
             {/* Learning Paths */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Learning Paths</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {learningPaths.map((path) => (
-              <div key={path.id} className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-10 h-10 bg-${path.color}-500 rounded-lg flex items-center justify-center`}>
-                    <Target className="h-5 w-5 text-white" />
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Learning Paths</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {learningPaths.map((path) => (
+                  <div key={path.id} className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={`w-10 h-10 bg-${path.color}-500 rounded-lg flex items-center justify-center`}>
+                        <Target className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-semibold text-gray-900">{path.title}</h3>
+                        <p className="text-sm text-gray-600">{path.duration} • {path.difficulty}</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-700 mb-4">{path.description}</p>
+                    <button className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                      Start Path
+                    </button>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900">{path.title}</h3>
-                    <p className="text-sm text-gray-600">{path.duration} • {path.difficulty}</p>
-                  </div>
-                </div>
-                <p className="text-gray-700 mb-4">{path.description}</p>
-                <button className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
-                  Start Path
-                </button>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Course Categories */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Course Categories</h2>
-          
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-4 mb-8">
-            {Object.entries(categories).map(([key, category]) => (
-              <button
-                key={key}
-                onClick={() => setActiveCategory(key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                  activeCategory === key
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <category.icon className="h-5 w-5" />
-                {category.title}
-              </button>
-            ))}
-          </div>
-
-          {/* Courses Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories[activeCategory]?.courses.map((course) => (
-              <div key={course.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold text-gray-900">{course.title}</h3>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600">{course.rating}</span>
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-600 mb-4">{course.description}</p>
-                  
-                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {course.duration}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      {course.students.toLocaleString()} students
-                    </div>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm text-gray-600 mb-1">
-                      <span>Progress</span>
-                      <span>{Math.round(getProgressPercentage(course.id))}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${getProgressPercentage(course.id)}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
+            {/* Course Categories */}
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Course Categories</h2>
+              
+              {/* Category Tabs */}
+              <div className="flex flex-wrap gap-4 mb-8">
+                {Object.entries(categories).map(([key, category]) => (
                   <button
-                    onClick={() => handleStartTutorial(course.id)}
-                    className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                    key={key}
+                    onClick={() => setActiveCategory(key)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                      activeCategory === key
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                    }`}
                   >
-                    <Play className="h-4 w-4" />
-                    {getProgressPercentage(course.id) > 0 ? 'Continue' : 'Start Course'}
+                    <category.icon className="h-5 w-5" />
+                    {category.title}
                   </button>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Resources */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Learning Resources</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {resources.map((resource, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-6 text-center">
-                <div className={`w-12 h-12 bg-${resource.color}-500 rounded-lg flex items-center justify-center mx-auto mb-4`}>
-                  <resource.icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{resource.title}</h3>
-                <p className="text-gray-600 mb-4">{resource.description}</p>
-                <button className="text-blue-500 hover:text-blue-600 font-medium flex items-center justify-center gap-1 mx-auto">
-                  <span>Explore</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
+              {/* Courses Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {categories[activeCategory]?.courses.map((course) => (
+                  <div key={course.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xl font-semibold text-gray-900">{course.title}</h3>
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                          <span className="text-sm text-gray-600">{course.rating}</span>
+                        </div>
+                      </div>
+                      
+                      <p className="text-gray-600 mb-4">{course.description}</p>
+                      
+                      <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {course.duration}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          {course.students.toLocaleString()} students
+                        </div>
+                      </div>
 
-        {/* Achievements */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Achievements</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {achievements.map((achievement, index) => (
-              <div key={index} className={`bg-white rounded-lg shadow-lg p-6 text-center ${
-                achievement.unlocked ? 'border-2 border-green-500' : 'opacity-60'
-              }`}>
-                <div className={`w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4 ${
-                  achievement.unlocked ? 'bg-green-500' : 'bg-gray-300'
-                }`}>
-                  <achievement.icon className="h-6 w-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{achievement.title}</h3>
-                <p className="text-gray-600 mb-4">{achievement.description}</p>
-                {achievement.unlocked && (
-                  <div className="flex items-center justify-center gap-1 text-green-600">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-sm font-medium">Unlocked</span>
+                      {/* Progress Bar */}
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm text-gray-600 mb-1">
+                          <span>Progress</span>
+                          <span>{Math.round(getProgressPercentage(course.id))}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${getProgressPercentage(course.id)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleStartTutorial(course.id)}
+                        className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Play className="h-4 w-4" />
+                        {getProgressPercentage(course.id) > 0 ? 'Continue' : 'Start Course'}
+                      </button>
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Stats */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold mb-2">50+</div>
-              <div className="text-blue-100">Courses Available</div>
+            {/* Resources */}
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Learning Resources</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {resources.map((resource, index) => (
+                  <div key={index} className="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div className={`w-12 h-12 bg-${resource.color}-500 rounded-lg flex items-center justify-center mx-auto mb-4`}>
+                      <resource.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{resource.title}</h3>
+                    <p className="text-gray-600 mb-4">{resource.description}</p>
+                    <button className="text-blue-500 hover:text-blue-600 font-medium flex items-center justify-center gap-1 mx-auto">
+                      <span>Explore</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">100K+</div>
-              <div className="text-blue-100">Students Learning</div>
+
+            {/* Achievements */}
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Achievements</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {achievements.map((achievement, index) => (
+                  <div key={index} className={`bg-white rounded-lg shadow-lg p-6 text-center ${
+                    achievement.unlocked ? 'border-2 border-green-500' : 'opacity-60'
+                  }`}>
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4 ${
+                      achievement.unlocked ? 'bg-green-500' : 'bg-gray-300'
+                    }`}>
+                      <achievement.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{achievement.title}</h3>
+                    <p className="text-gray-600 mb-4">{achievement.description}</p>
+                    {achievement.unlocked && (
+                      <div className="flex items-center justify-center gap-1 text-green-600">
+                        <CheckCircle className="h-4 w-4" />
+                        <span className="text-sm font-medium">Unlocked</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">500+</div>
-              <div className="text-blue-100">Hours of Content</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">4.8</div>
-              <div className="text-blue-100">Average Rating</div>
+
+            {/* Stats */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                <div>
+                  <div className="text-3xl font-bold mb-2">50+</div>
+                  <div className="text-blue-100">Courses Available</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold mb-2">100K+</div>
+                  <div className="text-blue-100">Students Learning</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold mb-2">500+</div>
+                  <div className="text-blue-100">Hours of Content</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold mb-2">4.8</div>
+                  <div className="text-blue-100">Average Rating</div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   )

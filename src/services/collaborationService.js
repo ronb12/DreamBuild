@@ -1,4 +1,4 @@
-import { db } from '../firebase'
+import firebaseService from './firebaseService'
 import { 
   collection, 
   doc, 
@@ -42,7 +42,7 @@ class CollaborationService {
 
   // Set up presence listener for online users
   async setupPresenceListener(projectId) {
-    const presenceRef = collection(db, 'projectPresence')
+    const presenceRef = collection(firebaseService.db, 'projectPresence')
     const q = query(
       presenceRef,
       where('projectId', '==', projectId),
@@ -73,7 +73,7 @@ class CollaborationService {
 
   // Set up cursors listener for real-time cursor tracking
   async setupCursorsListener(projectId) {
-    const cursorsRef = collection(db, 'cursors')
+    const cursorsRef = collection(firebaseService.db, 'cursors')
     const q = query(
       cursorsRef,
       where('projectId', '==', projectId),
@@ -108,7 +108,7 @@ class CollaborationService {
 
   // Set up comments listener for real-time comments
   async setupCommentsListener(projectId) {
-    const commentsRef = collection(db, 'comments')
+    const commentsRef = collection(firebaseService.db, 'comments')
     const q = query(
       commentsRef,
       where('projectId', '==', projectId),
@@ -142,7 +142,7 @@ class CollaborationService {
 
   // Set up file changes listener for real-time file updates
   async setupFileChangesListener(projectId) {
-    const changesRef = collection(db, 'fileChanges')
+    const changesRef = collection(firebaseService.db, 'fileChanges')
     const q = query(
       changesRef,
       where('projectId', '==', projectId),
@@ -175,7 +175,7 @@ class CollaborationService {
   async setUserPresence(projectId, isOnline) {
     if (!this.currentUser) return
 
-    const presenceRef = doc(db, 'projectPresence', `${this.currentUser.uid}_${projectId}`)
+    const presenceRef = doc(firebaseService.db, 'projectPresence', `${this.currentUser.uid}_${projectId}`)
     
     await setDoc(presenceRef, {
       userId: this.currentUser.uid,
@@ -193,7 +193,7 @@ class CollaborationService {
   async updateCursor(projectId, fileId, line, column, selection = null) {
     if (!this.currentUser) return
 
-    const cursorRef = doc(db, 'cursors', `${this.currentUser.uid}_${projectId}`)
+    const cursorRef = doc(firebaseService.db, 'cursors', `${this.currentUser.uid}_${projectId}`)
     
     await setDoc(cursorRef, {
       userId: this.currentUser.uid,
@@ -212,7 +212,7 @@ class CollaborationService {
   async addComment(projectId, fileId, lineNumber, content) {
     if (!this.currentUser) return
 
-    const commentsRef = collection(db, 'comments')
+    const commentsRef = collection(firebaseService.db, 'comments')
     const newComment = {
       userId: this.currentUser.uid,
       userName: this.currentUser.displayName || this.currentUser.email,
@@ -231,7 +231,7 @@ class CollaborationService {
 
   // Resolve a comment
   async resolveComment(commentId) {
-    const commentRef = doc(db, 'comments', commentId)
+    const commentRef = doc(firebaseService.db, 'comments', commentId)
     await updateDoc(commentRef, {
       resolved: true,
       resolvedAt: serverTimestamp()
@@ -242,7 +242,7 @@ class CollaborationService {
   async recordFileChange(projectId, fileId, changeType, content) {
     if (!this.currentUser) return
 
-    const changesRef = collection(db, 'fileChanges')
+    const changesRef = collection(firebaseService.db, 'fileChanges')
     const change = {
       userId: this.currentUser.uid,
       userName: this.currentUser.displayName || this.currentUser.email,
@@ -273,7 +273,7 @@ class CollaborationService {
 
   // Share project with another user
   async shareProject(projectId, userEmail, permissions = 'read') {
-    const shareRef = collection(db, 'projectShares')
+    const shareRef = collection(firebaseService.db, 'projectShares')
     const share = {
       projectId: projectId,
       ownerId: this.currentUser.uid,
@@ -289,7 +289,7 @@ class CollaborationService {
 
   // Accept project share
   async acceptProjectShare(shareId) {
-    const shareRef = doc(db, 'projectShares', shareId)
+    const shareRef = doc(firebaseService.db, 'projectShares', shareId)
     await updateDoc(shareRef, {
       accepted: true,
       acceptedAt: serverTimestamp()
@@ -298,7 +298,7 @@ class CollaborationService {
 
   // Get shared projects
   async getSharedProjects() {
-    const sharesRef = collection(db, 'projectShares')
+    const sharesRef = collection(firebaseService.db, 'projectShares')
     const q = query(
       sharesRef,
       where('sharedWith', '==', this.currentUser.email),

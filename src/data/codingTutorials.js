@@ -21,6 +21,68 @@ console.log(age);`,
     concepts: ['Variables', 'Data Types', 'Console Output']
   },
   {
+    id: 'html-css-basics-1',
+    title: 'HTML Structure and CSS Styling',
+    description: 'Learn the basics of HTML structure and CSS styling',
+    difficulty: 'Beginner',
+    duration: '20 minutes',
+    language: 'html',
+    instructions: 'Create an HTML page with a heading, paragraph, and button. Style them with CSS.',
+    initialCode: '<!DOCTYPE html>\n<html>\n<head>\n  <title>My Page</title>\n</head>\n<body>\n  <!-- Your HTML here\n</body>\n</html>',
+    expectedOutput: 'HTML page with styled elements',
+    hints: [
+      'Use <h1> for headings',
+      'Use <p> for paragraphs',
+      'Use <button> for buttons',
+      'Add CSS styles in <style> tag'
+    ],
+    solution: `<!DOCTYPE html>
+<html>
+<head>
+  <title>My Page</title>
+  <style>
+    h1 { color: blue; }
+    p { font-size: 16px; }
+    button { background: green; color: white; }
+  </style>
+</head>
+<body>
+  <h1>Welcome to My Page</h1>
+  <p>This is a paragraph.</p>
+  <button>Click Me</button>
+</body>
+</html>`,
+    concepts: ['HTML Structure', 'CSS Styling', 'Basic Elements']
+  },
+  {
+    id: 'react-basics-1',
+    title: 'React Components and JSX',
+    description: 'Learn how to create React components with JSX',
+    difficulty: 'Intermediate',
+    duration: '25 minutes',
+    language: 'javascript',
+    instructions: 'Create a React component that displays "Hello, World!" and render it.',
+    initialCode: '// Create your React component here\n\n',
+    expectedOutput: 'Hello, World!',
+    hints: [
+      'Use React.createElement or JSX',
+      'Create a function component',
+      'Return JSX from the component',
+      'Use ReactDOM.render to display it'
+    ],
+    solution: `function HelloWorld() {
+  return React.createElement('h1', null, 'Hello, World!');
+}
+
+// Or with JSX:
+// function HelloWorld() {
+//   return <h1>Hello, World!</h1>;
+// }
+
+ReactDOM.render(React.createElement(HelloWorld), document.getElementById('root'));`,
+    concepts: ['React Components', 'JSX', 'Rendering']
+  },
+  {
     id: 'javascript-basics-2',
     title: 'Functions in JavaScript',
     description: 'Learn how to create and use functions in JavaScript',
@@ -222,5 +284,39 @@ export const learningPaths = [
     ],
     tutorials: codingTutorials.filter(t => t.difficulty === 'Intermediate'),
     challenges: codingChallenges.filter(c => c.difficulty === 'Easy')
+  },
+  {
+    id: 'data-science',
+    title: 'Data Science Path',
+    description: 'Learn data analysis, machine learning, and visualization',
+    duration: '8 months',
+    difficulty: 'Intermediate to Advanced',
+    courses: [
+      'Python Fundamentals',
+      'Data Analysis with Pandas',
+      'Machine Learning Basics',
+      'Data Visualization',
+      'Statistical Analysis',
+      'Deep Learning'
+    ],
+    tutorials: codingTutorials.filter(t => t.language === 'python'),
+    challenges: codingChallenges.filter(c => c.difficulty === 'Medium')
+  },
+  {
+    id: 'backend-development',
+    title: 'Backend Development Path',
+    description: 'Master server-side development and APIs',
+    duration: '5 months',
+    difficulty: 'Intermediate',
+    courses: [
+      'Node.js & Express',
+      'Database Design',
+      'API Development',
+      'Authentication',
+      'Cloud Deployment',
+      'Microservices'
+    ],
+    tutorials: codingTutorials.filter(t => t.difficulty === 'Advanced'),
+    challenges: codingChallenges.filter(c => c.difficulty === 'Hard')
   }
 ];

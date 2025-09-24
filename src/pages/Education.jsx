@@ -517,7 +517,24 @@ const Education = () => {
                       </div>
                     </div>
                     <p className="text-gray-700 mb-4">{path.description}</p>
-                    <button className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                    <button 
+                      onClick={() => {
+                        // Start the learning path with the first tutorial
+                        const pathTutorials = codingTutorials.filter(t => 
+                          path.title.toLowerCase().includes('web') && t.difficulty === 'Beginner' ||
+                          path.title.toLowerCase().includes('mobile') && t.difficulty === 'Intermediate'
+                        )
+                        if (pathTutorials.length > 0) {
+                          setCurrentTutorial(pathTutorials[0])
+                          setActiveTab('tutorial')
+                        } else {
+                          // Fallback to first tutorial
+                          setCurrentTutorial(codingTutorials[0])
+                          setActiveTab('tutorial')
+                        }
+                      }}
+                      className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+                    >
                       Start Path
                     </button>
                   </div>

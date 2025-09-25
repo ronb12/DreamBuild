@@ -39,11 +39,15 @@ const AppGallery = () => {
   const loadApps = async () => {
     try {
       setIsLoading(true)
+      console.log('🔄 Loading apps from Firebase...')
       const publicApps = await firebaseAppService.getPublicApps(50)
+      console.log('✅ Loaded apps:', publicApps.length)
       setApps(publicApps)
     } catch (error) {
-      console.error('Error loading apps:', error)
+      console.error('❌ Error loading apps:', error)
       toast.error('Failed to load apps')
+      // Set empty array as fallback
+      setApps([])
     } finally {
       setIsLoading(false)
     }
@@ -51,10 +55,19 @@ const AppGallery = () => {
 
   const loadStats = async () => {
     try {
+      console.log('🔄 Loading app stats from Firebase...')
       const appStats = await firebaseAppService.getAppStats()
+      console.log('✅ Loaded stats:', appStats)
       setStats(appStats)
     } catch (error) {
-      console.error('Error loading stats:', error)
+      console.error('❌ Error loading stats:', error)
+      // Set default stats as fallback
+      setStats({
+        totalApps: 0,
+        publicApps: 0,
+        totalViews: 0,
+        totalLikes: 0
+      })
     }
   }
 
@@ -187,41 +200,75 @@ const AppGallery = () => {
       {/* Controls */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Search */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                placeholder="Search apps..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            {/* Enhanced Search */}
+            <div className="relative flex-1 max-w-lg min-w-[300px]">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <input
+                  type="text"
+                  placeholder="Search amazing apps..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              {searchTerm && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                  <div className="p-3 text-sm text-gray-600">
+                    <span className="font-medium">{filteredApps.length}</span> app{filteredApps.length !== 1 ? 's' : ''} found for "<span className="font-medium text-blue-600">{searchTerm}</span>"
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Sort & View Controls */}
+            {/* Enhanced Sort & View Controls */}
             <div className="flex items-center gap-4">
-              <select
-                value={sortBy}
-                onChange={handleSortChange}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="newest">Newest</option>
-                <option value="popular">Most Popular</option>
-                <option value="trending">Trending</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={handleSortChange}
+                  className="appearance-none px-4 py-3 pr-8 bg-white border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg cursor-pointer"
+                >
+                  <option value="newest">🆕 Newest</option>
+                  <option value="popular">🔥 Most Popular</option>
+                  <option value="trending">📈 Trending</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
                 <button
                   onClick={() => handleViewMode('grid')}
-                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'}`}
+                  className={`p-2 rounded-lg transition-all duration-200 ${
+                    viewMode === 'grid' 
+                      ? 'bg-blue-500 text-white shadow-md' 
+                      : 'text-gray-600 hover:bg-white hover:shadow-sm'
+                  }`}
                 >
                   <Grid className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleViewMode('list')}
-                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'}`}
+                  className={`p-2 rounded-lg transition-all duration-200 ${
+                    viewMode === 'list' 
+                      ? 'bg-blue-500 text-white shadow-md' 
+                      : 'text-gray-600 hover:bg-white hover:shadow-sm'
+                  }`}
                 >
                   <List className="h-4 w-4" />
                 </button>
@@ -235,9 +282,26 @@ const AppGallery = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {filteredApps.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No apps found</h3>
-            <p className="text-gray-600">Try adjusting your search or filters</p>
+            {apps.length === 0 ? (
+              <>
+                <div className="text-6xl mb-4">🚀</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No apps yet</h3>
+                <p className="text-gray-600 mb-4">Be the first to create an amazing app with DreamBuild AI!</p>
+                <a 
+                  href="/ai-builder" 
+                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <span>Create Your First App</span>
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </>
+            ) : (
+              <>
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No apps found</h3>
+                <p className="text-gray-600">Try adjusting your search or filters</p>
+              </>
+            )}
           </div>
         ) : (
           <div className={viewMode === 'grid' 

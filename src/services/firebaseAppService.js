@@ -1,30 +1,72 @@
 // Firebase App Service - Persistent app storage with Firestore
-import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, orderBy, where, deleteDoc, updateDoc, increment } from 'firebase/firestore'
+import { collection, doc, setDoc, getDoc, getDocs, query, orderBy, where, deleteDoc, updateDoc, increment } from 'firebase/firestore'
+import { db } from '../config/firebase'
 
 class FirebaseAppService {
   constructor() {
     this.collectionName = 'apps'
     this.baseUrl = 'https://dreambuild-2024-app.web.app/apps'
-    this.db = getFirestore()
+    this.db = db
   }
 
-  // Generate unique app ID
-  generateAppId() {
+  // Generate unique app ID with app name
+  generateAppId(appName = 'Generated Project') {
     const timestamp = Date.now()
     const random = Math.random().toString(36).substring(2, 8)
-    return `app-${timestamp}-${random}`
+    const counter = Math.floor(Math.random() * 1000)
+    
+    // Create a URL-friendly version of the app name
+    const cleanName = appName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .substring(0, 20) // Limit length
+    
+    return `${cleanName}-${timestamp}-${random}-${counter}`
   }
 
   // Deploy app to Firestore (persistent storage)
   async deployApp(appData, userId = 'anonymous') {
     try {
-      const appId = this.generateAppId()
+      const appName = appData.name || 'Generated Project'
+      const appId = this.generateAppId(appName)
       const appUrl = `${this.baseUrl}/${appId}`
+      
+      // Validate URL to ensure no extra characters and clean format
+      let cleanUrl = appUrl.replace(/[^a-zA-Z0-9\-:\/\.]/g, '')
+      
+      // Remove any trailing "App" that might have been appended
+      cleanUrl = cleanUrl.replace(/App$/, '')
+      
+      // Ensure URL ends with a clean app ID
+      if (cleanUrl.includes('/apps/')) {
+        const urlParts = cleanUrl.split('/apps/')
+        if (urlParts.length === 2) {
+          const appId = urlParts[1].replace(/[^a-zA-Z0-9\-]/g, '')
+          cleanUrl = `${urlParts[0]}/apps/${appId}`
+        }
+      }
+      
+      // Final validation - ensure URL is properly formatted
+      if (!cleanUrl.match(/^https:\/\/dreambuild-2024-app\.web\.app\/apps\/[a-zA-Z0-9\-]+$/)) {
+        // If URL is malformed, reconstruct it properly
+        cleanUrl = `${this.baseUrl}/${appId}`
+      }
+      
+      console.log('🚀 FirebaseAppService: App Name:', appName)
+      console.log('🚀 FirebaseAppService: Base URL:', this.baseUrl)
+      console.log('🚀 FirebaseAppService: Generated App ID:', appId)
+      console.log('🚀 FirebaseAppService: Constructed URL:', appUrl)
+      console.log('🚀 FirebaseAppService: Clean URL:', cleanUrl)
+      
+      console.log('🚀 FirebaseAppService: Deploying app with ID:', appId)
+      console.log('🚀 FirebaseAppService: App URL:', appUrl)
+      console.log('🚀 FirebaseAppService: App data:', appData)
       
       const appInfo = {
         id: appId,
-        name: appData.name || 'DreamBuild App',
-        url: appUrl,
+        name: appName,
+        url: cleanUrl,
         files: appData.files || {},
         userId: userId,
         isPublic: appData.isPublic || false,
@@ -38,16 +80,21 @@ class FirebaseAppService {
         likes: 0,
         tags: appData.tags || []
       }
+      
+      console.log('🚀 FirebaseAppService: App name:', appName)
+      console.log('🚀 FirebaseAppService: App ID:', appId)
+      console.log('🚀 FirebaseAppService: App URL:', appUrl)
 
       // Store in Firestore
       await setDoc(doc(this.db, this.collectionName, appId), appInfo)
       
       console.log(`🚀 App deployed to Firestore: ${appId} at ${appUrl}`)
+      console.log(`🚀 FirebaseAppService: Successfully stored app in Firestore`)
       
       return {
         success: true,
         appId,
-        url: appUrl,
+        url: cleanUrl,
         appInfo
       }
     } catch (error) {
@@ -62,10 +109,14 @@ class FirebaseAppService {
   // Get app by ID from Firestore
   async getApp(appId) {
     try {
+      console.log('🔍 FirebaseAppService: Getting app with ID:', appId)
       const appDoc = await getDoc(doc(this.db, this.collectionName, appId))
       if (appDoc.exists()) {
-        return { id: appDoc.id, ...appDoc.data() }
+        const appData = { id: appDoc.id, ...appDoc.data() }
+        console.log('🔍 FirebaseAppService: App found:', appData)
+        return appData
       }
+      console.log('🔍 FirebaseAppService: App not found in Firestore')
       return null
     } catch (error) {
       console.error('❌ Error getting app:', error)
@@ -187,7 +238,7 @@ class FirebaseAppService {
   // Get app statistics
   async getAppStats() {
     try {
-      const snapshot = await getDocs(collection(db, this.collectionName))
+      const snapshot = await getDocs(collection(this.db, this.collectionName))
       const apps = snapshot.docs.map(doc => doc.data())
       
       return {

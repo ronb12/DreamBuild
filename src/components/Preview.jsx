@@ -21,7 +21,7 @@ import {
   Download
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import appDeploymentService from '../services/appDeploymentService'
+import firebaseAppService from '../services/firebaseAppService'
 
 const Preview = () => {
   console.log('🎮 Preview component rendered!')
@@ -73,7 +73,7 @@ const Preview = () => {
     try {
       console.log('🚀 Deploying app...')
       
-      const deploymentResult = await appDeploymentService.deployApp({
+      const deploymentResult = await firebaseAppService.deployApp({
         name: currentProject.name || 'DreamBuild App',
         files: currentProject.files,
         preview: {

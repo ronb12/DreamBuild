@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import appDeploymentService from '../services/appDeploymentService'
+import firebaseAppService from '../services/firebaseAppService'
 
 const AppHost = () => {
   const { appId } = useParams()
@@ -18,14 +18,17 @@ const AppHost = () => {
     try {
       setIsLoading(true)
       
-      // Get app data from deployment service
-      const app = appDeploymentService.getApp(id)
+      // Get app data from Firebase
+      const app = await firebaseAppService.getApp(id)
       
       if (app) {
         setAppData(app)
         
         // Generate HTML content
-        const htmlContent = appDeploymentService.generateAppHTML(app)
+        const htmlContent = firebaseAppService.generateAppHTML(app)
+        
+        // Increment view count
+        await firebaseAppService.incrementViews(id)
         
         // Create a blob URL for the HTML content
         const blob = new Blob([htmlContent], { type: 'text/html' })

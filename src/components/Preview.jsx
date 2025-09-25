@@ -1,947 +1,166 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useProject } from '../contexts/ProjectContext'
 import { motion } from 'framer-motion'
-import { RefreshCw, ExternalLink, Maximize2, Minimize2 } from 'lucide-react'
+import { 
+  RefreshCw, 
+  ExternalLink, 
+  Maximize2, 
+  Minimize2, 
+  Monitor, 
+  Smartphone, 
+  Tablet, 
+  Settings, 
+  Eye, 
+  Code, 
+  Play, 
+  Pause, 
+  RotateCcw,
+  Globe,
+  Share2,
+  Copy,
+  Download
+} from 'lucide-react'
 import toast from 'react-hot-toast'
+import appDeploymentService from '../services/appDeploymentService'
 
 const Preview = () => {
   console.log('🎮 Preview component rendered!')
   const { currentProject } = useProject()
-  const iframeRef = useRef(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [previewError, setPreviewError] = useState(null)
-  const [renderCount, setRenderCount] = useState(0)
-  
-  // Increment render count to track component renders
-  React.useEffect(() => {
-    setRenderCount(prev => prev + 1)
-    console.log('🎮 Preview component rendered! Render count:', renderCount + 1)
-  }, [])
+  const [deviceType, setDeviceType] = useState('desktop') // 'desktop', 'tablet', 'mobile'
+  const [isAutoRefresh, setIsAutoRefresh] = useState(true)
+  const [refreshInterval, setRefreshInterval] = useState(2000)
+  const [showPreviewControls, setShowPreviewControls] = useState(true)
+  const [previewMode, setPreviewMode] = useState('live') // 'live', 'static'
+  const [isPreviewPaused, setIsPreviewPaused] = useState(false)
+  const [deployedApp, setDeployedApp] = useState(null)
+  const [appUrl, setAppUrl] = useState(null)
+  const [deploymentStatus, setDeploymentStatus] = useState(null)
 
-  // Update preview when files change - use separate effect for iframe mounting
+  // Deploy app when component mounts or project changes
   useEffect(() => {
-    console.log('🎮 Preview useEffect triggered - files changed:', Object.keys(currentProject.files))
-    console.log('🎮 Preview useEffect - currentProject:', currentProject)
-    console.log('🎮 Preview useEffect - file count:', Object.keys(currentProject.files).length)
-    
-    // Use a small delay to ensure iframe is mounted
-    const timer = setTimeout(() => {
-      updatePreview()
-    }, 50)
-    
-    return () => clearTimeout(timer)
-  }, [currentProject.files, currentProject.activeFile, currentProject])
+    if (currentProject && Object.keys(currentProject.files).length > 0) {
+      deployApp()
+    }
+  }, [currentProject])
 
-  // Additional effect to handle iframe mounting
+  // Auto-refresh functionality
   useEffect(() => {
-    const checkIframeReady = () => {
-      if (iframeRef.current) {
-        console.log('🎮 Iframe mounted, updating preview...')
-        updatePreview()
-      } else {
-        console.log('🎮 Iframe not ready, retrying...')
-        setTimeout(checkIframeReady, 50)
+    if (!isAutoRefresh || isPreviewPaused || previewMode === 'static' || !appUrl) return
+
+    const interval = setInterval(() => {
+      if (appUrl && !isLoading) {
+        // Refresh the iframe
+        const iframe = document.querySelector('#preview-iframe')
+        if (iframe) {
+          iframe.src = iframe.src
+        }
       }
-    }
-    
-    // Check iframe readiness after component mounts
-    setTimeout(checkIframeReady, 100)
-  }, [])
+    }, refreshInterval)
 
-  const updatePreview = () => {
-    console.log('🎮 updatePreview called with files:', Object.keys(currentProject.files))
-    if (!iframeRef.current) {
-      console.log('🎮 updatePreview: iframeRef.current is null, skipping update')
+    return () => clearInterval(interval)
+  }, [isAutoRefresh, isPreviewPaused, previewMode, refreshInterval, isLoading, appUrl])
+
+  const deployApp = async () => {
+    if (!currentProject || Object.keys(currentProject.files).length === 0) {
+      console.log('🎮 No project files to deploy')
       return
     }
 
-    // Check if we have any files to display
-    if (!currentProject.files || Object.keys(currentProject.files).length === 0) {
-      console.log('🎮 updatePreview: No files to display, showing placeholder')
-      showPlaceholder()
-      return
-    }
-
-    console.log('🎮 updatePreview: iframeRef.current exists, proceeding...')
     setIsLoading(true)
-    setPreviewError(null)
-
+    
     try {
-      let htmlContent = currentProject.files['index.html'] || ''
+      console.log('🚀 Deploying app...')
       
-      // If no HTML content, try to find any HTML file
-      if (!htmlContent.trim()) {
-        const htmlFiles = Object.keys(currentProject.files).filter(key => 
-          key.endsWith('.html') && key !== 'index.html'
-        )
-        if (htmlFiles.length > 0) {
-          console.log('🎮 Preview Debug - No index.html found, using:', htmlFiles[0])
-          const altHtmlContent = currentProject.files[htmlFiles[0]] || ''
-          if (altHtmlContent.trim()) {
-            htmlContent = altHtmlContent
-          }
-        }
+      const deploymentResult = await appDeploymentService.deployApp({
+        name: currentProject.name || 'DreamBuild App',
+        files: currentProject.files,
+        preview: {
+          title: currentProject.name || 'DreamBuild App',
+          description: 'Generated with DreamBuild AI Builder',
+          features: ['AI Generated', 'Responsive Design', 'Modern UI']
+        },
+        dependencies: [],
+        buildInstructions: []
+      })
+
+      if (deploymentResult.success) {
+        setDeployedApp(deploymentResult.appInfo)
+        setAppUrl(deploymentResult.url)
+        console.log('✅ App deployed successfully:', deploymentResult.url)
+        toast.success('App deployed successfully!')
+      } else {
+        console.error('❌ App deployment failed:', deploymentResult.error)
+        toast.error('App deployment failed')
       }
-      
-      // Collect all CSS files (both root and src CSS files)
-      const cssFiles = Object.keys(currentProject.files).filter(key => 
-        key.endsWith('.css')
-      )
-      const cssContent = cssFiles.map(file => currentProject.files[file]).join('\n')
-      
-      console.log('🎮 Preview Debug - All CSS files found:', cssFiles)
-      console.log('🎮 Preview Debug - CSS content length:', cssContent.length)
-      console.log('🎮 Preview Debug - CSS content preview:', cssContent.substring(0, 200) + '...')
-      
-      const jsContent = currentProject.files['script.js'] || ''
-      
-      // Check if we have React components (game files)
-      const gameAppFile = currentProject.files['src/components/GameApp.jsx'] || ''
-      const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
-      const templeRunUIFile = currentProject.files['src/components/TempleRunUI.jsx'] || ''
-      const runnerPlayerFile = currentProject.files['src/components/RunnerPlayer.jsx'] || ''
-      const obstacleFile = currentProject.files['src/components/Obstacle.jsx'] || ''
-      
-      // Log file contents for debugging
-      if (gameComponentFile) {
-        console.log('🎮 Preview Debug - GameComponent content preview:', gameComponentFile.substring(0, 200) + '...')
-        console.log('🎮 Preview Debug - GameComponent contains Temple Run:', gameComponentFile.toLowerCase().includes('temple run'))
-        console.log('🎮 Preview Debug - GameComponent contains lane:', gameComponentFile.toLowerCase().includes('lane'))
-        console.log('🎮 Preview Debug - GameComponent contains jump:', gameComponentFile.toLowerCase().includes('jump'))
-      }
-      
-      // Debug logging for file detection
-      console.log('🎮 Preview Debug - Checking for game files:')
-      console.log('🎮 - GameApp.jsx exists:', !!gameAppFile)
-      console.log('🎮 - GameComponent.jsx exists:', !!gameComponentFile)
-      console.log('🎮 - TempleRunUI.jsx exists:', !!templeRunUIFile)
-      console.log('🎮 - RunnerPlayer.jsx exists:', !!runnerPlayerFile)
-      console.log('🎮 - Obstacle.jsx exists:', !!obstacleFile)
-      console.log('🎮 - All project files:', Object.keys(currentProject.files))
-      
-      // If we have game components, create a React app preview
-      if (gameAppFile || gameComponentFile) {
-        console.log('🎮 Preview Debug - Game files detected, creating React preview')
-        console.log('🎮 Preview Debug - About to call createReactPreview, iframeRef.current:', !!iframeRef.current)
-        createReactPreview()
-        console.log('🎮 Preview Debug - createReactPreview call completed')
-        return
-      }
-
-      console.log('🎮 Preview Debug - No game files detected, using regular HTML preview')
-      console.log('🎮 Preview Debug - HTML content length:', htmlContent.length)
-      console.log('🎮 Preview Debug - CSS content length:', cssContent.length)
-      console.log('🎮 Preview Debug - JS content length:', jsContent.length)
-
-      if (!htmlContent.trim()) {
-        // If no HTML content, create a basic HTML structure from available files
-        console.log('🎮 Preview Debug - No HTML content found, creating basic structure')
-        const hasCSS = cssContent.trim().length > 0
-        const hasJS = jsContent.trim().length > 0
-        
-        htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamBuild Generated App</title>
-    ${hasCSS ? `<style>${cssContent}</style>` : ''}
-</head>
-<body>
-    <div id="app">
-        <h1>DreamBuild Generated Application</h1>
-        <p>Your application is loading...</p>
-        <div id="content"></div>
-    </div>
-    ${hasJS ? `<script>${jsContent}</script>` : ''}
-</body>
-</html>`
-        console.log('🎮 Preview Debug - Created basic HTML structure')
-      }
-
-      let fullHTML = htmlContent
-
-      // Inject CSS
-      if (cssContent.trim()) {
-        // Replace external CSS links
-        fullHTML = fullHTML.replace(
-          /<link[^>]*rel=["']stylesheet["'][^>]*href=["']style\.css["'][^>]*>/gi,
-          `<style>${cssContent}</style>`
-        )
-
-        // If no external CSS link found, inject into head
-        if (fullHTML === htmlContent && fullHTML.includes('<head>')) {
-          fullHTML = fullHTML.replace(
-            '<head>',
-            `<head>\n<style>${cssContent}</style>`
-          )
-        } else if (fullHTML === htmlContent && !fullHTML.includes('<head>')) {
-          if (fullHTML.includes('<title>')) {
-            fullHTML = fullHTML.replace(
-              '</title>',
-              `</title>\n<style>${cssContent}</style>`
-            )
-          } else {
-            fullHTML = `<style>${cssContent}</style>\n${fullHTML}`
-          }
-        }
-      }
-
-      // Inject JavaScript
-      if (jsContent.trim()) {
-        // Wrap JavaScript in IIFE to prevent variable conflicts
-        const wrappedJS = `(function() {
-          ${jsContent}
-        })();`
-        
-        // Replace external JS scripts
-        fullHTML = fullHTML.replace(
-          /<script[^>]*src=["']script\.js["'][^>]*><\/script>/gi,
-          `<script>${wrappedJS}</script>`
-        )
-
-        // If no external JS script found, inject before closing body
-        if (fullHTML.includes('</body>')) {
-          fullHTML = fullHTML.replace(
-            '</body>',
-            `<script>${wrappedJS}</script>\n</body>`
-          )
-        } else {
-          fullHTML += `\n<script>${wrappedJS}</script>`
-        }
-      }
-
-      // Ensure proper HTML structure
-      if (!fullHTML.includes('<!DOCTYPE html>')) {
-        fullHTML = `<!DOCTYPE html>\n${fullHTML}`
-      }
-
-      // Debug: Log final HTML structure
-      console.log('🎮 Preview Debug - Final HTML length:', fullHTML.length)
-      console.log('🎮 Preview Debug - HTML contains <style>:', fullHTML.includes('<style>'))
-      console.log('🎮 Preview Debug - HTML contains <script>:', fullHTML.includes('<script>'))
-      console.log('🎮 Preview Debug - HTML preview:', fullHTML.substring(0, 500) + '...')
-
-      // Update iframe content using srcdoc (CORS-safe)
-      const iframe = iframeRef.current
-      
-      // Use srcdoc to avoid CORS issues
-      iframe.srcdoc = fullHTML
-
-      // Handle iframe load events
-      iframe.onload = () => {
-        setIsLoading(false)
-        setPreviewError(null)
-      }
-
-      iframe.onerror = () => {
-        setIsLoading(false)
-        setPreviewError('Failed to load preview')
-      }
-
     } catch (error) {
-      console.error('Preview update error:', error)
+      console.error('❌ Deployment error:', error)
+      toast.error('Deployment error occurred')
+    } finally {
       setIsLoading(false)
-      setPreviewError('Preview update failed')
     }
-  }
-
-  // Function to escape code for template strings
-  const escapeCodeForTemplate = (code) => {
-    if (!code) return '';
-    return code
-      .replace(/`/g, '\\`')
-      .replace(/\${/g, '\\${')
-      .replace(/\$/g, '\\$');
-  };
-
-  const createReactPreview = () => {
-    console.log('🎮 Creating React preview...')
-    if (!iframeRef.current) {
-      console.log('🎮 createReactPreview: iframeRef.current is null')
-      return
-    }
-
-    try {
-      // Get all the React component files
-      const gameAppFile = currentProject.files['src/components/GameApp.jsx'] || ''
-      const gameComponentFile = currentProject.files['src/components/GameComponent.jsx'] || ''
-      const templeRunUIFile = currentProject.files['src/components/TempleRunUI.jsx'] || ''
-      const runnerPlayerFile = currentProject.files['src/components/RunnerPlayer.jsx'] || ''
-      const obstacleFile = currentProject.files['src/components/Obstacle.jsx'] || ''
-      const coinFile = currentProject.files['src/components/Coin.jsx'] || ''
-      const playerFile = currentProject.files['src/components/Player.jsx'] || ''
-    
-    // Get CSS files
-    const gameAppCSS = currentProject.files['src/components/GameApp.css'] || ''
-    const gameComponentCSS = currentProject.files['src/components/GameComponent.css'] || ''
-    const templeRunUICSS = currentProject.files['src/components/TempleRunUI.css'] || ''
-    const runnerPlayerCSS = currentProject.files['src/components/RunnerPlayer.css'] || ''
-    const obstacleCSS = currentProject.files['src/components/Obstacle.css'] || ''
-    const coinCSS = currentProject.files['src/components/Coin.css'] || ''
-    const playerCSS = currentProject.files['src/components/Player.css'] || ''
-    
-    // Detect game type based on available files and content
-    const hasTempleRunFiles = templeRunUIFile || runnerPlayerFile || obstacleFile
-    const hasCoinCollectorFiles = playerFile || coinFile
-    
-    // Also check GameComponent content for Temple Run indicators
-    const gameComponentContent = gameComponentFile.toLowerCase()
-    const hasTempleRunContent = gameComponentContent.includes('temple run') || 
-                               gameComponentContent.includes('lane') ||
-                               gameComponentContent.includes('jump') ||
-                               gameComponentContent.includes('slide') ||
-                               gameComponentContent.includes('obstacle') ||
-                               gameComponentContent.includes('endless runner')
-    
-    const isTempleRun = hasTempleRunFiles || hasTempleRunContent
-    const isCoinCollector = hasCoinCollectorFiles && !isTempleRun
-    
-    // Debug logging
-    console.log('🎮 Preview Debug - Available files:')
-    console.log('🎮 - templeRunUIFile:', !!templeRunUIFile)
-    console.log('🎮 - runnerPlayerFile:', !!runnerPlayerFile)
-    console.log('🎮 - obstacleFile:', !!obstacleFile)
-    console.log('🎮 - playerFile:', !!playerFile)
-    console.log('🎮 - coinFile:', !!coinFile)
-    console.log('🎮 - hasTempleRunFiles:', hasTempleRunFiles)
-    console.log('🎮 - hasTempleRunContent:', hasTempleRunContent)
-    console.log('🎮 - isTempleRun:', isTempleRun)
-    console.log('🎮 - isCoinCollector:', isCoinCollector)
-    console.log('🎮 - All project files:', Object.keys(currentProject.files))
-    
-    // Final game type decision
-    console.log('🎮 FINAL GAME TYPE DECISION:')
-    if (isTempleRun) {
-      console.log('🎮 ✅ RENDERING TEMPLE RUN GAME')
-    } else if (isCoinCollector) {
-      console.log('🎮 ✅ RENDERING COIN COLLECTOR GAME')
-    } else {
-      console.log('🎮 ✅ RENDERING DEFAULT GAME')
-    }
-
-    // Create a complete React app HTML
-    const reactHTML = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DreamBuild Game Preview</title>
-        <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-        <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
-          }
-          #root {
-            width: 100%;
-            min-height: 100vh;
-          }
-          ${escapeCodeForTemplate(gameAppCSS)}
-          ${escapeCodeForTemplate(gameComponentCSS)}
-          ${escapeCodeForTemplate(templeRunUICSS)}
-          ${escapeCodeForTemplate(runnerPlayerCSS)}
-          ${escapeCodeForTemplate(obstacleCSS)}
-          ${escapeCodeForTemplate(coinCSS)}
-          ${escapeCodeForTemplate(playerCSS)}
-        </style>
-      </head>
-      <body>
-        <div id="root"></div>
-        
-        <script type="text/babel">
-          const { useState, useEffect, useRef, useCallback } = React;
-          
-          // Game component based on detected game type
-          const GameComponent = () => {
-            const [gameState, setGameState] = useState({
-              score: 0,
-              distance: 0,
-              speed: 1,
-              isPlaying: false,
-              isPaused: false,
-              gameOver: false
-            });
-            
-            const [player, setPlayer] = useState({ x: 100, y: 200, lane: 1, isJumping: false, isSliding: false });
-            const [obstacles, setObstacles] = useState([]);
-            const [coins, setCoins] = useState([]);
-            const [keys, setKeys] = useState({});
-            
-            const handleKeyDown = useCallback((e) => {
-              setKeys(prev => ({ ...prev, [e.code]: true }));
-            }, []);
-            
-            const handleKeyUp = useCallback((e) => {
-              setKeys(prev => ({ ...prev, [e.code]: false }));
-            }, []);
-            
-            useEffect(() => {
-              window.addEventListener('keydown', handleKeyDown);
-              window.addEventListener('keyup', handleKeyUp);
-              return () => {
-                window.removeEventListener('keydown', handleKeyDown);
-                window.removeEventListener('keyup', handleKeyUp);
-              };
-            }, [handleKeyDown, handleKeyUp]);
-            
-            const startGame = () => {
-              setGameState(prev => ({ ...prev, isPlaying: true, gameOver: false, score: 0, distance: 0 }));
-              setPlayer({ x: 100, y: 200, lane: 1, isJumping: false, isSliding: false });
-              setObstacles([]);
-              setCoins([]);
-            };
-            
-            const pauseGame = () => {
-              setGameState(prev => ({ ...prev, isPaused: !prev.isPaused }));
-            };
-            
-            const gameLoop = useCallback(() => {
-              if (!gameState.isPlaying || gameState.isPaused) return;
-              
-              // Handle player movement
-              setPlayer(prevPlayer => {
-                let newLane = prevPlayer.lane;
-                let newY = prevPlayer.y;
-                let newIsJumping = prevPlayer.isJumping;
-                let newIsSliding = prevPlayer.isSliding;
-                
-                // Lane switching
-                if (keys['ArrowLeft'] || keys['KeyA']) {
-                  newLane = Math.max(0, newLane - 1);
-                }
-                if (keys['ArrowRight'] || keys['KeyD']) {
-                  newLane = Math.min(2, newLane + 1);
-                }
-                
-                // Jumping
-                if ((keys['ArrowUp'] || keys['KeyW']) && !prevPlayer.isJumping) {
-                  newIsJumping = true;
-                  newY = 100;
-                  setTimeout(() => setPlayer(p => ({ ...p, isJumping: false, y: 200 })), 500);
-                }
-                
-                // Sliding
-                if ((keys['ArrowDown'] || keys['KeyS']) && !prevPlayer.isSliding) {
-                  newIsSliding = true;
-                  newY = 250;
-                  setTimeout(() => setPlayer(p => ({ ...p, isSliding: false, y: 200 })), 400);
-                }
-                
-                return { 
-                  ...prevPlayer, 
-                  lane: newLane, 
-                  y: newY, 
-                  isJumping: newIsJumping, 
-                  isSliding: newIsSliding,
-                  x: 50 + newLane * 75
-                };
-              });
-              
-              // Update game state
-              setGameState(prev => ({
-                ...prev,
-                distance: prev.distance + prev.speed,
-                speed: Math.min(3, 1 + Math.floor(prev.distance / 1000) * 0.2)
-              }));
-              
-              // Spawn obstacles
-              if (Math.random() < 0.02 + gameState.speed * 0.01) {
-                setObstacles(prev => [...prev, {
-                  id: Date.now(),
-                  lane: Math.floor(Math.random() * 3),
-                  type: Math.random() < 0.7 ? 'low' : 'high',
-                  x: 400,
-                  y: Math.random() < 0.7 ? 200 : 100
-                }]);
-              }
-              
-              // Spawn coins
-              if (Math.random() < 0.01) {
-                setCoins(prev => [...prev, {
-                  id: Date.now(),
-                  lane: Math.floor(Math.random() * 3),
-                  x: 400,
-                  y: 150,
-                  collected: false
-                }]);
-              }
-              
-              // Move obstacles and coins
-              setObstacles(prev => prev.map(obs => ({ ...obs, x: obs.x - gameState.speed * 3 })).filter(obs => obs.x > -50));
-              setCoins(prev => prev.map(coin => ({ ...coin, x: coin.x - gameState.speed * 2 })).filter(coin => coin.x > -50));
-              
-              // Check collisions
-              setObstacles(prevObstacles => {
-                return prevObstacles.map(obs => {
-                  if (obs.lane === player.lane && Math.abs(obs.x - player.x) < 30 && 
-                      ((obs.type === 'low' && !player.isJumping) || (obs.type === 'high' && !player.isSliding))) {
-                    setGameState(prev => ({ ...prev, gameOver: true, isPlaying: false }));
-                    return obs;
-                  }
-                  return obs;
-                });
-              });
-              
-              // Check coin collection
-              setCoins(prevCoins => {
-                return prevCoins.map(coin => {
-                  if (coin.lane === player.lane && Math.abs(coin.x - player.x) < 25 && !coin.collected) {
-                    setGameState(prev => ({ ...prev, score: prev.score + 10 }));
-                    return { ...coin, collected: true };
-                  }
-                  return coin;
-                }).filter(coin => !coin.collected);
-              });
-              
-              requestAnimationFrame(gameLoop);
-            }, [keys, player.lane, player.isJumping, player.isSliding, gameState.isPlaying, gameState.isPaused, gameState.speed]);
-            
-            useEffect(() => {
-              if (gameState.isPlaying && !gameState.isPaused) {
-                const timer = setTimeout(gameLoop, 16);
-                return () => clearTimeout(timer);
-              }
-            }, [gameLoop, gameState.isPlaying, gameState.isPaused]);
-            
-            if (${isTempleRun}) {
-              // Temple Run Game
-              return (
-                <div style={{ 
-                  width: '400px', 
-                  height: '300px', 
-                  border: '2px solid #333', 
-                  position: 'relative',
-                  background: 'linear-gradient(180deg, #87CEEB 0%, #98FB98 100%)',
-                  borderRadius: '10px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                    color: 'white',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
-                  }}>
-                    Score: {gameState.score} | Distance: {Math.floor(gameState.distance)}
-                  </div>
-                  
-                  {!gameState.isPlaying && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      textAlign: 'center',
-                      color: 'white',
-                      textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
-                    }}>
-                      <h2>Temple Run</h2>
-                      <p>A/D or ←/→ to switch lanes</p>
-                      <p>W or ↑ to jump</p>
-                      <p>S or ↓ to slide</p>
-                      <button onClick={startGame} style={{
-                        padding: '10px 20px',
-                        fontSize: '16px',
-                        background: '#4CAF50',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer'
-                      }}>
-                        Start Game
-                      </button>
-                    </div>
-                  )}
-                  
-                  {gameState.isPlaying && (
-                    <>
-                      {/* Lanes */}
-                      <div style={{ position: 'absolute', left: '50px', top: '0', width: '2px', height: '100%', background: 'rgba(255,255,255,0.3)' }} />
-                      <div style={{ position: 'absolute', left: '125px', top: '0', width: '2px', height: '100%', background: 'rgba(255,255,255,0.3)' }} />
-                      <div style={{ position: 'absolute', left: '200px', top: '0', width: '2px', height: '100%', background: 'rgba(255,255,255,0.3)' }} />
-                      
-                      {/* Player */}
-                      <div style={{
-                        position: 'absolute',
-                        top: player.y,
-                        left: player.x,
-                        width: '30px',
-                        height: player.isSliding ? '15px' : '30px',
-                        background: player.isSliding ? '#8B4513' : '#FFD700',
-                        borderRadius: player.isSliding ? '5px' : '50%',
-                        border: '2px solid #FFA500',
-                        transition: 'all 0.1s ease'
-                      }} />
-                      
-                      {/* Obstacles */}
-                      {obstacles.map(obs => (
-                        <div key={obs.id} style={{
-                          position: 'absolute',
-                          top: obs.y,
-                          left: obs.x,
-                          width: '25px',
-                          height: obs.type === 'low' ? '40px' : '20px',
-                          background: '#8B4513',
-                          borderRadius: '3px'
-                        }} />
-                      ))}
-                      
-                      {/* Coins */}
-                      {coins.map(coin => (
-                        <div key={coin.id} style={{
-                          position: 'absolute',
-                          top: coin.y,
-                          left: coin.x,
-                          width: '15px',
-                          height: '15px',
-                          background: '#FFD700',
-                          borderRadius: '50%',
-                          border: '2px solid #FFA500',
-                          boxShadow: '0 0 10px #FFD700'
-                        }} />
-                      ))}
-                      
-                      <button onClick={pauseGame} style={{
-                        position: 'absolute',
-                        bottom: '10px',
-                        right: '10px',
-                        padding: '5px 10px',
-                        fontSize: '12px',
-                        background: '#f44336',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '3px',
-                        cursor: 'pointer'
-                      }}>
-                        {gameState.isPaused ? 'Resume' : 'Pause'}
-                      </button>
-                    </>
-                  )}
-                  
-                  {gameState.gameOver && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      textAlign: 'center',
-                      color: 'white',
-                      background: 'rgba(0,0,0,0.8)',
-                      padding: '20px',
-                      borderRadius: '10px'
-                    }}>
-                      <h2>Game Over!</h2>
-                      <p>Final Score: {gameState.score}</p>
-                      <p>Distance: {Math.floor(gameState.distance)}</p>
-                      <button onClick={startGame} style={{
-                        padding: '10px 20px',
-                        fontSize: '16px',
-                        background: '#4CAF50',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer'
-                      }}>
-                        Play Again
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            } else if (${isCoinCollector}) {
-              // Coin Collector Game
-              return (
-                <div style={{ 
-                  width: '400px', 
-                  height: '400px', 
-                  border: '2px solid #333', 
-                  position: 'relative',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  borderRadius: '10px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                    color: 'white',
-                    fontSize: '18px',
-                    fontWeight: 'bold'
-                  }}>
-                    Score: {gameState.score}
-                  </div>
-                  
-                  {!gameState.isPlaying && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      textAlign: 'center',
-                      color: 'white'
-                    }}>
-                      <h2>Coin Collector Game</h2>
-                      <p>Use arrow keys or WASD to move</p>
-                      <button onClick={startGame} style={{
-                        padding: '10px 20px',
-                        fontSize: '16px',
-                        background: '#4CAF50',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer'
-                      }}>
-                        Start Game
-                      </button>
-                    </div>
-                  )}
-                  
-                  {gameState.isPlaying && (
-                    <>
-                      <div style={{
-                        position: 'absolute',
-                        top: 200,
-                        left: 200,
-                        width: '20px',
-                        height: '20px',
-                        background: '#FFD700',
-                        borderRadius: '50%',
-                        border: '2px solid #FFA500'
-                      }} />
-                      
-                      <button onClick={pauseGame} style={{
-                        position: 'absolute',
-                        bottom: '10px',
-                        right: '10px',
-                        padding: '5px 10px',
-                        fontSize: '12px',
-                        background: '#f44336',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '3px',
-                        cursor: 'pointer'
-                      }}>
-                        {gameState.isPaused ? 'Resume' : 'Pause'}
-                      </button>
-                    </>
-                  )}
-                </div>
-              );
-            } else {
-              // Default Game
-              return (
-                <div style={{ 
-                  width: '400px', 
-                  height: '300px', 
-                  border: '2px solid #333', 
-                  position: 'relative',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  borderRadius: '10px',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '18px',
-                  fontWeight: 'bold'
-                }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <h2>Game Preview</h2>
-                    <p>No specific game type detected</p>
-                    <button onClick={startGame} style={{
-                      padding: '10px 20px',
-                      fontSize: '16px',
-                      background: '#4CAF50',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '5px',
-                      cursor: 'pointer'
-                    }}>
-                      Start Game
-                    </button>
-                  </div>
-                </div>
-              );
-            }
-          };
-          
-          const GameApp = () => {
-            return (
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                minHeight: '100vh',
-                background: '#f0f0f0',
-                fontFamily: 'Arial, sans-serif'
-              }}>
-                <GameComponent />
-              </div>
-            );
-          };
-          
-          // Render the app
-          const root = ReactDOM.createRoot(document.getElementById('root'));
-          root.render(React.createElement(GameApp));
-        </script>
-      </body>
-      </html>
-    `
-
-    const iframe = iframeRef.current
-    console.log('🎮 Setting iframe content, length:', reactHTML.length)
-    iframe.srcdoc = reactHTML
-
-    iframe.onload = () => {
-      console.log('🎮 Iframe loaded successfully')
-      setIsLoading(false)
-      setPreviewError(null)
-      
-      // Verify iframe content
-      try {
-        const iframeContent = iframe.contentDocument?.body?.textContent || ''
-        console.log('🎮 Iframe content verification - length:', iframeContent.length)
-        console.log('🎮 Iframe content preview:', iframeContent.substring(0, 100))
-      } catch (e) {
-        console.log('🎮 Iframe content verification - access denied:', e.message)
-      }
-    }
-
-    iframe.onerror = () => {
-      console.log('🎮 Iframe error occurred')
-      setIsLoading(false)
-      setPreviewError('Failed to load React preview')
-    }
-    
-    } catch (error) {
-      console.error('🎮 Error in createReactPreview:', error)
-      setIsLoading(false)
-      setPreviewError(`Preview generation failed: ${error.message}`)
-    }
-  }
-
-  const showPlaceholder = () => {
-    if (!iframeRef.current) return
-
-    const placeholderHTML = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Preview</title>
-        <style>
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-          }
-          .placeholder {
-            text-align: center;
-            padding: 40px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            max-width: 400px;
-          }
-          .placeholder h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            opacity: 0.9;
-          }
-          .placeholder p {
-            font-size: 1.1rem;
-            opacity: 0.8;
-            line-height: 1.6;
-          }
-          .icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            display: block;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="placeholder">
-          <span class="icon">🚀</span>
-          <h2>Ready to Build</h2>
-          <p>Generate some code to see your application preview here!</p>
-        </div>
-      </body>
-      </html>
-    `
-
-    const iframe = iframeRef.current
-    
-    // Use srcdoc to avoid CORS issues
-    iframe.srcdoc = placeholderHTML
-
-    setIsLoading(false)
   }
 
   const handleRefresh = () => {
-    updatePreview()
-    toast.success('Preview refreshed!')
+    if (appUrl) {
+      const iframe = document.querySelector('#preview-iframe')
+      if (iframe) {
+        iframe.src = iframe.src
+      }
+    }
   }
 
   const handleOpenInNewTab = () => {
-    if (!iframeRef.current) return
-
-    const iframe = iframeRef.current
-    
-    // Get the current HTML content from srcdoc
-    if (iframe.srcdoc) {
-      const newWindow = window.open('', '_blank')
-      newWindow.document.write(iframe.srcdoc)
-      newWindow.document.close()
+    if (appUrl) {
+      window.open(appUrl, '_blank')
       toast.success('Opened in new tab!')
-    } else {
-      toast.error('No content to open')
     }
   }
 
-  const handleFullscreen = () => {
-    setIsFullscreen(!isFullscreen)
-  }
-
-  const handleFullscreenChange = () => {
-    if (!document.fullscreenElement) {
-      setIsFullscreen(false)
+  const handleCopyUrl = () => {
+    if (appUrl) {
+      navigator.clipboard.writeText(appUrl)
+      toast.success('URL copied to clipboard!')
     }
   }
 
-  useEffect(() => {
-    document.addEventListener('fullscreenchange', handleFullscreenChange)
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  const handleShare = () => {
+    if (appUrl) {
+      if (navigator.share) {
+        navigator.share({
+          title: deployedApp?.name || 'DreamBuild App',
+          url: appUrl
+        })
+      } else {
+        handleCopyUrl()
+      }
     }
-  }, [])
+  }
 
   const toggleFullscreen = async () => {
     if (!isFullscreen) {
-      if (iframeRef.current.requestFullscreen) {
-        await iframeRef.current.requestFullscreen()
+      const iframe = document.querySelector('#preview-iframe')
+      if (iframe && iframe.requestFullscreen) {
+        await iframe.requestFullscreen()
       }
     } else {
       if (document.exitFullscreen) {
         await document.exitFullscreen()
       }
+    }
+    setIsFullscreen(!isFullscreen)
+  }
+
+  // Get device-specific styling
+  const getDeviceStyling = () => {
+    switch (deviceType) {
+      case 'mobile':
+        return 'w-80 h-[600px] rounded-lg shadow-lg'
+      case 'tablet':
+        return 'w-[768px] h-[600px] rounded-lg shadow-md'
+      default:
+        return 'w-full h-full'
     }
   }
 
@@ -953,31 +172,92 @@ const Preview = () => {
         isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''
       }`}
     >
-      {/* Preview Header */}
+      {/* Debug Indicator */}
+      <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs z-50">
+        PREVIEW LOADED - {deployedApp ? 'DEPLOYED' : 'LOADING'}
+      </div>
+      
+      {/* Advanced Preview Header */}
       <div className="flex items-center justify-between p-3 border-b border-border bg-muted/50">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-sm">Live Preview</h3>
-          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">RENDERED</span>
-          <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">#{renderCount}</span>
+          <h3 className="font-semibold text-sm">Advanced Live Preview</h3>
+          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">DEPLOYED</span>
           {isLoading && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <div className="spinner"></div>
-              <span>Updating...</span>
+              <span>Deploying...</span>
             </div>
           )}
-          {previewError && (
-            <span className="text-xs text-destructive">Error</span>
+          {isAutoRefresh && !isPreviewPaused && (
+            <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded">AUTO-REFRESH</span>
+          )}
+          {previewMode === 'live' && (
+            <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded">LIVE</span>
+          )}
+          {appUrl && (
+            <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">ONLINE</span>
           )}
         </div>
         
+        {/* Advanced Preview Controls */}
         <div className="flex items-center gap-2">
+          {/* Device Type Selector */}
+          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+            <button
+              onClick={() => setDeviceType('desktop')}
+              className={`p-1 rounded ${deviceType === 'desktop' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
+              title="Desktop View"
+            >
+              <Monitor className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setDeviceType('tablet')}
+              className={`p-1 rounded ${deviceType === 'tablet' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
+              title="Tablet View"
+            >
+              <Tablet className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setDeviceType('mobile')}
+              className={`p-1 rounded ${deviceType === 'mobile' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
+              title="Mobile View"
+            >
+              <Smartphone className="h-4 w-4" />
+            </button>
+          </div>
+          
+          {/* Auto-refresh Toggle */}
+          <button
+            onClick={() => setIsAutoRefresh(!isAutoRefresh)}
+            className={`p-2 rounded-md transition-colors ${
+              isAutoRefresh ? 'bg-green-500 text-white' : 'bg-muted hover:bg-muted-foreground/20'
+            }`}
+            title={isAutoRefresh ? 'Disable Auto-refresh' : 'Enable Auto-refresh'}
+          >
+            <RefreshCw className={`h-4 w-4 ${isAutoRefresh ? 'animate-spin' : ''}`} />
+          </button>
+          
+          {/* Pause/Play Toggle */}
+          <button
+            onClick={() => setIsPreviewPaused(!isPreviewPaused)}
+            className={`p-2 rounded-md transition-colors ${
+              isPreviewPaused ? 'bg-red-500 text-white' : 'bg-muted hover:bg-muted-foreground/20'
+            }`}
+            title={isPreviewPaused ? 'Resume Preview' : 'Pause Preview'}
+          >
+            {isPreviewPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+          </button>
+          
+          {/* Manual Refresh */}
           <button
             onClick={handleRefresh}
             className="p-2 hover:bg-muted rounded-md transition-colors"
-            title="Refresh Preview"
+            title="Manual Refresh"
           >
-            <RefreshCw className="h-4 w-4" />
+            <RotateCcw className="h-4 w-4" />
           </button>
+          
+          {/* Open in New Tab */}
           <button
             onClick={handleOpenInNewTab}
             className="p-2 hover:bg-muted rounded-md transition-colors"
@@ -985,64 +265,113 @@ const Preview = () => {
           >
             <ExternalLink className="h-4 w-4" />
           </button>
+          
+          {/* Copy URL */}
+          <button
+            onClick={handleCopyUrl}
+            className="p-2 hover:bg-muted rounded-md transition-colors"
+            title="Copy URL"
+          >
+            <Copy className="h-4 w-4" />
+          </button>
+          
+          {/* Share */}
+          <button
+            onClick={handleShare}
+            className="p-2 hover:bg-muted rounded-md transition-colors"
+            title="Share App"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
+          
+          {/* Fullscreen */}
           <button
             onClick={toggleFullscreen}
             className="p-2 hover:bg-muted rounded-md transition-colors"
-            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            title="Toggle Fullscreen"
           >
-            {isFullscreen ? (
-              <Minimize2 className="h-4 w-4" />
-            ) : (
-              <Maximize2 className="h-4 w-4" />
-            )}
+            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </button>
         </div>
       </div>
 
       {/* Preview Content */}
-      <div className="flex-1 relative bg-black">
-        {previewError ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center p-6">
-              <div className="text-4xl mb-4">⚠️</div>
-              <h3 className="text-lg font-semibold mb-2">Preview Error</h3>
-              <p className="text-muted-foreground mb-4">{previewError}</p>
-              <button
-                onClick={handleRefresh}
-                className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors"
-              >
-                Try Again
-              </button>
+      <div className="flex-1 relative h-full min-h-[500px]">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center h-full text-center p-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="text-lg font-medium">Deploying App...</span>
+            </div>
+            <div className="text-sm text-muted-foreground text-center max-w-md">
+              <p>Creating your app's web address...</p>
+              <p className="mt-2">This may take a few moments</p>
+            </div>
+          </div>
+        ) : appUrl ? (
+          <div className={`w-full h-full flex items-center justify-center ${
+            deviceType === 'mobile' ? 'bg-gray-100' : 
+            deviceType === 'tablet' ? 'bg-gray-50' : 
+            'bg-white'
+          }`}>
+            <div className={`${getDeviceStyling()} transition-all duration-300 ease-in-out`}>
+              <iframe
+                id="preview-iframe"
+                src={appUrl}
+                className={`w-full h-full border-0 ${
+                  deviceType === 'mobile' ? 'rounded-lg shadow-lg' : 
+                  deviceType === 'tablet' ? 'rounded-lg shadow-md' : 
+                  ''
+                }`}
+                title="DreamBuild App Preview"
+                sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
+                onLoad={() => setIsLoading(false)}
+                onError={() => {
+                  setIsLoading(false)
+                  toast.error('Failed to load app preview')
+                }}
+              />
             </div>
           </div>
         ) : (
-          <iframe
-            ref={iframeRef}
-            className="w-full h-full border-0"
-            title="Preview"
-            // Using srcdoc with sandbox for secure preview rendering
-            // allow-same-origin removed to prevent sandbox escape warnings
-            sandbox="allow-scripts allow-forms allow-popups"
-            onLoad={() => setIsLoading(false)}
-            onError={() => {
-              setIsLoading(false)
-              setPreviewError('Failed to load preview')
-            }}
-          />
+          <div className="flex flex-col items-center justify-center h-full text-center p-8">
+            <Globe className="h-16 w-16 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No App Deployed</h3>
+            <p className="text-muted-foreground mb-4">Generate an app to see the preview</p>
+            <button
+              onClick={deployApp}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Deploy App
+            </button>
+          </div>
         )}
       </div>
 
-      {/* Preview Footer */}
+      {/* Advanced Preview Footer */}
       <div className="flex items-center justify-between p-2 border-t border-border bg-muted/30 text-xs text-muted-foreground">
         <div className="flex items-center gap-4">
-          <span>Responsive</span>
-          <span>•</span>
-          <span>Auto-refresh</span>
+          {appUrl && (
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              <span className="font-mono text-xs">{appUrl}</span>
+            </div>
+          )}
+          {deployedApp && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-green-600">App Deployed</span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <span>Ctrl+R to refresh</span>
           <span>•</span>
-          <span>F11 for fullscreen</span>
+          <span>Ctrl+Shift+F for fullscreen</span>
+          <span>•</span>
+          <span>Live preview with web addresses</span>
+          <span>•</span>
+          <span>Share your apps</span>
         </div>
       </div>
     </motion.div>

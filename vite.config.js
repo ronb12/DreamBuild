@@ -37,6 +37,9 @@ export default defineConfig({
   optimizeDeps: {
     include: ['monaco-editor', 'firebase/app', 'firebase/firestore', 'firebase/auth']
   },
-  envPrefix: [],
-  envDir: undefined
+  envPrefix: 'REACT_APP_',
+  envDir: '.',
+  define: {
+    'process.env': 'import.meta.env'
+  }
 })

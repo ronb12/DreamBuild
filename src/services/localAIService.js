@@ -623,7 +623,7 @@ export class AppComponent {
 </main>`,
       'nodejs': `const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+// PORT removed - not needed in browser code
 
 app.get('/', (req, res) => {
   res.send(\`
@@ -686,7 +686,7 @@ fn main() {
 }`,
       'api': `const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+// PORT removed - not needed in browser code
 
 app.use(express.json());
 

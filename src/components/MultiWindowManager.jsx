@@ -33,16 +33,22 @@ const MultiWindowManager = () => {
   const [isWindowMenuOpen, setIsWindowMenuOpen] = useState(false)
   
   console.log('🪟 Current state:', { windows: windows.length, activeWindowId, isWindowMenuOpen })
+  console.log('🪟 Windows array:', windows)
 
   // Load windows on mount
   useEffect(() => {
+    console.log('🪟 MultiWindowManager useEffect running...')
+    console.log('🪟 Service instance:', multiWindowService)
+    
     const updateWindows = () => {
       console.log('🪟 Updating windows state...')
       const allWindows = multiWindowService.getAllWindows()
       const activeId = multiWindowService.activeWindowId
       console.log('🪟 Current windows:', allWindows.length, 'Active:', activeId)
+      console.log('🪟 Windows data:', allWindows)
       setWindows(allWindows)
       setActiveWindowId(activeId)
+      console.log('🪟 State set - windows:', allWindows.length, 'active:', activeId)
     }
 
     // Initial load
@@ -54,6 +60,7 @@ const MultiWindowManager = () => {
       updateWindows()
     }
     
+    console.log('🪟 Adding event listeners...')
     multiWindowService.addEventListener('windowCreated', handleWindowEvent)
     multiWindowService.addEventListener('windowClosed', handleWindowEvent)
     multiWindowService.addEventListener('windowActivated', handleWindowEvent)
@@ -71,6 +78,9 @@ const MultiWindowManager = () => {
   const createNewWindow = useCallback(async (projectData = null) => {
     try {
       console.log('🪟 Creating new window...', projectData)
+      console.log('🪟 Service before creation:', multiWindowService)
+      console.log('🪟 Service methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(multiWindowService)))
+      
       const windowId = multiWindowService.createWindow(projectData)
       console.log('🪟 Window created with ID:', windowId)
       
@@ -80,10 +90,12 @@ const MultiWindowManager = () => {
       }
       
       // Update windows state
-      setWindows(multiWindowService.getAllWindows())
+      const allWindows = multiWindowService.getAllWindows()
+      console.log('🪟 All windows after creation:', allWindows)
+      setWindows(allWindows)
       setActiveWindowId(windowId)
       
-      console.log('🪟 Windows after creation:', multiWindowService.getAllWindows())
+      console.log('🪟 State updated - windows:', allWindows.length, 'active:', windowId)
       
       toast.success('New window created!')
       return windowId
@@ -371,7 +383,7 @@ const MultiWindowManager = () => {
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col" style={{ paddingTop: '64px' }}>
       {/* Top Bar */}
       <div className="flex items-center justify-between px-4 py-2 bg-muted/30 border-b border-border">
         <div className="flex items-center gap-4">
@@ -385,7 +397,13 @@ const MultiWindowManager = () => {
               e.preventDefault()
               e.stopPropagation()
               console.log('🪟 New Window button clicked!')
-              createNewWindow()
+              try {
+                console.log('🪟 Calling createNewWindow...')
+                createNewWindow()
+                console.log('🪟 createNewWindow called successfully')
+              } catch (error) {
+                console.error('🪟 Error calling createNewWindow:', error)
+              }
             }}
             className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm"
             type="button"

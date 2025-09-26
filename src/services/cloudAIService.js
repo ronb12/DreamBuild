@@ -8,7 +8,7 @@ class CloudAIService {
   constructor() {
     this.isHealthy = true
     this.baseURL = 'https://api-inference.huggingface.co/models'
-    this.apiKey = process.env.REACT_APP_HUGGINGFACE_API_KEY || 'hf_your_api_key_here'
+    this.apiKey = import.meta.env.VITE_HUGGINGFACE_API_KEY || 'hf_your_api_key_here'
     
     // Open source models available via Hugging Face
     this.availableModels = {
@@ -3319,7 +3319,7 @@ header h1 {
       'server.js': `const express = require('express');
 const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 3000;
+// PORT removed - not needed in browser code
 
 // Middleware
 app.use(cors());

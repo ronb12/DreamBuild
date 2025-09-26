@@ -249,7 +249,7 @@ class WebSocketService {
   }
 
   getWebSocketUrl() {
-    if (process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       // In production, use your deployed WebSocket server
       return 'wss://your-domain.com';
     } else {

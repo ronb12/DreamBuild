@@ -342,7 +342,7 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) =
   res.json({ received: true });
 });
 
-const PORT = process.env.PORT || 3001;
+// PORT removed - not needed in browser code
 app.listen(PORT, () => {
 
 });`,
@@ -593,7 +593,7 @@ app.post('/api/capture-paypal-order', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
+// PORT removed - not needed in browser code
 app.listen(PORT, () => {
 
 });`,

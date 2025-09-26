@@ -10,9 +10,12 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
   const scrollContainerRef = useRef(null);
+  const modelsLoadedRef = useRef(false);
 
   // Load available models from services
   useEffect(() => {
+    if (modelsLoadedRef.current) return; // Prevent multiple loads
+    
     const loadModels = async () => {
       try {
         setIsLoading(true);
@@ -28,7 +31,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
           console.log('🔧 Cloud AI models:', services['cloud-ai'].models);
           services['cloud-ai'].models.forEach(model => {
             models.push({
-              id: model.model || model.name.toLowerCase().replace(/\s+/g, '-'),
+              id: `cloud-${model.model || model.name.toLowerCase().replace(/\s+/g, '-')}`,
               name: model.name,
               description: model.description,
               icon: Code,
@@ -44,7 +47,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
           console.log('🔧 Local AI models:', services['local-ai'].models);
           services['local-ai'].models.forEach(model => {
             models.push({
-              id: model.model || model.name.toLowerCase().replace(/\s+/g, '-'),
+              id: `local-${model.model || model.name.toLowerCase().replace(/\s+/g, '-')}`,
               name: model.name,
               description: model.description,
               icon: Server,
@@ -55,19 +58,32 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
           });
         }
         
-        // Add auto select option
-        models.unshift({
-          id: 'auto',
-          name: 'Auto Select',
-          description: 'Automatically selects the best available model',
-          icon: Sparkles,
-          color: 'text-purple-500',
-          bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-          type: 'auto'
+        // Add auto select option only if not already present
+        if (!models.some(model => model.id === 'auto')) {
+          models.unshift({
+            id: 'auto',
+            name: 'Auto Select',
+            description: 'Automatically selects the best available model',
+            icon: Sparkles,
+            color: 'text-purple-500',
+            bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+            type: 'auto'
+          });
+        }
+        
+        console.log('🔧 Final models before deduplication:', models);
+        
+        // Remove duplicates based on both id AND name to be extra safe
+        const uniqueModels = models.filter((model, index, self) => {
+          const isUniqueById = index === self.findIndex(m => m.id === model.id);
+          const isUniqueByName = index === self.findIndex(m => m.name === model.name);
+          return isUniqueById && isUniqueByName;
         });
         
-        console.log('🔧 Final models:', models);
-        setAvailableModels(models);
+        console.log('🔧 Unique models after deduplication:', uniqueModels.length);
+        console.log('🔧 Final unique models:', uniqueModels.map(m => `${m.name} (${m.id})`));
+        setAvailableModels(uniqueModels);
+        modelsLoadedRef.current = true;
       } catch (error) {
         console.error('❌ Error loading models:', error);
         // Fallback to basic models with more options for scrolling test

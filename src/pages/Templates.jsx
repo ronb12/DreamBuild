@@ -1022,7 +1022,6 @@ export default App`
         )}
       </div>
 
-      
       {/* Template Preview Modal */}
       {showPreview && previewTemplate && (
         <div 

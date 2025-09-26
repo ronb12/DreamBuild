@@ -1,4 +1,4 @@
-class n{constructor(){this.supportedFrameworks={"react-native":{name:"React Native",description:"Cross-platform mobile apps with JavaScript",platforms:["ios","android"],languages:["javascript","typescript"],features:["native-performance","hot-reload","large-community"]},flutter:{name:"Flutter",description:"Cross-platform apps with Dart",platforms:["ios","android","web"],languages:["dart"],features:["fast-development","beautiful-ui","google-backed"]},ionic:{name:"Ionic",description:"Cross-platform apps with web technologies",platforms:["ios","android","web"],languages:["javascript","typescript"],features:["web-based","easy-deployment","pwa-ready"]},pwa:{name:"Progressive Web App",description:"Web apps that work like native apps",platforms:["ios","android","web"],languages:["javascript","html","css"],features:["no-app-store","instant-updates","cross-platform"]},capacitor:{name:"Capacitor",description:"Native apps from web technologies",platforms:["ios","android","web"],languages:["javascript","typescript"],features:["web-to-native","plugin-system","ionic-integration"]}}}async generateMobileApp(e,t={}){const i=this.detectFramework(e,t),r=this.detectPlatform(e,t);switch(console.log(`📱 Generating ${i.name} app for ${r}...`),i.id){case"react-native":return this.generateReactNativeApp(e,t,r);case"flutter":return this.generateFlutterApp(e,t,r);case"ionic":return this.generateIonicApp(e,t,r);case"pwa":return this.generatePWAApp(e,t,r);case"capacitor":return this.generateCapacitorApp(e,t,r);default:return this.generatePWAApp(e,t,r)}}detectFramework(e,t){const i=e.toLowerCase(),r=t.framework||t.mobileFramework;return i.includes("react native")||i.includes("react-native")?this.supportedFrameworks["react-native"]:i.includes("flutter")?this.supportedFrameworks.flutter:i.includes("ionic")?this.supportedFrameworks.ionic:i.includes("capacitor")?this.supportedFrameworks.capacitor:i.includes("pwa")||i.includes("progressive web app")?this.supportedFrameworks.pwa:r&&this.supportedFrameworks[r]?this.supportedFrameworks[r]:i.includes("game")||i.includes("performance")?this.supportedFrameworks["react-native"]:i.includes("ui")||i.includes("design")||i.includes("beautiful")?this.supportedFrameworks.flutter:i.includes("web")||i.includes("website")||i.includes("simple")?this.supportedFrameworks.pwa:this.supportedFrameworks.pwa}detectPlatform(e,t){const i=e.toLowerCase(),r=t.platform||t.mobilePlatform;return r||(i.includes("ios")||i.includes("iphone")||i.includes("apple")?"ios":i.includes("android")||i.includes("google play")?"android":"cross-platform")}generateReactNativeApp(e,t,i){const r=t.projectName||"DreamBuildApp",a=r.toLowerCase().replace(/[^a-z0-9]/g,"");return{"package.json":this.generateReactNativePackageJSON(r,t),"App.js":this.generateReactNativeAppJS(r,e,t),"App.json":this.generateReactNativeAppJSON(r,t),"metro.config.js":this.generateMetroConfig(),"babel.config.js":this.generateBabelConfig(),"android/app/build.gradle":this.generateAndroidBuildGradle(r,a),"android/app/src/main/AndroidManifest.xml":this.generateAndroidManifest(r,a),"ios/Info.plist":this.generateIOSInfoPlist(r,a),"README.md":this.generateReactNativeREADME(r,e,t),"app.json":this.generateExpoConfig(r,t)}}generateFlutterApp(e,t,i){const r=t.projectName||"dreambuild_app",a=r.toLowerCase().replace(/[^a-z0-9]/g,"");return{"pubspec.yaml":this.generateFlutterPubspec(r,t),"lib/main.dart":this.generateFlutterMain(r,e,t),"android/app/build.gradle":this.generateFlutterAndroidBuildGradle(r,a),"android/app/src/main/AndroidManifest.xml":this.generateFlutterAndroidManifest(r,a),"ios/Runner/Info.plist":this.generateFlutterIOSInfoPlist(r,a),"README.md":this.generateFlutterREADME(r,e,t)}}generateIonicApp(e,t,i){const r=t.projectName||"DreamBuildApp",a=r.toLowerCase().replace(/[^a-z0-9]/g,"");return{"package.json":this.generateIonicPackageJSON(r,t),"ionic.config.json":this.generateIonicConfig(r,t),"src/app/app.component.ts":this.generateIonicAppComponent(r,e,t),"src/app/app.module.ts":this.generateIonicAppModule(r,t),"src/index.html":this.generateIonicIndexHTML(r,t),"capacitor.config.json":this.generateCapacitorConfig(r,t),"android/app/build.gradle":this.generateCapacitorAndroidBuildGradle(r,a),"ios/App/App/Info.plist":this.generateCapacitorIOSInfoPlist(r,a),"README.md":this.generateIonicREADME(r,e,t)}}generatePWAApp(e,t,i){const r=t.projectName||"DreamBuild App";return{"index.html":this.generatePWAHTML(r,e,t),"manifest.json":this.generatePWAManifest(r,t),"sw.js":this.generatePWAServiceWorker(r,t),"style.css":this.generatePWACSS(r,t),"script.js":this.generatePWAJavaScript(r,e,t),"package.json":this.generatePWAPackageJSON(r,t),"README.md":this.generatePWAREADME(r,e,t)}}generateCapacitorApp(e,t,i){const r=t.projectName||"DreamBuildApp",a=r.toLowerCase().replace(/[^a-z0-9]/g,"");return{"package.json":this.generateCapacitorPackageJSON(r,t),"capacitor.config.json":this.generateCapacitorConfig(r,t),"src/index.html":this.generateCapacitorIndexHTML(r,t),"src/main.ts":this.generateCapacitorMain(r,e,t),"src/app/app.component.ts":this.generateCapacitorAppComponent(r,e,t),"android/app/build.gradle":this.generateCapacitorAndroidBuildGradle(r,a),"ios/App/App/Info.plist":this.generateCapacitorIOSInfoPlist(r,a),"README.md":this.generateCapacitorREADME(r,e,t)}}generateReactNativePackageJSON(e,t){return JSON.stringify({name:e.toLowerCase().replace(/[^a-z0-9]/g,"-"),version:"1.0.0",description:`Built with DreamBuild - ${e}`,main:"node_modules/expo/AppEntry.js",scripts:{start:"expo start",android:"expo start --android",ios:"expo start --ios",web:"expo start --web","build:android":"eas build --platform android","build:ios":"eas build --platform ios"},dependencies:{expo:"~50.0.0",react:"18.2.0","react-native":"0.73.0","@expo/vector-icons":"^14.0.0","react-native-safe-area-context":"4.8.2","react-native-screens":"~3.29.0","@react-navigation/native":"^6.1.9","@react-navigation/stack":"^6.3.20"},devDependencies:{"@babel/core":"^7.20.0"},keywords:["react-native","expo","mobile","dreambuild"],author:"DreamBuild AI",license:"MIT"},null,2)}generateReactNativeAppJS(e,t,i){return`import React from 'react';
+class n{constructor(){this.supportedFrameworks={"react-native":{name:"React Native",description:"Cross-platform mobile apps with JavaScript",platforms:["ios","android"],languages:["javascript","typescript"],features:["native-performance","hot-reload","large-community"]},flutter:{name:"Flutter",description:"Cross-platform apps with Dart",platforms:["ios","android","web"],languages:["dart"],features:["fast-development","beautiful-ui","google-backed"]},ionic:{name:"Ionic",description:"Cross-platform apps with web technologies",platforms:["ios","android","web"],languages:["javascript","typescript"],features:["web-based","easy-deployment","pwa-ready"]},pwa:{name:"Progressive Web App",description:"Web apps that work like native apps",platforms:["ios","android","web"],languages:["javascript","html","css"],features:["no-app-store","instant-updates","cross-platform"]},capacitor:{name:"Capacitor",description:"Native apps from web technologies",platforms:["ios","android","web"],languages:["javascript","typescript"],features:["web-to-native","plugin-system","ionic-integration"]}}}async generateMobileApp(e,t={}){const a=this.detectFramework(e,t),r=this.detectPlatform(e,t);switch(console.log(`📱 Generating ${a.name} app for ${r}...`),a.id){case"react-native":return this.generateReactNativeApp(e,t,r);case"flutter":return this.generateFlutterApp(e,t,r);case"ionic":return this.generateIonicApp(e,t,r);case"pwa":return this.generatePWAApp(e,t,r);case"capacitor":return this.generateCapacitorApp(e,t,r);default:return this.generatePWAApp(e,t,r)}}detectFramework(e,t){const a=e.toLowerCase(),r=t.framework||t.mobileFramework;return a.includes("react native")||a.includes("react-native")?this.supportedFrameworks["react-native"]:a.includes("flutter")?this.supportedFrameworks.flutter:a.includes("ionic")?this.supportedFrameworks.ionic:a.includes("capacitor")?this.supportedFrameworks.capacitor:a.includes("pwa")||a.includes("progressive web app")?this.supportedFrameworks.pwa:r&&this.supportedFrameworks[r]?this.supportedFrameworks[r]:a.includes("game")||a.includes("performance")?this.supportedFrameworks["react-native"]:a.includes("ui")||a.includes("design")||a.includes("beautiful")?this.supportedFrameworks.flutter:a.includes("web")||a.includes("website")||a.includes("simple")?this.supportedFrameworks.pwa:this.supportedFrameworks.pwa}detectPlatform(e,t){const a=e.toLowerCase(),r=t.platform||t.mobilePlatform;return r||(a.includes("ios")||a.includes("iphone")||a.includes("apple")?"ios":a.includes("android")||a.includes("google play")?"android":"cross-platform")}generateReactNativeApp(e,t,a){const r=t.projectName||"DreamBuildApp",i=r.toLowerCase().replace(/[^a-z0-9]/g,"");return{"package.json":this.generateReactNativePackageJSON(r,t),"App.js":this.generateReactNativeAppJS(r,e,t),"App.json":this.generateReactNativeAppJSON(r,t),"metro.config.js":this.generateMetroConfig(),"babel.config.js":this.generateBabelConfig(),"android/app/build.gradle":this.generateAndroidBuildGradle(r,i),"android/app/src/main/AndroidManifest.xml":this.generateAndroidManifest(r,i),"ios/Info.plist":this.generateIOSInfoPlist(r,i),"README.md":this.generateReactNativeREADME(r,e,t),"app.json":this.generateExpoConfig(r,t)}}generateFlutterApp(e,t,a){const r=t.projectName||"dreambuild_app",i=r.toLowerCase().replace(/[^a-z0-9]/g,"");return{"pubspec.yaml":this.generateFlutterPubspec(r,t),"lib/main.dart":this.generateFlutterMain(r,e,t),"android/app/build.gradle":this.generateFlutterAndroidBuildGradle(r,i),"android/app/src/main/AndroidManifest.xml":this.generateFlutterAndroidManifest(r,i),"ios/Runner/Info.plist":this.generateFlutterIOSInfoPlist(r,i),"README.md":this.generateFlutterREADME(r,e,t)}}generateIonicApp(e,t,a){const r=t.projectName||"DreamBuildApp",i=r.toLowerCase().replace(/[^a-z0-9]/g,"");return{"package.json":this.generateIonicPackageJSON(r,t),"ionic.config.json":this.generateIonicConfig(r,t),"src/app/app.component.ts":this.generateIonicAppComponent(r,e,t),"src/app/app.module.ts":this.generateIonicAppModule(r,t),"src/index.html":this.generateIonicIndexHTML(r,t),"capacitor.config.json":this.generateCapacitorConfig(r,t),"android/app/build.gradle":this.generateCapacitorAndroidBuildGradle(r,i),"ios/App/App/Info.plist":this.generateCapacitorIOSInfoPlist(r,i),"README.md":this.generateIonicREADME(r,e,t)}}generatePWAApp(e,t,a){const r=t.projectName||"DreamBuild App";return{"index.html":this.generatePWAHTML(r,e,t),"manifest.json":this.generatePWAManifest(r,t),"sw.js":this.generatePWAServiceWorker(r,t),"style.css":this.generatePWACSS(r,t),"script.js":this.generatePWAJavaScript(r,e,t),"package.json":this.generatePWAPackageJSON(r,t),"README.md":this.generatePWAREADME(r,e,t)}}generateCapacitorApp(e,t,a){const r=t.projectName||"DreamBuildApp",i=r.toLowerCase().replace(/[^a-z0-9]/g,"");return{"package.json":this.generateCapacitorPackageJSON(r,t),"capacitor.config.json":this.generateCapacitorConfig(r,t),"src/index.html":this.generateCapacitorIndexHTML(r,t),"src/main.ts":this.generateCapacitorMain(r,e,t),"src/app/app.component.ts":this.generateCapacitorAppComponent(r,e,t),"android/app/build.gradle":this.generateCapacitorAndroidBuildGradle(r,i),"ios/App/App/Info.plist":this.generateCapacitorIOSInfoPlist(r,i),"README.md":this.generateCapacitorREADME(r,e,t)}}generateReactNativePackageJSON(e,t){return JSON.stringify({name:e.toLowerCase().replace(/[^a-z0-9]/g,"-"),version:"1.0.0",description:`Built with DreamBuild - ${e}`,main:"node_modules/expo/AppEntry.js",scripts:{start:"expo start",android:"expo start --android",ios:"expo start --ios",web:"expo start --web","build:android":"eas build --platform android","build:ios":"eas build --platform ios"},dependencies:{expo:"~50.0.0",react:"18.2.0","react-native":"0.73.0","@expo/vector-icons":"^14.0.0","react-native-safe-area-context":"4.8.2","react-native-screens":"~3.29.0","@react-navigation/native":"^6.1.9","@react-navigation/stack":"^6.3.20"},devDependencies:{"@babel/core":"^7.20.0"},keywords:["react-native","expo","mobile","dreambuild"],author:"DreamBuild AI",license:"MIT"},null,2)}generateReactNativeAppJS(e,t,a){return`import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
@@ -114,7 +114,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-`}generateFlutterMain(e,t,i){return`import 'package:flutter/material.dart';
+`}generateFlutterMain(e,t,a){return`import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
@@ -230,7 +230,7 @@ class FeatureItem extends StatelessWidget {
     );
   }
 }
-`}generatePWAHTML(e,t,i){return`<!DOCTYPE html>
+`}generatePWAHTML(e,t,a){return`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -300,7 +300,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+
         return cache.addAll(urlsToCache);
       })
   );
@@ -325,7 +325,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+
             return caches.delete(cacheName);
           }
         })
@@ -442,18 +442,17 @@ body {
     user-select: none;
     -webkit-user-select: none;
   }
-}`}generatePWAJavaScript(e,t,i){return`// DreamBuild PWA JavaScript
-console.log('🚀 ${e} PWA loaded!');
+}`}generatePWAJavaScript(e,t,a){return`// DreamBuild PWA JavaScript
 
 // Register service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
-        console.log('SW registered: ', registration);
+
       })
       .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+
       });
   });
 }
@@ -488,7 +487,7 @@ installButton.addEventListener('click', async () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log('User choice:', outcome);
+
     deferredPrompt = null;
     installButton.remove();
   }
@@ -496,8 +495,7 @@ installButton.addEventListener('click', async () => {
 
 // App functionality
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('📱 ${e} PWA ready!');
-  
+
   // Add some interactive features
   const featureItems = document.querySelectorAll('.feature-list li');
   featureItems.forEach((item, index) => {
@@ -512,16 +510,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Handle app updates
 window.addEventListener('appinstalled', () => {
-  console.log('🎉 ${e} installed successfully!');
+
 });
 
 // Network status
 window.addEventListener('online', () => {
-  console.log('📶 App is online');
+
 });
 
 window.addEventListener('offline', () => {
-  console.log('📵 App is offline');
+
 });`}generateMetroConfig(){return`module.exports = {
   transformer: {
     getTransformOptions: async () => ({
@@ -590,7 +588,7 @@ window.addEventListener('offline', () => {
     <key>CFBundleShortVersionString</key>
     <string>1.0.0</string>
 </dict>
-</plist>`}generateReactNativeREADME(e,t,i){return`# ${e}
+</plist>`}generateReactNativeREADME(e,t,a){return`# ${e}
 
 Built with [DreamBuild](https://dreambuild-2024-app.web.app) - Universal AI Development Platform
 
@@ -653,7 +651,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
 ---
 
 *Generated on ${new Date().toLocaleDateString()} by DreamBuild AI*
-`}generateFlutterREADME(e,t,i){return`# ${e}
+`}generateFlutterREADME(e,t,a){return`# ${e}
 
 Built with [DreamBuild](https://dreambuild-2024-app.web.app) - Universal AI Development Platform
 
@@ -709,7 +707,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
 ---
 
 *Generated on ${new Date().toLocaleDateString()} by DreamBuild AI*
-`}generatePWAREADME(e,t,i){return`# ${e}
+`}generatePWAREADME(e,t,a){return`# ${e}
 
 Built with [DreamBuild](https://dreambuild-2024-app.web.app) - Universal AI Development Platform
 
@@ -778,4 +776,3 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
 
 *Generated on ${new Date().toLocaleDateString()} by DreamBuild AI*
 `}generateIonicPackageJSON(e,t){return JSON.stringify({name:e.toLowerCase().replace(/[^a-z0-9]/g,"-"),version:"1.0.0",description:`Built with DreamBuild - ${e}`,main:"index.js",scripts:{build:"ionic build",serve:"ionic serve",ios:"ionic capacitor run ios",android:"ionic capacitor run android"},dependencies:{"@ionic/core":"^7.0.0","@ionic/react":"^7.0.0","@capacitor/core":"^5.0.0","@capacitor/ios":"^5.0.0","@capacitor/android":"^5.0.0"},devDependencies:{"@ionic/cli":"^7.0.0"},keywords:["ionic","capacitor","mobile","dreambuild"],author:"DreamBuild AI",license:"MIT"},null,2)}generateCapacitorConfig(e,t){return JSON.stringify({appId:`com.dreambuild.${e.toLowerCase().replace(/[^a-z0-9]/g,"")}`,appName:e,webDir:"dist",server:{androidScheme:"https"}},null,2)}generateExpoConfig(e,t){return JSON.stringify({expo:{name:e,slug:e.toLowerCase().replace(/[^a-z0-9]/g,"-"),version:"1.0.0",platforms:["ios","android","web"],orientation:"portrait",icon:"./assets/icon.png",splash:{image:"./assets/splash.png",resizeMode:"contain",backgroundColor:"#ffffff"}}},null,2)}generatePWAPackageJSON(e,t){return JSON.stringify({name:e.toLowerCase().replace(/[^a-z0-9]/g,"-"),version:"1.0.0",description:`Built with DreamBuild - ${e}`,main:"index.html",scripts:{start:"npx serve .",build:"echo 'PWA - no build required'",deploy:"echo 'Deploy using DreamBuild deployment system'"},keywords:["pwa","progressive-web-app","mobile","dreambuild"],author:"DreamBuild AI",license:"MIT",dependencies:{},devDependencies:{serve:"^14.0.0"}},null,2)}}const s=new n;export{s as default};
-//# sourceMappingURL=mobileAppService-CFUDTDME.js.map

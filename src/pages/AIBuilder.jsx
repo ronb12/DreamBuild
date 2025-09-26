@@ -4,7 +4,7 @@ import FileManager from '../components/FileManager'
 import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
 import PreviewSimple from '../components/PreviewSimple'
-import AIPromptCursorStyle from '../components/AIPromptCursorStyle'
+import AIPromptSimplified from '../components/AIPromptSimplified'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import TemplateSelector from '../components/TemplateSelector'
 import Terminal from '../components/Terminal'
@@ -25,10 +25,6 @@ const AIBuilder = () => {
   ]
 
   const handleTabClick = (tabId) => {
-    console.log('🎯 handleTabClick called with tabId:', tabId)
-    console.log('🎯 Current activeTab:', activeTab)
-    console.log('🎯 Available tabs:', tabs.map(t => t.id))
-    
     if (tabId === 'workspace') {
       // Toggle workspace visibility
       if (activeTab === 'workspace' && isWorkspaceVisible) {
@@ -40,10 +36,8 @@ const AIBuilder = () => {
       }
     } else {
       // For other tabs, just switch normally
-      console.log('🎯 Setting activeTab to:', tabId)
       setActiveTab(tabId)
       setIsWorkspaceVisible(false) // Hide workspace when switching to other tabs
-      console.log('🎯 Tab switched successfully to:', tabId)
     }
   }
 
@@ -273,7 +267,7 @@ const AIBuilder = () => {
               
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden">
-                <AIPromptCursorStyle />
+                <AIPromptSimplified />
               </div>
             </div>
           </ResizablePanel>
@@ -286,7 +280,6 @@ const AIBuilder = () => {
         isVisible={showTemplateSelector}
         onClose={() => setShowTemplateSelector(false)}
         onTemplateSelect={(template, files) => {
-          console.log('🎯 Template selected:', template.name)
           setShowTemplateSelector(false)
         }}
       />

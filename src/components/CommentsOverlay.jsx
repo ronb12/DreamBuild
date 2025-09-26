@@ -206,3 +206,4 @@ const CommentsOverlay = ({ editorRef, fileId }) => {
 }
 
 export default CommentsOverlay
+

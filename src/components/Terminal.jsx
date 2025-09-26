@@ -136,7 +136,7 @@ drwxr-xr-x  2 user  staff   64 Dec 15 10:30 dist`
             const file = cmd.substring(4)
             output = `Contents of ${file}:
 // This is a sample file
-console.log('Hello, World!');`
+`
           } else if (cmd.startsWith('echo ')) {
             output = cmd.substring(5)
           } else if (cmd.startsWith('npm ')) {

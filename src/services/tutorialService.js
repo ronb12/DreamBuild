@@ -179,7 +179,7 @@ name = "John";
 age = 25;
 isStudent = true;
 
-console.log(name);`,
+`,
             expectedOutput: 'John',
             hints: [
               'Use let, const, or var to declare variables',
@@ -285,7 +285,7 @@ function multiply(a, b) {
 const person = { name: 'John', age: 30 };
 // Destructure here
 
-console.log(name);`,
+`,
             expectedOutput: 'John',
             hints: [
               'Arrow functions use => syntax',
@@ -557,3 +557,4 @@ export default App;`,
 }
 
 export default new TutorialService()
+

@@ -21,8 +21,7 @@ class GameDevelopmentService {
    * Generate a complete game based on the requested type
    */
   generateGame(gameType, options = {}) {
-    console.log(`🎮 Generating ${gameType} game with proper framework...`);
-    
+
     const template = this.gameTemplates[gameType];
     if (!template) {
       throw new Error(`Unsupported game type: ${gameType}`);

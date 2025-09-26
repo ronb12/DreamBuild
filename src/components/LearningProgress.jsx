@@ -319,3 +319,4 @@ const LearningProgress = () => {
 }
 
 export default LearningProgress
+

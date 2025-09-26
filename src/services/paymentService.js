@@ -232,7 +232,7 @@ function App() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const handlePaymentSuccess = (paymentIntent) => {
-    console.log('Payment succeeded:', paymentIntent);
+
     setPaymentSuccess(true);
   };
 
@@ -308,8 +308,7 @@ app.post('/api/payment-success', async (req, res) => {
     
     if (paymentIntent.status === 'succeeded') {
       // Update your database, send confirmation email, etc.
-      console.log('Payment succeeded:', paymentIntent);
-      
+
       res.json({ success: true, paymentIntent });
     } else {
       res.status(400).json({ error: 'Payment not completed' });
@@ -334,10 +333,10 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) =
   switch (event.type) {
     case 'payment_intent.succeeded':
       const paymentIntent = event.data.object;
-      console.log('PaymentIntent was successful!', paymentIntent);
+
       break;
     default:
-      console.log(\`Unhandled event type \${event.type}\`);
+
   }
 
   res.json({ received: true });
@@ -345,7 +344,7 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) =
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(\`Server running on port \${PORT}\`);
+
 });`,
 
         'package.json': JSON.stringify({
@@ -462,7 +461,7 @@ const PayPalButton = ({ amount, onSuccess, onError }) => {
         }}
         onApprove={(data, actions) => {
           return actions.order.capture().then((details) => {
-            console.log('Payment completed:', details);
+
             onSuccess?.(details);
           });
         }}
@@ -485,7 +484,7 @@ function App() {
   const [paymentDetails, setPaymentDetails] = useState(null);
 
   const handlePaymentSuccess = (details) => {
-    console.log('Payment succeeded:', details);
+
     setPaymentDetails(details);
     setPaymentSuccess(true);
   };
@@ -587,8 +586,7 @@ app.post('/api/capture-paypal-order', async (req, res) => {
     const capture = await client.execute(request);
     
     // Update your database, send confirmation email, etc.
-    console.log('Payment captured:', capture.result);
-    
+
     res.json({ success: true, capture });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -597,7 +595,7 @@ app.post('/api/capture-paypal-order', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(\`Server running on port \${PORT}\`);
+
 });`,
 
         'package.json': JSON.stringify({

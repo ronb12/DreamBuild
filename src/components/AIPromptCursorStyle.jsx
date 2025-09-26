@@ -34,10 +34,6 @@ export default function AIPromptCursorStyle() {
   const [aiModel, setAIModel] = useState('auto')
   const [modelUpdateKey, setModelUpdateKey] = useState(0)
   
-  // Debug: Log when aiModel changes (commented out for production)
-  // useEffect(() => {
-  //   console.log(`🎯 AI Model state changed to: ${aiModel}`)
-  // }, [aiModel])
   const [showModelSelector, setShowModelSelector] = useState(false)
   const [showContextUsage, setShowContextUsage] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
@@ -63,11 +59,6 @@ export default function AIPromptCursorStyle() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
-
-  // Debug AI model changes
-  useEffect(() => {
-    console.log(`🎯 AI Model state changed to: ${aiModel}`)
-  }, [aiModel])
 
   // Close model selector when clicking outside
   useEffect(() => {
@@ -527,8 +518,7 @@ export default function AIPromptCursorStyle() {
               rows={4}
               aria-label="AI prompt input"
             />
-            
-            
+
             {/* Drag overlay */}
             {isDragOver && (
               <div className="absolute inset-0 bg-blue-500/10 border-2 border-blue-500 border-dashed rounded-lg flex items-center justify-center pointer-events-none">

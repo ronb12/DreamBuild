@@ -1,8 +1,7 @@
 import React from 'react';
 
 const PreviewSimple = () => {
-  console.log('🎮 PreviewSimple component rendered!');
-  
+
   return (
     <div style={{ 
       padding: '20px', 

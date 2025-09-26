@@ -219,3 +219,4 @@ const LiveTutorial = ({ tutorial, onComplete, onNext, onPrevious }) => {
 };
 
 export default LiveTutorial;
+

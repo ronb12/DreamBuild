@@ -42,7 +42,6 @@ const Dashboard = () => {
     return () => clearTimeout(timer)
   }, [])
 
-
   // Real data from projects and GitHub
   const stats = {
     totalProjects: projects.length,

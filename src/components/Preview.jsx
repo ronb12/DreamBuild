@@ -40,8 +40,9 @@ const Preview = () => {
   const [deployedApp, setDeployedApp] = useState(null)
   const [appUrl, setAppUrl] = useState(null)
   const [deploymentStatus, setDeploymentStatus] = useState(null)
+  const [isDeploying, setIsDeploying] = useState(false)
 
-  // Deploy app when component mounts or project changes
+  // Deploy app when component mounts or project changes - with debouncing
   useEffect(() => {
     console.log('🎮 Preview useEffect triggered')
     console.log('🎮 Current project:', currentProject)
@@ -56,29 +57,36 @@ const Preview = () => {
         length: currentProject.files[key]?.length || 0,
         preview: currentProject.files[key]?.substring(0, 100) || 'No content'
       })))
-      deployApp()
+      
+      // Add debouncing to prevent multiple deployments
+      const timeoutId = setTimeout(() => {
+        deployApp()
+      }, 1000) // Wait 1 second before deploying
+      
+      return () => clearTimeout(timeoutId)
     } else {
       console.log('🎮 No project or files to deploy')
       console.log('🎮 Current project:', currentProject)
       console.log('🎮 Files count:', currentProject ? Object.keys(currentProject.files).length : 'No project')
     }
-  }, [currentProject])
+  }, [currentProject?.name, currentProject?.activeFile]) // Only depend on specific properties
 
-  // Auto-refresh functionality
+  // Auto-refresh functionality - DISABLED to prevent reload loop
   useEffect(() => {
-    if (!isAutoRefresh || isPreviewPaused || previewMode === 'static' || !appUrl) return
+    // Disabled auto-refresh to prevent reload loop
+    // if (!isAutoRefresh || isPreviewPaused || previewMode === 'static' || !appUrl) return
 
-    const interval = setInterval(() => {
-      if (appUrl && !isLoading) {
-        // Refresh the iframe
-        const iframe = document.querySelector('#preview-iframe')
-        if (iframe) {
-          iframe.src = iframe.src
-        }
-      }
-    }, refreshInterval)
+    // const interval = setInterval(() => {
+    //   if (appUrl && !isLoading) {
+    //     // Refresh the iframe
+    //     const iframe = document.querySelector('#preview-iframe')
+    //     if (iframe) {
+    //       iframe.src = iframe.src
+    //     }
+    //   }
+    // }, refreshInterval)
 
-    return () => clearInterval(interval)
+    // return () => clearInterval(interval)
   }, [isAutoRefresh, isPreviewPaused, previewMode, refreshInterval, isLoading, appUrl])
 
   const deployApp = async () => {
@@ -93,6 +101,13 @@ const Preview = () => {
       return
     }
 
+    // Prevent multiple simultaneous deployments
+    if (isDeploying) {
+      console.log('🎮 Deployment already in progress, skipping...')
+      return
+    }
+
+    setIsDeploying(true)
     setIsLoading(true)
     setDeploymentStatus('Deploying...')
     console.log('🎮 Starting deployment process...')
@@ -186,6 +201,7 @@ const Preview = () => {
       // Error message handled by toast
     } finally {
       setIsLoading(false)
+      setIsDeploying(false)
     }
   }
 

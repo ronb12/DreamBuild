@@ -14,15 +14,14 @@ const DeleteApps = () => {
 
   const loadApps = async () => {
     try {
-      console.log('🔍 Loading apps...');
+
       const appsRef = collection(db, 'apps');
       const snapshot = await getDocs(appsRef);
       const appsList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      
-      console.log(`📊 Found ${appsList.length} apps`);
+
       setApps(appsList);
     } catch (error) {
       console.error('❌ Error loading apps:', error);
@@ -40,8 +39,7 @@ const DeleteApps = () => {
     setDeletedCount(0);
 
     try {
-      console.log('🗑️ Starting deletion of all apps...');
-      
+
       for (const app of apps) {
         try {
           await deleteDoc(doc(db, 'apps', app.id));
@@ -51,8 +49,7 @@ const DeleteApps = () => {
           console.error(`❌ Failed to delete app ${app.id}:`, error);
         }
       }
-      
-      console.log('🎉 All apps deleted successfully!');
+
       await loadApps(); // Reload to show empty state
     } catch (error) {
       console.error('❌ Error deleting apps:', error);
@@ -151,3 +148,4 @@ const DeleteApps = () => {
 };
 
 export default DeleteApps;
+

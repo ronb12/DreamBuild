@@ -634,7 +634,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+
         return cache.addAll(urlsToCache);
       })
   );
@@ -659,7 +659,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+
             return caches.delete(cacheName);
           }
         })
@@ -785,17 +785,16 @@ body {
 
   generatePWAJavaScript(appName, prompt, config) {
     return `// DreamBuild PWA JavaScript
-console.log('🚀 ${appName} PWA loaded!');
 
 // Register service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
-        console.log('SW registered: ', registration);
+
       })
       .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+
       });
   });
 }
@@ -830,7 +829,7 @@ installButton.addEventListener('click', async () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    console.log('User choice:', outcome);
+
     deferredPrompt = null;
     installButton.remove();
   }
@@ -838,8 +837,7 @@ installButton.addEventListener('click', async () => {
 
 // App functionality
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('📱 ${appName} PWA ready!');
-  
+
   // Add some interactive features
   const featureItems = document.querySelectorAll('.feature-list li');
   featureItems.forEach((item, index) => {
@@ -854,16 +852,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Handle app updates
 window.addEventListener('appinstalled', () => {
-  console.log('🎉 ${appName} installed successfully!');
+
 });
 
 // Network status
 window.addEventListener('online', () => {
-  console.log('📶 App is online');
+
 });
 
 window.addEventListener('offline', () => {
-  console.log('📵 App is offline');
+
 });`
   }
 

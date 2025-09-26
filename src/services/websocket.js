@@ -25,7 +25,7 @@ class WebSocketService {
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log('🔌 WebSocket connected to terminal server');
+
           this.isConnecting = false;
           this.reconnectAttempts = 0;
           this.startHeartbeat();
@@ -44,7 +44,7 @@ class WebSocketService {
         };
 
         this.ws.onclose = (event) => {
-          console.log('🔌 WebSocket connection closed:', event.code, event.reason);
+
           this.isConnecting = false;
           this.stopHeartbeat();
           this.emit('disconnected', { code: event.code, reason: event.reason });
@@ -201,7 +201,7 @@ class WebSocketService {
         break;
         
       default:
-        console.log('Unknown message type:', message.type);
+
         this.emit('unknown_message', message);
     }
   }
@@ -229,7 +229,7 @@ class WebSocketService {
         
         // Set timeout for pong response
         this.heartbeatTimeout = setTimeout(() => {
-          console.log('❌ Heartbeat timeout, closing connection');
+
           this.ws.close();
         }, 5000);
       }
@@ -491,5 +491,4 @@ class WebSocketService {
 const websocketService = new WebSocketService();
 
 export default websocketService;
-
 

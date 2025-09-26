@@ -634,7 +634,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`Server running on port \${PORT}\`);
+
 });`,
       'python': `from flask import Flask, render_template
 
@@ -699,7 +699,7 @@ app.get('/api', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`API server running on port \${PORT}\`);
+
 });`,
       'dashboard': `import React from 'react';
 import './Dashboard.css';
@@ -752,8 +752,6 @@ const styles = StyleSheet.create({
 });`,
       'web': `// ${template.name}
 // ${template.description}
-
-console.log('Hello from ${template.name}!');
 
 // Template based on: ${template.githubData.fullName}
 // Repository: ${template.githubData.htmlUrl}`

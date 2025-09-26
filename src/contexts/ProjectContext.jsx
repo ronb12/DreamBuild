@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
 import { useAuth } from './AuthContext'
 import toast from 'react-hot-toast'
 
@@ -33,7 +33,6 @@ export function ProjectProvider({ children }) {
   const [projects, setProjects] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
-
   const switchFile = useCallback((filename) => {
     setCurrentProject(prev => ({
       ...prev,
@@ -43,25 +42,14 @@ export function ProjectProvider({ children }) {
   }, [])
 
   const updateFile = useCallback((filename, content) => {
-    console.log(`🔄 Updating file: ${filename} (${content?.length || 0} chars)`)
-    console.log(`🔄 Content preview:`, content?.substring(0, 100) || 'No content')
-    setCurrentProject(prev => {
-      const newProject = {
-        ...prev,
-        files: {
-          ...prev.files,
-          [filename]: content
-        },
-        lastModified: new Date()
-      }
-      console.log(`📁 Project files after update:`, Object.keys(newProject.files))
-      console.log(`📁 Files content:`, Object.keys(newProject.files).map(key => ({
-        filename: key,
-        length: newProject.files[key]?.length || 0,
-        preview: newProject.files[key]?.substring(0, 50) || 'No content'
-      })))
-      return newProject
-    })
+    setCurrentProject(prev => ({
+      ...prev,
+      files: {
+        ...prev.files,
+        [filename]: content
+      },
+      lastModified: new Date()
+    }))
   }, [])
 
   const updateConfig = useCallback((config) => {
@@ -75,7 +63,6 @@ export function ProjectProvider({ children }) {
       // If name is being updated, also update the project name directly
       if (config.name) {
         updatedProject.name = config.name
-        console.log(`📝 ProjectContext: Updated project name to: ${config.name}`)
       }
       
       return updatedProject
@@ -84,11 +71,9 @@ export function ProjectProvider({ children }) {
 
   const loadProjects = useCallback(async () => {
     if (!user) {
-      console.log('⚠️ loadProjects: No user found')
       return
     }
 
-    console.log('🔄 Loading projects for user:', user.uid)
     setIsLoading(true)
     try {
       const { collection, query, where, getDocs, orderBy } = await import('firebase/firestore')
@@ -99,18 +84,15 @@ export function ProjectProvider({ children }) {
         orderBy('lastModified', 'desc')
       )
       
-      console.log('🔥 Querying Firestore for projects...')
       const snapshot = await getDocs(q)
       const projectsList = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }))
       
-      console.log('📦 Loaded projects:', projectsList.length, 'projects')
-      console.log('📋 Projects list:', projectsList)
       setProjects(projectsList)
     } catch (error) {
-      console.error('❌ Failed to load projects:', error)
+      console.error('Failed to load projects:', error)
       toast.error('Failed to load projects: ' + error.message)
     } finally {
       setIsLoading(false)
@@ -120,10 +102,8 @@ export function ProjectProvider({ children }) {
   // Automatically load projects when user authenticates
   useEffect(() => {
     if (user) {
-      console.log('🔄 User authenticated, loading projects automatically...')
       loadProjects()
     } else {
-      console.log('⚠️ No user, clearing projects')
       setProjects([])
     }
   }, [user, loadProjects])
@@ -171,7 +151,6 @@ export function ProjectProvider({ children }) {
       return
     }
 
-    console.log('💾 saveExternalProject called with:', project)
     setIsLoading(true)
     try {
       // Ensure project has required fields
@@ -182,8 +161,6 @@ export function ProjectProvider({ children }) {
         createdAt: project.createdAt || new Date()
       }
 
-      console.log('📝 Project to save:', projectToSave)
-
       // Save to Firestore
       const { doc, setDoc, collection } = await import('firebase/firestore')
       const projectRef = doc(collection(db, 'projects'))
@@ -193,18 +170,14 @@ export function ProjectProvider({ children }) {
         id: projectRef.id
       }
       
-      console.log('🔥 Saving to Firestore:', savedProject)
       await setDoc(projectRef, savedProject)
-      console.log('✅ Project saved to Firestore with ID:', projectRef.id)
 
       toast.success(`Project "${project.name}" saved successfully!`)
       
       // Refresh projects list
-      console.log('🔄 Refreshing projects list...')
       await loadProjects()
-      console.log('✅ Projects list refreshed')
     } catch (error) {
-      console.error('❌ Failed to save external project:', error)
+      console.error('Failed to save external project:', error)
       toast.error('Failed to save project')
     } finally {
       setIsLoading(false)
@@ -275,7 +248,6 @@ export function ProjectProvider({ children }) {
   }, [])
 
   const addFilesToProject = useCallback((newFiles) => {
-    console.log('📁 Adding files to project:', Object.keys(newFiles))
     setCurrentProject(prev => ({
       ...prev,
       files: {
@@ -287,7 +259,7 @@ export function ProjectProvider({ children }) {
     toast.success(`${Object.keys(newFiles).length} files added to project!`)
   }, [])
 
-  const value = {
+  const value = useMemo(() => ({
     currentProject,
     projects,
     isLoading,
@@ -301,7 +273,21 @@ export function ProjectProvider({ children }) {
     deleteProject,
     createNewProject,
     addFilesToProject
-  }
+  }), [
+    currentProject,
+    projects,
+    isLoading,
+    switchFile,
+    updateFile,
+    updateConfig,
+    saveProject,
+    saveExternalProject,
+    loadProjects,
+    loadProject,
+    deleteProject,
+    createNewProject,
+    addFilesToProject
+  ])
 
   return (
     <ProjectContext.Provider value={value}>

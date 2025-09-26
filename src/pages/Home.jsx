@@ -43,7 +43,6 @@ const Home = () => {
     { label: 'Templates', value: '25+', icon: TrendingUp }
   ]
 
-
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -135,7 +134,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
 
       {/* Features Section */}
       <section className="py-20 bg-background">

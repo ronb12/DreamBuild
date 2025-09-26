@@ -13,20 +13,16 @@ class TemplateBasedGenerator {
   }
 
   async initialize() {
-    console.log('🚀 Initializing Template-Based Generator...');
-    
+
     // Load all templates
     await this.loadAllTemplates();
     
     // Initialize AI enhancer
     this.aiEnhancer = new AICustomizationService();
-    console.log('✅ AI Customization Service initialized');
-    
+
     // Initialize template matcher
     this.templateMatcher = new TemplateMatcher(this.templates);
-    console.log('✅ Template Matcher initialized');
-    
-    console.log(`✅ Template-Based Generator initialized with ${this.templates.size} templates`);
+
   }
 
   async loadAllTemplates() {
@@ -62,8 +58,7 @@ class TemplateBasedGenerator {
           });
         }
       }
-      
-      console.log(`📚 Loaded ${this.templates.size} templates across ${this.categories.size} categories`);
+
     } catch (error) {
       console.error('Failed to load templates from localAIService, using fallback:', error.message);
       this.loadFallbackTemplates();
@@ -148,37 +143,32 @@ class TemplateBasedGenerator {
         });
       });
     }
-    
-    console.log(`📚 Loaded ${this.templates.size} fallback templates across ${this.categories.size} categories`);
-    
+
     // Initialize template matcher after loading templates
     this.templateMatcher = new TemplateMatcher(this.templates);
-    console.log('✅ Template Matcher initialized with fallback templates');
+
   }
 
   // Main generation method - Template-First approach
   async generateApp(prompt, context = {}) {
-    console.log('🎯 Starting Template-First generation...');
-    
+
     try {
       // Ensure templates are loaded before proceeding
       if (this.templates.size === 0) {
-        console.log('📚 No templates loaded, initializing...');
+
         await this.initialize();
       }
       
       // Step 1: Template Selection (Instant)
       const selectedTemplate = await this.selectTemplate(prompt, context);
-      console.log(`📋 Selected template: ${selectedTemplate.name}`);
-      
+
       // Step 2: Template Instantiation (Instant)
       const baseApp = await this.instantiateTemplate(selectedTemplate);
       console.log(`⚡ Instantiated template with ${Object.keys(baseApp.files).length} files`);
       
       // Step 3: AI Customization (Fast)
       const customizedApp = await this.customizeWithAI(baseApp, prompt, context);
-      console.log(`🎨 AI customization completed`);
-      
+
       return {
         success: true,
         files: customizedApp.files,
@@ -204,10 +194,10 @@ class TemplateBasedGenerator {
     
     // Check if template matcher is available
     if (!this.templateMatcher) {
-      console.log('⚠️ Template matcher not available, using fallback selection');
+
       const templates = Array.from(this.templates.values());
       if (templates.length === 0) {
-        console.log('⚠️ No templates available, will use fallback generation');
+
         throw new Error('No templates available');
       }
       return templates[0];
@@ -221,7 +211,7 @@ class TemplateBasedGenerator {
     });
     
     if (matches.length === 0) {
-      console.log('⚠️ No matches found, using first available template');
+
       const templates = Array.from(this.templates.values());
       if (templates.length === 0) {
         throw new Error('No suitable template found');
@@ -446,11 +436,9 @@ footer {
 
   generateJavaScript(template) {
     return `// ${template.name} JavaScript
-console.log('${template.name} loaded successfully!');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing app...');
-    
+
     // Initialize app
     initializeApp();
     
@@ -459,8 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
-    console.log('Initializing ${template.name}...');
-    
+
     // Add any initialization logic here
     const app = document.getElementById('app');
     if (app) {
@@ -471,7 +458,7 @@ function initializeApp() {
 
 function setupEventListeners() {
     // Add event listeners here
-    console.log('Event listeners setup complete');
+
 }
 
 // Export for module systems
@@ -513,8 +500,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
   // Fallback generation
   async generateFallback(prompt, context) {
-    console.log('🔄 Generating fallback application...');
-    
+
     // Create a basic application based on the prompt
     const appName = this.extractAppName(prompt);
     const appType = this.detectAppType(prompt);
@@ -736,11 +722,9 @@ footer {
 
   generateFallbackJS(appName, appType) {
     return `// ${appName} JavaScript
-console.log('${appName} loaded successfully!');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing ${appType} app...');
-    
+
     // Initialize app
     initializeApp();
     
@@ -752,8 +736,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
-    console.log('Initializing ${appName}...');
-    
+
     // Add loading animation
     const container = document.querySelector('.container');
     if (container) {
@@ -797,8 +780,7 @@ function setupAppFeatures() {
             this.style.transform = 'translateY(0)';
         });
     });
-    
-    console.log('App features initialized');
+
 }
 
 // Export for module systems

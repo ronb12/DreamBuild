@@ -603,8 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.style.transform = 'scale(1)';
         }, 150);
     });
-    
-    console.log('${appName} loaded successfully!');
+
 });`,
       'package.json': `{
   "name": "${appName.toLowerCase().replace(/\s+/g, '-')}",
@@ -832,8 +831,7 @@ class ${appName.replace(/\s+/g, '')} {
         this.input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.processInput();
         });
-        
-        console.log('${appName} initialized successfully!');
+
     }
     
     processInput() {
@@ -1072,8 +1070,7 @@ class FactorialCalculator {
         this.input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.calculateFactorial();
         });
-        
-        console.log('${appName} initialized!');
+
     }
     
     calculateFactorial() {
@@ -1326,8 +1323,7 @@ class FibonacciCalculator {
         this.input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.generateFibonacci();
         });
-        
-        console.log('${appName} initialized!');
+
     }
     
     generateFibonacci() {
@@ -1635,8 +1631,7 @@ class WeatherApp {
         this.cityInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.searchWeather();
         });
-        
-        console.log('${appName} initialized!');
+
     }
     
     async searchWeather() {
@@ -2972,7 +2967,7 @@ app.post('/api/users', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`Server running on port \${PORT}\`);
+
 });`,
       'package.json': `{
   "name": "api-server",

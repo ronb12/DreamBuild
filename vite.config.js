@@ -11,18 +11,24 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
           'monaco-editor': ['monaco-editor'],
           'firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],
           'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': ['framer-motion', 'lucide-react']
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'editor-vendor': ['@monaco-editor/react'],
+          'router-vendor': ['react-router-dom'],
+          'utils-vendor': ['axios', 'date-fns', 'clsx', 'tailwind-merge']
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 500,
+    target: 'esnext',
+    cssCodeSplit: true
   },
   server: {
     port: 3000,

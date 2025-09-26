@@ -235,7 +235,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
   const handleScroll = () => {
     if (scrollContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-      setShowScrollTop(scrollTop > 0);
+      setShowScrollTop(scrollTop > 10);
       setShowScrollBottom(scrollTop < scrollHeight - clientHeight - 10);
     }
   };
@@ -278,10 +278,10 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
           >
             {/* Scroll to top indicator */}
             {showScrollTop && (
-              <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-card to-transparent p-2 z-10 rounded-t-xl">
+              <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-card via-card/80 to-transparent p-2 z-10 rounded-t-xl">
                 <button
                   onClick={scrollToTop}
-                  className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card/50 backdrop-blur-sm rounded-lg py-1"
                 >
                   <ChevronUp className="h-3 w-3" />
                   Scroll to top
@@ -293,12 +293,19 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
             <div 
               ref={scrollContainerRef}
               onScroll={handleScroll}
-              className="max-h-80 overflow-y-auto"
+              className="max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 relative"
               style={{
                 scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(156, 163, 175, 0.3) transparent'
+                scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent',
+                scrollBehavior: 'smooth'
               }}
             >
+              {/* Scroll indicator overlay */}
+              {showScrollBottom && (
+                <div className="absolute bottom-2 right-2 bg-primary/10 backdrop-blur-sm rounded-full p-1.5 z-20">
+                  <ChevronDown className="h-3 w-3 text-primary animate-bounce" />
+                </div>
+              )}
               <div className="p-2">
                 {isLoading ? (
                   <div className="p-4 text-center text-muted-foreground">
@@ -339,10 +346,10 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
             
             {/* Scroll to bottom indicator */}
             {showScrollBottom && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card to-transparent p-2 z-10 rounded-b-xl">
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card via-card/80 to-transparent p-2 z-10 rounded-b-xl">
                 <button
                   onClick={scrollToBottom}
-                  className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card/50 backdrop-blur-sm rounded-lg py-1"
                 >
                   <ChevronDown className="h-3 w-3" />
                   Scroll to bottom

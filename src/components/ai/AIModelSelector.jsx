@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, Sparkles, Zap, Brain, Code, Cloud, Server, Loader2, ChevronUp } from 'lucide-react';
+import { ChevronDown, Check, Sparkles, Code, Cloud, Server, Loader2, ChevronUp } from 'lucide-react';
 import simpleAIService from '../../services/simpleAIService';
 
 const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKey }) => {
@@ -10,22 +10,19 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
   const scrollContainerRef = useRef(null);
-  const modelsLoadedRef = useRef(false);
 
   // Load available models from services
   useEffect(() => {
-    if (modelsLoadedRef.current) return; // Prevent multiple loads
-    
     const loadModels = async () => {
       try {
         setIsLoading(true);
         console.log('🔧 Loading AI models...');
-        
+
         const services = simpleAIService.getServices();
         console.log('🔧 Services:', services);
-        
+
         const models = [];
-        
+
         // Add cloud AI models
         if (services['cloud-ai'] && services['cloud-ai'].models) {
           console.log('🔧 Cloud AI models:', services['cloud-ai'].models);
@@ -41,7 +38,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
             });
           });
         }
-        
+
         // Add local AI models
         if (services['local-ai'] && services['local-ai'].models) {
           console.log('🔧 Local AI models:', services['local-ai'].models);
@@ -57,36 +54,34 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
             });
           });
         }
-        
-        // Add auto select option only if not already present
-        if (!models.some(model => model.id === 'auto')) {
-          models.unshift({
-            id: 'auto',
-            name: 'Auto Select',
-            description: 'Automatically selects the best available model',
-            icon: Sparkles,
-            color: 'text-purple-500',
-            bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-            type: 'auto'
-          });
-        }
-        
+
+        // Add auto select option
+        models.unshift({
+          id: 'auto',
+          name: 'Auto Select',
+          description: 'Automatically selects the best available model',
+          icon: Sparkles,
+          color: 'text-purple-500',
+          bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+          type: 'auto'
+        });
+
         console.log('🔧 Final models before deduplication:', models);
-        
-        // Remove duplicates based on both id AND name to be extra safe
+
+        // Remove duplicates based on both id AND name
         const uniqueModels = models.filter((model, index, self) => {
           const isUniqueById = index === self.findIndex(m => m.id === model.id);
           const isUniqueByName = index === self.findIndex(m => m.name === model.name);
           return isUniqueById && isUniqueByName;
         });
-        
+
         console.log('🔧 Unique models after deduplication:', uniqueModels.length);
         console.log('🔧 Final unique models:', uniqueModels.map(m => `${m.name} (${m.id})`));
+        
         setAvailableModels(uniqueModels);
-        modelsLoadedRef.current = true;
       } catch (error) {
         console.error('❌ Error loading models:', error);
-        // Fallback to basic models with more options for scrolling test
+        // Fallback to basic models
         const fallbackModels = [
           {
             id: 'auto',
@@ -107,94 +102,93 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
             type: 'cloud'
           },
           {
-            id: 'deepseek-coder',
-            name: 'DeepSeek Coder',
-            description: 'Advanced code understanding and generation',
-            icon: Brain,
-            color: 'text-green-500',
-            bgColor: 'bg-green-50 dark:bg-green-900/20',
-            type: 'cloud'
-          },
-          {
-            id: 'starcoder',
-            name: 'StarCoder',
-            description: 'High-performance code generation model',
+            id: 'codellama-13b',
+            name: 'CodeLlama 13B',
+            description: 'Higher quality code generation',
             icon: Code,
             color: 'text-blue-600',
             bgColor: 'bg-blue-50 dark:bg-blue-900/20',
             type: 'cloud'
           },
           {
-            id: 'wizardcoder',
-            name: 'WizardCoder',
-            description: 'Wizard-level code generation capabilities',
-            icon: Brain,
-            color: 'text-purple-600',
-            bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-            type: 'cloud'
-          },
-          {
-            id: 'phi-3-mini',
-            name: 'Phi-3 Mini',
-            description: 'Microsoft\'s efficient language model',
+            id: 'starcoder-15b',
+            name: 'StarCoder 15B',
+            description: 'Excellent code completion',
             icon: Code,
             color: 'text-indigo-500',
             bgColor: 'bg-indigo-50 dark:bg-indigo-900/20',
             type: 'cloud'
           },
           {
-            id: 'llama-3',
-            name: 'Llama 3',
-            description: 'Meta\'s latest large language model',
-            icon: Brain,
-            color: 'text-orange-500',
-            bgColor: 'bg-orange-50 dark:bg-orange-900/20',
-            type: 'cloud'
-          },
-          {
-            id: 'mistral',
-            name: 'Mistral',
-            description: 'European AI model for code generation',
+            id: 'deepseek-coder',
+            name: 'DeepSeek Coder',
+            description: 'High-performance generation',
             icon: Code,
-            color: 'text-cyan-500',
-            bgColor: 'bg-cyan-50 dark:bg-cyan-900/20',
+            color: 'text-green-500',
+            bgColor: 'bg-green-50 dark:bg-green-900/20',
             type: 'cloud'
           },
           {
-            id: 'gemma',
-            name: 'Gemma',
-            description: 'Google\'s lightweight language model',
-            icon: Brain,
-            color: 'text-emerald-500',
-            bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
+            id: 'wizardcoder-7b',
+            name: 'WizardCoder 7B',
+            description: 'Great at following instructions',
+            icon: Code,
+            color: 'text-yellow-500',
+            bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
             type: 'cloud'
           },
           {
-            id: 'local-codellama',
-            name: 'Local CodeLlama',
-            description: 'CodeLlama running on your local machine',
-            icon: Server,
-            color: 'text-green-600',
-            bgColor: 'bg-green-50 dark:bg-green-900/20',
-            type: 'local'
+            id: 'phi-3-mini',
+            name: 'Phi-3 Mini',
+            description: 'Lightweight but powerful',
+            icon: Code,
+            color: 'text-purple-500',
+            bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+            type: 'cloud'
           },
           {
-            id: 'local-llama',
-            name: 'Local Llama',
-            description: 'Llama model running locally',
-            icon: Server,
-            color: 'text-green-700',
-            bgColor: 'bg-green-50 dark:bg-green-900/20',
-            type: 'local'
+            id: 'llama3-8b',
+            name: 'Llama 3 8B',
+            description: 'General purpose model',
+            icon: Code,
+            color: 'text-red-500',
+            bgColor: 'bg-red-50 dark:bg-red-900/20',
+            type: 'cloud'
+          },
+          {
+            id: 'mistral-7b',
+            name: 'Mistral 7B',
+            description: 'Fast and efficient coding assistant',
+            icon: Code,
+            color: 'text-indigo-500',
+            bgColor: 'bg-indigo-50 dark:bg-indigo-900/20',
+            type: 'cloud'
+          },
+          {
+            id: 'gemma-7b',
+            name: 'Gemma 7B',
+            description: 'Google\'s lightweight model',
+            icon: Code,
+            color: 'text-pink-500',
+            bgColor: 'bg-pink-50 dark:bg-pink-900/20',
+            type: 'cloud'
+          },
+          {
+            id: 'qwen-7b',
+            name: 'Qwen 7B',
+            description: 'Alibaba\'s coding model',
+            icon: Code,
+            color: 'text-teal-500',
+            bgColor: 'bg-teal-50 dark:bg-teal-900/20',
+            type: 'cloud'
           }
         ];
-        console.log('🔧 Using fallback models:', fallbackModels);
         setAvailableModels(fallbackModels);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     loadModels();
   }, []);
 
@@ -225,7 +219,6 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
   // Check scroll indicators when dropdown opens
   useEffect(() => {
     if (showModelSelector && scrollContainerRef.current) {
-      // Small delay to ensure DOM is updated
       setTimeout(() => {
         handleScroll();
       }, 100);
@@ -307,40 +300,40 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
               }}
             >
               <div className="p-2">
-              {isLoading ? (
-                <div className="p-4 text-center text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin mx-auto mb-2" />
-                  Loading models...
-                </div>
-              ) : (
-                availableModels.map((model) => {
-                const Icon = model.icon;
-                const isSelected = model.id === aiModel;
-                
-                return (
-                  <button
-                    key={model.id}
-                    onClick={() => handleModelSelect(model.id)}
-                    className={`w-full p-3 rounded-lg text-left transition-colors hover:bg-muted/50 ${
-                      isSelected ? 'bg-primary/10' : ''
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg ${model.bgColor} flex items-center justify-center`}>
-                        <Icon className={`h-4 w-4 ${model.color}`} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">{model.name}</span>
-                          {isSelected && <Check className="h-4 w-4 text-primary" />}
+                {isLoading ? (
+                  <div className="p-4 text-center text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin mx-auto mb-2" />
+                    Loading models...
+                  </div>
+                ) : (
+                  availableModels.map((model) => {
+                    const Icon = model.icon;
+                    const isSelected = model.id === aiModel;
+                    
+                    return (
+                      <button
+                        key={model.id}
+                        onClick={() => handleModelSelect(model.id)}
+                        className={`w-full p-3 rounded-lg text-left transition-colors hover:bg-muted/50 ${
+                          isSelected ? 'bg-primary/10' : ''
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg ${model.bgColor} flex items-center justify-center`}>
+                            <Icon className={`h-4 w-4 ${model.color}`} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-sm">{model.name}</span>
+                              {isSelected && <Check className="h-4 w-4 text-primary" />}
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">{model.description}</p>
+                          </div>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">{model.description}</p>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })
-              )}
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
             

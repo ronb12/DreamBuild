@@ -15,6 +15,7 @@ import {
 import { toast } from 'react-hot-toast'
 import simpleAIService from '../services/simpleAIService'
 import aiAgentService from '../services/aiAgentService'
+import conversationService from '../services/conversationService'
 import AIModelSelector from './ai/AIModelSelector'
 import AIChatInterface from './ai/AIChatInterface'
 
@@ -90,7 +91,20 @@ export default function AIPromptSimplified() {
     setPrompt('')
     setIsGenerating(true)
 
-    // Add user message
+    // Initialize conversation if not already done
+    if (!conversationService.currentConversation) {
+      await conversationService.initializeConversation(currentProject.id, {
+        name: currentProject.name,
+        files: currentProject.files,
+        features: currentProject.features || [],
+        techStack: currentProject.techStack || [],
+        appType: currentProject.appType || 'web',
+        complexity: currentProject.complexity || 'basic',
+        industry: currentProject.industry || 'general'
+      })
+    }
+
+    // Add user message to conversation
     const userMessage = {
       id: Date.now(),
       type: 'user',
@@ -99,12 +113,16 @@ export default function AIPromptSimplified() {
     }
 
     setMessages(prev => [...prev, userMessage])
+    await conversationService.addMessage(userPrompt)
 
     try {
       // Check if this is an incremental development request
       const isIncremental = isIncrementalRequest(userPrompt)
       
-      // Generate AI response
+      // Get conversation context for better AI responses
+      const conversationContext = conversationService.getConversationContext()
+      
+      // Generate AI response with conversation context
       const response = await simpleAIService.generateCode({
         prompt: userPrompt,
         projectName: projectName || currentProject.name,
@@ -113,11 +131,13 @@ export default function AIPromptSimplified() {
           activeFile: currentProject.activeFile,
           config: currentProject.config,
           isIncremental: isIncremental,
-          existingProject: isIncremental ? currentProject : null
+          existingProject: isIncremental ? currentProject : null,
+          conversationContext: conversationContext,
+          conversationHistory: conversationService.getConversationHistory()
         }
       })
 
-      // Add AI response
+      // Add AI response to conversation
       let responseMessage = 'Code generated successfully!'
       
       if (response.type === 'incremental_update') {
@@ -131,6 +151,9 @@ export default function AIPromptSimplified() {
         toast.success(responseMessage)
       }
 
+      // Save AI response to conversation
+      await conversationService.addMessage(responseMessage, null, 'assistant')
+
       const aiMessage = {
         id: Date.now() + 1,
         type: 'assistant',
@@ -142,6 +165,10 @@ export default function AIPromptSimplified() {
       }
 
       setMessages(prev => [...prev, aiMessage])
+
+      // Generate feature recommendations for continuous conversation
+      const recommendations = await conversationService.generateFeatureRecommendations()
+      setAiRecommendations(recommendations)
 
       // Update project files if new files were generated
       if (response.files && Object.keys(response.files).length > 0) {
@@ -183,8 +210,24 @@ export default function AIPromptSimplified() {
 
   const clearChat = () => {
     setMessages([])
+    conversationService.clearConversation()
     toast.success('Chat cleared!')
   }
+
+  // Handle corrections and improvements
+  const handleCorrection = async (correctionPrompt) => {
+    if (!correctionPrompt.trim() || isGenerating) return
+
+    setPrompt(correctionPrompt)
+    await handleGenerate()
+  }
+
+  // Load conversation history when component mounts
+  useEffect(() => {
+    if (currentProject.id) {
+      conversationService.loadConversationHistory(currentProject.id)
+    }
+  }, [currentProject.id])
 
   console.log('🔧 AIPromptSimplified render - currentProject:', currentProject)
   console.log('🔧 AIPromptSimplified render - prompt:', prompt)
@@ -217,13 +260,33 @@ export default function AIPromptSimplified() {
 
       {/* AI Model Selector */}
       <div className="p-4 border-b border-border/50">
-        <AIModelSelector
+        <AIModelSelector 
           aiModel={aiModel}
           setAIModel={setAIModel}
           modelUpdateKey={modelUpdateKey}
           setModelUpdateKey={setModelUpdateKey}
         />
       </div>
+
+      {/* Feature Recommendations */}
+      {aiRecommendations.length > 0 && (
+        <div className="p-4 border-b border-border/50">
+          <h3 className="text-sm font-medium text-muted-foreground mb-3">💡 Suggested Features</h3>
+          <div className="space-y-2">
+            {aiRecommendations.slice(0, 3).map((rec, index) => (
+              <button
+                key={index}
+                onClick={() => handleCorrection(`Add ${rec.name.toLowerCase()}: ${rec.description}`)}
+                className="w-full text-left p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-border/50"
+              >
+                <div className="font-medium text-sm">{rec.name}</div>
+                <div className="text-xs text-muted-foreground mt-1">{rec.description}</div>
+                <div className="text-xs text-primary mt-1">Click to add this feature</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Chat Interface */}
       <div className="flex-1 overflow-hidden">

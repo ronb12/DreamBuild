@@ -107,12 +107,20 @@ class CloudAIService {
         return await this.generateIncrementalCode(prompt, context)
       }
       
-      // Enhanced context analysis (like Cursor)
+      // Enhanced context analysis with conversation history
       const enhancedContext = this.analyzeProjectContext(context)
+      
+      // Add conversation context if available
+      if (context.conversationContext) {
+        enhancedContext.conversationHistory = context.conversationHistory || []
+        enhancedContext.recentMessages = context.conversationContext.recentMessages || []
+        enhancedContext.projectContext = context.conversationContext
+      }
+      
       console.log('🧠 Enhanced context analysis:', enhancedContext)
       
       // Generate code with full context awareness
-      const generatedCode = this.generateContextAwareCode(prompt, enhancedContext)
+      const generatedCode = await this.generateContextAwareCode(prompt, enhancedContext)
       
       // Generate app name
       const appName = this.generateAppName(prompt)
@@ -142,7 +150,7 @@ class CloudAIService {
     } catch (error) {
       console.error('❌ Code generation failed:', error)
       // Enhanced fallback
-      const fallbackCode = this.createFallbackResponse(prompt, context)
+      const fallbackCode = await this.createFallbackResponse(prompt, context)
       const appName = this.generateAppName(prompt)
       
       return {
@@ -224,12 +232,12 @@ class CloudAIService {
   }
 
   // Context-aware code generation (like Cursor)
-  generateContextAwareCode(prompt, context) {
+  async generateContextAwareCode(prompt, context) {
     console.log('🧠 Context-aware generation:', context)
     
     // Use context to inform code generation
     const analysis = this.analyzeUserRequest(prompt)
-    const contextualCode = this.generateSpecificCode(prompt, analysis)
+    const contextualCode = await this.generateSpecificCode(prompt, analysis)
     
     // Enhance with context awareness
     const enhancedCode = this.enhanceWithContext(contextualCode, context)
@@ -398,55 +406,70 @@ class CloudAIService {
     return 'html' // Default to HTML
   }
 
-  // Generate specific code based on analysis
-  generateSpecificCode(prompt, analysis) {
+  // Generate specific code based on analysis using AI
+  async generateSpecificCode(prompt, analysis) {
     console.log('🎯 Generating specific code for:', analysis.specificFeature || 'general app')
     
-    // Handle specific features first
-    if (analysis.specificFeature) {
-      return this.generateSpecificFeature(prompt, analysis.specificFeature)
-    }
-    
-    // Handle specific functionality
-    if (analysis.hasCalculator) {
+    try {
+      // Use AI to generate code based on the actual prompt
+      const systemPrompt = this.createSystemPrompt({
+        projectType: 'web',
+        existingFiles: [],
+        dependencies: [],
+        architecture: 'monolithic',
+        frameworks: ['html', 'css', 'javascript']
+      })
+      
+      const fullPrompt = `${systemPrompt}\n\nUser Request: ${prompt}\n\nGenerate a complete, working application with all the features requested. Return the code as a JSON object with files.`
+      
+      // Select the best model for the task
+      const model = this.selectBestModel(prompt, {})
+      const modelKey = this.availableModels[model]?.model || 'codellama/CodeLlama-7b-Python-hf'
+      
+      console.log('🤖 Using AI model:', modelKey)
+      console.log('📝 Full prompt:', fullPrompt)
+      
+      // Call AI API to generate code
+      const aiResponse = await this.callHuggingFaceAPI(
+        modelKey,
+        fullPrompt,
+        2048, // max tokens
+        0.7   // temperature
+      )
+      
+      console.log('🤖 AI Response received:', aiResponse)
+      
+      // Parse AI response
+      const generatedCode = await this.parseAIResponse(aiResponse, prompt)
+      
+      if (generatedCode && Object.keys(generatedCode).length > 0) {
+        console.log('✅ AI generated code successfully')
+        return generatedCode
+      } else {
+        console.log('⚠️ AI response was empty, using fallback')
+        return await this.createFallbackResponse(prompt, {})
+      }
+      
+    } catch (error) {
+      console.error('❌ AI code generation failed:', error)
+      console.log('🔄 Falling back to template generation...')
+      
+      // Fallback to templates only if AI fails
+      if (analysis.hasTodo) {
+        return this.createTodoTemplate(prompt)
+      }
+      
+      if (analysis.hasAPI) {
+        return this.createAPITemplate(prompt)
+      }
+      
+      if (analysis.specificFeature === 'weather') {
+        return this.generateWeatherApp(prompt)
+      }
+      
+      // Default fallback
       return this.createDefaultTemplate(prompt)
     }
-    
-    if (analysis.hasTodo) {
-      return this.createTodoTemplate(prompt)
-    }
-    
-    if (analysis.hasGame) {
-      return this.createDefaultTemplate(prompt)
-    }
-    
-    if (analysis.hasAnimation) {
-      return this.createDefaultTemplate(prompt)
-    }
-    
-    if (analysis.hasAPI) {
-      return this.createAPITemplate(prompt)
-    }
-    
-    if (analysis.specificFeature === 'weather') {
-      return this.generateWeatherApp(prompt)
-    }
-    
-    // Handle technology preferences
-    if (analysis.wantsReact) {
-      return this.generateReactApp(prompt)
-    }
-    
-    if (analysis.wantsPython) {
-      return this.generatePythonApp(prompt)
-    }
-    
-    if (analysis.wantsNode) {
-      return this.generateNodeApp(prompt)
-    }
-    
-    // Default to web app with detected features
-    return this.generateWebAppWithFeatures(prompt, analysis)
   }
 
   // Select the best model for the task
@@ -502,7 +525,13 @@ class CloudAIService {
 
   // Create system prompt
   createSystemPrompt(context = {}) {
-    return `You are an expert software developer and code generator. Generate complete, working applications based on user requests.
+    const conversationContext = context.conversationHistory?.length > 0 ? 
+      `\n\nConversation Context:
+- Previous messages: ${context.conversationHistory.length} messages
+- Recent conversation: ${context.recentMessages?.slice(-3).map(msg => `${msg.type}: ${msg.content}`).join('\n') || 'none'}
+- Project context: ${JSON.stringify(context.projectContext || {})}` : ''
+
+    return `You are an expert software developer and code generator with advanced conversation capabilities. Generate complete, working applications based on user requests and maintain context across conversations.
 
 Guidelines:
 1. Always generate complete, runnable code
@@ -510,6 +539,17 @@ Guidelines:
 3. Use modern best practices
 4. Make the code clean and well-commented
 5. Ensure the application is functional and user-friendly
+6. Maintain conversation context and remember previous requests
+7. Handle corrections and improvements intelligently
+8. Provide incremental updates when requested
+9. Suggest additional features based on context
+
+Context:
+- Project Type: ${context.projectType || 'web'}
+- Existing Files: ${context.existingFiles?.length || 0} files
+- Dependencies: ${context.dependencies?.join(', ') || 'none'}
+- Architecture: ${context.architecture || 'monolithic'}
+- Frameworks: ${context.frameworks?.join(', ') || 'vanilla'}${conversationContext}
 
 Return your response as a JSON object with this structure:
 {
@@ -518,14 +558,16 @@ Return your response as a JSON object with this structure:
     "filename2.ext": "file content here"
   },
   "description": "Brief description of what was generated",
-  "instructions": "How to run or use the generated code"
+  "instructions": "How to run or use the generated code",
+  "message": "Conversational response to the user",
+  "suggestions": ["Additional feature suggestions based on context"]
 }
 
-Generate practical, working applications that users can immediately use.`
+Generate practical, working applications that users can immediately use. If this is a correction or improvement request, modify the existing code appropriately while maintaining functionality.`
   }
 
   // Parse AI response
-  parseAIResponse(response, originalPrompt) {
+  async parseAIResponse(response, originalPrompt) {
     try {
       // Handle different response formats from Hugging Face
       let content = ''
@@ -550,11 +592,11 @@ Generate practical, working applications that users can immediately use.`
       }
       
       // If no valid JSON, create fallback response
-      return this.createFallbackResponse(originalPrompt, {})
+      return await this.createFallbackResponse(originalPrompt, {})
       
     } catch (error) {
       console.error('❌ Failed to parse AI response:', error)
-      return this.createFallbackResponse(originalPrompt, {})
+      return await this.createFallbackResponse(originalPrompt, {})
     }
   }
 
@@ -933,7 +975,7 @@ class ${appName.replace(/\s+/g, '')} {
     
     showResult(message, type) {
         this.result.innerHTML = message;
-        this.result.className = \`result \${type}\`;
+        this.result.className = 'result ' + type;
         
         // Clear input
         this.input.value = '';
@@ -1181,7 +1223,7 @@ class FactorialCalculator {
     
     showResult(message, type) {
         this.result.innerHTML = message;
-        this.result.className = \`result \${type}\`;
+        this.result.className = 'result ' + type;
     }
 }
 
@@ -1439,7 +1481,7 @@ class FibonacciCalculator {
     
     showResult(message, type) {
         this.result.innerHTML = message;
-        this.result.className = \`result \${type}\`;
+        this.result.className = 'result ' + type;
     }
 }
 
@@ -2445,18 +2487,61 @@ ${originalContent}`
     return creativeNames[Math.floor(Math.random() * creativeNames.length)];
   }
 
-  // Create fallback response
-  createFallbackResponse(prompt, context = {}) {
-    console.log('🔄 Creating fallback response for prompt:', prompt)
+  // Create fallback response using AI generation
+  async createFallbackResponse(prompt, context = {}) {
+    console.log('🔄 Creating AI-generated fallback response for prompt:', prompt)
     
-    // Analyze prompt to determine template
+    try {
+      // Try to generate code using AI with a simpler prompt
+      const simplePrompt = `Create a complete web application based on this request: ${prompt}. 
+      
+      Generate HTML, CSS, and JavaScript files that implement the requested features. 
+      Return the code as a JSON object with this structure:
+      {
+        "files": {
+          "index.html": "HTML content here",
+          "styles.css": "CSS content here", 
+          "script.js": "JavaScript content here"
+        }
+      }
+      
+      Make sure the application is fully functional and includes all requested features.`
+      
+      // Use a reliable model for fallback
+      const modelKey = 'codellama/CodeLlama-7b-Python-hf'
+      
+      console.log('🤖 Fallback: Using AI model:', modelKey)
+      
+      const aiResponse = await this.callHuggingFaceAPI(
+        modelKey,
+        simplePrompt,
+        1500, // max tokens
+        0.5   // lower temperature for more consistent output
+      )
+      
+      console.log('🤖 Fallback AI Response received:', aiResponse)
+      
+      // Parse AI response
+      const generatedCode = await this.parseAIResponse(aiResponse, prompt)
+      
+      if (generatedCode && Object.keys(generatedCode).length > 0) {
+        console.log('✅ Fallback AI generated code successfully')
+        return generatedCode
+      }
+      
+    } catch (error) {
+      console.error('❌ Fallback AI generation failed:', error)
+    }
+    
+    // Only use templates as absolute last resort
+    console.log('⚠️ Using template as absolute last resort')
     const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
     const lowerPrompt = promptString.toLowerCase()
     
-    if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('analytics')) {
-      return this.createDashboardTemplate(prompt)
-    } else if (lowerPrompt.includes('todo') || lowerPrompt.includes('task')) {
+    if (lowerPrompt.includes('todo') || lowerPrompt.includes('task')) {
       return this.createTodoTemplate(prompt)
+    } else if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('analytics')) {
+      return this.createDashboardTemplate(prompt)
     } else if (lowerPrompt.includes('ecommerce') || lowerPrompt.includes('store') || lowerPrompt.includes('shop')) {
       return this.createEcommerceTemplate(prompt)
     } else if (lowerPrompt.includes('api') || lowerPrompt.includes('backend')) {
@@ -2679,10 +2764,10 @@ ${originalContent}`
         <div class="controls">
             <h2>Dashboard Controls</h2>
             <div class="button-group">
-                <button onclick="refreshData()">Refresh Data</button>
-                <button class="refresh-btn" onclick="updateStats()">Update Stats</button>
-                <button class="export-btn" onclick="exportData()">Export Data</button>
-                <button onclick="showAlert()">Show Alert</button>
+                <button id="refreshDataBtn">Refresh Data</button>
+                <button class="refresh-btn" id="updateStatsBtn">Update Stats</button>
+                <button class="export-btn" id="exportDataBtn">Export Data</button>
+                <button id="showAlertBtn">Show Alert</button>
             </div>
             <div class="alert hidden" id="alert">
                 Dashboard updated successfully!
@@ -2694,7 +2779,7 @@ ${originalContent}`
             <div class="chart-placeholder">
                 Interactive Chart Area
             </div>
-            <button onclick="generateChart()">Generate New Chart</button>
+            <button id="generateChartBtn">Generate New Chart</button>
         </div>
     </div>
 
@@ -2779,8 +2864,72 @@ ${originalContent}`
             showAlert('New chart generated!');
         }
 
-        // Initialize the dashboard
-        document.addEventListener('DOMContentLoaded', initDashboard);
+        // Initialize the dashboard with proper event listeners
+        function initDashboardWithEvents() {
+            console.log('Dashboard initializing with event listeners...');
+            
+            // Get button elements
+            const refreshBtn = document.getElementById('refreshDataBtn');
+            const updateBtn = document.getElementById('updateStatsBtn');
+            const exportBtn = document.getElementById('exportDataBtn');
+            const alertBtn = document.getElementById('showAlertBtn');
+            const chartBtn = document.getElementById('generateChartBtn');
+            
+            // Add event listeners
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    refreshData();
+                });
+                console.log('Refresh button listener added');
+            }
+            
+            if (updateBtn) {
+                updateBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    updateStats();
+                });
+                console.log('Update button listener added');
+            }
+            
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    exportData();
+                });
+                console.log('Export button listener added');
+            }
+            
+            if (alertBtn) {
+                alertBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showAlert();
+                });
+                console.log('Alert button listener added');
+            }
+            
+            if (chartBtn) {
+                chartBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    generateChart();
+                });
+                console.log('Chart button listener added');
+            }
+            
+            // Initialize dashboard
+            initDashboard();
+            console.log('Dashboard initialized successfully!');
+        }
+
+        // Multiple initialization methods for maximum compatibility
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDashboardWithEvents);
+        } else {
+            initDashboardWithEvents();
+        }
+        
+        // Also try on window load as fallback
+        window.addEventListener('load', initDashboardWithEvents);
     </script>
 </body>
 </html>`,
@@ -2907,7 +3056,7 @@ body {
     }
   }
 
-  // Create todo template
+  // Create comprehensive todo template with 10+ features
   createTodoTemplate(prompt) {
     return {
       'index.html': `<!DOCTYPE html>
@@ -2915,7 +3064,7 @@ body {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App</title>
+    <title>Advanced Todo App - 10 Features</title>
     <style>
       * {
         margin: 0;
@@ -2927,11 +3076,11 @@ body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
-        padding: 2rem;
+        padding: 1rem;
       }
 
       .todo-app {
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
         background: white;
         padding: 2rem;
@@ -2946,14 +3095,40 @@ body {
         font-size: 2.5rem;
       }
 
+      .stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .stat {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+      }
+
       .input-container {
         display: flex;
         gap: 1rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
       }
 
       input[type="text"] {
         flex: 1;
+        min-width: 200px;
         padding: 1rem;
         border: 2px solid #e1e5e9;
         border-radius: 8px;
@@ -2966,33 +3141,101 @@ body {
         border-color: #667eea;
       }
 
-       button {
-         padding: 1rem 2rem;
-         background: #667eea;
-         color: white;
-         border: none;
-         border-radius: 8px;
-         font-size: 1rem;
-         cursor: pointer;
-         transition: all 0.3s;
-         font-weight: 500;
-       }
+      input[type="date"] {
+        padding: 1rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.3s;
+      }
 
-       button:hover {
-         background: #5a6fd8;
-         transform: translateY(-1px);
-         box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-       }
+      select {
+        padding: 1rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        background: white;
+        cursor: pointer;
+      }
 
-       button:active {
-         transform: translateY(0);
-         box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
-       }
+      button {
+        padding: 1rem 1.5rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      button:hover {
+        background: #5a6fd8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .secondary-btn {
+        background: #6c757d;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .secondary-btn:hover {
+        background: #5a6268;
+      }
+
+      .danger-btn {
+        background: #dc3545;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .danger-btn:hover {
+        background: #c82333;
+      }
+
+      .success-btn {
+        background: #28a745;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .success-btn:hover {
+        background: #218838;
+      }
+
+      .controls {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .search-container {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .search-container input {
+        width: 100%;
+        margin-bottom: 0;
+      }
 
       .todos {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        margin-bottom: 2rem;
       }
 
       .todo-item {
@@ -3003,10 +3246,29 @@ body {
         background: #f8f9fa;
         border-radius: 8px;
         transition: all 0.3s;
+        border-left: 4px solid #e9ecef;
       }
 
       .todo-item:hover {
         background: #e9ecef;
+        transform: translateX(4px);
+      }
+
+      .todo-item.completed {
+        opacity: 0.7;
+        border-left-color: #28a745;
+      }
+
+      .todo-item.high-priority {
+        border-left-color: #dc3545;
+      }
+
+      .todo-item.medium-priority {
+        border-left-color: #ffc107;
+      }
+
+      .todo-item.low-priority {
+        border-left-color: #17a2b8;
       }
 
       .todo-item.completed .todo-text {
@@ -3018,90 +3280,177 @@ body {
         flex: 1;
         cursor: pointer;
         font-size: 1.1rem;
+        word-break: break-word;
       }
 
-       .delete-btn {
-         background: #dc3545;
-         padding: 0.5rem 1rem;
-         font-size: 0.9rem;
-         cursor: pointer;
-         border: none;
-         border-radius: 4px;
-         transition: background 0.3s;
-       }
+      .todo-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        font-size: 0.8rem;
+        color: #6c757d;
+        min-width: 120px;
+      }
 
-       .delete-btn:hover {
-         background: #c82333;
-       }
-
-       .delete-btn:active {
-         background: #bd2130;
-         transform: translateY(1px);
-       }
+      .todo-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
 
       .no-todos {
         text-align: center;
         color: #6c757d;
         font-style: italic;
-        margin-top: 2rem;
+        margin: 2rem 0;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      .filter-active {
+        background: #667eea !important;
+        color: white !important;
+      }
+
+      .priority-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      .priority-high {
+        background: #dc3545;
+        color: white;
+      }
+
+      .priority-medium {
+        background: #ffc107;
+        color: #212529;
+      }
+
+      .priority-low {
+        background: #17a2b8;
+        color: white;
+      }
+
+      .due-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
+
+      .due-date.overdue {
+        color: #dc3545;
+        font-weight: bold;
+      }
+
+      .due-date.due-today {
+        color: #ffc107;
+        font-weight: bold;
+      }
+
+      @media (max-width: 768px) {
+        .todo-app {
+          padding: 1rem;
+        }
+        
+        .input-container {
+          flex-direction: column;
+        }
+        
+        .controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        
+        .todo-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+        
+        .todo-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
       }
     </style>
 </head>
 <body>
     <div class="todo-app">
-        <h1>Todo App</h1>
+        <h1>🚀 Advanced Todo App</h1>
+        <p style="text-align: center; color: #6c757d; margin-bottom: 2rem;">10 Powerful Features for Maximum Productivity</p>
         
+        <!-- Stats Dashboard -->
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="totalTodos">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="activeTodos">0</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="completedTodos">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="overdueTodos">0</div>
+                <div class="stat-label">Overdue</div>
+            </div>
+        </div>
+        
+        <!-- Input Form -->
         <div class="input-container">
             <input type="text" id="todoInput" placeholder="Add a new todo..." />
+            <input type="date" id="dueDate" />
+            <select id="priority">
+                <option value="low">Low Priority</option>
+                <option value="medium" selected>Medium Priority</option>
+                <option value="high">High Priority</option>
+            </select>
             <button id="addBtn">Add Todo</button>
         </div>
         
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search todos..." />
+            </div>
+            <button id="filterAll" class="secondary-btn filter-active">All</button>
+            <button id="filterActive" class="secondary-btn">Active</button>
+            <button id="filterCompleted" class="secondary-btn">Completed</button>
+            <button id="sortBtn" class="secondary-btn">Sort by Date</button>
+            <button id="clearCompleted" class="danger-btn">Clear Completed</button>
+        </div>
+        
+        <!-- Todos List -->
         <div class="todos" id="todos"></div>
         
-        <p class="no-todos" id="noTodos" style="display: none;">No todos yet. Add one above!</p>
+        <p class="no-todos" id="noTodos" style="display: none;">No todos yet. Add one above to get started! 🎯</p>
     </div>
 
     <script>
         // Global variables
         let todos = [];
         let nextId = 1;
+        let currentFilter = 'all';
+        let sortBy = 'date';
 
         // Initialize the app
         function initApp() {
-            console.log('Todo app initializing...');
-            
-            // Wait for elements to be available
-            const checkElements = () => {
-                const input = document.getElementById('todoInput');
-                const addBtn = document.getElementById('addBtn');
-                const container = document.getElementById('todos');
-                
-                if (input && addBtn && container) {
-                    console.log('All elements found, setting up app');
-                    setupEventListeners();
-                    renderTodos();
-                    return true;
-                }
-                return false;
-            };
-
-            // Try immediately, then with intervals
-            if (!checkElements()) {
-                const interval = setInterval(() => {
-                    if (checkElements()) {
-                        clearInterval(interval);
-                    }
-                }, 100);
-                
-                // Fallback timeout
-                setTimeout(() => {
-                    clearInterval(interval);
-                    console.log('App initialization timeout');
-                }, 3000);
-            }
+            console.log('Advanced Todo app initializing...');
+            loadTodos();
+            setupEventListeners();
+            renderTodos();
+            updateStats();
         }
 
         function setupEventListeners() {
+            // Add todo
             const input = document.getElementById('todoInput');
             const addBtn = document.getElementById('addBtn');
             
@@ -3112,7 +3461,6 @@ body {
                         addTodo();
                     }
                 });
-                console.log('Input event listener added');
             }
             
             if (addBtn) {
@@ -3120,285 +3468,596 @@ body {
                     e.preventDefault();
                     addTodo();
                 });
-                console.log('Add button event listener added');
             }
+
+            // Search
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    renderTodos();
+                });
+            }
+
+            // Filters
+            document.getElementById('filterAll').addEventListener('click', () => setFilter('all'));
+            document.getElementById('filterActive').addEventListener('click', () => setFilter('active'));
+            document.getElementById('filterCompleted').addEventListener('click', () => setFilter('completed'));
+
+            // Sort
+            document.getElementById('sortBtn').addEventListener('click', toggleSort);
+
+            // Clear completed
+            document.getElementById('clearCompleted').addEventListener('click', clearCompleted);
         }
 
         function addTodo() {
-            console.log('addTodo called');
             const input = document.getElementById('todoInput');
-            if (!input) {
-                console.error('Input element not found');
-                return;
-            }
+            const dueDate = document.getElementById('dueDate');
+            const priority = document.getElementById('priority');
+            
+            if (!input) return;
             
             const text = input.value.trim();
-            console.log('Input text:', text);
+            if (!text) return;
             
-            if (text) {
-                const newTodo = {
-                    id: nextId++,
-                    text: text,
-                    completed: false
-                };
-                todos.push(newTodo);
-                
-                input.value = '';
-                renderTodos();
-                console.log('Todo added:', newTodo);
-                console.log('Total todos:', todos.length);
-            }
+            const newTodo = {
+                id: nextId++,
+                text: text,
+                completed: false,
+                priority: priority.value,
+                dueDate: dueDate.value || null,
+                createdAt: new Date().toISOString(),
+                completedAt: null
+            };
+            
+            todos.push(newTodo);
+            input.value = '';
+            dueDate.value = '';
+            priority.value = 'medium';
+            
+            saveTodos();
+            renderTodos();
+            updateStats();
+            
+            console.log('Todo added:', newTodo);
         }
 
         function toggleTodo(id) {
-            console.log('toggleTodo called with id:', id);
             const todo = todos.find(t => t.id === id);
             if (todo) {
                 todo.completed = !todo.completed;
+                todo.completedAt = todo.completed ? new Date().toISOString() : null;
+                saveTodos();
                 renderTodos();
+                updateStats();
                 console.log('Todo toggled:', todo);
             }
         }
 
         function deleteTodo(id) {
-            console.log('deleteTodo called with id:', id);
-            const initialLength = todos.length;
             todos = todos.filter(t => t.id !== id);
-            if (todos.length < initialLength) {
+            saveTodos();
+            renderTodos();
+            updateStats();
+            console.log('Todo deleted');
+        }
+
+        function editTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (!todo) return;
+            
+            const newText = prompt('Edit todo:', todo.text);
+            if (newText && newText.trim() !== todo.text) {
+                todo.text = newText.trim();
+                saveTodos();
                 renderTodos();
-                console.log('Todo deleted, remaining:', todos.length);
+                console.log('Todo edited:', todo);
             }
         }
 
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-active').forEach(btn => {
+                btn.classList.remove('filter-active');
+            });
+            document.getElementById('filter' + filter.charAt(0).toUpperCase() + filter.slice(1)).classList.add('filter-active');
+            
+            renderTodos();
+        }
+
+        function toggleSort() {
+            sortBy = sortBy === 'date' ? 'priority' : 'date';
+            document.getElementById('sortBtn').textContent = sortBy === 'date' ? 'Sort by Priority' : 'Sort by Date';
+            renderTodos();
+        }
+
+        function clearCompleted() {
+            if (confirm('Are you sure you want to clear all completed todos?')) {
+                todos = todos.filter(t => !t.completed);
+                saveTodos();
+                renderTodos();
+                updateStats();
+                console.log('Completed todos cleared');
+            }
+        }
+
+        function getFilteredTodos() {
+            let filtered = todos;
+            
+            // Apply search filter
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(todo => 
+                    todo.text.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Apply status filter
+            switch (currentFilter) {
+                case 'active':
+                    filtered = filtered.filter(todo => !todo.completed);
+                    break;
+                case 'completed':
+                    filtered = filtered.filter(todo => todo.completed);
+                    break;
+            }
+            
+            // Apply sorting
+            filtered.sort((a, b) => {
+                if (sortBy === 'priority') {
+                    const priorityOrder = { high: 3, medium: 2, low: 1 };
+                    return priorityOrder[b.priority] - priorityOrder[a.priority];
+                } else {
+                    return new Date(a.createdAt) - new Date(b.createdAt);
+                }
+            });
+            
+            return filtered;
+        }
+
         function renderTodos() {
-            console.log('renderTodos called');
             const container = document.getElementById('todos');
             const noTodos = document.getElementById('noTodos');
             
-            if (!container) {
-                console.error('Container element not found');
-                return;
-            }
+            if (!container) return;
             
+            const filteredTodos = getFilteredTodos();
             container.innerHTML = '';
             
-            if (todos.length === 0) {
-                if (noTodos) noTodos.style.display = 'block';
-                console.log('No todos to display');
+            if (filteredTodos.length === 0) {
+                noTodos.style.display = 'block';
                 return;
             }
             
-            if (noTodos) noTodos.style.display = 'none';
+            noTodos.style.display = 'none';
             
-            todos.forEach(todo => {
+            filteredTodos.forEach(todo => {
                 const todoElement = document.createElement('div');
-                todoElement.className = 'todo-item' + (todo.completed ? ' completed' : '');
+                todoElement.className = 'todo-item ' + (todo.completed ? 'completed' : '') + ' ' + todo.priority + '-priority';
                 
                 const textSpan = document.createElement('span');
                 textSpan.className = 'todo-text';
                 textSpan.textContent = todo.text;
-                textSpan.style.cursor = 'pointer';
-                textSpan.addEventListener('click', function() {
-                    toggleTodo(todo.id);
-                });
+                textSpan.addEventListener('click', () => toggleTodo(todo.id));
+                
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'todo-meta';
+                
+                const prioritySpan = document.createElement('span');
+                prioritySpan.className = 'priority-badge priority-' + todo.priority;
+                prioritySpan.textContent = todo.priority;
+                
+                const dueDateSpan = document.createElement('span');
+                dueDateSpan.className = 'due-date';
+                if (todo.dueDate) {
+                    const dueDate = new Date(todo.dueDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    dueDate.setHours(0, 0, 0, 0);
+                    
+                    if (dueDate < today && !todo.completed) {
+                        dueDateSpan.classList.add('overdue');
+                        dueDateSpan.textContent = 'Overdue: ' + dueDate.toLocaleDateString();
+                    } else if (dueDate.getTime() === today.getTime()) {
+                        dueDateSpan.classList.add('due-today');
+                        dueDateSpan.textContent = 'Due today';
+                    } else {
+                        dueDateSpan.textContent = 'Due: ' + dueDate.toLocaleDateString();
+                    }
+                } else {
+                    dueDateSpan.textContent = 'No due date';
+                }
+                
+                metaDiv.appendChild(prioritySpan);
+                metaDiv.appendChild(dueDateSpan);
+                
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'todo-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'secondary-btn';
+                editBtn.textContent = 'Edit';
+                editBtn.addEventListener('click', () => editTodo(todo.id));
                 
                 const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'delete-btn';
+                deleteBtn.className = 'danger-btn';
                 deleteBtn.textContent = 'Delete';
-                deleteBtn.addEventListener('click', function() {
-                    deleteTodo(todo.id);
-                });
+                deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
+                
+                actionsDiv.appendChild(editBtn);
+                actionsDiv.appendChild(deleteBtn);
                 
                 todoElement.appendChild(textSpan);
-                todoElement.appendChild(deleteBtn);
+                todoElement.appendChild(metaDiv);
+                todoElement.appendChild(actionsDiv);
                 container.appendChild(todoElement);
             });
-            
-            console.log('Rendered', todos.length, 'todos');
         }
 
-        // Multiple initialization methods for maximum compatibility
+        function updateStats() {
+            const total = todos.length;
+            const active = todos.filter(t => !t.completed).length;
+            const completed = todos.filter(t => t.completed).length;
+            const overdue = todos.filter(t => {
+                if (!t.dueDate || t.completed) return false;
+                const dueDate = new Date(t.dueDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                dueDate.setHours(0, 0, 0, 0);
+                return dueDate < today;
+            }).length;
+            
+            document.getElementById('totalTodos').textContent = total;
+            document.getElementById('activeTodos').textContent = active;
+            document.getElementById('completedTodos').textContent = completed;
+            document.getElementById('overdueTodos').textContent = overdue;
+        }
+
+        function saveTodos() {
+            localStorage.setItem('advancedTodos', JSON.stringify(todos));
+        }
+
+        function loadTodos() {
+            const saved = localStorage.getItem('advancedTodos');
+            if (saved) {
+                todos = JSON.parse(saved);
+                nextId = Math.max(...todos.map(t => t.id), 0) + 1;
+            }
+        }
+
+        // Initialize when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initApp);
         } else {
             initApp();
         }
-        
-        // Also try on window load as fallback
-        window.addEventListener('load', initApp);
-        
-        // Make functions globally available for debugging
-        window.todoApp = {
-            addTodo,
-            toggleTodo,
-            deleteTodo,
-            renderTodos,
-            todos: () => todos
-        };
     </script>
 </body>
 </html>`,
-      'App.jsx': `const { useState } = React;
-
-function TodoApp() {
-  const [todos, setTodos] = useState([]);
-  const [text, setText] = useState('');
-
-  const addTodo = () => {
-    if (text.trim()) {
-      setTodos([...todos, { id: Date.now(), text: text.trim(), completed: false }]);
-      setText('');
-    }
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
-  };
-
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
-
-  return React.createElement('div', { className: 'todo-app' },
-    React.createElement('h1', null, 'Todo App'),
-    React.createElement('div', { className: 'input-container' },
-      React.createElement('input', {
-        type: 'text',
-        value: text,
-        onChange: (e) => setText(e.target.value),
-        placeholder: 'Add a new todo...',
-        onKeyPress: (e) => e.key === 'Enter' && addTodo()
-      }),
-      React.createElement('button', { onClick: addTodo }, 'Add Todo')
-    ),
-    React.createElement('div', { className: 'todos' },
-      todos.map(todo => 
-        React.createElement('div', { 
-          key: todo.id, 
-          className: \`todo-item \${todo.completed ? 'completed' : ''}\` 
-        },
-          React.createElement('span', { 
-            onClick: () => toggleTodo(todo.id), 
-            className: 'todo-text' 
-          }, todo.text),
-          React.createElement('button', { 
-            onClick: () => deleteTodo(todo.id),
-            className: 'delete-btn'
-          }, 'Delete')
-        )
-      )
-    ),
-    todos.length === 0 && React.createElement('p', { className: 'no-todos' }, 'No todos yet. Add one above!')
-  );
-}
-
-ReactDOM.render(React.createElement(TodoApp), document.getElementById('root'));`,
-      'styles.css': `* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  padding: 2rem;
-}
-
+      'styles.css': `/* Advanced Todo App Styles */
 .todo-app {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   background: white;
   padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
 }
 
-.todo-app h1 {
+h1 {
   text-align: center;
-  margin-bottom: 2rem;
   color: #333;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
 }
 
 .input-container {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
-.input-container input {
+input[type="text"] {
   flex: 1;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 0.5rem;
+  min-width: 200px;
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
   font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
 }
 
-.input-container button {
-  padding: 0.75rem 1.5rem;
-  background: #007bff;
+input[type="text"]:focus {
+  border-color: #667eea;
+}
+
+input[type="date"] {
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+select {
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  background: white;
+  cursor: pointer;
+}
+
+button {
+  padding: 1rem 1.5rem;
+  background: #667eea;
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
+  border-radius: 8px;
   font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.input-container button:hover {
-  background: #0056b3;
+button:hover {
+  background: #5a6fd8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.secondary-btn {
+  background: #6c757d;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.secondary-btn:hover {
+  background: #5a6268;
+}
+
+.danger-btn {
+  background: #dc3545;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.danger-btn:hover {
+  background: #c82333;
+}
+
+.success-btn {
+  background: #28a745;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.success-btn:hover {
+  background: #218838;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-container {
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-container input {
+  width: 100%;
+  margin-bottom: 0;
 }
 
 .todos {
-  space-y: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
 }
 
 .todo-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   padding: 1rem;
   background: #f8f9fa;
-  border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s;
+  border-left: 4px solid #e9ecef;
+}
+
+.todo-item:hover {
+  background: #e9ecef;
+  transform: translateX(4px);
+}
+
+.todo-item.completed {
+  opacity: 0.7;
+  border-left-color: #28a745;
+}
+
+.todo-item.high-priority {
+  border-left-color: #dc3545;
+}
+
+.todo-item.medium-priority {
+  border-left-color: #ffc107;
+}
+
+.todo-item.low-priority {
+  border-left-color: #17a2b8;
 }
 
 .todo-item.completed .todo-text {
   text-decoration: line-through;
-  color: #666;
+  color: #6c757d;
 }
 
 .todo-text {
-  cursor: pointer;
   flex: 1;
+  cursor: pointer;
+  font-size: 1.1rem;
+  word-break: break-word;
 }
 
-.delete-btn {
+.todo-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #6c757d;
+  min-width: 120px;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.no-todos {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  margin: 2rem 0;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.filter-active {
+  background: #667eea !important;
+  color: white !important;
+}
+
+.priority-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.priority-high {
   background: #dc3545;
   color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
 }
 
-.delete-btn:hover {
-  background: #c82333;
+.priority-medium {
+  background: #ffc107;
+  color: #212529;
+}
+
+.priority-low {
+  background: #17a2b8;
+  color: white;
+}
+
+.due-date {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.due-date.overdue {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.due-date.due-today {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .todo-app {
+    padding: 1rem;
+  }
+  
+  .input-container {
+    flex-direction: column;
+  }
+  
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .todo-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .todo-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
 }`,
       'package.json': `{
-  "name": "todo-app",
-  "version": "1.0.0",
-  "description": "Generated by DreamBuild",
+  "name": "advanced-todo-app",
+  "version": "2.0.0",
+  "description": "A comprehensive todo list application with 10+ advanced features",
   "main": "index.html",
   "scripts": {
-    "start": "python -m http.server 8000",
-    "dev": "python -m http.server 8000"
+    "start": "npx serve .",
+    "dev": "npx live-server ."
   },
-  "keywords": ["todo", "react", "app"],
+  "keywords": ["todo", "productivity", "task-management", "advanced", "features"],
   "author": "DreamBuild",
-  "license": "MIT"
+  "license": "MIT",
+  "features": [
+    "Add/Edit/Delete todos",
+    "Mark complete/incomplete",
+    "Priority levels (High/Medium/Low)",
+    "Due dates with overdue detection",
+    "Search functionality",
+    "Filter by status (All/Active/Completed)",
+    "Sort by date or priority",
+    "Statistics dashboard",
+    "Local storage persistence",
+    "Responsive mobile design"
+  ]
 }`
     }
   }
@@ -3580,7 +4239,7 @@ body {
 <body>
     <div class="header">
         <h1>E-commerce Store</h1>
-        <div class="cart" onclick="toggleCart()">
+        <div class="cart" id="cartToggle">
             Cart (<span id="cartCount">0</span>) - $<span id="cartTotal">0</span>
         </div>
     </div>
@@ -3595,7 +4254,7 @@ body {
     <!-- Cart Modal -->
     <div class="cart-modal" id="cartModal">
         <div class="cart-content">
-            <button class="close-cart" onclick="toggleCart()">&times;</button>
+            <button class="close-cart" id="closeCartBtn">&times;</button>
             <h2>Shopping Cart</h2>
             <div id="cartItems"></div>
             <div class="total">Total: $<span id="cartTotalModal">0</span></div>
@@ -3623,12 +4282,27 @@ body {
             products.forEach(product => {
                 const productDiv = document.createElement('div');
                 productDiv.className = 'product';
-                productDiv.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}">
-                    <h3>${product.name}</h3>
-                    <div class="price">$${product.price}</div>
-                    <button class="add-to-cart" onclick="addToCart(${product.id})">Add to Cart</button>
-                `;
+                // Create product HTML using DOM methods to avoid template literal issues
+                const img = document.createElement('img');
+                img.src = product.image;
+                img.alt = product.name;
+                
+                const h3 = document.createElement('h3');
+                h3.textContent = product.name;
+                
+                const priceDiv = document.createElement('div');
+                priceDiv.className = 'price';
+                priceDiv.textContent = '$' + product.price;
+                
+                const button = document.createElement('button');
+                button.className = 'add-to-cart';
+                button.setAttribute('data-product-id', product.id);
+                button.textContent = 'Add to Cart';
+                
+                productDiv.appendChild(img);
+                productDiv.appendChild(h3);
+                productDiv.appendChild(priceDiv);
+                productDiv.appendChild(button);
                 container.appendChild(productDiv);
             });
         }
@@ -3678,19 +4352,84 @@ body {
             cart.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'cart-item';
-                itemDiv.innerHTML = `
-                    <div>
-                        <strong>${item.name}</strong><br>
-                        $${item.price}
-                    </div>
-                    <button class="remove-item" onclick="removeFromCart(${item.id})">Remove</button>
-                `;
+                // Create cart item HTML using DOM methods
+                const itemInfo = document.createElement('div');
+                const strong = document.createElement('strong');
+                strong.textContent = item.name;
+                const br = document.createElement('br');
+                const priceText = document.createTextNode('$' + item.price);
+                
+                itemInfo.appendChild(strong);
+                itemInfo.appendChild(br);
+                itemInfo.appendChild(priceText);
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-item';
+                removeBtn.setAttribute('data-item-id', item.id);
+                removeBtn.textContent = 'Remove';
+                
+                itemDiv.appendChild(itemInfo);
+                itemDiv.appendChild(removeBtn);
                 container.appendChild(itemDiv);
             });
         }
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', initApp);
+        // Initialize the app with proper event listeners
+        function initAppWithEvents() {
+            console.log('E-commerce app initializing with event listeners...');
+            
+            // Get elements
+            const cartToggle = document.getElementById('cartToggle');
+            const closeCartBtn = document.getElementById('closeCartBtn');
+            
+            // Add event listeners
+            if (cartToggle) {
+                cartToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleCart();
+                });
+                console.log('Cart toggle listener added');
+            }
+            
+            if (closeCartBtn) {
+                closeCartBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleCart();
+                });
+                console.log('Close cart listener added');
+            }
+            
+            // Add event delegation for dynamic buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('add-to-cart')) {
+                    e.preventDefault();
+                    const productId = parseInt(e.target.getAttribute('data-product-id'));
+                    addToCart(productId);
+                    console.log('Add to cart clicked for product:', productId);
+                }
+                
+                if (e.target.classList.contains('remove-item')) {
+                    e.preventDefault();
+                    const itemId = parseInt(e.target.getAttribute('data-item-id'));
+                    removeFromCart(itemId);
+                    console.log('Remove from cart clicked for item:', itemId);
+                }
+            });
+            
+            // Initialize the app
+            initApp();
+            console.log('E-commerce app initialized successfully!');
+        }
+
+        // Multiple initialization methods for maximum compatibility
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAppWithEvents);
+        } else {
+            initAppWithEvents();
+        }
+        
+        // Also try on window load as fallback
+        window.addEventListener('load', initAppWithEvents);
     </script>
 </body>
 </html>`,
@@ -4056,7 +4795,7 @@ header h1 {
         <div class="api-section">
             <h2>API Health Check</h2>
             <div class="button-group">
-                <button class="get-btn" onclick="checkHealth()">Check API Health</button>
+                <button class="get-btn" id="checkHealthBtn">Check API Health</button>
             </div>
             <div class="response-area" id="healthResponse">Click the button above to check API health...</div>
         </div>
@@ -4064,8 +4803,8 @@ header h1 {
         <div class="api-section">
             <h2>User Management</h2>
             <div class="button-group">
-                <button class="get-btn" onclick="getUsers()">Get All Users</button>
-                <button class="post-btn" onclick="createUser()">Create User</button>
+                <button class="get-btn" id="getUsersBtn">Get All Users</button>
+                <button class="post-btn" id="createUserBtn">Create User</button>
             </div>
             
             <div class="form-group">
@@ -4087,8 +4826,8 @@ header h1 {
                 <input type="text" id="customUrl" placeholder="https://api.example.com/endpoint" value="https://jsonplaceholder.typicode.com/posts/1">
             </div>
             <div class="button-group">
-                <button class="get-btn" onclick="makeCustomRequest('GET')">GET Request</button>
-                <button class="post-btn" onclick="makeCustomRequest('POST')">POST Request</button>
+                <button class="get-btn" id="customGetBtn">GET Request</button>
+                <button class="post-btn" id="customPostBtn">POST Request</button>
             </div>
             <div class="response-area" id="customResponse">Make a custom API request...</div>
         </div>
@@ -4105,7 +4844,7 @@ header h1 {
             }
             
             const status = document.createElement('span');
-            status.className = \`status-indicator status-\${type}\`;
+            status.className = 'status-indicator status-' + type;
             status.textContent = message;
             element.appendChild(status);
         }
@@ -4252,10 +4991,70 @@ header h1 {
             }
         }
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the app with proper event listeners
+        function initAPIAppWithEvents() {
+            console.log('API Client initializing with event listeners...');
+            
+            // Get button elements
+            const checkHealthBtn = document.getElementById('checkHealthBtn');
+            const getUsersBtn = document.getElementById('getUsersBtn');
+            const createUserBtn = document.getElementById('createUserBtn');
+            const customGetBtn = document.getElementById('customGetBtn');
+            const customPostBtn = document.getElementById('customPostBtn');
+            
+            // Add event listeners
+            if (checkHealthBtn) {
+                checkHealthBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    checkHealth();
+                });
+                console.log('Check health button listener added');
+            }
+            
+            if (getUsersBtn) {
+                getUsersBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    getUsers();
+                });
+                console.log('Get users button listener added');
+            }
+            
+            if (createUserBtn) {
+                createUserBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    createUser();
+                });
+                console.log('Create user button listener added');
+            }
+            
+            if (customGetBtn) {
+                customGetBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    makeCustomRequest('GET');
+                });
+                console.log('Custom GET button listener added');
+            }
+            
+            if (customPostBtn) {
+                customPostBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    makeCustomRequest('POST');
+                });
+                console.log('Custom POST button listener added');
+            }
+            
             console.log('API Client initialized successfully!');
-        });
+        }
+
+        // Multiple initialization methods for maximum compatibility
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAPIAppWithEvents);
+        } else {
+            initAPIAppWithEvents();
+        }
+        
+        // Also try on window load as fallback
+        window.addEventListener('load', initAPIAppWithEvents);
     </script>
 </body>
 </html>`,
@@ -4442,10 +5241,10 @@ app.listen(PORT, () => {
             <h2>Interactive Demo</h2>
             <p>Click the buttons below to see the app in action:</p>
             <div class="counter" id="counter">0</div>
-            <button onclick="incrementCounter()">Increment</button>
-            <button onclick="decrementCounter()">Decrement</button>
-            <button onclick="resetCounter()">Reset</button>
-            <button onclick="showAlert()">Show Alert</button>
+            <button id="incrementBtn">Increment</button>
+            <button id="decrementBtn">Decrement</button>
+            <button id="resetBtn">Reset</button>
+            <button id="alertBtn">Show Alert</button>
         </div>
     </div>
 
@@ -4455,31 +5254,99 @@ app.listen(PORT, () => {
         function incrementCounter() {
             counter++;
             updateCounter();
+            console.log('Counter incremented to:', counter);
         }
 
         function decrementCounter() {
             counter--;
             updateCounter();
+            console.log('Counter decremented to:', counter);
         }
 
         function resetCounter() {
             counter = 0;
             updateCounter();
+            console.log('Counter reset to:', counter);
         }
 
         function updateCounter() {
-            document.getElementById('counter').textContent = counter;
+            const counterElement = document.getElementById('counter');
+            if (counterElement) {
+                counterElement.textContent = counter;
+            }
         }
 
         function showAlert() {
             alert('Hello from your DreamBuild app! The buttons are working perfectly!');
+            console.log('Alert button clicked!');
         }
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DreamBuild app initialized successfully!');
+        // Initialize the app with proper event listeners
+        function initializeApp() {
+            console.log('DreamBuild app initializing...');
+            
+            // Get button elements
+            const incrementBtn = document.getElementById('incrementBtn');
+            const decrementBtn = document.getElementById('decrementBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const alertBtn = document.getElementById('alertBtn');
+            
+            // Add event listeners
+            if (incrementBtn) {
+                incrementBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    incrementCounter();
+                });
+                console.log('Increment button listener added');
+            }
+            
+            if (decrementBtn) {
+                decrementBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    decrementCounter();
+                });
+                console.log('Decrement button listener added');
+            }
+            
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    resetCounter();
+                });
+                console.log('Reset button listener added');
+            }
+            
+            if (alertBtn) {
+                alertBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showAlert();
+                });
+                console.log('Alert button listener added');
+            }
+            
+            // Initialize counter display
             updateCounter();
-        });
+            console.log('DreamBuild app initialized successfully!');
+        }
+
+        // Multiple initialization methods for maximum compatibility
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+        
+        // Also try on window load as fallback
+        window.addEventListener('load', initializeApp);
+        
+        // Make functions globally available for debugging
+        window.dreamBuildApp = {
+            incrementCounter,
+            decrementCounter,
+            resetCounter,
+            showAlert,
+            getCounter: () => counter
+        };
     </script>
 </body>
 </html>`,

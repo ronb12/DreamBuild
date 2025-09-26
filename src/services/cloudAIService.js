@@ -2561,16 +2561,204 @@ body {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .todo-app {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 2rem;
+        font-size: 2.5rem;
+      }
+
+      .input-container {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      input[type="text"] {
+        flex: 1;
+        padding: 1rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.3s;
+      }
+
+      input[type="text"]:focus {
+        border-color: #667eea;
+      }
+
+      button {
+        padding: 1rem 2rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      button:hover {
+        background: #5a6fd8;
+      }
+
+      .todos {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .todo-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s;
+      }
+
+      .todo-item:hover {
+        background: #e9ecef;
+      }
+
+      .todo-item.completed .todo-text {
+        text-decoration: line-through;
+        color: #6c757d;
+      }
+
+      .todo-text {
+        flex: 1;
+        cursor: pointer;
+        font-size: 1.1rem;
+      }
+
+      .delete-btn {
+        background: #dc3545;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .delete-btn:hover {
+        background: #c82333;
+      }
+
+      .no-todos {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        margin-top: 2rem;
+      }
+    </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="App.jsx"></script>
+    <div class="todo-app">
+        <h1>Todo App</h1>
+        
+        <div class="input-container">
+            <input type="text" id="todoInput" placeholder="Add a new todo..." />
+            <button onclick="addTodo()">Add Todo</button>
+        </div>
+        
+        <div class="todos" id="todos"></div>
+        
+        <p class="no-todos" id="noTodos" style="display: none;">No todos yet. Add one above!</p>
+    </div>
+
+    <script>
+        let todos = [];
+        let nextId = 1;
+
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const text = input.value.trim();
+            
+            if (text) {
+                todos.push({
+                    id: nextId++,
+                    text: text,
+                    completed: false
+                });
+                
+                input.value = '';
+                renderTodos();
+            }
+        }
+
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                renderTodos();
+            }
+        }
+
+        function deleteTodo(id) {
+            todos = todos.filter(t => t.id !== id);
+            renderTodos();
+        }
+
+        function renderTodos() {
+            const container = document.getElementById('todos');
+            const noTodos = document.getElementById('noTodos');
+            
+            container.innerHTML = '';
+            
+            if (todos.length === 0) {
+                noTodos.style.display = 'block';
+                return;
+            }
+            
+            noTodos.style.display = 'none';
+            
+            todos.forEach(todo => {
+                const todoElement = document.createElement('div');
+                todoElement.className = \`todo-item \${todo.completed ? 'completed' : ''}\`;
+                todoElement.innerHTML = \`
+                    <span class="todo-text" onclick="toggleTodo(\${todo.id})">\${todo.text}</span>
+                    <button class="delete-btn" onclick="deleteTodo(\${todo.id})">Delete</button>
+                \`;
+                container.appendChild(todoElement);
+            });
+        }
+
+        // Allow adding todos with Enter key
+        document.getElementById('todoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+
+        // Initial render
+        renderTodos();
+    </script>
 </body>
 </html>`,
-      'App.jsx': `import React, { useState } from 'react';
+      'App.jsx': `const { useState } = React;
 
 function TodoApp() {
   const [todos, setTodos] = useState([]);
@@ -2593,38 +2781,40 @@ function TodoApp() {
     setTodos(todos.filter(todo => todo.id !== id));
   };
 
-  return (
-    <div className="todo-app">
-      <h1>Todo App</h1>
-      
-      <div className="input-container">
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Add a new todo..."
-          onKeyPress={(e) => e.key === 'Enter' && addTodo()}
-        />
-        <button onClick={addTodo}>Add</button>
-      </div>
-
-      <div className="todos">
-        {todos.map(todo => (
-          <div key={todo.id} className={\`todo-item \${todo.completed ? 'completed' : ''}\`}>
-            <span onClick={() => toggleTodo(todo.id)} className="todo-text">
-              {todo.text}
-            </span>
-            <button onClick={() => deleteTodo(todo.id)} className="delete-btn">
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
+  return React.createElement('div', { className: 'todo-app' },
+    React.createElement('h1', null, 'Todo App'),
+    React.createElement('div', { className: 'input-container' },
+      React.createElement('input', {
+        type: 'text',
+        value: text,
+        onChange: (e) => setText(e.target.value),
+        placeholder: 'Add a new todo...',
+        onKeyPress: (e) => e.key === 'Enter' && addTodo()
+      }),
+      React.createElement('button', { onClick: addTodo }, 'Add Todo')
+    ),
+    React.createElement('div', { className: 'todos' },
+      todos.map(todo => 
+        React.createElement('div', { 
+          key: todo.id, 
+          className: \`todo-item \${todo.completed ? 'completed' : ''}\` 
+        },
+          React.createElement('span', { 
+            onClick: () => toggleTodo(todo.id), 
+            className: 'todo-text' 
+          }, todo.text),
+          React.createElement('button', { 
+            onClick: () => deleteTodo(todo.id),
+            className: 'delete-btn'
+          }, 'Delete')
+        )
+      )
+    ),
+    todos.length === 0 && React.createElement('p', { className: 'no-todos' }, 'No todos yet. Add one above!')
   );
 }
 
-ReactDOM.render(<TodoApp />, document.getElementById('root'));`,
+ReactDOM.render(React.createElement(TodoApp), document.getElementById('root'));`,
       'styles.css': `* {
   margin: 0;
   padding: 0;

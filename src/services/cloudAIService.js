@@ -272,7 +272,9 @@ class CloudAIService {
 
   // Analyze what the user actually wants
   analyzeUserRequest(prompt) {
-    const lowerPrompt = prompt.toLowerCase()
+    // Ensure prompt is a string
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase()
     
     return {
       // Detect specific functionality
@@ -308,7 +310,8 @@ class CloudAIService {
 
   // Extract specific feature from prompt
   extractSpecificFeature(prompt) {
-    const lowerPrompt = prompt.toLowerCase()
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase()
     
     if (lowerPrompt.includes('factorial')) return 'factorial'
     if (lowerPrompt.includes('fibonacci')) return 'fibonacci'
@@ -326,7 +329,8 @@ class CloudAIService {
 
   // Detect target programming language
   detectTargetLanguage(prompt) {
-    const lowerPrompt = prompt.toLowerCase()
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase()
     
     if (lowerPrompt.includes('python')) return 'python'
     if (lowerPrompt.includes('javascript') || lowerPrompt.includes('js')) return 'javascript'
@@ -392,7 +396,8 @@ class CloudAIService {
 
   // Select the best model for the task
   selectBestModel(prompt, context) {
-    const lowerPrompt = prompt.toLowerCase()
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase()
     
     // Code-specific models
     if (lowerPrompt.includes('python') || lowerPrompt.includes('django') || lowerPrompt.includes('flask')) {
@@ -2276,7 +2281,8 @@ ${originalContent}`
 
   // Extract app name from prompt
   extractAppName(prompt) {
-    const words = prompt.split(' ');
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const words = promptString.split(' ');
     const nameIndex = words.findIndex(word => 
       word.toLowerCase().includes('app') || 
       word.toLowerCase().includes('application') ||
@@ -2293,10 +2299,11 @@ ${originalContent}`
 
   // Generate a creative app name based on the prompt
   generateAppName(prompt) {
-    const lowerPrompt = prompt.toLowerCase();
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase();
     
     // Extract key words from the prompt
-    const keyWords = prompt.split(' ').filter(word => 
+    const keyWords = promptString.split(' ').filter(word => 
       word.length > 3 && 
       !['create', 'build', 'make', 'generate', 'app', 'application', 'website', 'page'].includes(word.toLowerCase())
     );
@@ -2388,7 +2395,8 @@ ${originalContent}`
     console.log('🔄 Creating fallback response for prompt:', prompt)
     
     // Analyze prompt to determine template
-    const lowerPrompt = prompt.toLowerCase()
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase()
     
     if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('analytics')) {
       return this.createDashboardTemplate(prompt)

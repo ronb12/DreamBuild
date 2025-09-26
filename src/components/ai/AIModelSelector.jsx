@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, Sparkles, Code, Cloud, Server, Loader2, ChevronUp } from 'lucide-react';
+import { ChevronDown, Check, Sparkles, Code, Cloud, Server, Loader2, ChevronUp, X } from 'lucide-react';
 import simpleAIService from '../../services/simpleAIService';
 
 const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKey }) => {
-  const [showModelSelector, setShowModelSelector] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [availableModels, setAvailableModels] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const scrollContainerRef = useRef(null);
 
   // Load available models from services
@@ -202,33 +203,33 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
     type: 'auto'
   };
 
-  // Close model selector when clicking outside
+  // Close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showModelSelector && 
-          !event.target.closest('.model-selector') && 
+      if (showModal && 
+          !event.target.closest('.model-modal') && 
           !event.target.closest('button[class*="w-full p-2 rounded"]')) {
-        setShowModelSelector(false);
+        setShowModal(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showModelSelector]);
+  }, [showModal]);
 
-  // Check scroll indicators when dropdown opens
+  // Check scroll indicators when modal opens
   useEffect(() => {
-    if (showModelSelector && scrollContainerRef.current) {
+    if (showModal && scrollContainerRef.current) {
       setTimeout(() => {
         handleScroll();
       }, 100);
     }
-  }, [showModelSelector, availableModels]);
+  }, [showModal, availableModels]);
 
   const handleModelSelect = (modelId) => {
     setAIModel(modelId);
     setModelUpdateKey(prev => prev + 1);
-    setShowModelSelector(false);
+    setShowModal(false);
   };
 
   // Handle scroll indicators
@@ -237,6 +238,10 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
       const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
       setShowScrollTop(scrollTop > 10);
       setShowScrollBottom(scrollTop < scrollHeight - clientHeight - 10);
+      
+      // Calculate scroll progress
+      const progress = scrollTop / (scrollHeight - clientHeight);
+      setScrollProgress(Math.min(progress, 1));
     }
   };
 
@@ -255,111 +260,175 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
   };
 
   return (
-    <div className="relative">
+    <>
+      {/* Model Selector Button */}
       <button
-        onClick={() => setShowModelSelector(!showModelSelector)}
-        className="w-full p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors text-left flex items-center justify-between"
+        onClick={() => setShowModal(true)}
+        className="w-full p-3 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 transition-all duration-300 text-left flex items-center justify-between border border-primary/20 hover:border-primary/30"
       >
-        <div className="flex items-center gap-2">
-          <selectedModel.icon className={`h-4 w-4 ${selectedModel.color}`} />
-          <span className="text-sm font-medium">{selectedModel.name}</span>
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-lg ${selectedModel.bgColor} flex items-center justify-center`}>
+            <selectedModel.icon className={`h-4 w-4 ${selectedModel.color}`} />
+          </div>
+          <div>
+            <div className="font-medium text-sm">{selectedModel.name}</div>
+            <div className="text-xs text-muted-foreground">{selectedModel.description}</div>
+          </div>
         </div>
-        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showModelSelector ? 'rotate-180' : ''}`} />
+        <ChevronDown className="h-4 w-4 text-muted-foreground" />
       </button>
 
+      {/* Modal */}
       <AnimatePresence>
-        {showModelSelector && (
+        {showModal && (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg z-50 model-selector"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowModal(false)}
           >
-            {/* Scroll to top indicator */}
-            {showScrollTop && (
-              <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-card via-card/80 to-transparent p-2 z-10 rounded-t-xl">
-                <button
-                  onClick={scrollToTop}
-                  className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card/50 backdrop-blur-sm rounded-lg py-1"
-                >
-                  <ChevronUp className="h-3 w-3" />
-                  Scroll to top
-                </button>
-              </div>
-            )}
-            
-            {/* Scrollable content */}
-            <div 
-              ref={scrollContainerRef}
-              onScroll={handleScroll}
-              className="max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 relative"
-              style={{
-                scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent',
-                scrollBehavior: 'smooth'
-              }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+              className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col model-modal"
+              onClick={(e) => e.stopPropagation()}
             >
-              {/* Scroll indicator overlay */}
-              {showScrollBottom && (
-                <div className="absolute bottom-2 right-2 bg-primary/10 backdrop-blur-sm rounded-full p-1.5 z-20">
-                  <ChevronDown className="h-3 w-3 text-primary animate-bounce" />
-                </div>
-              )}
-              <div className="p-2">
-                {isLoading ? (
-                  <div className="p-4 text-center text-muted-foreground">
-                    <Loader2 className="h-4 w-4 animate-spin mx-auto mb-2" />
-                    Loading models...
-                  </div>
-                ) : (
-                  availableModels.map((model) => {
-                    const Icon = model.icon;
-                    const isSelected = model.id === aiModel;
-                    
-                    return (
-                      <button
-                        key={model.id}
-                        onClick={() => handleModelSelect(model.id)}
-                        className={`w-full p-3 rounded-lg text-left transition-colors hover:bg-muted/50 ${
-                          isSelected ? 'bg-primary/10' : ''
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-lg ${model.bgColor} flex items-center justify-center`}>
-                            <Icon className={`h-4 w-4 ${model.color}`} />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-sm">{model.name}</span>
-                              {isSelected && <Check className="h-4 w-4 text-primary" />}
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-1">{model.description}</p>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-            
-            {/* Scroll to bottom indicator */}
-            {showScrollBottom && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card via-card/80 to-transparent p-2 z-10 rounded-b-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <h3 className="text-lg font-semibold">Select AI Model</h3>
                 <button
-                  onClick={scrollToBottom}
-                  className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card/50 backdrop-blur-sm rounded-lg py-1"
+                  onClick={() => setShowModal(false)}
+                  className="p-1 rounded-lg hover:bg-muted transition-colors"
                 >
-                  <ChevronDown className="h-3 w-3" />
-                  Scroll to bottom
+                  <X className="h-4 w-4" />
                 </button>
               </div>
-            )}
+
+              {/* Scrollable content */}
+              <div className="flex-1 overflow-hidden relative">
+                {/* Scroll progress bar */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-30">
+                  <div 
+                    className="h-full bg-primary transition-all duration-200"
+                    style={{ width: `${scrollProgress * 100}%` }}
+                  />
+                </div>
+                
+                {/* Scroll to top indicator */}
+                {showScrollTop && (
+                  <div className="absolute top-2 left-0 right-0 bg-gradient-to-b from-card via-card/90 to-transparent p-2 z-20 rounded-t-xl">
+                    <button
+                      onClick={scrollToTop}
+                      className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card/80 backdrop-blur-sm rounded-lg py-2 border border-border/50"
+                    >
+                      <ChevronUp className="h-3 w-3" />
+                      Scroll to top
+                    </button>
+                  </div>
+                )}
+                
+                <div 
+                  ref={scrollContainerRef}
+                  onScroll={handleScroll}
+                  className="flex-1 overflow-y-auto relative"
+                  style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'rgba(59, 130, 246, 0.5) rgba(0, 0, 0, 0.1)',
+                    scrollBehavior: 'smooth',
+                    maxHeight: '400px'
+                  }}
+                >
+                  {/* Scroll indicator overlay */}
+                  {showScrollBottom && (
+                    <div className="absolute bottom-4 right-4 bg-primary/20 backdrop-blur-sm rounded-full p-2 z-20 shadow-lg border border-primary/30">
+                      <ChevronDown className="h-4 w-4 text-primary animate-bounce" />
+                    </div>
+                  )}
+                  
+                  <div className="p-2">
+                    {isLoading ? (
+                      <div className="p-8 text-center text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3" />
+                        <p>Loading AI models...</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        {availableModels.map((model) => {
+                          const Icon = model.icon;
+                          const isSelected = model.id === aiModel;
+                          
+                          return (
+                            <button
+                              key={model.id}
+                              onClick={() => handleModelSelect(model.id)}
+                              className={`w-full p-3 rounded-lg text-left transition-all duration-200 hover:bg-muted/50 border ${
+                                isSelected 
+                                  ? 'bg-primary/10 border-primary/30 shadow-sm' 
+                                  : 'border-border hover:border-primary/20'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-lg ${model.bgColor} flex items-center justify-center`}>
+                                  <Icon className={`h-4 w-4 ${model.color}`} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-sm truncate">{model.name}</span>
+                                    {isSelected && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-0.5 truncate">{model.description}</p>
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Scroll to bottom indicator */}
+                {showScrollBottom && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card via-card/90 to-transparent p-2 z-20 rounded-b-xl">
+                    <button
+                      onClick={scrollToBottom}
+                      className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card/80 backdrop-blur-sm rounded-lg py-2 border border-border/50"
+                    >
+                      <ChevronDown className="h-3 w-3" />
+                      Scroll to bottom
+                    </button>
+                  </div>
+                )}
+                
+                {/* Floating scroll buttons */}
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 z-20">
+                  {showScrollTop && (
+                    <button
+                      onClick={scrollToTop}
+                      className="p-2 bg-primary/10 hover:bg-primary/20 backdrop-blur-sm rounded-full border border-primary/30 transition-all duration-200 shadow-lg"
+                    >
+                      <ChevronUp className="h-4 w-4 text-primary" />
+                    </button>
+                  )}
+                  {showScrollBottom && (
+                    <button
+                      onClick={scrollToBottom}
+                      className="p-2 bg-primary/10 hover:bg-primary/20 backdrop-blur-sm rounded-full border border-primary/30 transition-all duration-200 shadow-lg"
+                    >
+                      <ChevronDown className="h-4 w-4 text-primary" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 

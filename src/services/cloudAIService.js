@@ -2474,14 +2474,314 @@ ${originalContent}`
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Analytics Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f5f7fa;
+        color: #333;
+      }
+
+      .dashboard {
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .dashboard-header {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .dashboard-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+      }
+
+      .dashboard-header p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: transform 0.3s;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .stat-card h3 {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-change {
+        font-size: 0.9rem;
+        color: #27ae60;
+      }
+
+      .controls {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .controls h2 {
+        margin-bottom: 1rem;
+        color: #2c3e50;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      button {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s;
+        margin: 0.25rem;
+      }
+
+      button:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .refresh-btn {
+        background: #27ae60;
+      }
+
+      .refresh-btn:hover {
+        background: #229954;
+      }
+
+      .export-btn {
+        background: #e74c3c;
+      }
+
+      .export-btn:hover {
+        background: #c0392b;
+      }
+
+      .chart-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+      }
+
+      .chart-placeholder {
+        height: 300px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        margin: 1rem 0;
+      }
+
+      .alert {
+        background: #d4edda;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+        border: 1px solid #c3e6cb;
+      }
+
+      .alert.hidden {
+        display: none;
+      }
+    </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="App.jsx"></script>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <h1>Analytics Dashboard</h1>
+            <p>Welcome to your business dashboard</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p class="stat-number" id="users">1,250</p>
+                <p class="stat-change">+12.5% from last month</p>
+            </div>
+            <div class="stat-card">
+                <h3>Revenue</h3>
+                <p class="stat-number" id="revenue">$45,230</p>
+                <p class="stat-change">+8.2% from last month</p>
+            </div>
+            <div class="stat-card">
+                <h3>Orders</h3>
+                <p class="stat-number" id="orders">89</p>
+                <p class="stat-change">+15.3% from last month</p>
+            </div>
+            <div class="stat-card">
+                <h3>Growth</h3>
+                <p class="stat-number" id="growth">+12.5%</p>
+                <p class="stat-change">+2.1% from last month</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h2>Dashboard Controls</h2>
+            <div class="button-group">
+                <button onclick="refreshData()">Refresh Data</button>
+                <button class="refresh-btn" onclick="updateStats()">Update Stats</button>
+                <button class="export-btn" onclick="exportData()">Export Data</button>
+                <button onclick="showAlert()">Show Alert</button>
+            </div>
+            <div class="alert hidden" id="alert">
+                Dashboard updated successfully!
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Analytics Chart</h2>
+            <div class="chart-placeholder">
+                Interactive Chart Area
+            </div>
+            <button onclick="generateChart()">Generate New Chart</button>
+        </div>
+    </div>
+
+    <script>
+        let stats = {
+            users: 1250,
+            revenue: 45230,
+            orders: 89,
+            growth: 12.5
+        };
+
+        function initDashboard() {
+            console.log('Dashboard initializing...');
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('users').textContent = stats.users.toLocaleString();
+            document.getElementById('revenue').textContent = '$' + stats.revenue.toLocaleString();
+            document.getElementById('orders').textContent = stats.orders;
+            document.getElementById('growth').textContent = '+' + stats.growth + '%';
+        }
+
+        function refreshData() {
+            console.log('Refreshing data...');
+            // Simulate data refresh
+            stats.users += Math.floor(Math.random() * 10);
+            stats.revenue += Math.floor(Math.random() * 1000);
+            stats.orders += Math.floor(Math.random() * 5);
+            stats.growth += (Math.random() - 0.5) * 2;
+            
+            updateDisplay();
+            showAlert('Data refreshed successfully!');
+        }
+
+        function updateStats() {
+            console.log('Updating stats...');
+            // Simulate API call
+            setTimeout(() => {
+                stats.users = 1250 + Math.floor(Math.random() * 100);
+                stats.revenue = 45230 + Math.floor(Math.random() * 5000);
+                stats.orders = 89 + Math.floor(Math.random() * 20);
+                stats.growth = 12.5 + (Math.random() - 0.5) * 5;
+                
+                updateDisplay();
+                showAlert('Stats updated successfully!');
+            }, 1000);
+        }
+
+        function exportData() {
+            console.log('Exporting data...');
+            const data = {
+                timestamp: new Date().toISOString(),
+                stats: stats
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dashboard-data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showAlert('Data exported successfully!');
+        }
+
+        function showAlert(message = 'Dashboard updated successfully!') {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.classList.remove('hidden');
+            
+            setTimeout(() => {
+                alert.classList.add('hidden');
+            }, 3000);
+        }
+
+        function generateChart() {
+            console.log('Generating new chart...');
+            const chartPlaceholder = document.querySelector('.chart-placeholder');
+            chartPlaceholder.innerHTML = 'Chart generated at ' + new Date().toLocaleTimeString();
+            showAlert('New chart generated!');
+        }
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
 </body>
 </html>`,
       'App.jsx': `import React, { useState } from 'react';
@@ -3112,13 +3412,286 @@ body {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-commerce Store</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f5f5f5;
+        color: #333;
+      }
+
+      .header {
+        background: white;
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .cart {
+        background: #4CAF50;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .cart:hover {
+        background: #45a049;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .products {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .product {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+      }
+
+      .product:hover {
+        transform: translateY(-4px);
+      }
+
+      .product img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+      }
+
+      .product h3 {
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      .product .price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #4CAF50;
+        margin-bottom: 1rem;
+      }
+
+      .add-to-cart {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.3s;
+        width: 100%;
+      }
+
+      .add-to-cart:hover {
+        background: #45a049;
+      }
+
+      .add-to-cart:active {
+        transform: translateY(1px);
+      }
+
+      .cart-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+      }
+
+      .cart-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .remove-item {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .remove-item:hover {
+        background: #c82333;
+      }
+
+      .total {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-top: 1rem;
+        text-align: center;
+        color: #4CAF50;
+      }
+
+      .close-cart {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+    </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="App.jsx"></script>
+    <div class="header">
+        <h1>E-commerce Store</h1>
+        <div class="cart" onclick="toggleCart()">
+            Cart (<span id="cartCount">0</span>) - $<span id="cartTotal">0</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Products</h2>
+        <div class="products" id="products">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <button class="close-cart" onclick="toggleCart()">&times;</button>
+            <h2>Shopping Cart</h2>
+            <div id="cartItems"></div>
+            <div class="total">Total: $<span id="cartTotalModal">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let products = [
+            { id: 1, name: 'Laptop', price: 999, image: 'https://via.placeholder.com/200x200/4CAF50/white?text=Laptop' },
+            { id: 2, name: 'Phone', price: 699, image: 'https://via.placeholder.com/200x200/2196F3/white?text=Phone' },
+            { id: 3, name: 'Tablet', price: 399, image: 'https://via.placeholder.com/200x200/FF9800/white?text=Tablet' }
+        ];
+
+        function initApp() {
+            console.log('E-commerce app initializing...');
+            renderProducts();
+            updateCartDisplay();
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('products');
+            container.innerHTML = '';
+
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <div class="price">$${product.price}</div>
+                    <button class="add-to-cart" onclick="addToCart(${product.id})">Add to Cart</button>
+                `;
+                container.appendChild(productDiv);
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                cart.push(product);
+                updateCartDisplay();
+                console.log('Added to cart:', product.name);
+            }
+        }
+
+        function removeFromCart(productId) {
+            const index = cart.findIndex(item => item.id === productId);
+            if (index > -1) {
+                cart.splice(index, 1);
+                updateCartDisplay();
+                renderCartItems();
+            }
+        }
+
+        function updateCartDisplay() {
+            document.getElementById('cartCount').textContent = cart.length;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cartTotal').textContent = total;
+            document.getElementById('cartTotalModal').textContent = total;
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+            if (modal.style.display === 'block') {
+                renderCartItems();
+            }
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItems');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p>Your cart is empty</p>';
+                return;
+            }
+
+            cart.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        $${item.price}
+                    </div>
+                    <button class="remove-item" onclick="removeFromCart(${item.id})">Remove</button>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
 </body>
 </html>`,
       'App.jsx': `import React, { useState } from 'react';
@@ -3316,10 +3889,379 @@ header h1 {
   // Create API template
   createAPITemplate(prompt) {
     return {
+      'index.html': `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Client</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f5f7fa;
+        color: #333;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .header {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .header h1 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+      }
+
+      .api-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+      }
+
+      .api-section h2 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+      }
+
+      button {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s;
+      }
+
+      button:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .get-btn {
+        background: #27ae60;
+      }
+
+      .get-btn:hover {
+        background: #229954;
+      }
+
+      .post-btn {
+        background: #e74c3c;
+      }
+
+      .post-btn:hover {
+        background: #c0392b;
+      }
+
+      .response-area {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 1rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        min-height: 100px;
+        white-space: pre-wrap;
+        margin-top: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      }
+
+      .status-indicator {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-left: 1rem;
+      }
+
+      .status-success {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .status-loading {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>API Client</h1>
+            <p>Test your API endpoints with this interactive client</p>
+        </div>
+
+        <div class="api-section">
+            <h2>API Health Check</h2>
+            <div class="button-group">
+                <button class="get-btn" onclick="checkHealth()">Check API Health</button>
+            </div>
+            <div class="response-area" id="healthResponse">Click the button above to check API health...</div>
+        </div>
+
+        <div class="api-section">
+            <h2>User Management</h2>
+            <div class="button-group">
+                <button class="get-btn" onclick="getUsers()">Get All Users</button>
+                <button class="post-btn" onclick="createUser()">Create User</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="userName">Name:</label>
+                <input type="text" id="userName" placeholder="Enter user name">
+            </div>
+            <div class="form-group">
+                <label for="userEmail">Email:</label>
+                <input type="email" id="userEmail" placeholder="Enter user email">
+            </div>
+            
+            <div class="response-area" id="userResponse">Click a button above to interact with users...</div>
+        </div>
+
+        <div class="api-section">
+            <h2>Custom API Calls</h2>
+            <div class="form-group">
+                <label for="customUrl">API Endpoint:</label>
+                <input type="text" id="customUrl" placeholder="https://api.example.com/endpoint" value="https://jsonplaceholder.typicode.com/posts/1">
+            </div>
+            <div class="button-group">
+                <button class="get-btn" onclick="makeCustomRequest('GET')">GET Request</button>
+                <button class="post-btn" onclick="makeCustomRequest('POST')">POST Request</button>
+            </div>
+            <div class="response-area" id="customResponse">Make a custom API request...</div>
+        </div>
+    </div>
+
+    <script>
+        let isLoading = false;
+
+        function showStatus(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            const statusSpan = element.querySelector('.status-indicator');
+            if (statusSpan) {
+                statusSpan.remove();
+            }
+            
+            const status = document.createElement('span');
+            status.className = \`status-indicator status-\${type}\`;
+            status.textContent = message;
+            element.appendChild(status);
+        }
+
+        function setLoading(elementId, loading = true) {
+            const element = document.getElementById(elementId);
+            if (loading) {
+                element.style.opacity = '0.7';
+                showStatus(elementId, 'Loading...', 'loading');
+            } else {
+                element.style.opacity = '1';
+                const statusSpan = element.querySelector('.status-indicator');
+                if (statusSpan) {
+                    statusSpan.remove();
+                }
+            }
+        }
+
+        async function checkHealth() {
+            const responseElement = document.getElementById('healthResponse');
+            setLoading('healthResponse', true);
+            
+            try {
+                // Simulate API call since we don't have a real server
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const mockResponse = {
+                    status: 'OK',
+                    message: 'API is running',
+                    timestamp: new Date().toISOString(),
+                    uptime: '99.9%'
+                };
+                
+                responseElement.textContent = JSON.stringify(mockResponse, null, 2);
+                showStatus('healthResponse', '✓ Success', 'success');
+            } catch (error) {
+                responseElement.textContent = \`Error: \${error.message}\`;
+                showStatus('healthResponse', '✗ Error', 'error');
+            } finally {
+                setLoading('healthResponse', false);
+            }
+        }
+
+        async function getUsers() {
+            const responseElement = document.getElementById('userResponse');
+            setLoading('userResponse', true);
+            
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                const mockUsers = [
+                    { id: 1, name: 'John Doe', email: 'john@example.com' },
+                    { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
+                    { id: 3, name: 'Bob Johnson', email: 'bob@example.com' }
+                ];
+                
+                responseElement.textContent = JSON.stringify(mockUsers, null, 2);
+                showStatus('userResponse', '✓ Success', 'success');
+            } catch (error) {
+                responseElement.textContent = \`Error: \${error.message}\`;
+                showStatus('userResponse', '✗ Error', 'error');
+            } finally {
+                setLoading('userResponse', false);
+            }
+        }
+
+        async function createUser() {
+            const responseElement = document.getElementById('userResponse');
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            
+            if (!name || !email) {
+                responseElement.textContent = 'Error: Please fill in both name and email fields';
+                showStatus('userResponse', '✗ Validation Error', 'error');
+                return;
+            }
+            
+            setLoading('userResponse', true);
+            
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const newUser = {
+                    id: Date.now(),
+                    name: name,
+                    email: email,
+                    createdAt: new Date().toISOString()
+                };
+                
+                responseElement.textContent = JSON.stringify(newUser, null, 2);
+                showStatus('userResponse', '✓ User Created', 'success');
+                
+                // Clear form
+                document.getElementById('userName').value = '';
+                document.getElementById('userEmail').value = '';
+            } catch (error) {
+                responseElement.textContent = \`Error: \${error.message}\`;
+                showStatus('userResponse', '✗ Error', 'error');
+            } finally {
+                setLoading('userResponse', false);
+            }
+        }
+
+        async function makeCustomRequest(method) {
+            const responseElement = document.getElementById('customResponse');
+            const url = document.getElementById('customUrl').value;
+            
+            if (!url) {
+                responseElement.textContent = 'Error: Please enter a URL';
+                showStatus('customResponse', '✗ Validation Error', 'error');
+                return;
+            }
+            
+            setLoading('customResponse', true);
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (method === 'POST') {
+                    options.body = JSON.stringify({
+                        title: 'Test Post',
+                        body: 'This is a test post created by the API client',
+                        userId: 1
+                    });
+                }
+                
+                const response = await fetch(url, options);
+                const data = await response.json();
+                
+                responseElement.textContent = JSON.stringify(data, null, 2);
+                showStatus('customResponse', \`✓ \${method} Success\`, 'success');
+            } catch (error) {
+                responseElement.textContent = \`Error: \${error.message}\`;
+                showStatus('customResponse', '✗ Error', 'error');
+            } finally {
+                setLoading('customResponse', false);
+            }
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('API Client initialized successfully!');
+        });
+    </script>
+</body>
+</html>`,
       'server.js': `const express = require('express');
 const cors = require('cors');
 const app = express();
-// PORT removed - not needed in browser code
 
 // Middleware
 app.use(cors());
@@ -3344,8 +4286,9 @@ app.post('/api/users', (req, res) => {
   res.json(newUser);
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-
+  console.log(\`Server running on port \${PORT}\`);
 });`,
       'package.json': `{
   "name": "api-server",
@@ -3379,7 +4322,102 @@ app.listen(PORT, () => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DreamBuild App</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: white;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .content {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-top: 2rem;
+        text-align: left;
+      }
+
+      .interactive-section {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-top: 2rem;
+        text-align: center;
+      }
+
+      .counter {
+        font-size: 2rem;
+        margin: 1rem 0;
+        color: #4CAF50;
+      }
+
+      button {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 0.5rem;
+        transition: all 0.3s;
+      }
+
+      button:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .feature-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .feature-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .feature-list li:before {
+        content: "✓ ";
+        color: #4CAF50;
+        font-weight: bold;
+      }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -3391,15 +4429,58 @@ app.listen(PORT, () => {
             <p>This is a starter application generated by DreamBuild. You can customize it further by editing the files in your project.</p>
             
             <h3>Features:</h3>
-            <ul>
+            <ul class="feature-list">
                 <li>Responsive design</li>
                 <li>Modern styling</li>
                 <li>Clean code structure</li>
+                <li>Interactive buttons</li>
+                <li>Fully functional</li>
             </ul>
-            
-            <p>To run this application, simply open the index.html file in your web browser.</p>
+        </div>
+
+        <div class="interactive-section">
+            <h2>Interactive Demo</h2>
+            <p>Click the buttons below to see the app in action:</p>
+            <div class="counter" id="counter">0</div>
+            <button onclick="incrementCounter()">Increment</button>
+            <button onclick="decrementCounter()">Decrement</button>
+            <button onclick="resetCounter()">Reset</button>
+            <button onclick="showAlert()">Show Alert</button>
         </div>
     </div>
+
+    <script>
+        let counter = 0;
+
+        function incrementCounter() {
+            counter++;
+            updateCounter();
+        }
+
+        function decrementCounter() {
+            counter--;
+            updateCounter();
+        }
+
+        function resetCounter() {
+            counter = 0;
+            updateCounter();
+        }
+
+        function updateCounter() {
+            document.getElementById('counter').textContent = counter;
+        }
+
+        function showAlert() {
+            alert('Hello from your DreamBuild app! The buttons are working perfectly!');
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DreamBuild app initialized successfully!');
+            updateCounter();
+        });
+    </script>
 </body>
 </html>`,
       'styles.css': `* {

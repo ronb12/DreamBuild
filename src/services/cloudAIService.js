@@ -354,23 +354,23 @@ class CloudAIService {
     
     // Handle specific functionality
     if (analysis.hasCalculator) {
-      return this.generateCalculatorApp(prompt)
+      return this.createDefaultTemplate(prompt)
     }
     
     if (analysis.hasTodo) {
-      return this.generateTodoApp(prompt)
+      return this.createTodoTemplate(prompt)
     }
     
     if (analysis.hasGame) {
-      return this.generateGameApp(prompt)
+      return this.createDefaultTemplate(prompt)
     }
     
     if (analysis.hasAnimation) {
-      return this.generateAnimationApp(prompt)
+      return this.createDefaultTemplate(prompt)
     }
     
     if (analysis.hasAPI) {
-      return this.generateAPIApp(prompt)
+      return this.createAPITemplate(prompt)
     }
     
     if (analysis.specificFeature === 'weather') {

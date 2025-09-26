@@ -49,6 +49,29 @@ export default function AIPromptSimplified() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Check if the request is for incremental development
+  const isIncrementalRequest = (prompt) => {
+    const lowerPrompt = prompt.toLowerCase()
+    const incrementalKeywords = [
+      'add', 'add a', 'add new', 'add the', 'add some',
+      'include', 'include a', 'include new',
+      'implement', 'implement a', 'implement new',
+      'create', 'create a', 'create new',
+      'build', 'build a', 'build new',
+      'feature', 'features',
+      'functionality', 'function',
+      'capability', 'capabilities',
+      'enhance', 'enhancement',
+      'improve', 'improvement',
+      'modify', 'modification',
+      'update', 'upgrade',
+      'extend', 'extension'
+    ]
+    
+    // Check if the prompt contains incremental keywords
+    return incrementalKeywords.some(keyword => lowerPrompt.includes(keyword))
+  }
+
   const handleGenerate = async () => {
     if (!prompt.trim() || isGenerating) return
 
@@ -67,6 +90,9 @@ export default function AIPromptSimplified() {
     setMessages(prev => [...prev, userMessage])
 
     try {
+      // Check if this is an incremental development request
+      const isIncremental = this.isIncrementalRequest(userPrompt)
+      
       // Generate AI response
       const response = await simpleAIService.generateCode({
         prompt: userPrompt,
@@ -74,17 +100,34 @@ export default function AIPromptSimplified() {
         context: {
           currentFiles: currentProject.files,
           activeFile: currentProject.activeFile,
-          config: currentProject.config
+          config: currentProject.config,
+          isIncremental: isIncremental,
+          existingProject: isIncremental ? currentProject : null
         }
       })
 
       // Add AI response
+      let responseMessage = 'Code generated successfully!'
+      
+      if (response.type === 'incremental_update') {
+        responseMessage = response.message || `Added ${response.newFeatures?.length || 0} new feature(s) to your existing app!`
+        toast.success(responseMessage)
+      } else if (response.type === 'no_changes') {
+        responseMessage = response.message || 'No new features to add - these already exist in your app.'
+        toast.info(responseMessage)
+      } else {
+        responseMessage = response.message || 'Code generated successfully!'
+        toast.success(responseMessage)
+      }
+
       const aiMessage = {
         id: Date.now() + 1,
         type: 'assistant',
-        content: response.message || 'Code generated successfully!',
+        content: responseMessage,
         timestamp: new Date(),
-        files: response.files || {}
+        files: response.files || {},
+        isIncremental: response.type === 'incremental_update',
+        newFeatures: response.newFeatures || []
       }
 
       setMessages(prev => [...prev, aiMessage])
@@ -94,7 +137,12 @@ export default function AIPromptSimplified() {
         Object.entries(response.files).forEach(([filename, content]) => {
           updateFile(filename, content)
         })
-        toast.success(`Generated ${Object.keys(response.files).length} files!`)
+        
+        if (response.type === 'incremental_update') {
+          toast.success(`Added ${response.newFeatures?.length || 0} new feature(s): ${response.newFeatures?.join(', ')}`)
+        } else {
+          toast.success(`Generated ${Object.keys(response.files).length} files!`)
+        }
       }
 
       // Update project name if provided

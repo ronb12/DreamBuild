@@ -1,0 +1,654 @@
+{
+  "timestamp": "2025-09-26T16:58:23.763Z",
+  "summary": {
+    "totalApps": 10,
+    "successful": 10,
+    "failed": 0,
+    "averageCodeQuality": 99,
+    "averageFunctionality": 63,
+    "averageFilesGenerated": 4.9
+  },
+  "detailedResults": [
+    {
+      "appId": "todo-app",
+      "appName": "Todo Management App",
+      "prompt": "Create a modern todo management application with add, edit, delete, and mark complete functionality. Include categories, due dates, and search features.",
+      "expectedFeatures": [
+        "CRUD operations",
+        "Categories",
+        "Due dates",
+        "Search",
+        "Responsive design"
+      ],
+      "startTime": "2025-09-26T16:58:23.754Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Todo Management App</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Todo Management App</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"todo-container\">\n                <div class=\"todo-header\">\n                    <h2>My Tasks</h2>\n                    <div class=\"add-task\">\n                        <input type=\"text\" id=\"taskInput\" placeholder=\"Add a new task...\">\n                        <button id=\"addTaskBtn\" class=\"btn btn-primary\">\n                            <i class=\"fas fa-plus\"></i> Add Task\n                        </button>\n                    </div>\n                </div>\n                \n                <div class=\"filters\">\n                    <button class=\"filter-btn active\" data-filter=\"all\">All</button>\n                    <button class=\"filter-btn\" data-filter=\"active\">Active</button>\n                    <button class=\"filter-btn\" data-filter=\"completed\">Completed</button>\n                </div>\n                \n                <ul id=\"taskList\" class=\"task-list\">\n                    <!-- Tasks will be added here -->\n                </ul>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Todo Management App. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Todo Management App Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Todo Management App JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        document.getElementById('addTaskBtn').addEventListener('click', () => {\n            this.addTask();\n        });\n        \n        document.getElementById('taskInput').addEventListener('keypress', (e) => {\n            if (e.key === 'Enter') {\n                this.addTask();\n            }\n        });\n        \n        document.querySelectorAll('.filter-btn').forEach(btn => {\n            btn.addEventListener('click', (e) => {\n                this.filterTasks(e.target.dataset.filter);\n            });\n        });\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Todo Management App...');\n        \n        this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];\n        this.renderTasks();\n    }\n\n    \n    addTask() {\n        const input = document.getElementById('taskInput');\n        const text = input.value.trim();\n        \n        if (text) {\n            const task = {\n                id: Date.now(),\n                text: text,\n                completed: false,\n                createdAt: new Date()\n            };\n            \n            this.tasks.push(task);\n            this.saveTasks();\n            this.renderTasks();\n            input.value = '';\n        }\n    }\n    \n    toggleTask(id) {\n        const task = this.tasks.find(t => t.id === id);\n        if (task) {\n            task.completed = !task.completed;\n            this.saveTasks();\n            this.renderTasks();\n        }\n    }\n    \n    deleteTask(id) {\n        this.tasks = this.tasks.filter(t => t.id !== id);\n        this.saveTasks();\n        this.renderTasks();\n    }\n    \n    filterTasks(filter) {\n        document.querySelectorAll('.filter-btn').forEach(btn => {\n            btn.classList.remove('active');\n        });\n        document.querySelector(`[data-filter=\"${filter}\"]`).classList.add('active');\n        \n        this.renderTasks(filter);\n    }\n    \n    renderTasks(filter = 'all') {\n        const taskList = document.getElementById('taskList');\n        let filteredTasks = this.tasks;\n        \n        if (filter === 'active') {\n            filteredTasks = this.tasks.filter(t => !t.completed);\n        } else if (filter === 'completed') {\n            filteredTasks = this.tasks.filter(t => t.completed);\n        }\n        \n        taskList.innerHTML = filteredTasks.map(task => `\n            <li class=\"task-item ${task.completed ? 'completed' : ''}\">\n                <span onclick=\"app.toggleTask(${task.id})\">${task.text}</span>\n                <button onclick=\"app.deleteTask(${task.id})\" class=\"btn btn-danger\">\n                    <i class=\"fas fa-trash\"></i>\n                </button>\n            </li>\n        `).join('');\n    }\n    \n    saveTasks() {\n        localStorage.setItem('tasks', JSON.stringify(this.tasks));\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "README.md",
+          "content": "# Todo Management App\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nCreate a modern todo management application with add, edit, delete, and mark complete functionality. Include categories, due dates, and search features.\n\n## Features\n\n- add\n- edit\n- delete\n- create\n- update\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Add new tasks using the input field and \"Add Task\" button\n2. Click on tasks to mark them as complete/incomplete\n3. Use the filter buttons to view all, active, or completed tasks\n4. Click the trash icon to delete tasks\n5. All data is automatically saved to your browser's local storage\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\ntodo-app/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 10,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 90
+      },
+      "functionality": {
+        "featuresImplemented": 3,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality"
+        ],
+        "missingFeatures": [],
+        "score": 60
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.757Z",
+      "duration": 3
+    },
+    {
+      "appId": "ecommerce-store",
+      "appName": "E-commerce Store",
+      "prompt": "Build a complete e-commerce store with product catalog, shopping cart, checkout process, user authentication, and payment integration.",
+      "expectedFeatures": [
+        "Product catalog",
+        "Shopping cart",
+        "Checkout",
+        "Authentication",
+        "Payment"
+      ],
+      "startTime": "2025-09-26T16:58:23.758Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>E-commerce Store</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>E-commerce Store</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"ecommerce-container\">\n                <div class=\"product-grid\">\n                    <div class=\"product-card\">\n                        <img src=\"https://via.placeholder.com/300x200\" alt=\"Product 1\">\n                        <h3>Product 1</h3>\n                        <p class=\"price\">$29.99</p>\n                        <button class=\"btn btn-primary add-to-cart\">Add to Cart</button>\n                    </div>\n                    <div class=\"product-card\">\n                        <img src=\"https://via.placeholder.com/300x200\" alt=\"Product 2\">\n                        <h3>Product 2</h3>\n                        <p class=\"price\">$39.99</p>\n                        <button class=\"btn btn-primary add-to-cart\">Add to Cart</button>\n                    </div>\n                </div>\n                \n                <div class=\"cart-sidebar\">\n                    <h3>Shopping Cart</h3>\n                    <div id=\"cartItems\"></div>\n                    <div class=\"cart-total\">\n                        <strong>Total: $0.00</strong>\n                    </div>\n                    <button class=\"btn btn-success checkout-btn\">Checkout</button>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 E-commerce Store. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* E-commerce Store Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// E-commerce Store JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        document.querySelectorAll('.add-to-cart').forEach(btn => {\n            btn.addEventListener('click', (e) => {\n                this.addToCart(e.target);\n            });\n        });\n        \n        document.querySelector('.checkout-btn').addEventListener('click', () => {\n            this.checkout();\n        });\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for E-commerce Store...');\n        \n        this.cart = JSON.parse(localStorage.getItem('cart')) || [];\n        this.products = this.getProducts();\n        this.renderCart();\n    }\n\n    \n    addToCart(button) {\n        const productCard = button.closest('.product-card');\n        const product = {\n            id: Date.now(),\n            name: productCard.querySelector('h3').textContent,\n            price: productCard.querySelector('.price').textContent,\n            quantity: 1\n        };\n        \n        const existingItem = this.cart.find(item => item.name === product.name);\n        if (existingItem) {\n            existingItem.quantity += 1;\n        } else {\n            this.cart.push(product);\n        }\n        \n        this.saveCart();\n        this.renderCart();\n        this.showNotification('Product added to cart!');\n    }\n    \n    removeFromCart(id) {\n        this.cart = this.cart.filter(item => item.id !== id);\n        this.saveCart();\n        this.renderCart();\n    }\n    \n    renderCart() {\n        const cartItems = document.getElementById('cartItems');\n        const cartTotal = document.querySelector('.cart-total strong');\n        \n        cartItems.innerHTML = this.cart.map(item => `\n            <div class=\"cart-item\">\n                <span>${item.name} x${item.quantity}</span>\n                <span>${item.price}</span>\n                <button onclick=\"app.removeFromCart(${item.id})\" class=\"btn btn-sm btn-danger\">Remove</button>\n            </div>\n        `).join('');\n        \n        const total = this.cart.reduce((sum, item) => {\n            const price = parseFloat(item.price.replace('$', ''));\n            return sum + (price * item.quantity);\n        }, 0);\n        \n        cartTotal.textContent = `Total: ${utils.formatCurrency(total)}`;\n    }\n    \n    checkout() {\n        if (this.cart.length === 0) {\n            alert('Your cart is empty!');\n            return;\n        }\n        \n        alert('Checkout functionality would be implemented here!');\n        this.cart = [];\n        this.saveCart();\n        this.renderCart();\n    }\n    \n    saveCart() {\n        localStorage.setItem('cart', JSON.stringify(this.cart));\n    }\n    \n    showNotification(message) {\n        // Simple notification\n        const notification = document.createElement('div');\n        notification.textContent = message;\n        notification.style.cssText = `\n            position: fixed;\n            top: 20px;\n            right: 20px;\n            background: #27ae60;\n            color: white;\n            padding: 10px 20px;\n            border-radius: 5px;\n            z-index: 1000;\n        `;\n        document.body.appendChild(notification);\n        \n        setTimeout(() => {\n            notification.remove();\n        }, 3000);\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"ecommerce-store\",\n  \"version\": \"1.0.0\",\n  \"description\": \"E-commerce Store - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"ecommerce-store\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# E-commerce Store\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nBuild a complete e-commerce store with product catalog, shopping cart, checkout process, user authentication, and payment integration.\n\n## Features\n\n- add\n- create\n- update\n- search\n- categorize\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Browse products in the product grid\n2. Click \"Add to Cart\" to add items to your shopping cart\n3. View your cart in the sidebar\n4. Remove items from cart using the \"Remove\" button\n5. Click \"Checkout\" to complete your purchase (demo only)\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\necommerce-store/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 4,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality",
+          "Shopping Cart"
+        ],
+        "missingFeatures": [],
+        "score": 80
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.758Z",
+      "duration": 0
+    },
+    {
+      "appId": "dashboard-analytics",
+      "appName": "Analytics Dashboard",
+      "prompt": "Create a comprehensive analytics dashboard with charts, graphs, data visualization, real-time updates, and export functionality.",
+      "expectedFeatures": [
+        "Charts",
+        "Data visualization",
+        "Real-time updates",
+        "Export",
+        "Responsive"
+      ],
+      "startTime": "2025-09-26T16:58:23.759Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Analytics Dashboard</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Analytics Dashboard</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"dashboard-container\">\n                <div class=\"dashboard-header\">\n                    <h2>Analytics Dashboard</h2>\n                    <div class=\"date-range\">\n                        <select id=\"dateRange\">\n                            <option value=\"7d\">Last 7 days</option>\n                            <option value=\"30d\">Last 30 days</option>\n                            <option value=\"90d\">Last 90 days</option>\n                        </select>\n                    </div>\n                </div>\n                \n                <div class=\"metrics-grid\">\n                    <div class=\"metric-card\">\n                        <h3>Total Users</h3>\n                        <div class=\"metric-value\">1,234</div>\n                        <div class=\"metric-change positive\">+12%</div>\n                    </div>\n                    <div class=\"metric-card\">\n                        <h3>Revenue</h3>\n                        <div class=\"metric-value\">$45,678</div>\n                        <div class=\"metric-change positive\">+8%</div>\n                    </div>\n                    <div class=\"metric-card\">\n                        <h3>Conversion Rate</h3>\n                        <div class=\"metric-value\">3.2%</div>\n                        <div class=\"metric-change negative\">-2%</div>\n                    </div>\n                </div>\n                \n                <div class=\"charts-container\">\n                    <canvas id=\"lineChart\" width=\"400\" height=\"200\"></canvas>\n                    <canvas id=\"barChart\" width=\"400\" height=\"200\"></canvas>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Analytics Dashboard. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Analytics Dashboard Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Analytics Dashboard JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        // Generic event listeners\n        console.log('Setting up event listeners for Analytics Dashboard');\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Analytics Dashboard...');\n        \n        // Load app-specific data\n        console.log('Data loaded for Analytics Dashboard');\n    }\n\n    \n    // App-specific methods for Analytics Dashboard\n    initializeApp() {\n        console.log('Initializing Analytics Dashboard...');\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"dashboard-analytics\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Analytics Dashboard - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"dashboard-analytics\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# Analytics Dashboard\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nCreate a comprehensive analytics dashboard with charts, graphs, data visualization, real-time updates, and export functionality.\n\n## Features\n\n- add\n- create\n- update\n- search\n- categorize\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. View key metrics in the metrics cards\n2. Use the date range selector to change the time period\n3. Analyze data using the interactive charts\n4. All data is simulated for demonstration purposes\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\ndashboard-analytics/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 4,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality",
+          "Data Visualization"
+        ],
+        "missingFeatures": [],
+        "score": 80
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.760Z",
+      "duration": 1
+    },
+    {
+      "appId": "blog-cms",
+      "appName": "Blog CMS",
+      "prompt": "Develop a content management system for blogs with rich text editor, image uploads, categories, tags, comments, and SEO optimization.",
+      "expectedFeatures": [
+        "Rich text editor",
+        "Image uploads",
+        "Categories",
+        "Comments",
+        "SEO"
+      ],
+      "startTime": "2025-09-26T16:58:23.760Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Blog CMS</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Blog CMS</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"app-container\">\n                <h2>Blog CMS</h2>\n                <p>Welcome to your blog cms!</p>\n                <div class=\"features\">\n                    <div class=\"feature-item\">add</div><div class=\"feature-item\">edit</div><div class=\"feature-item\">create</div><div class=\"feature-item\">update</div><div class=\"feature-item\">search</div>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Blog CMS. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Blog CMS Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Blog CMS JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        // Generic event listeners\n        console.log('Setting up event listeners for Blog CMS');\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Blog CMS...');\n        \n        // Load app-specific data\n        console.log('Data loaded for Blog CMS');\n    }\n\n    \n    // App-specific methods for Blog CMS\n    initializeApp() {\n        console.log('Initializing Blog CMS...');\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"blog-cms\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Blog CMS - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"blog-cms\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# Blog CMS\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nDevelop a content management system for blogs with rich text editor, image uploads, categories, tags, comments, and SEO optimization.\n\n## Features\n\n- add\n- edit\n- create\n- update\n- search\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Open the application in your web browser\n2. Interact with the features as designed\n3. All functionality is client-side and runs in your browser\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\nblog-cms/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 3,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality"
+        ],
+        "missingFeatures": [],
+        "score": 60
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.760Z",
+      "duration": 0
+    },
+    {
+      "appId": "chat-app",
+      "appName": "Real-time Chat App",
+      "prompt": "Build a real-time chat application with user rooms, message history, file sharing, emoji reactions, and online status indicators.",
+      "expectedFeatures": [
+        "Real-time messaging",
+        "Rooms",
+        "File sharing",
+        "Emoji reactions",
+        "Online status"
+      ],
+      "startTime": "2025-09-26T16:58:23.760Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Real-time Chat App</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Real-time Chat App</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"app-container\">\n                <h2>Real-time Chat App</h2>\n                <p>Welcome to your real-time chat app!</p>\n                <div class=\"features\">\n                    <div class=\"feature-item\">add</div><div class=\"feature-item\">create</div><div class=\"feature-item\">update</div><div class=\"feature-item\">search</div><div class=\"feature-item\">categorize</div>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Real-time Chat App. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Real-time Chat App Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Real-time Chat App JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        // Generic event listeners\n        console.log('Setting up event listeners for Real-time Chat App');\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Real-time Chat App...');\n        \n        // Load app-specific data\n        console.log('Data loaded for Real-time Chat App');\n    }\n\n    \n    // App-specific methods for Real-time Chat App\n    initializeApp() {\n        console.log('Initializing Real-time Chat App...');\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"chat-app\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Real-time Chat App - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"chat-app\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# Real-time Chat App\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nBuild a real-time chat application with user rooms, message history, file sharing, emoji reactions, and online status indicators.\n\n## Features\n\n- add\n- create\n- update\n- search\n- categorize\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Open the application in your web browser\n2. Interact with the features as designed\n3. All functionality is client-side and runs in your browser\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\nchat-app/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 3,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality"
+        ],
+        "missingFeatures": [],
+        "score": 60
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.761Z",
+      "duration": 1
+    },
+    {
+      "appId": "task-project-manager",
+      "appName": "Project Management Tool",
+      "prompt": "Create a project management tool with task boards, team collaboration, time tracking, progress reports, and deadline management.",
+      "expectedFeatures": [
+        "Task boards",
+        "Team collaboration",
+        "Time tracking",
+        "Progress reports",
+        "Deadlines"
+      ],
+      "startTime": "2025-09-26T16:58:23.761Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Project Management Tool</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Project Management Tool</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"app-container\">\n                <h2>Project Management Tool</h2>\n                <p>Welcome to your project management tool!</p>\n                <div class=\"features\">\n                    <div class=\"feature-item\">add</div><div class=\"feature-item\">create</div><div class=\"feature-item\">update</div><div class=\"feature-item\">search</div><div class=\"feature-item\">categorize</div>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Project Management Tool. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Project Management Tool Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Project Management Tool JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        // Generic event listeners\n        console.log('Setting up event listeners for Project Management Tool');\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Project Management Tool...');\n        \n        // Load app-specific data\n        console.log('Data loaded for Project Management Tool');\n    }\n\n    \n    // App-specific methods for Project Management Tool\n    initializeApp() {\n        console.log('Initializing Project Management Tool...');\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"task-project-manager\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Project Management Tool - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"task-project-manager\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# Project Management Tool\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nCreate a project management tool with task boards, team collaboration, time tracking, progress reports, and deadline management.\n\n## Features\n\n- add\n- create\n- update\n- search\n- categorize\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Open the application in your web browser\n2. Interact with the features as designed\n3. All functionality is client-side and runs in your browser\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\ntask-project-manager/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 3,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality"
+        ],
+        "missingFeatures": [],
+        "score": 60
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.761Z",
+      "duration": 0
+    },
+    {
+      "appId": "weather-app",
+      "appName": "Weather Application",
+      "prompt": "Develop a weather application with current conditions, 7-day forecast, location search, weather maps, and alerts.",
+      "expectedFeatures": [
+        "Current weather",
+        "7-day forecast",
+        "Location search",
+        "Maps",
+        "Alerts"
+      ],
+      "startTime": "2025-09-26T16:58:23.761Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Weather Application</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Weather Application</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"app-container\">\n                <h2>Weather Application</h2>\n                <p>Welcome to your weather application!</p>\n                <div class=\"features\">\n                    <div class=\"feature-item\">add</div><div class=\"feature-item\">create</div><div class=\"feature-item\">update</div><div class=\"feature-item\">search</div><div class=\"feature-item\">categorize</div>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Weather Application. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Weather Application Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Weather Application JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        // Generic event listeners\n        console.log('Setting up event listeners for Weather Application');\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Weather Application...');\n        \n        // Load app-specific data\n        console.log('Data loaded for Weather Application');\n    }\n\n    \n    // App-specific methods for Weather Application\n    initializeApp() {\n        console.log('Initializing Weather Application...');\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"weather-app\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Weather Application - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"weather-app\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# Weather Application\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nDevelop a weather application with current conditions, 7-day forecast, location search, weather maps, and alerts.\n\n## Features\n\n- add\n- create\n- update\n- search\n- categorize\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Open the application in your web browser\n2. Interact with the features as designed\n3. All functionality is client-side and runs in your browser\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\nweather-app/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 3,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality"
+        ],
+        "missingFeatures": [],
+        "score": 60
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.761Z",
+      "duration": 0
+    },
+    {
+      "appId": "expense-tracker",
+      "appName": "Expense Tracker",
+      "prompt": "Build an expense tracking application with budget management, category analysis, receipt scanning, and financial reports.",
+      "expectedFeatures": [
+        "Budget management",
+        "Category analysis",
+        "Receipt scanning",
+        "Reports",
+        "Charts"
+      ],
+      "startTime": "2025-09-26T16:58:23.761Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Expense Tracker</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Expense Tracker</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"app-container\">\n                <h2>Expense Tracker</h2>\n                <p>Welcome to your expense tracker!</p>\n                <div class=\"features\">\n                    <div class=\"feature-item\">user management</div><div class=\"feature-item\">instant</div><div class=\"feature-item\">analytics</div><div class=\"feature-item\">report</div>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Expense Tracker. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Expense Tracker Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Expense Tracker JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        // Generic event listeners\n        console.log('Setting up event listeners for Expense Tracker');\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Expense Tracker...');\n        \n        // Load app-specific data\n        console.log('Data loaded for Expense Tracker');\n    }\n\n    \n    // App-specific methods for Expense Tracker\n    initializeApp() {\n        console.log('Initializing Expense Tracker...');\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"expense-tracker\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Expense Tracker - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"expense-tracker\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# Expense Tracker\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nBuild an expense tracking application with budget management, category analysis, receipt scanning, and financial reports.\n\n## Features\n\n- user management\n- instant\n- analytics\n- report\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Open the application in your web browser\n2. Interact with the features as designed\n3. All functionality is client-side and runs in your browser\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\nexpense-tracker/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 3,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality"
+        ],
+        "missingFeatures": [],
+        "score": 60
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.762Z",
+      "duration": 1
+    },
+    {
+      "appId": "social-media-feed",
+      "appName": "Social Media Feed",
+      "prompt": "Create a social media feed application with posts, likes, comments, user profiles, following system, and content moderation.",
+      "expectedFeatures": [
+        "Posts",
+        "Likes",
+        "Comments",
+        "User profiles",
+        "Following",
+        "Moderation"
+      ],
+      "startTime": "2025-09-26T16:58:23.762Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Social Media Feed</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Social Media Feed</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"app-container\">\n                <h2>Social Media Feed</h2>\n                <p>Welcome to your social media feed!</p>\n                <div class=\"features\">\n                    <div class=\"feature-item\">add</div><div class=\"feature-item\">create</div><div class=\"feature-item\">update</div><div class=\"feature-item\">search</div><div class=\"feature-item\">categorize</div>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Social Media Feed. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Social Media Feed Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Social Media Feed JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        // Generic event listeners\n        console.log('Setting up event listeners for Social Media Feed');\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Social Media Feed...');\n        \n        // Load app-specific data\n        console.log('Data loaded for Social Media Feed');\n    }\n\n    \n    // App-specific methods for Social Media Feed\n    initializeApp() {\n        console.log('Initializing Social Media Feed...');\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"social-media-feed\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Social Media Feed - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"social-media-feed\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# Social Media Feed\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nCreate a social media feed application with posts, likes, comments, user profiles, following system, and content moderation.\n\n## Features\n\n- add\n- create\n- update\n- search\n- categorize\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Open the application in your web browser\n2. Interact with the features as designed\n3. All functionality is client-side and runs in your browser\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\nsocial-media-feed/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 3,
+        "totalFeatures": 6,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality"
+        ],
+        "missingFeatures": [],
+        "score": 50
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.762Z",
+      "duration": 0
+    },
+    {
+      "appId": "learning-management",
+      "appName": "Learning Management System",
+      "prompt": "Develop a learning management system with courses, quizzes, progress tracking, certificates, and instructor dashboard.",
+      "expectedFeatures": [
+        "Courses",
+        "Quizzes",
+        "Progress tracking",
+        "Certificates",
+        "Instructor dashboard"
+      ],
+      "startTime": "2025-09-26T16:58:23.763Z",
+      "status": "completed",
+      "generatedFiles": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Learning Management System</title>\n    <link rel=\"stylesheet\" href=\"styles.css\">\n    <link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"container\">\n        <header class=\"header\">\n            <h1>Learning Management System</h1>\n            <nav class=\"nav\">\n                <a href=\"#\" class=\"nav-link\">Home</a>\n                <a href=\"#\" class=\"nav-link\">Features</a>\n                <a href=\"#\" class=\"nav-link\">About</a>\n            </nav>\n        </header>\n        \n        <main class=\"main\">\n            \n            <div class=\"app-container\">\n                <h2>Learning Management System</h2>\n                <p>Welcome to your learning management system!</p>\n                <div class=\"features\">\n                    <div class=\"feature-item\">add</div><div class=\"feature-item\">create</div><div class=\"feature-item\">update</div><div class=\"feature-item\">search</div><div class=\"feature-item\">categorize</div>\n                </div>\n            </div>\n        \n        </main>\n        \n        <footer class=\"footer\">\n            <p>&copy; 2024 Learning Management System. Built with DreamBuild AI.</p>\n        </footer>\n    </div>\n    \n    <script src=\"script.js\"></script>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "styles.css",
+          "content": "/* Learning Management System Styles */\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n    line-height: 1.6;\n    color: #333;\n    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n    min-height: 100vh;\n}\n\n.container {\n    max-width: 1200px;\n    margin: 0 auto;\n    padding: 20px;\n    min-height: 100vh;\n    display: flex;\n    flex-direction: column;\n}\n\n.header {\n    background: rgba(255, 255, 255, 0.95);\n    padding: 20px;\n    border-radius: 10px;\n    margin-bottom: 20px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n}\n\n.header h1 {\n    color: #2c3e50;\n    font-size: 2rem;\n}\n\n.nav {\n    display: flex;\n    gap: 20px;\n}\n\n.nav-link {\n    text-decoration: none;\n    color: #666;\n    padding: 8px 16px;\n    border-radius: 5px;\n    transition: all 0.3s ease;\n}\n\n.nav-link:hover {\n    background: #f8f9fa;\n    color: #2c3e50;\n}\n\n.main {\n    flex: 1;\n    background: rgba(255, 255, 255, 0.95);\n    padding: 30px;\n    border-radius: 10px;\n    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n\n.btn {\n    padding: 10px 20px;\n    border: none;\n    border-radius: 5px;\n    cursor: pointer;\n    font-size: 14px;\n    transition: all 0.3s ease;\n    display: inline-flex;\n    align-items: center;\n    gap: 8px;\n}\n\n.btn-primary {\n    background: #3498db;\n    color: white;\n}\n\n.btn-primary:hover {\n    background: #2980b9;\n    transform: translateY(-2px);\n}\n\n.btn-success {\n    background: #27ae60;\n    color: white;\n}\n\n.btn-success:hover {\n    background: #229954;\n}\n\n.footer {\n    text-align: center;\n    padding: 20px;\n    color: rgba(255, 255, 255, 0.8);\n    margin-top: 20px;\n}\n\n/* Responsive Design */\n@media (max-width: 768px) {\n    .container {\n        padding: 10px;\n    }\n    \n    .header {\n        flex-direction: column;\n        gap: 15px;\n    }\n    \n    .nav {\n        justify-content: center;\n    }\n    \n    .main {\n        padding: 20px;\n    }\n}\n\n/* App-specific styles */\n.todo-container {\n    max-width: 600px;\n    margin: 0 auto;\n}\n\n.todo-header {\n    margin-bottom: 30px;\n}\n\n.add-task {\n    display: flex;\n    gap: 10px;\n    margin-top: 15px;\n}\n\n#taskInput {\n    flex: 1;\n    padding: 10px;\n    border: 2px solid #ddd;\n    border-radius: 5px;\n    font-size: 16px;\n}\n\n.filters {\n    display: flex;\n    gap: 10px;\n    margin-bottom: 20px;\n}\n\n.filter-btn {\n    padding: 8px 16px;\n    border: 2px solid #ddd;\n    background: white;\n    border-radius: 5px;\n    cursor: pointer;\n    transition: all 0.3s ease;\n}\n\n.filter-btn.active,\n.filter-btn:hover {\n    background: #3498db;\n    color: white;\n    border-color: #3498db;\n}\n\n.task-list {\n    list-style: none;\n}\n\n.task-item {\n    background: #f8f9fa;\n    padding: 15px;\n    margin-bottom: 10px;\n    border-radius: 5px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    transition: all 0.3s ease;\n}\n\n.task-item:hover {\n    background: #e9ecef;\n}\n\n.task-item.completed {\n    opacity: 0.6;\n    text-decoration: line-through;\n}\n\n.ecommerce-container {\n    display: grid;\n    grid-template-columns: 1fr 300px;\n    gap: 30px;\n}\n\n.product-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n    gap: 20px;\n}\n\n.product-card {\n    background: white;\n    border-radius: 10px;\n    padding: 20px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n    transition: transform 0.3s ease;\n}\n\n.product-card:hover {\n    transform: translateY(-5px);\n}\n\n.product-card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n    border-radius: 5px;\n    margin-bottom: 15px;\n}\n\n.price {\n    font-size: 1.5rem;\n    font-weight: bold;\n    color: #27ae60;\n    margin: 10px 0;\n}\n\n.dashboard-container {\n    max-width: 1000px;\n    margin: 0 auto;\n}\n\n.metrics-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n    gap: 20px;\n    margin-bottom: 30px;\n}\n\n.metric-card {\n    background: white;\n    padding: 20px;\n    border-radius: 10px;\n    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);\n    text-align: center;\n}\n\n.metric-value {\n    font-size: 2rem;\n    font-weight: bold;\n    color: #2c3e50;\n    margin: 10px 0;\n}\n\n.metric-change.positive {\n    color: #27ae60;\n}\n\n.metric-change.negative {\n    color: #e74c3c;\n}\n\n.charts-container {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));\n    gap: 20px;\n}\n\n@media (max-width: 768px) {\n    .ecommerce-container {\n        grid-template-columns: 1fr;\n    }\n    \n    .product-grid {\n        grid-template-columns: 1fr;\n    }\n    \n    .charts-container {\n        grid-template-columns: 1fr;\n    }\n}",
+          "type": "css"
+        },
+        {
+          "name": "script.js",
+          "content": "// Learning Management System JavaScript\nclass App {\n    constructor() {\n        this.init();\n    }\n\n    init() {\n        this.setupEventListeners();\n        this.loadData();\n    }\n\n    setupEventListeners() {\n        // Add event listeners based on app type\n        \n        // Generic event listeners\n        console.log('Setting up event listeners for Learning Management System');\n    }\n\n    loadData() {\n        // Load initial data\n        console.log('Loading data for Learning Management System...');\n        \n        // Load app-specific data\n        console.log('Data loaded for Learning Management System');\n    }\n\n    \n    // App-specific methods for Learning Management System\n    initializeApp() {\n        console.log('Initializing Learning Management System...');\n    }\n}\n\n// Utility functions\nconst utils = {\n    formatDate: (date) => {\n        return new Date(date).toLocaleDateString();\n    },\n    \n    formatCurrency: (amount) => {\n        return new Intl.NumberFormat('en-US', {\n            style: 'currency',\n            currency: 'USD'\n        }).format(amount);\n    },\n    \n    debounce: (func, wait) => {\n        let timeout;\n        return function executedFunction(...args) {\n            const later = () => {\n                clearTimeout(timeout);\n                func(...args);\n            };\n            clearTimeout(timeout);\n            timeout = setTimeout(later, wait);\n        };\n    }\n};\n\n// Initialize app when DOM is loaded\ndocument.addEventListener('DOMContentLoaded', () => {\n    new App();\n});\n\n// Export for module systems\nif (typeof module !== 'undefined' && module.exports) {\n    module.exports = { App, utils };\n}",
+          "type": "javascript"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"learning-management\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Learning Management System - Generated by DreamBuild AI\",\n  \"main\": \"script.js\",\n  \"scripts\": {\n    \"start\": \"python -m http.server 8000\",\n    \"dev\": \"python -m http.server 8000\",\n    \"build\": \"echo 'Build completed'\"\n  },\n  \"keywords\": [\n    \"ai-generated\",\n    \"web-app\",\n    \"learning-management\",\n    \"dreambuild\"\n  ],\n  \"author\": \"DreamBuild AI\",\n  \"license\": \"MIT\",\n  \"dependencies\": {},\n  \"devDependencies\": {}\n}",
+          "type": "json"
+        },
+        {
+          "name": "README.md",
+          "content": "# Learning Management System\n\nGenerated by DreamBuild AI - Universal AI Development Platform\n\n## Description\n\nDevelop a learning management system with courses, quizzes, progress tracking, certificates, and instructor dashboard.\n\n## Features\n\n- add\n- create\n- update\n- search\n- categorize\n\n## Getting Started\n\n### Prerequisites\n\n- A modern web browser\n- Python 3.x (for local development server)\n\n### Installation\n\n1. Clone or download this project\n2. Navigate to the project directory\n3. Start a local development server:\n\n```bash\npython -m http.server 8000\n```\n\n4. Open your browser and go to `http://localhost:8000`\n\n## Usage\n\n1. Open the application in your web browser\n2. Interact with the features as designed\n3. All functionality is client-side and runs in your browser\n\n## Technologies Used\n\n- HTML5\n- CSS3\n- JavaScript (ES6+)\n- Font Awesome Icons\n\n## File Structure\n\n```\nlearning-management/\n├── index.html          # Main HTML file\n├── styles.css          # CSS styles\n├── script.js           # JavaScript functionality\n├── package.json        # Project configuration\n└── README.md           # This file\n```\n\n## Contributing\n\nThis project was generated by DreamBuild AI. For modifications, please use the DreamBuild platform.\n\n## License\n\nMIT License - Generated by DreamBuild AI\n\n---\n\n*Built with ❤️ by DreamBuild AI*",
+          "type": "markdown"
+        }
+      ],
+      "codeQuality": {
+        "structure": 20,
+        "bestPractices": 20,
+        "performance": 15,
+        "security": 10,
+        "maintainability": 20,
+        "accessibility": 15,
+        "totalScore": 100
+      },
+      "functionality": {
+        "featuresImplemented": 3,
+        "totalFeatures": 5,
+        "workingFeatures": [
+          "HTML Structure",
+          "Styling",
+          "JavaScript Functionality"
+        ],
+        "missingFeatures": [],
+        "score": 60
+      },
+      "errors": [],
+      "endTime": "2025-09-26T16:58:23.763Z",
+      "duration": 0
+    }
+  ],
+  "recommendations": [
+    "Enhance feature implementation and functionality testing"
+  ]
+}

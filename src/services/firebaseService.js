@@ -763,6 +763,151 @@ class FirebaseService {
       throw error
     }
   }
+
+  // Save conversation to Firebase
+  async saveConversation(conversation) {
+    try {
+      await this.initialize()
+      
+      const conversationRef = doc(this.db, 'conversations', conversation.id)
+      await setDoc(conversationRef, {
+        ...conversation,
+        userId: this.user?.uid || 'anonymous',
+        updatedAt: new Date().toISOString()
+      })
+      
+      console.log('💬 Conversation saved successfully')
+    } catch (error) {
+      console.error('❌ Failed to save conversation:', error)
+      throw error
+    }
+  }
+
+  // Get conversation by ID
+  async getConversation(conversationId) {
+    try {
+      await this.initialize()
+      
+      const conversationRef = doc(this.db, 'conversations', conversationId)
+      const conversationSnap = await getDoc(conversationRef)
+      
+      if (conversationSnap.exists()) {
+        console.log('💬 Conversation loaded successfully')
+        return conversationSnap.data()
+      }
+      
+      return null
+    } catch (error) {
+      console.error('❌ Failed to load conversation:', error)
+      return null
+    }
+  }
+
+  // Get all conversations for a user
+  async getUserConversations() {
+    try {
+      await this.initialize()
+      
+      const conversationsRef = collection(this.db, 'conversations')
+      const q = query(
+        conversationsRef, 
+        where('userId', '==', this.user?.uid || 'anonymous'),
+        orderBy('lastModified', 'desc')
+      )
+      const conversationsSnapshot = await getDocs(q)
+      
+      const conversations = []
+      conversationsSnapshot.forEach(doc => {
+        conversations.push({ id: doc.id, ...doc.data() })
+      })
+      
+      console.log('💬 User conversations loaded successfully')
+      return conversations
+    } catch (error) {
+      console.error('❌ Failed to load user conversations:', error)
+      return []
+    }
+  }
+
+  // Save feature recommendations
+  async saveFeatureRecommendations(conversationId, recommendations) {
+    try {
+      await this.initialize()
+      
+      const recommendationsRef = doc(this.db, 'featureRecommendations', conversationId)
+      await setDoc(recommendationsRef, {
+        conversationId,
+        recommendations,
+        userId: this.user?.uid || 'anonymous',
+        createdAt: new Date().toISOString()
+      })
+      
+      console.log('🎯 Feature recommendations saved successfully')
+    } catch (error) {
+      console.error('❌ Failed to save feature recommendations:', error)
+      throw error
+    }
+  }
+
+  // Get feature recommendations
+  async getFeatureRecommendations(conversationId) {
+    try {
+      await this.initialize()
+      
+      const recommendationsRef = doc(this.db, 'featureRecommendations', conversationId)
+      const recommendationsSnap = await getDoc(recommendationsRef)
+      
+      if (recommendationsSnap.exists()) {
+        console.log('🎯 Feature recommendations loaded successfully')
+        return recommendationsSnap.data().recommendations
+      }
+      
+      return []
+    } catch (error) {
+      console.error('❌ Failed to load feature recommendations:', error)
+      return []
+    }
+  }
+
+  // Save industry standards check
+  async saveIndustryStandardsCheck(conversationId, standardsCheck) {
+    try {
+      await this.initialize()
+      
+      const standardsRef = doc(this.db, 'industryStandards', conversationId)
+      await setDoc(standardsRef, {
+        conversationId,
+        standardsCheck,
+        userId: this.user?.uid || 'anonymous',
+        checkedAt: new Date().toISOString()
+      })
+      
+      console.log('📊 Industry standards check saved successfully')
+    } catch (error) {
+      console.error('❌ Failed to save industry standards check:', error)
+      throw error
+    }
+  }
+
+  // Get industry standards check
+  async getIndustryStandardsCheck(conversationId) {
+    try {
+      await this.initialize()
+      
+      const standardsRef = doc(this.db, 'industryStandards', conversationId)
+      const standardsSnap = await getDoc(standardsRef)
+      
+      if (standardsSnap.exists()) {
+        console.log('📊 Industry standards check loaded successfully')
+        return standardsSnap.data().standardsCheck
+      }
+      
+      return null
+    } catch (error) {
+      console.error('❌ Failed to load industry standards check:', error)
+      return null
+    }
+  }
 }
 
 // Export singleton instance

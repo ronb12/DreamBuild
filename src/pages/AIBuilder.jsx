@@ -5,6 +5,7 @@ import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
 import PreviewSimple from '../components/PreviewSimple'
 import AIPromptSimplified from '../components/AIPromptSimplified'
+import ConversationalAI from '../components/ai/ConversationalAI'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import TemplateSelector from '../components/TemplateSelector'
 import Terminal from '../components/Terminal'
@@ -21,7 +22,8 @@ const AIBuilder = () => {
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
     { id: 'preview', label: 'Live Preview', icon: Eye, description: 'View your application in real-time' },
     { id: 'terminal', label: 'Terminal', icon: TerminalIcon, description: 'Command line interface' },
-    { id: 'workspace', label: 'Advanced Workspace', icon: Brain, description: 'Full-featured workspace with collaboration, visual editor, and deployment' }
+    { id: 'conversation', label: 'AI Assistant', icon: Brain, description: 'Continuous conversation with AI for iterative development' },
+    { id: 'workspace', label: 'Advanced Workspace', icon: Sparkles, description: 'Full-featured workspace with collaboration, visual editor, and deployment' }
   ]
 
   const handleTabClick = (tabId) => {
@@ -34,6 +36,10 @@ const AIBuilder = () => {
         setIsWorkspaceVisible(true)
         setActiveTab(tabId)
       }
+    } else if (tabId === 'conversation') {
+      // For conversation tab, just switch normally
+      setActiveTab(tabId)
+      setIsWorkspaceVisible(false)
     } else {
       // For other tabs, just switch normally
       setActiveTab(tabId)
@@ -178,15 +184,9 @@ const AIBuilder = () => {
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden h-full min-h-[600px]">
                 {activeTab === 'editor' && <CodeEditor />}
-                {activeTab === 'preview' && (
-                  <div className="relative">
-                    <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs z-50">
-                      PREVIEW TAB ACTIVE - {activeTab}
-                    </div>
-                    <Preview />
-                  </div>
-                )}
+                {activeTab === 'preview' && <Preview />}
                 {activeTab === 'terminal' && <Terminal />}
+                {activeTab === 'conversation' && <ConversationalAI />}
                 {activeTab === 'workspace' && !isWorkspaceVisible && (
                   <div className="h-full flex items-center justify-center bg-muted/20">
                     <div className="text-center">

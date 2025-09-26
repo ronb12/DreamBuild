@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Sparkles, Sun, Moon, Menu, X, Rocket, Code, Database, Users, LogOut, User, Home, BookOpen, Grid3X3 } from 'lucide-react'
+import { Sparkles, Sun, Moon, Menu, X, Rocket, Code, Database, Users, LogOut, User, Home, BookOpen, Grid3X3, Monitor } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -40,6 +40,7 @@ const Navbar = () => {
   const navigation = [
     { name: 'Home', href: '/', icon: Rocket },
     { name: 'AI Builder', href: '/ai-builder', icon: Code },
+    { name: 'Multi-Window', href: '/multi-window', icon: Monitor },
     { name: 'Templates', href: '/templates', icon: Sparkles },
     { name: 'Gallery', href: '/gallery', icon: Grid3X3 },
     { name: 'Education', href: '/education', icon: BookOpen },

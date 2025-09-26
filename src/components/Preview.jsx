@@ -281,133 +281,134 @@ const Preview = () => {
         isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''
       }`}
     >
-      {/* Status Indicator */}
-      <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs z-50">
-        {deployedApp ? 'DEPLOYED' : 'LOADING'}
-      </div>
-      
-      {/* Advanced Preview Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border bg-muted/50">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={deployApp}
-            disabled={isLoading}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:opacity-50"
-          >
-            {isLoading ? 'Deploying...' : 'Deploy App'}
-          </button>
-          <h3 className="font-semibold text-sm text-foreground">Live Preview</h3>
-          {deployedApp && (
-            <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">DEPLOYED</span>
-          )}
-          {isLoading && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
-              <span>Deploying...</span>
-            </div>
-          )}
+      {/* Preview Header - Two Row Layout */}
+      <div className="border-b border-border bg-muted/50 relative">
+        {/* Status Indicator - Repositioned */}
+        <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded text-xs z-10 shadow-sm">
+          {deployedApp ? 'DEPLOYED' : 'READY'}
         </div>
         
-        {/* Advanced Preview Controls */}
-        <div className="flex items-center gap-2">
+        {/* Top Row - Main Controls */}
+        <div className="flex items-center justify-between p-3 pr-24">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={deployApp}
+              disabled={isLoading}
+              className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:opacity-50"
+            >
+              {isLoading ? 'Deploying...' : 'Deploy App'}
+            </button>
+            <h3 className="font-semibold text-sm text-foreground">Live Preview</h3>
+            {isLoading && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
+                <span>Deploying...</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Right Side - Main Action Buttons */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setIsAutoRefresh(!isAutoRefresh)}
+              className={`p-2 rounded-md transition-colors ${
+                isAutoRefresh ? 'bg-green-500 text-white' : 'bg-muted hover:bg-muted-foreground/20'
+              }`}
+              title={isAutoRefresh ? 'Disable Auto-refresh' : 'Enable Auto-refresh'}
+            >
+              <RefreshCw className={`h-4 w-4 ${isAutoRefresh ? 'animate-spin' : ''}`} />
+            </button>
+            
+            <button
+              onClick={() => setIsPreviewPaused(!isPreviewPaused)}
+              className={`p-2 rounded-md transition-colors ${
+                isPreviewPaused ? 'bg-red-500 text-white' : 'bg-muted hover:bg-muted-foreground/20'
+              }`}
+              title={isPreviewPaused ? 'Resume Preview' : 'Pause Preview'}
+            >
+              {isPreviewPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+            </button>
+            
+            <button
+              onClick={handleRefresh}
+              className="p-2 hover:bg-muted rounded-md transition-colors"
+              title="Manual Refresh"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </button>
+            
+            <button
+              onClick={toggleFullscreen}
+              className="p-2 hover:bg-muted rounded-md transition-colors"
+              title="Toggle Fullscreen"
+            >
+              {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+        
+        {/* Bottom Row - Device Controls and Additional Actions */}
+        <div className="flex items-center justify-between px-3 pb-3">
           {/* Device Type Selector */}
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-            <button
-              onClick={() => setDeviceType('desktop')}
-              className={`p-1 rounded ${deviceType === 'desktop' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
-              title="Desktop View"
-            >
-              <Monitor className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setDeviceType('tablet')}
-              className={`p-1 rounded ${deviceType === 'tablet' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
-              title="Tablet View"
-            >
-              <Tablet className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setDeviceType('mobile')}
-              className={`p-1 rounded ${deviceType === 'mobile' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
-              title="Mobile View"
-            >
-              <Smartphone className="h-4 w-4" />
-            </button>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+              <button
+                onClick={() => setDeviceType('desktop')}
+                className={`p-1 rounded ${deviceType === 'desktop' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
+                title="Desktop View"
+              >
+                <Monitor className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setDeviceType('tablet')}
+                className={`p-1 rounded ${deviceType === 'tablet' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
+                title="Tablet View"
+              >
+                <Tablet className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setDeviceType('mobile')}
+                className={`p-1 rounded ${deviceType === 'mobile' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
+                title="Mobile View"
+              >
+                <Smartphone className="h-4 w-4" />
+              </button>
+            </div>
+            
+            {/* Device Type Labels */}
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className={deviceType === 'desktop' ? 'font-semibold text-foreground' : ''}>Desktop</span>
+              <span className={deviceType === 'tablet' ? 'font-semibold text-foreground' : ''}>Tablet</span>
+              <span className={deviceType === 'mobile' ? 'font-semibold text-foreground' : ''}>Mobile</span>
+            </div>
           </div>
           
-          {/* Device Type Labels */}
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <span className={deviceType === 'desktop' ? 'font-semibold' : ''}>Desktop</span>
-            <span className={deviceType === 'tablet' ? 'font-semibold' : ''}>Tablet</span>
-            <span className={deviceType === 'mobile' ? 'font-semibold' : ''}>Mobile</span>
+          {/* Additional Action Buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleOpenInNewTab}
+              className="p-2 hover:bg-muted rounded-md transition-colors"
+              title="Open in New Tab"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </button>
+            
+            <button
+              onClick={handleCopyUrl}
+              className="p-2 hover:bg-muted rounded-md transition-colors"
+              title="Copy URL"
+            >
+              <Copy className="h-4 w-4" />
+            </button>
+            
+            <button
+              onClick={handleShare}
+              className="p-2 hover:bg-muted rounded-md transition-colors"
+              title="Share App"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
           </div>
-          
-          {/* Auto-refresh Toggle */}
-          <button
-            onClick={() => setIsAutoRefresh(!isAutoRefresh)}
-            className={`p-2 rounded-md transition-colors ${
-              isAutoRefresh ? 'bg-green-500 text-white' : 'bg-muted hover:bg-muted-foreground/20'
-            }`}
-            title={isAutoRefresh ? 'Disable Auto-refresh' : 'Enable Auto-refresh'}
-          >
-            <RefreshCw className={`h-4 w-4 ${isAutoRefresh ? 'animate-spin' : ''}`} />
-          </button>
-          
-          {/* Pause/Play Toggle */}
-          <button
-            onClick={() => setIsPreviewPaused(!isPreviewPaused)}
-            className={`p-2 rounded-md transition-colors ${
-              isPreviewPaused ? 'bg-red-500 text-white' : 'bg-muted hover:bg-muted-foreground/20'
-            }`}
-            title={isPreviewPaused ? 'Resume Preview' : 'Pause Preview'}
-          >
-            {isPreviewPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-          </button>
-          
-          {/* Manual Refresh */}
-          <button
-            onClick={handleRefresh}
-            className="p-2 hover:bg-muted rounded-md transition-colors"
-            title="Manual Refresh"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </button>
-          
-          {/* Open in New Tab */}
-          <button
-            onClick={handleOpenInNewTab}
-            className="p-2 hover:bg-muted rounded-md transition-colors"
-            title="Open in New Tab"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </button>
-          
-          {/* Copy URL */}
-          <button
-            onClick={handleCopyUrl}
-            className="p-2 hover:bg-muted rounded-md transition-colors"
-            title="Copy URL"
-          >
-            <Copy className="h-4 w-4" />
-          </button>
-          
-          {/* Share */}
-          <button
-            onClick={handleShare}
-            className="p-2 hover:bg-muted rounded-md transition-colors"
-            title="Share App"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
-          
-          {/* Fullscreen */}
-          <button
-            onClick={toggleFullscreen}
-            className="p-2 hover:bg-muted rounded-md transition-colors"
-            title="Toggle Fullscreen"
-          >
-            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </button>
         </div>
       </div>
 

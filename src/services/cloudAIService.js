@@ -2,6 +2,7 @@
 // Uses Hugging Face Inference API for open source models
 
 import axios from 'axios'
+import incrementalDevelopmentService from './incrementalDevelopmentService.js'
 
 class CloudAIService {
   constructor() {
@@ -101,6 +102,11 @@ class CloudAIService {
     console.log('🚀 Generating code with Cloud AI...')
     
     try {
+      // Check if this is an incremental development request
+      if (context.isIncremental && context.existingProject) {
+        return await this.generateIncrementalCode(prompt, context)
+      }
+      
       // Enhanced context analysis (like Cursor)
       const enhancedContext = this.analyzeProjectContext(context)
       console.log('🧠 Enhanced context analysis:', enhancedContext)
@@ -148,6 +154,53 @@ class CloudAIService {
         dependencies: this.extractDependencies(fallbackCode),
         buildInstructions: this.generateBuildInstructions(fallbackCode)
       }
+    }
+  }
+
+  // Generate incremental code for existing projects
+  async generateIncrementalCode(prompt, context) {
+    console.log('🔄 Generating incremental code...')
+    
+    try {
+      // Initialize incremental development service
+      await incrementalDevelopmentService.initializeProject(context.existingProject)
+      
+      // Process the feature request
+      const result = await incrementalDevelopmentService.processFeatureRequest(prompt, context)
+      
+      if (result.type === 'no_new_features') {
+        return {
+          type: 'no_changes',
+          message: result.message,
+          existingFeatures: result.existingFeatures,
+          files: context.existingProject.files || {}
+        }
+      }
+      
+      if (result.type === 'incremental_update') {
+        // Merge new code with existing files
+        const updatedFiles = { ...context.existingProject.files, ...result.code }
+        
+        return {
+          type: 'incremental_update',
+          files: updatedFiles,
+          newFeatures: result.newFeatures,
+          updatedFiles: result.updatedFiles,
+          message: result.message,
+          appName: context.existingProject.name || 'Updated App',
+          prompt: prompt,
+          generatedAt: new Date().toISOString(),
+          preview: this.generatePreviewData(updatedFiles, context.existingProject.name),
+          context: this.analyzeProjectContext(context),
+          iterations: incrementalDevelopmentService.featureHistory,
+          dependencies: this.extractDependencies(updatedFiles),
+          buildInstructions: this.generateBuildInstructions(updatedFiles)
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Incremental code generation failed:', error)
+      throw error
     }
   }
 
@@ -2611,20 +2664,28 @@ body {
         border-color: #667eea;
       }
 
-      button {
-        padding: 1rem 2rem;
-        background: #667eea;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.3s;
-      }
+       button {
+         padding: 1rem 2rem;
+         background: #667eea;
+         color: white;
+         border: none;
+         border-radius: 8px;
+         font-size: 1rem;
+         cursor: pointer;
+         transition: all 0.3s;
+         font-weight: 500;
+       }
 
-      button:hover {
-        background: #5a6fd8;
-      }
+       button:hover {
+         background: #5a6fd8;
+         transform: translateY(-1px);
+         box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+       }
+
+       button:active {
+         transform: translateY(0);
+         box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+       }
 
       .todos {
         display: flex;
@@ -2657,15 +2718,24 @@ body {
         font-size: 1.1rem;
       }
 
-      .delete-btn {
-        background: #dc3545;
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-      }
+       .delete-btn {
+         background: #dc3545;
+         padding: 0.5rem 1rem;
+         font-size: 0.9rem;
+         cursor: pointer;
+         border: none;
+         border-radius: 4px;
+         transition: background 0.3s;
+       }
 
-      .delete-btn:hover {
-        background: #c82333;
-      }
+       .delete-btn:hover {
+         background: #c82333;
+       }
+
+       .delete-btn:active {
+         background: #bd2130;
+         transform: translateY(1px);
+       }
 
       .no-todos {
         text-align: center;
@@ -2681,7 +2751,7 @@ body {
         
         <div class="input-container">
             <input type="text" id="todoInput" placeholder="Add a new todo..." />
-            <button onclick="addTodo()">Add Todo</button>
+            <button id="addBtn">Add Todo</button>
         </div>
         
         <div class="todos" id="todos"></div>
@@ -2690,71 +2760,179 @@ body {
     </div>
 
     <script>
+        // Global variables
         let todos = [];
         let nextId = 1;
 
-        function addTodo() {
+        // Initialize the app
+        function initApp() {
+            console.log('Todo app initializing...');
+            
+            // Wait for elements to be available
+            const checkElements = () => {
+                const input = document.getElementById('todoInput');
+                const addBtn = document.getElementById('addBtn');
+                const container = document.getElementById('todos');
+                
+                if (input && addBtn && container) {
+                    console.log('All elements found, setting up app');
+                    setupEventListeners();
+                    renderTodos();
+                    return true;
+                }
+                return false;
+            };
+
+            // Try immediately, then with intervals
+            if (!checkElements()) {
+                const interval = setInterval(() => {
+                    if (checkElements()) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+                
+                // Fallback timeout
+                setTimeout(() => {
+                    clearInterval(interval);
+                    console.log('App initialization timeout');
+                }, 3000);
+            }
+        }
+
+        function setupEventListeners() {
             const input = document.getElementById('todoInput');
+            const addBtn = document.getElementById('addBtn');
+            
+            if (input) {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addTodo();
+                    }
+                });
+                console.log('Input event listener added');
+            }
+            
+            if (addBtn) {
+                addBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    addTodo();
+                });
+                console.log('Add button event listener added');
+            }
+        }
+
+        function addTodo() {
+            console.log('addTodo called');
+            const input = document.getElementById('todoInput');
+            if (!input) {
+                console.error('Input element not found');
+                return;
+            }
+            
             const text = input.value.trim();
+            console.log('Input text:', text);
             
             if (text) {
-                todos.push({
+                const newTodo = {
                     id: nextId++,
                     text: text,
                     completed: false
-                });
+                };
+                todos.push(newTodo);
                 
                 input.value = '';
                 renderTodos();
+                console.log('Todo added:', newTodo);
+                console.log('Total todos:', todos.length);
             }
         }
 
         function toggleTodo(id) {
+            console.log('toggleTodo called with id:', id);
             const todo = todos.find(t => t.id === id);
             if (todo) {
                 todo.completed = !todo.completed;
                 renderTodos();
+                console.log('Todo toggled:', todo);
             }
         }
 
         function deleteTodo(id) {
+            console.log('deleteTodo called with id:', id);
+            const initialLength = todos.length;
             todos = todos.filter(t => t.id !== id);
-            renderTodos();
+            if (todos.length < initialLength) {
+                renderTodos();
+                console.log('Todo deleted, remaining:', todos.length);
+            }
         }
 
         function renderTodos() {
+            console.log('renderTodos called');
             const container = document.getElementById('todos');
             const noTodos = document.getElementById('noTodos');
+            
+            if (!container) {
+                console.error('Container element not found');
+                return;
+            }
             
             container.innerHTML = '';
             
             if (todos.length === 0) {
-                noTodos.style.display = 'block';
+                if (noTodos) noTodos.style.display = 'block';
+                console.log('No todos to display');
                 return;
             }
             
-            noTodos.style.display = 'none';
+            if (noTodos) noTodos.style.display = 'none';
             
             todos.forEach(todo => {
                 const todoElement = document.createElement('div');
-                todoElement.className = \`todo-item \${todo.completed ? 'completed' : ''}\`;
-                todoElement.innerHTML = \`
-                    <span class="todo-text" onclick="toggleTodo(\${todo.id})">\${todo.text}</span>
-                    <button class="delete-btn" onclick="deleteTodo(\${todo.id})">Delete</button>
-                \`;
+                todoElement.className = 'todo-item' + (todo.completed ? ' completed' : '');
+                
+                const textSpan = document.createElement('span');
+                textSpan.className = 'todo-text';
+                textSpan.textContent = todo.text;
+                textSpan.style.cursor = 'pointer';
+                textSpan.addEventListener('click', function() {
+                    toggleTodo(todo.id);
+                });
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', function() {
+                    deleteTodo(todo.id);
+                });
+                
+                todoElement.appendChild(textSpan);
+                todoElement.appendChild(deleteBtn);
                 container.appendChild(todoElement);
             });
+            
+            console.log('Rendered', todos.length, 'todos');
         }
 
-        // Allow adding todos with Enter key
-        document.getElementById('todoInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addTodo();
-            }
-        });
-
-        // Initial render
-        renderTodos();
+        // Multiple initialization methods for maximum compatibility
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+        
+        // Also try on window load as fallback
+        window.addEventListener('load', initApp);
+        
+        // Make functions globally available for debugging
+        window.todoApp = {
+            addTodo,
+            toggleTodo,
+            deleteTodo,
+            renderTodos,
+            todos: () => todos
+        };
     </script>
 </body>
 </html>`,

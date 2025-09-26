@@ -29,6 +29,7 @@ const Education = lazy(() => import('./pages/Education'))
 const AppHost = lazy(() => import('./pages/AppHost'))
 const AppGallery = lazy(() => import('./pages/AppGallery'))
 const DeleteApps = lazy(() => import('./pages/DeleteApps'))
+const MultiWindowManager = lazy(() => import('./components/MultiWindowManager'))
 
 // Loading component
 const PageLoader = () => (
@@ -44,8 +45,8 @@ const PageLoader = () => (
 function ConditionalFooter() {
   const location = useLocation()
   
-  // Don't show footer on AI Builder page to maximize workspace
-  const noFooterRoutes = ['/ai-builder']
+  // Don't show footer on AI Builder and Multi-Window pages to maximize workspace
+  const noFooterRoutes = ['/ai-builder', '/multi-window']
   
   if (noFooterRoutes.includes(location.pathname)) {
     return null
@@ -58,8 +59,8 @@ function ConditionalFooter() {
 function ConditionalMain({ children }) {
   const location = useLocation()
   
-  // Don't apply pt-16 on AI Builder, Dashboard, and Projects pages as they handle their own spacing
-  const noPaddingRoutes = ['/ai-builder', '/dashboard', '/projects']
+  // Don't apply pt-16 on AI Builder, Dashboard, Projects, and Multi-Window pages as they handle their own spacing
+  const noPaddingRoutes = ['/ai-builder', '/dashboard', '/projects', '/multi-window']
   
   if (noPaddingRoutes.includes(location.pathname)) {
     return <main>{children}</main>
@@ -86,6 +87,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/app" element={<Navigate to="/ai-builder" replace />} />
                         <Route path="/ai-builder" element={<AIBuilder />} />
+                        <Route path="/multi-window" element={<MultiWindowManager />} />
                         <Route path="/templates" element={<Templates />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/login" element={<Login />} />

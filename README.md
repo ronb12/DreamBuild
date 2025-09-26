@@ -14,6 +14,9 @@ DreamBuild is the **first AI coding platform** to combine the best of Cursor and
 - ✅ **29 Programming Languages** (Most comprehensive language support)
 - ✅ **8 Specialized AI Models** (Optimized for different languages)
 - ✅ **Unlimited File Generation** (50-100+ files per project)
+- ✅ **Multi-Window System** (Like Cursor IDE - work on multiple projects)
+- ✅ **Advanced Conversation AI** (Sophisticated back-and-forth communication)
+- ✅ **Incremental Development** (Add features without rebuilding apps)
 - ✅ **Real-time Collaboration** (Multi-user co-editing)
 - ✅ **Visual Editor** (Drag-and-drop interface)
 - ✅ **One-click Deployment** (5 hosting providers)
@@ -34,6 +37,9 @@ DreamBuild is the **first AI coding platform** to combine the best of Cursor and
 | **AI Models** | ✅ **8 Specialized** | ✅ Multiple | ✅ Multiple |
 | **Code Generation** | ✅ Advanced | ✅ Advanced | ✅ Advanced |
 | **Multi-file Apps** | ✅ 50-100+ files | ✅ Unlimited | ✅ Unlimited |
+| **Multi-Window System** | ✅ **Advanced** | ✅ Basic | ❌ None |
+| **Conversation AI** | ✅ **Advanced** | ✅ Basic | ✅ Basic |
+| **Incremental Development** | ✅ **Smart** | ❌ None | ❌ None |
 | **Real-time Collaboration** | ✅ Advanced | ❌ Limited | ✅ Advanced |
 | **Visual Editor** | ✅ Advanced | ❌ None | ✅ Advanced |
 | **Deployment Pipeline** | ✅ Advanced | ❌ None | ✅ Advanced |
@@ -45,6 +51,53 @@ DreamBuild is the **first AI coding platform** to combine the best of Cursor and
 | **Education Platform** | ✅ Interactive | ❌ None | ❌ None |
 | **Coding Challenges** | ✅ Advanced | ❌ None | ❌ None |
 | **Learning Analytics** | ✅ Comprehensive | ❌ None | ❌ None |
+
+## 🪟 **Multi-Window System**
+
+DreamBuild features an **advanced multi-window system** that rivals Cursor IDE:
+
+### **Window Management**
+- **Unlimited Windows**: Create as many windows as needed for different projects
+- **Independent Projects**: Each window works on a completely separate project
+- **Window Controls**: Minimize, maximize, restore, close, fullscreen
+- **Drag & Drop**: Position windows anywhere on screen
+- **Z-Index Management**: Proper window layering and focus
+
+### **Project Isolation**
+- **Separate File Systems**: Each window has its own file manager
+- **Independent AI Conversations**: Each window has its own AI assistant
+- **Individual Previews**: Each window has its own live preview
+- **Isolated Terminals**: Each window has its own terminal
+- **Project-Specific Settings**: Each window maintains its own configuration
+
+### **Advanced Features**
+- **Window Duplication**: Copy existing windows with all content
+- **Window Arrangement**: Cascade, tile, minimize all, maximize all
+- **Dirty State Tracking**: Know which windows have unsaved changes
+- **Auto-Save Protection**: Prevent accidental loss of work
+- **Project Synchronization**: Real-time updates across windows
+
+## 🧠 **Advanced Conversation AI**
+
+DreamBuild features **sophisticated conversation capabilities** that exceed most AI platforms:
+
+### **Intelligent Intent Recognition**
+- **15+ Intent Types**: Create, Add, Modify, Explain, Help, Debug, Optimize, Test
+- **Entity Extraction**: Technologies, features, technical terms
+- **Context Analysis**: Understand project state and user needs
+- **Confidence Scoring**: Measure understanding accuracy
+
+### **Back-and-Forth Communication**
+- **Context Preservation**: Remembers conversation history
+- **Follow-up Questions**: Asks clarifying questions when needed
+- **Progressive Understanding**: Builds knowledge over multiple interactions
+- **Smart Responses**: Tailored responses based on intent and context
+
+### **Incremental Development**
+- **Feature Detection**: Analyzes existing code to identify implemented features
+- **Smart Addition**: Adds only new features without rebuilding entire apps
+- **Context Awareness**: Understands what's already in your project
+- **Prevents Duplication**: Avoids adding features that already exist
 
 ## 🚀 **Quick Start**
 
@@ -214,6 +267,30 @@ DreamBuild/
 ├── firebase/               # Firebase configuration
 └── docs/                   # Documentation
 ```
+
+## 🌐 **Live Demo**
+
+**Try DreamBuild right now!**
+
+- **Main Platform**: https://dreambuild-2024-app.web.app
+- **Multi-Window Mode**: https://dreambuild-2024-app.web.app/multi-window
+- **AI Builder**: https://dreambuild-2024-app.web.app/ai-builder
+- **Templates**: https://dreambuild-2024-app.web.app/templates
+- **Education**: https://dreambuild-2024-app.web.app/education
+
+### **Multi-Window Features to Try:**
+1. **Create Multiple Windows**: Click "New Window" to open multiple projects
+2. **Open Projects in New Windows**: Use the window menu to load existing projects
+3. **Window Management**: Try minimize, maximize, close, and arrange windows
+4. **Independent Development**: Work on different projects simultaneously
+5. **AI Conversations**: Each window has its own AI assistant
+
+### **Advanced Conversation Features to Try:**
+1. **Build an App**: "Create a todo app with authentication"
+2. **Add Features**: "Add a search feature to my todo app"
+3. **Ask Questions**: "How does this authentication work?"
+4. **Get Help**: "Help me optimize this code"
+5. **Debug Issues**: "There's an error in my code"
 
 ## 🚀 **Advanced Features**
 

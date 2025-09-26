@@ -13,10 +13,13 @@ import {
   User,
   Tag,
   TrendingUp,
-  Star
+  Star,
+  RefreshCw
 } from 'lucide-react'
 import firebaseAppService from '../services/firebaseAppService'
 import toast from 'react-hot-toast'
+import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore'
+import { db } from '../config/firebase'
 
 const AppGallery = () => {
   const [apps, setApps] = useState([])
@@ -26,23 +29,123 @@ const AppGallery = () => {
   const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
   const [sortBy, setSortBy] = useState('newest') // 'newest', 'popular', 'trending'
   const [stats, setStats] = useState(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
+    // Always load apps first
     loadApps()
     loadStats()
+    
+    // Try to set up real-time listener
+    let unsubscribe = null
+    try {
+      unsubscribe = setupRealtimeListener()
+    } catch (error) {
+      console.error('❌ Failed to setup real-time listener:', error)
+    }
+    
+    // Listen for custom app deployment events
+    const handleAppDeployed = (event) => {
+      console.log('📡 App deployment event received:', event.detail)
+      toast.success(`New app "${event.detail.appName}" added to gallery!`, {
+        duration: 4000,
+        icon: '🚀'
+      })
+      // Refresh apps immediately with refreshing state
+      loadApps(true)
+    }
+    
+    window.addEventListener('appDeployed', handleAppDeployed)
+    
+    // Cleanup listeners on unmount
+    return () => {
+      if (unsubscribe) {
+        unsubscribe()
+      }
+      window.removeEventListener('appDeployed', handleAppDeployed)
+    }
   }, [])
+
+  // Set up real-time listener for new apps
+  const setupRealtimeListener = () => {
+    try {
+      console.log('🔄 Setting up real-time listener for apps...')
+      const q = query(
+        collection(db, 'apps'),
+        where('isPublic', '==', true),
+        orderBy('createdAt', 'desc')
+      )
+      
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        console.log('📡 Real-time update received:', snapshot.docs.length, 'apps')
+        const newApps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        setApps(newApps)
+        
+        // Show notification for new apps
+        if (newApps.length > 0) {
+          const latestApp = newApps[0]
+          const now = new Date()
+          const appTime = latestApp.createdAt?.toDate?.() || new Date(latestApp.createdAt)
+          const timeDiff = now - appTime
+          
+          // If app was created within the last 30 seconds, show notification
+          if (timeDiff < 30000) {
+            toast.success(`New app "${latestApp.name}" added to gallery!`, {
+              duration: 4000,
+              icon: '🚀'
+            })
+          }
+        }
+      }, (error) => {
+        console.error('❌ Real-time listener error:', error)
+        console.log('🔄 Falling back to manual refresh due to permissions error')
+        // Don't call loadApps() here to avoid infinite loop
+        // Just show a message that real-time updates are disabled
+        toast.error('Real-time updates disabled - use refresh button', {
+          duration: 3000
+        })
+      })
+      
+      // Store unsubscribe function for cleanup
+      return unsubscribe
+    } catch (error) {
+      console.error('❌ Error setting up real-time listener:', error)
+      console.log('🔄 Real-time listener setup failed, using manual refresh only')
+      return null
+    }
+  }
 
   useEffect(() => {
     filterApps()
   }, [apps, searchTerm, sortBy])
 
-  const loadApps = async () => {
+  const loadApps = async (showRefreshing = false) => {
     try {
-      setIsLoading(true)
+      if (showRefreshing) {
+        setIsRefreshing(true)
+      } else {
+        setIsLoading(true)
+      }
       console.log('🔄 Loading apps from Firebase...')
       const publicApps = await firebaseAppService.getPublicApps(50)
       console.log('✅ Loaded apps:', publicApps.length)
+      console.log('✅ Apps data:', publicApps)
       setApps(publicApps)
+      
+      // Add debug info to page
+      if (publicApps.length === 0) {
+        console.log('⚠️ No public apps found in Firebase')
+        const debugDiv = document.createElement('div')
+        debugDiv.className = 'fixed top-20 left-4 bg-yellow-500 text-white px-4 py-2 rounded shadow-lg z-50'
+        debugDiv.textContent = 'No apps found in Firebase'
+        debugDiv.id = 'no-apps-debug'
+        document.body.appendChild(debugDiv)
+        
+        setTimeout(() => {
+          const existing = document.getElementById('no-apps-debug')
+          if (existing) existing.remove()
+        }, 5000)
+      }
     } catch (error) {
       console.error('❌ Error loading apps:', error)
       toast.error('Failed to load apps')
@@ -50,6 +153,7 @@ const AppGallery = () => {
       setApps([])
     } finally {
       setIsLoading(false)
+      setIsRefreshing(false)
     }
   }
 
@@ -133,11 +237,34 @@ const AppGallery = () => {
   }
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
+    if (!date) return 'Unknown date'
+    
+    try {
+      let dateObj
+      
+      // Handle Firestore timestamp objects
+      if (date && typeof date === 'object' && date.toDate) {
+        dateObj = date.toDate()
+      } else if (date && typeof date === 'object' && date.seconds) {
+        // Handle Firestore timestamp with seconds
+        dateObj = new Date(date.seconds * 1000)
+      } else {
+        dateObj = new Date(date)
+      }
+      
+      if (isNaN(dateObj.getTime())) {
+        return 'Unknown date'
+      }
+      
+      return dateObj.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
+    } catch (error) {
+      console.error('Date formatting error:', error)
+      return 'Unknown date'
+    }
   }
 
   if (isLoading) {
@@ -154,20 +281,29 @@ const AppGallery = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">DreamBuild App Gallery</h1>
-              <p className="text-gray-600 mt-2">Discover amazing apps created with DreamBuild AI</p>
-            </div>
-            {stats && (
-              <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600">{stats.totalApps}</div>
-                <div className="text-sm text-gray-500">Total Apps</div>
-              </div>
-            )}
-          </div>
+                 <div className="text-center">
+                   <h1 className="text-3xl font-bold text-gray-900">DreamBuild App Gallery</h1>
+                   <p className="text-gray-600 mt-2">Discover amazing apps created with DreamBuild AI</p>
+                   <button
+                     onClick={() => loadApps(true)}
+                     disabled={isRefreshing}
+                     className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 flex items-center gap-2"
+                   >
+                     {isRefreshing ? (
+                       <>
+                         <RefreshCw className="h-4 w-4 animate-spin" />
+                         Refreshing...
+                       </>
+                     ) : (
+                       <>
+                         <RefreshCw className="h-4 w-4" />
+                         Refresh Apps
+                       </>
+                     )}
+                   </button>
+                 </div>
         </div>
       </div>
 
@@ -200,22 +336,22 @@ const AppGallery = () => {
       {/* Controls */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            {/* Enhanced Search */}
-            <div className="relative flex-1 max-w-lg min-w-[300px]">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-center lg:justify-between">
+            {/* Enhanced Search - Centered */}
+            <div className="relative w-full max-w-md mx-auto">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
                   placeholder="Search amazing apps..."
                   value={searchTerm}
                   onChange={handleSearch}
-                  className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
+                  className="w-full pl-4 pr-12 py-3 bg-white border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
                 />
+                <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 {searchTerm && (
                   <button
                     onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

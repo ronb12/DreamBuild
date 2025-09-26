@@ -44,6 +44,7 @@ export function ProjectProvider({ children }) {
 
   const updateFile = useCallback((filename, content) => {
     console.log(`🔄 Updating file: ${filename} (${content?.length || 0} chars)`)
+    console.log(`🔄 Content preview:`, content?.substring(0, 100) || 'No content')
     setCurrentProject(prev => {
       const newProject = {
         ...prev,
@@ -54,16 +55,31 @@ export function ProjectProvider({ children }) {
         lastModified: new Date()
       }
       console.log(`📁 Project files after update:`, Object.keys(newProject.files))
+      console.log(`📁 Files content:`, Object.keys(newProject.files).map(key => ({
+        filename: key,
+        length: newProject.files[key]?.length || 0,
+        preview: newProject.files[key]?.substring(0, 50) || 'No content'
+      })))
       return newProject
     })
   }, [])
 
   const updateConfig = useCallback((config) => {
-    setCurrentProject(prev => ({
-      ...prev,
-      config: { ...prev.config, ...config },
-      lastModified: new Date()
-    }))
+    setCurrentProject(prev => {
+      const updatedProject = {
+        ...prev,
+        config: { ...prev.config, ...config },
+        lastModified: new Date()
+      }
+      
+      // If name is being updated, also update the project name directly
+      if (config.name) {
+        updatedProject.name = config.name
+        console.log(`📝 ProjectContext: Updated project name to: ${config.name}`)
+      }
+      
+      return updatedProject
+    })
   }, [])
 
   const loadProjects = useCallback(async () => {

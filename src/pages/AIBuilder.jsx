@@ -7,6 +7,7 @@ import PreviewSimple from '../components/PreviewSimple'
 import AIPromptCursorStyle from '../components/AIPromptCursorStyle'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import TemplateSelector from '../components/TemplateSelector'
+import Terminal from '../components/Terminal'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
 import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText } from 'lucide-react'
@@ -26,6 +27,7 @@ const AIBuilder = () => {
   const handleTabClick = (tabId) => {
     console.log('🎯 handleTabClick called with tabId:', tabId)
     console.log('🎯 Current activeTab:', activeTab)
+    console.log('🎯 Available tabs:', tabs.map(t => t.id))
     
     if (tabId === 'workspace') {
       // Toggle workspace visibility
@@ -41,13 +43,14 @@ const AIBuilder = () => {
       console.log('🎯 Setting activeTab to:', tabId)
       setActiveTab(tabId)
       setIsWorkspaceVisible(false) // Hide workspace when switching to other tabs
+      console.log('🎯 Tab switched successfully to:', tabId)
     }
   }
 
   return (
     <div className="h-screen bg-background flex flex-col">
       {/* Enhanced Header Bar */}
-      <div className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-card/95 to-background/95 backdrop-blur-xl border-b border-border/60 shadow-lg shadow-primary/5" style={{ marginTop: '45px' }}>
+      <div className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-card/95 to-background/95 backdrop-blur-xl border-b border-border/60 shadow-lg shadow-primary/5 mt-16">
         {/* Left Side - Title and Template Button */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
@@ -189,14 +192,7 @@ const AIBuilder = () => {
                     <Preview />
                   </div>
                 )}
-                {activeTab === 'terminal' && (
-                  <div className="h-full flex items-center justify-center bg-muted/20">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold mb-4">Terminal</div>
-                      <div className="text-muted-foreground">Terminal component coming soon</div>
-                    </div>
-                  </div>
-                )}
+                {activeTab === 'terminal' && <Terminal />}
                 {activeTab === 'workspace' && !isWorkspaceVisible && (
                   <div className="h-full flex items-center justify-center bg-muted/20">
                     <div className="text-center">

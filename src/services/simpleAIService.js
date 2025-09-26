@@ -1,11 +1,12 @@
-// DreamBuild Simple AI Service - 100% Local, No API Keys
-// This replaces all the complex API services with just local AI
+// DreamBuild Simple AI Service - Cloud AI with Open Source Models
+// Uses Hugging Face Inference API for open source models
 
 import localAIService from './localAIService.js'
+import cloudAIService from './cloudAIService.js'
 
 class SimpleAIService {
   constructor() {
-    this.currentService = 'local-ai'
+    this.currentService = 'cloud-ai'
     this.usageStats = {
       totalRequests: 0,
       successfulRequests: 0,
@@ -13,12 +14,18 @@ class SimpleAIService {
       averageResponseTime: 0
     }
     
-    console.log('🤖 Simple AI Service initialized - Local AI only!')
+    console.log('🤖 Simple AI Service initialized - Cloud AI with Open Source Models!')
   }
 
-  // Get available services (just local AI)
+  // Get available services (cloud AI + local AI)
   getServices() {
     return {
+      'cloud-ai': {
+        name: 'Cloud AI Models',
+        type: 'Cloud',
+        description: 'Open source AI models via Hugging Face - no API keys required',
+        models: cloudAIService.getAvailableModels()
+      },
       'local-ai': {
         name: 'Local AI Models',
         type: 'Local',
@@ -58,51 +65,61 @@ class SimpleAIService {
     return await localAIService.getPopularTemplates()
   }
 
-  // Generate code using local AI
+  // Generate code using cloud AI (primary) or local AI (fallback)
   async generateCode(prompt, context = {}) {
     const startTime = Date.now()
     this.usageStats.totalRequests++
     
     try {
-      console.log('🚀 Generating code with Local AI...')
+      console.log('🚀 Generating code with Cloud AI...')
       
-      // Check if local AI is available
-      if (!localAIService.isHealthy) {
-        console.log('⚠️ Local AI not available, using template fallback')
-        return localAIService.createFallbackResponse(prompt, context)
+      // Try cloud AI first (primary)
+      if (this.currentService === 'cloud-ai') {
+        const response = await cloudAIService.generateCode(prompt, context)
+        
+        // Track successful generation
+        const duration = Date.now() - startTime
+        this.usageStats.successfulRequests++
+        this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
+        
+        console.log('✅ Code generated successfully with Cloud AI!')
+        return response
       }
       
-      // Use local AI service
-      const response = await localAIService.generateCode(prompt, context)
-      
-      // Track successful generation
-      const duration = Date.now() - startTime
-      this.usageStats.successfulRequests++
-      this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
-      
-      console.log('✅ Code generated successfully with Local AI!')
-      
-      // Return the files from the response, not the entire response object
-      if (response && response.files) {
-        return response.files
-      } else {
-        console.warn('⚠️ No files found in response, returning empty object')
-        return {}
+      // Fallback to local AI if cloud AI fails
+      if (localAIService.isHealthy) {
+        console.log('🔄 Falling back to Local AI...')
+        const response = await localAIService.generateCode(prompt, context)
+        
+        // Track successful generation
+        const duration = Date.now() - startTime
+        this.usageStats.successfulRequests++
+        this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
+        
+        console.log('✅ Code generated successfully with Local AI!')
+        return response
       }
+      
+      // Final fallback to template generation
+      console.log('⚠️ No AI services available, using template fallback')
+      return cloudAIService.createFallbackResponse(prompt, context)
       
     } catch (error) {
-      console.error('❌ Local AI generation failed:', error)
+      console.error('❌ AI generation failed:', error)
       this.usageStats.failedRequests++
       
       // Fallback to template generation
       console.log('🔄 Falling back to template generation...')
-      return localAIService.createFallbackResponse(prompt, context)
+      return cloudAIService.createFallbackResponse(prompt, context)
     }
   }
 
   // Get service health status
   getServiceHealth() {
-    return localAIService.modelHealth
+    return {
+      'cloud-ai': cloudAIService.getServiceHealth(),
+      'local-ai': localAIService.modelHealth
+    }
   }
 
   // Get usage statistics
@@ -113,7 +130,7 @@ class SimpleAIService {
   // Get user preferences (simplified)
   getUserPreferences() {
     return {
-      preferredService: 'local-ai',
+      preferredService: 'cloud-ai',
       fallbackEnabled: true,
       autoHealthCheck: true
     }
@@ -134,6 +151,11 @@ class SimpleAIService {
   // Get service status
   getServiceStatus() {
     return {
+      'cloud-ai': {
+        isHealthy: cloudAIService.isHealthy,
+        models: cloudAIService.getHealthyModels().length,
+        totalModels: cloudAIService.getAvailableModels().length
+      },
       'local-ai': {
         isHealthy: localAIService.isHealthy,
         models: localAIService.getHealthyModels().length,
@@ -149,7 +171,7 @@ class SimpleAIService {
 
   // Get fallback order
   getFallbackOrder() {
-    return ['local-ai']
+    return ['cloud-ai', 'local-ai']
   }
 
   // Check if fallback is enabled
@@ -166,6 +188,17 @@ class SimpleAIService {
   // Get setup instructions
   getSetupInstructions() {
     return {
+      'cloud-ai': {
+        title: 'Cloud AI Setup',
+        description: 'Open source AI models via Hugging Face - no setup required',
+        steps: [
+          '1. Cloud AI is ready to use with open source models',
+          '2. No API keys or installation required',
+          '3. Models include CodeLlama, StarCoder, DeepSeek, and more',
+          '4. Start generating code immediately!'
+        ],
+        isSetup: cloudAIService.isHealthy
+      },
       'local-ai': {
         title: 'Local AI Setup',
         description: 'Set up local AI models for code generation',
@@ -182,17 +215,20 @@ class SimpleAIService {
 
   // Get services needing setup
   getServicesNeedingSetup() {
-    return localAIService.isHealthy ? [] : ['local-ai']
+    const needsSetup = []
+    if (!cloudAIService.isHealthy) needsSetup.push('cloud-ai')
+    if (!localAIService.isHealthy) needsSetup.push('local-ai')
+    return needsSetup
   }
 
-  // Check if service has valid API key (always true for local AI)
+  // Check if service has valid API key (always true for cloud AI and local AI)
   hasValidApiKey(serviceName) {
-    return serviceName === 'local-ai'
+    return serviceName === 'cloud-ai' || serviceName === 'local-ai'
   }
 
-  // Set current service (always local-ai)
+  // Set current service (cloud-ai or local-ai)
   setService(serviceName) {
-    if (serviceName === 'local-ai') {
+    if (serviceName === 'cloud-ai' || serviceName === 'local-ai') {
       this.currentService = serviceName
     }
   }

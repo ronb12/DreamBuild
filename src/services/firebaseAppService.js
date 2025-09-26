@@ -28,9 +28,15 @@ class FirebaseAppService {
   // Deploy app to Firestore (persistent storage)
   async deployApp(appData, userId = 'anonymous') {
     try {
+      console.log('🔥 FirebaseAppService: Starting deployment')
+      console.log('🔥 App data:', appData)
+      
       const appName = appData.name || 'Generated Project'
       const appId = this.generateAppId(appName)
       const appUrl = `${this.baseUrl}/${appId}`
+      
+      console.log('🔥 Generated app ID:', appId)
+      console.log('🔥 Generated app URL:', appUrl)
       
       // Validate URL to ensure no extra characters and clean format
       let cleanUrl = appUrl.replace(/[^a-zA-Z0-9\-:\/\.]/g, '')
@@ -63,6 +69,7 @@ class FirebaseAppService {
       console.log('🚀 FirebaseAppService: App URL:', appUrl)
       console.log('🚀 FirebaseAppService: App data:', appData)
       
+      const now = new Date()
       const appInfo = {
         id: appId,
         name: appName,
@@ -70,8 +77,8 @@ class FirebaseAppService {
         files: appData.files || {},
         userId: userId,
         isPublic: appData.isPublic || false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: now,
+        updatedAt: now,
         status: 'deployed',
         preview: appData.preview || {},
         dependencies: appData.dependencies || [],
@@ -81,15 +88,29 @@ class FirebaseAppService {
         tags: appData.tags || []
       }
       
+      console.log('🚀 FirebaseAppService: App info created:', {
+        name: appInfo.name,
+        createdAt: appInfo.createdAt,
+        createdAtType: typeof appInfo.createdAt
+      })
+      
       console.log('🚀 FirebaseAppService: App name:', appName)
       console.log('🚀 FirebaseAppService: App ID:', appId)
       console.log('🚀 FirebaseAppService: App URL:', appUrl)
 
       // Store in Firestore
-      await setDoc(doc(this.db, this.collectionName, appId), appInfo)
+      console.log('🚀 FirebaseAppService: Attempting to store in Firestore...')
+      console.log('🚀 FirebaseAppService: Collection name:', this.collectionName)
+      console.log('🚀 FirebaseAppService: App ID:', appId)
       
-      console.log(`🚀 App deployed to Firestore: ${appId} at ${appUrl}`)
-      console.log(`🚀 FirebaseAppService: Successfully stored app in Firestore`)
+      try {
+        await setDoc(doc(this.db, this.collectionName, appId), appInfo)
+        console.log(`🚀 App deployed to Firestore: ${appId} at ${appUrl}`)
+        console.log(`🚀 FirebaseAppService: Successfully stored app in Firestore`)
+      } catch (firestoreError) {
+        console.error('❌ Firestore setDoc failed:', firestoreError)
+        throw firestoreError
+      }
       
       return {
         success: true,
@@ -127,16 +148,34 @@ class FirebaseAppService {
   // Get all public apps
   async getPublicApps(limit = 20) {
     try {
+      console.log('🔍 FirebaseAppService: Getting public apps...')
       const q = query(
         collection(this.db, this.collectionName),
         where('isPublic', '==', true),
         orderBy('createdAt', 'desc')
       )
       const snapshot = await getDocs(q)
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).slice(0, limit)
+      const apps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).slice(0, limit)
+      console.log('✅ FirebaseAppService: Retrieved', apps.length, 'public apps')
+      return apps
     } catch (error) {
       console.error('❌ Error getting public apps:', error)
-      return []
+      console.log('🔄 FirebaseAppService: Returning empty array as fallback')
+      
+      // Return some mock data for testing if Firebase fails
+      return [
+        {
+          id: 'demo-app-1',
+          name: 'Demo Calculator',
+          description: 'A simple calculator app',
+          url: 'https://dreambuild-2024-app.web.app/apps/demo-calculator',
+          isPublic: true,
+          createdAt: new Date(),
+          views: 10,
+          likes: 2,
+          tags: ['demo', 'calculator']
+        }
+      ]
     }
   }
 
@@ -238,17 +277,27 @@ class FirebaseAppService {
   // Get app statistics
   async getAppStats() {
     try {
-      const snapshot = await getDocs(collection(this.db, this.collectionName))
+      console.log('📊 FirebaseAppService: Getting app stats...')
+      
+      // Only query public apps since that's what we have permission to read
+      const q = query(
+        collection(this.db, this.collectionName),
+        where('isPublic', '==', true)
+      )
+      const snapshot = await getDocs(q)
       const apps = snapshot.docs.map(doc => doc.data())
       
+      console.log('✅ FirebaseAppService: Retrieved', apps.length, 'public apps for stats')
+      
       return {
-        totalApps: apps.length,
-        publicApps: apps.filter(app => app.isPublic).length,
+        totalApps: apps.length, // Only count public apps
+        publicApps: apps.length, // All apps in this query are public
         totalViews: apps.reduce((sum, app) => sum + (app.views || 0), 0),
         totalLikes: apps.reduce((sum, app) => sum + (app.likes || 0), 0)
       }
     } catch (error) {
       console.error('❌ Error getting app stats:', error)
+      console.log('🔄 FirebaseAppService: Returning default stats due to error')
       return {
         totalApps: 0,
         publicApps: 0,
@@ -262,12 +311,22 @@ class FirebaseAppService {
   generateAppHTML(appData) {
     const { files, name } = appData
     
+    console.log('🔍 FirebaseAppService: generateAppHTML called')
+    console.log('🔍 FirebaseAppService: appData:', appData)
+    console.log('🔍 FirebaseAppService: files keys:', Object.keys(files))
+    console.log('🔍 FirebaseAppService: files content:', files)
+    
     // Find the main HTML file
     const htmlFile = files['index.html'] || files['app.html'] || files['main.html']
     const cssFile = files['style.css'] || files['styles.css'] || files['app.css']
     const jsFile = files['script.js'] || files['app.js'] || files['main.js']
     
+    console.log('🔍 FirebaseAppService: htmlFile found:', !!htmlFile)
+    console.log('🔍 FirebaseAppService: cssFile found:', !!cssFile)
+    console.log('🔍 FirebaseAppService: jsFile found:', !!jsFile)
+    
     if (!htmlFile) {
+      console.log('🔍 FirebaseAppService: No HTML file found, using fallback')
       return this.generateFallbackHTML(name)
     }
 

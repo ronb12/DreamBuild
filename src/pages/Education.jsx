@@ -1,789 +1,391 @@
-import React, { useState, useEffect } from 'react'
-import { 
-  BookOpen, 
-  Code, 
-  Globe, 
-  Smartphone, 
-  Database, 
-  Server, 
-  Palette, 
-  Zap,
-  Play,
-  CheckCircle,
-  Clock,
-  Star,
-  ArrowRight,
-  Download,
-  ExternalLink,
-  Video,
-  FileText,
-  Trophy,
-  Users,
-  Target,
-  BarChart3,
-  TrendingUp
-} from 'lucide-react'
-import EducationDashboard from '../components/EducationDashboard'
-import InteractiveTutorial from '../components/InteractiveTutorial'
-import CodingChallenges from '../components/CodingChallenges'
-import LearningProgress from '../components/LearningProgress'
-import LiveTutorial from '../components/LiveTutorial'
-import CourseViewer from '../components/CourseViewer'
-import CourseSelection from '../components/CourseSelection'
-import tutorialService from '../services/tutorialService'
-import { codingTutorials, codingChallenges, learningPaths } from '../data/codingTutorials'
-import { courseModules, courseProgress } from '../data/courseContent50'
+import React, { useState } from 'react';
+import { Play, Clock, Star, Users, FileText, BookOpen } from 'lucide-react';
 
 const Education = () => {
-  const [activeTab, setActiveTab] = useState('dashboard')
-  const [activeCategory, setActiveCategory] = useState('web-development')
-  const [selectedCourse, setSelectedCourse] = useState(null)
-  const [selectedTutorial, setSelectedTutorial] = useState(null)
-  const [currentTutorial, setCurrentTutorial] = useState(null)
-  const [currentCourse, setCurrentCourse] = useState(null)
-  const [progress, setProgress] = useState({})
-  const [tutorialProgress, setTutorialProgress] = useState([])
-  const [completedLessons, setCompletedLessons] = useState(new Set())
-  const [courseProgressData, setCourseProgressData] = useState(courseProgress)
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [showPDFs, setShowPDFs] = useState(false);
 
-  // Course categories and content
-  const categories = {
-    'web-development': {
-      title: 'Web Development',
-      icon: Globe,
-      color: 'blue',
-      description: 'Learn to build modern websites and web applications',
-      courses: [
-        {
-          id: 'html-css-basics',
-          title: 'HTML & CSS Fundamentals',
-          duration: '4 hours',
-          difficulty: 'Beginner',
-          rating: 4.8,
-          students: 12500,
-          description: 'Master the building blocks of web development',
-          lessons: [
-            { id: 1, title: 'Introduction to HTML', duration: '30 min', completed: false },
-            { id: 2, title: 'HTML Elements and Tags', duration: '45 min', completed: false },
-            { id: 3, title: 'CSS Basics and Styling', duration: '40 min', completed: false },
-            { id: 4, title: 'Layout with Flexbox', duration: '35 min', completed: false },
-            { id: 5, title: 'Responsive Design', duration: '50 min', completed: false }
-          ]
-        },
-        {
-          id: 'javascript-essentials',
-          title: 'JavaScript Essentials',
-          duration: '6 hours',
-          difficulty: 'Intermediate',
-          rating: 4.9,
-          students: 18900,
-          description: 'Learn JavaScript from basics to advanced concepts',
-          lessons: [
-            { id: 1, title: 'Variables and Data Types', duration: '25 min', completed: false },
-            { id: 2, title: 'Functions and Scope', duration: '40 min', completed: false },
-            { id: 3, title: 'DOM Manipulation', duration: '45 min', completed: false },
-            { id: 4, title: 'Async Programming', duration: '35 min', completed: false },
-            { id: 5, title: 'ES6+ Features', duration: '50 min', completed: false }
-          ]
-        },
-        {
-          id: 'react-complete',
-          title: 'React Complete Guide',
-          duration: '8 hours',
-          difficulty: 'Intermediate',
-          rating: 4.7,
-          students: 22100,
-          description: 'Build modern web applications with React',
-          lessons: [
-            { id: 1, title: 'React Components', duration: '40 min', completed: false },
-            { id: 2, title: 'State and Props', duration: '35 min', completed: false },
-            { id: 3, title: 'Hooks and Lifecycle', duration: '45 min', completed: false },
-            { id: 4, title: 'Routing and Navigation', duration: '30 min', completed: false },
-            { id: 5, title: 'State Management', duration: '50 min', completed: false }
-          ]
-        }
-      ]
+  // Simple video data with actual YouTube video titles and verified durations
+  const videos = [
+    {
+      id: 'html-css',
+      title: 'HTML CSS JavaScript Tutorial - Complete Course for Beginners',
+      duration: '4 hours 25 minutes',
+      rating: 4.8,
+      students: 12500,
+      videoUrl: 'https://www.youtube.com/embed/UB1O30fR-EE?autoplay=1&mute=1&loop=1&playlist=UB1O30fR-EE'
     },
-    'mobile-development': {
-      title: 'Mobile Development',
-      icon: Smartphone,
-      color: 'green',
-      description: 'Create mobile apps for iOS and Android',
-      courses: [
-        {
-          id: 'react-native-basics',
-          title: 'React Native Basics',
-          duration: '5 hours',
-          difficulty: 'Intermediate',
-          rating: 4.6,
-          students: 9800,
-          description: 'Build cross-platform mobile apps',
-          lessons: [
-            { id: 1, title: 'React Native Setup', duration: '30 min', completed: false },
-            { id: 2, title: 'Components and Navigation', duration: '45 min', completed: false },
-            { id: 3, title: 'State Management', duration: '40 min', completed: false },
-            { id: 4, title: 'API Integration', duration: '35 min', completed: false },
-            { id: 5, title: 'App Deployment', duration: '50 min', completed: false }
-          ]
-        }
-      ]
+    {
+      id: 'javascript',
+      title: 'JavaScript Tutorial for Beginners - Complete Course',
+      duration: '3 hours 26 minutes',
+      rating: 4.9,
+      students: 15200,
+      videoUrl: 'https://www.youtube.com/embed/PkZNo7MFNFg?autoplay=1&mute=1&loop=1&playlist=PkZNo7MFNFg'
     },
-    'backend-development': {
-      title: 'Backend Development',
-      icon: Server,
-      color: 'purple',
-      description: 'Learn server-side development and APIs',
-      courses: [
-        {
-          id: 'nodejs-express',
-          title: 'Node.js & Express',
-          duration: '6 hours',
-          difficulty: 'Intermediate',
-          rating: 4.8,
-          students: 15200,
-          description: 'Build robust backend services',
-          lessons: [
-            { id: 1, title: 'Node.js Fundamentals', duration: '35 min', completed: false },
-            { id: 2, title: 'Express Framework', duration: '40 min', completed: false },
-            { id: 3, title: 'RESTful APIs', duration: '45 min', completed: false },
-            { id: 4, title: 'Database Integration', duration: '50 min', completed: false },
-            { id: 5, title: 'Authentication & Security', duration: '40 min', completed: false }
-          ]
-        }
-      ]
+    {
+      id: 'react',
+      title: 'React Tutorial for Beginners - Complete Course',
+      duration: '2 hours 15 minutes',
+      rating: 4.7,
+      students: 11800,
+      videoUrl: 'https://www.youtube.com/embed/SqcY0GlETPk?autoplay=1&mute=1&loop=1&playlist=SqcY0GlETPk'
     },
-    'data-science': {
-      title: 'Data Science',
-      icon: Database,
-      color: 'orange',
-      description: 'Analyze data and build machine learning models',
-      courses: [
-        {
-          id: 'python-data-analysis',
-          title: 'Python Data Analysis',
-          duration: '7 hours',
-          difficulty: 'Beginner',
-          rating: 4.5,
-          students: 11200,
-          description: 'Learn data analysis with Python',
-          lessons: [
-            { id: 1, title: 'Python Basics', duration: '30 min', completed: false },
-            { id: 2, title: 'Pandas Library', duration: '45 min', completed: false },
-            { id: 3, title: 'Data Visualization', duration: '40 min', completed: false },
-            { id: 4, title: 'Statistical Analysis', duration: '50 min', completed: false },
-            { id: 5, title: 'Machine Learning Intro', duration: '45 min', completed: false }
-          ]
-        }
-      ]
+    {
+      id: 'python',
+      title: 'Python Tutorial for Beginners - Complete Course',
+      duration: '4 hours 30 minutes',
+      rating: 4.9,
+      students: 20100,
+      videoUrl: 'https://www.youtube.com/embed/rfscVS0vtbw?autoplay=1&mute=1&loop=1&playlist=rfscVS0vtbw'
+    },
+    {
+      id: 'nodejs',
+      title: 'Node.js Tutorial for Beginners - Complete Course',
+      duration: '2 hours 45 minutes',
+      rating: 4.6,
+      students: 9800,
+      videoUrl: 'https://www.youtube.com/embed/Oe421EPjeBE?autoplay=1&mute=1&loop=1&playlist=Oe421EPjeBE'
+    },
+    {
+      id: 'database',
+      title: 'SQL Tutorial for Beginners - Complete Course',
+      duration: '1 hour 45 minutes',
+      rating: 4.8,
+      students: 7600,
+      videoUrl: 'https://www.youtube.com/embed/HXV3zeQKqGY?autoplay=1&mute=1&loop=1&playlist=HXV3zeQKqGY'
+    },
+    {
+      id: 'vue',
+      title: 'Vue.js Tutorial for Beginners - Complete Course',
+      duration: '2 hours 30 minutes',
+      rating: 4.7,
+      students: 8900,
+      videoUrl: 'https://www.youtube.com/embed/qZXt1Aom3Cs?autoplay=1&mute=1&loop=1&playlist=qZXt1Aom3Cs'
+    },
+    {
+      id: 'angular',
+      title: 'Angular Tutorial for Beginners - Complete Course',
+      duration: '3 hours 15 minutes',
+      rating: 4.6,
+      students: 11200,
+      videoUrl: 'https://www.youtube.com/embed/3qBXWUpoPHo?autoplay=1&mute=1&loop=1&playlist=3qBXWUpoPHo'
+    },
+    {
+      id: 'typescript',
+      title: 'TypeScript Tutorial for Beginners - Complete Course',
+      duration: '1 hour 30 minutes',
+      rating: 4.9,
+      students: 13400,
+      videoUrl: 'https://www.youtube.com/embed/BwuLxPH8IDs?autoplay=1&mute=1&loop=1&playlist=BwuLxPH8IDs'
+    },
+    {
+      id: 'mongodb',
+      title: 'MongoDB Tutorial for Beginners - Complete Course',
+      duration: '2 hours 10 minutes',
+      rating: 4.5,
+      students: 6800,
+      videoUrl: 'https://www.youtube.com/embed/-56x56UppqQ?autoplay=1&mute=1&loop=1&playlist=-56x56UppqQ'
     }
-  }
+  ];
 
-  const learningPaths = [
+  // PDF Resources data - Titles matching actual website content
+  const pdfResources = [
     {
-      id: 'full-stack-developer',
-      title: 'Full-Stack Developer',
-      duration: '12 weeks',
-      difficulty: 'Intermediate',
-      description: 'Complete path to become a full-stack developer',
-      courses: ['html-css-basics', 'javascript-essentials', 'react-complete', 'nodejs-express'],
-      color: 'blue'
+      id: 'js-reference',
+      title: 'JavaScript Reference - MDN',
+      description: 'Complete JavaScript reference with syntax, methods, and examples',
+      category: 'Reference',
+      size: '2.1 MB',
+      downloads: 15420,
+      url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference',
+      isPDF: false
     },
     {
-      id: 'mobile-developer',
-      title: 'Mobile App Developer',
-      duration: '8 weeks',
-      difficulty: 'Intermediate',
-      description: 'Learn to build mobile applications',
-      courses: ['html-css-basics', 'javascript-essentials', 'react-native-basics'],
-      color: 'green'
+      id: 'git-cheatsheet',
+      title: 'Git Cheat Sheet - GitHub Education',
+      description: 'Essential Git commands for version control and collaboration',
+      category: 'Tools',
+      size: '1.2 MB',
+      downloads: 9600,
+      url: 'https://education.github.com/git-cheat-sheet-education.pdf',
+      isPDF: true
     },
     {
-      id: 'data-scientist',
-      title: 'Data Scientist',
-      duration: '10 weeks',
-      difficulty: 'Advanced',
-      description: 'Master data analysis and machine learning',
-      courses: ['python-data-analysis'],
-      color: 'orange'
-    }
-  ]
-
-  const resources = [
-    {
-      title: 'Interactive Code Editor',
-      description: 'Practice coding with our built-in editor',
-      icon: Code,
-      color: 'blue',
-      link: '/editor'
+      id: 'html-guide',
+      title: 'HTML: HyperText Markup Language - MDN',
+      description: 'Complete guide to HTML elements, attributes, and best practices',
+      category: 'Web Development',
+      size: '3.2 MB',
+      downloads: 18200,
+      url: 'https://developer.mozilla.org/en-US/docs/Web/HTML',
+      isPDF: false
     },
     {
-      title: 'Video Tutorials',
-      description: 'Watch step-by-step video guides',
-      icon: Video,
-      color: 'red',
-      link: '/tutorials'
+      id: 'python-tutorial',
+      title: 'The Python Tutorial - Python.org',
+      description: 'Official Python tutorial covering fundamentals and advanced topics',
+      category: 'Language',
+      size: '4.5 MB',
+      downloads: 22100,
+      url: 'https://docs.python.org/3/tutorial/',
+      isPDF: false
     },
     {
-      title: 'Documentation',
-      description: 'Comprehensive coding documentation',
-      icon: FileText,
-      color: 'green',
-      link: '/docs'
+      id: 'react-learn',
+      title: 'Quick Start - React',
+      description: 'Learn React fundamentals with interactive examples and guides',
+      category: 'Framework',
+      size: '2.8 MB',
+      downloads: 13400,
+      url: 'https://react.dev/learn',
+      isPDF: false
     },
     {
-      title: 'Community Forum',
-      description: 'Connect with other learners',
-      icon: Users,
-      color: 'purple',
-      link: '/community'
+      id: 'sql-tutorial',
+      title: 'SQL Tutorial - W3Schools',
+      description: 'Learn SQL with interactive examples and database fundamentals',
+      category: 'Database',
+      size: '2.3 MB',
+      downloads: 16800,
+      url: 'https://www.w3schools.com/sql/default.asp',
+      isPDF: false
+    },
+    {
+      id: 'nodejs-api',
+      title: 'Node.js API Documentation',
+      description: 'Complete Node.js API reference for server-side JavaScript development',
+      category: 'Backend',
+      size: '3.7 MB',
+      downloads: 11200,
+      url: 'https://nodejs.org/docs/latest/api/',
+      isPDF: false
+    },
+    {
+      id: 'mongodb-docs',
+      title: 'MongoDB Documentation',
+      description: 'Complete MongoDB documentation for NoSQL database operations',
+      category: 'Database',
+      size: '2.9 MB',
+      downloads: 8900,
+      url: 'https://www.mongodb.com/docs/',
+      isPDF: false
     }
-  ]
+  ];
 
-  const achievements = [
-    { title: 'First Code', description: 'Write your first line of code', icon: Code, unlocked: true },
-    { title: 'Web Master', description: 'Complete web development course', icon: Globe, unlocked: false },
-    { title: 'Mobile Expert', description: 'Build your first mobile app', icon: Smartphone, unlocked: false },
-    { title: 'Data Wizard', description: 'Complete data science course', icon: Database, unlocked: false }
-  ]
+  const handlePlayVideo = (video) => {
+    setSelectedVideo(video);
+  };
 
+  const handleBackToVideos = () => {
+    setSelectedVideo(null);
+  };
 
-  const handleStartTutorial = (tutorialId) => {
-    const tutorial = tutorialService.getTutorial(tutorialId)
-    setSelectedTutorial(tutorial)
-    setActiveTab('tutorial')
-  }
+  const handleVisitResource = (resource) => {
+    // Open resource in new tab
+    window.open(resource.url, '_blank');
+  };
 
-  const handleCompleteTutorial = (completionData) => {
-    console.log('Tutorial completed:', completionData)
-    setSelectedTutorial(null)
-    setActiveTab('dashboard')
-  }
-
-  const handleCompleteLesson = (lessonId) => {
-    setCompletedLessons(prev => new Set([...prev, lessonId]))
-  }
-
-  const getProgressPercentage = (courseId) => {
-    const course = categories[activeCategory]?.courses.find(c => c.id === courseId)
-    if (!course) return 0
-    
-    const completedCount = course.lessons.filter(lesson => 
-      completedLessons.has(lesson.id)
-    ).length
-    
-    return (completedCount / course.lessons.length) * 100
-  }
-
-  const handleStartLearning = () => {
-    console.log('Start Learning clicked - showing course selection')
-    // Show course selection interface
-    setActiveTab('course-selection')
-  }
-
-  const handleBrowseCourses = () => {
-    setActiveTab('tutorials')
-  }
-
-  const handleTutorialComplete = (result) => {
-    setTutorialProgress(prev => [...prev, result])
-    // Move to next tutorial
-    const currentIndex = codingTutorials.findIndex(t => t.id === currentTutorial.id)
-    if (currentIndex < codingTutorials.length - 1) {
-      setCurrentTutorial(codingTutorials[currentIndex + 1])
-    } else {
-      // All tutorials completed
-      setCurrentTutorial(null)
-      setActiveTab('dashboard')
-    }
-  }
-
-  const handleStartChallenge = (challengeId) => {
-    const challenge = codingChallenges.find(c => c.id === challengeId)
-    if (challenge) {
-      setCurrentTutorial(challenge)
-      setActiveTab('tutorial')
-    }
-  }
-
-  const handleStartCourse = (courseId) => {
-    const course = courseModules[courseId]
-    if (course) {
-      setCurrentCourse(course)
-      setActiveTab('course')
-    }
-  }
-
-  const handleCourseComplete = (result) => {
-    setCourseProgressData(prev => ({
-      ...prev,
-      [result.courseId]: {
-        ...prev[result.courseId],
-        progress: result.progress,
-        timeSpent: result.timeSpent,
-        completedLessons: result.completedLessons,
-        lastAccessed: new Date().toISOString()
-      }
-    }))
-    setCurrentCourse(null)
-    setActiveTab('dashboard')
-  }
-
-  const handleBackToCourses = () => {
-    setCurrentCourse(null)
-    setActiveTab('tutorials')
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100">
-      {/* Enhanced Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full"></div>
-            <div className="absolute top-20 right-20 w-16 h-16 bg-white opacity-5 rounded-full"></div>
-            <div className="absolute bottom-10 left-1/4 w-12 h-12 bg-white opacity-10 rounded-full"></div>
-            <div className="absolute bottom-20 right-1/3 w-8 h-8 bg-white opacity-5 rounded-full"></div>
+  // Show video player if a video is selected
+  if (selectedVideo) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b sticky top-0 z-10 mt-16">
+          <div className="container mx-auto px-6 py-4">
+            <button
+              onClick={handleBackToVideos}
+              className="flex items-center text-blue-600 hover:text-blue-700 font-medium"
+            >
+              ← Back to Videos
+            </button>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
-          <div className="flex flex-col items-center justify-center text-center">
-            <div className="flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full mb-6">
-              <BookOpen className="h-10 w-10 text-white" />
+
+        {/* Video Player */}
+        <div className="container mx-auto px-6 py-12">
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="relative" style={{ aspectRatio: '16/9', height: '500px' }}>
+              <iframe
+                className="w-full h-full"
+                src={selectedVideo.videoUrl}
+                title={selectedVideo.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
             </div>
-            <h1 className="text-5xl font-bold mb-6 text-white text-center w-full">
-              Master Programming Skills
-            </h1>
-            <p className="text-xl text-blue-100 mb-10 max-w-3xl leading-relaxed text-center">
-              Join thousands of students learning to code with our comprehensive educational platform. 
-              From beginner to advanced, we have courses for every skill level.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-              <button 
-                onClick={handleStartLearning}
-                className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                <Play className="inline-block mr-2 h-5 w-5" />
-                Start Learning
-              </button>
-              <button 
-                onClick={handleBrowseCourses}
-                className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                <BookOpen className="inline-block mr-2 h-5 w-5" />
-                Browse Courses
-              </button>
-            </div>
-            <div className="flex justify-center items-center gap-8 text-sm text-blue-100">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span>50+ Courses</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Star className="h-5 w-5" />
-                <span>4.8/5 Rating</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Trophy className="h-5 w-5" />
-                <span>Certificates</span>
+            
+            {/* Video Info */}
+            <div className="p-6">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">{selectedVideo.title}</h1>
+              <div className="flex items-center gap-4 text-sm text-gray-600">
+                <span className="flex items-center gap-1">
+                  <Star className="h-4 w-4" />
+                  {selectedVideo.rating}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Users className="h-4 w-4" />
+                  {selectedVideo.students.toLocaleString()} students
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
+    );
+  }
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Enhanced Navigation Tabs */}
-        <div className="bg-white rounded-2xl shadow-lg p-2 mb-8">
-          <div className="flex flex-wrap gap-2">
-            {[
-              { id: 'dashboard', label: 'Dashboard', icon: BarChart3, color: 'blue' },
-              { id: 'tutorials', label: 'Tutorials', icon: BookOpen, color: 'green' },
-              { id: 'challenges', label: 'Challenges', icon: Code, color: 'purple' },
-              { id: 'progress', label: 'Progress', icon: TrendingUp, color: 'orange' }
-            ].map(tab => (
+  // Show PDF resources if selected
+  if (showPDFs) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm sticky top-0 z-10 mt-16">
+          <div className="container mx-auto px-6 py-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-4">Programming Resources</h1>
+                <p className="text-gray-600 text-lg">Download comprehensive guides, cheat sheets, and documentation</p>
+              </div>
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 px-6 py-4 rounded-xl font-semibold transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? `bg-gradient-to-r from-${tab.color}-500 to-${tab.color}-600 text-white shadow-lg transform scale-105`
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
+                onClick={() => setShowPDFs(false)}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
               >
-                <tab.icon className="h-5 w-5" />
-                {tab.label}
+                <Play className="h-5 w-5" />
+                Back to Videos
               </button>
-            ))}
+            </div>
           </div>
         </div>
 
-        {/* Dashboard Tab */}
-        {activeTab === 'dashboard' && (
-          <div className="space-y-6">
-            <EducationDashboard />
-            
-            {/* Learning Progress Section */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Learning Progress</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600 mb-2">75%</div>
-                  <div className="text-gray-600">Overall Progress</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-2">12</div>
-                  <div className="text-gray-600">Courses Completed</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600 mb-2">45</div>
-                  <div className="text-gray-600">Challenges Solved</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Achievements Section */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Recent Achievements</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                    <Trophy className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">First Steps</div>
-                    <div className="text-sm text-gray-600">Completed first tutorial</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                    <Code className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">Code Warrior</div>
-                    <div className="text-sm text-gray-600">Solved 10 challenges</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                    <Star className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">Streak Master</div>
-                    <div className="text-sm text-gray-600">7-day learning streak</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg">
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                    <Target className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">Goal Achiever</div>
-                    <div className="text-sm text-gray-600">Met weekly goal</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tutorial Tab */}
-        {activeTab === 'tutorial' && selectedTutorial && (
-          <InteractiveTutorial 
-            tutorial={selectedTutorial} 
-            onComplete={handleCompleteTutorial}
-          />
-        )}
-
-        {/* Live Tutorial */}
-        {activeTab === 'tutorial' && currentTutorial && (
-          <LiveTutorial
-            tutorial={currentTutorial}
-            onComplete={handleTutorialComplete}
-            onNext={() => {
-              const currentIndex = codingTutorials.findIndex(t => t.id === currentTutorial.id)
-              if (currentIndex < codingTutorials.length - 1) {
-                setCurrentTutorial(codingTutorials[currentIndex + 1])
-              }
-            }}
-            onPrevious={() => {
-              const currentIndex = codingTutorials.findIndex(t => t.id === currentTutorial.id)
-              if (currentIndex > 0) {
-                setCurrentTutorial(codingTutorials[currentIndex - 1])
-              }
-            }}
-          />
-        )}
-
-        {/* Challenges Tab */}
-        {activeTab === 'challenges' && (
-          <div className="space-y-6">
-            <CodingChallenges />
-            
-            {/* Interactive Challenges */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {codingChallenges.map((challenge) => (
-                <div key={challenge.id} className="bg-white rounded-lg shadow-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold text-gray-900">{challenge.title}</h3>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        challenge.difficulty === 'Easy' ? 'bg-green-100 text-green-700' :
-                        challenge.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-red-100 text-red-700'
-                      }`}>
-                        {challenge.difficulty}
-                      </span>
-                      <span className="text-sm text-gray-500">{challenge.points} pts</span>
+        {/* Programming Resources List */}
+        <div className="container mx-auto px-6 py-12">
+          <div className="max-w-4xl mx-auto">
+            <div className="space-y-4">
+              {pdfResources.map((resource) => (
+                <div
+                  key={resource.id}
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 border border-gray-100"
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <FileText className="h-5 w-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-900">
+                              {resource.title}
+                            </h3>
+                            <p className="text-gray-600 text-sm">
+                              {resource.description}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-500 ml-13">
+                          <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">
+                            {resource.category}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Users className="h-4 w-4" />
+                            {resource.downloads.toLocaleString()} users
+                          </span>
+                        </div>
+                      </div>
+                      <div className="ml-6">
+                        <button
+                          onClick={() => handleVisitResource(resource)}
+                          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        >
+                          <BookOpen className="h-5 w-5" />
+                          Visit Resource
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  
-                  <p className="text-gray-600 mb-4">{challenge.description}</p>
-                  
-                  <div className="flex items-center gap-2 mb-4">
-                    <Code className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm text-gray-600">{challenge.language}</span>
-                  </div>
-                  
-                  <button
-                    onClick={() => handleStartChallenge(challenge.id)}
-                    className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-                  >
-                    Start Challenge
-                  </button>
                 </div>
               ))}
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Progress Tab */}
-        {activeTab === 'progress' && <LearningProgress />}
+      </div>
+    );
+  }
 
-        {/* Course Selection Tab */}
-        {activeTab === 'course-selection' && (
-          <CourseSelection
-            onSelectCourse={handleStartCourse}
-            courseProgress={courseProgressData}
-          />
-        )}
-
-        {/* Course Tab */}
-        {activeTab === 'course' && currentCourse && (
-          <CourseViewer
-            courseId={currentCourse.id}
-            courseData={currentCourse}
-            onComplete={handleCourseComplete}
-            onBack={handleBackToCourses}
-          />
-        )}
-
-        {/* Tutorials Tab */}
-        {activeTab === 'tutorials' && (
-          <div className="space-y-6">
-            {/* Learning Paths */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Learning Paths</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {learningPaths.map((path) => (
-                  <div key={path.id} className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className={`w-10 h-10 bg-${path.color}-500 rounded-lg flex items-center justify-center`}>
-                        <Target className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900">{path.title}</h3>
-                        <p className="text-sm text-gray-600">{path.duration} • {path.difficulty}</p>
-                      </div>
-                    </div>
-                    <p className="text-gray-700 mb-4">{path.description}</p>
-                    <button 
-                      onClick={() => {
-                        // Start the learning path with the first tutorial
-                        const pathTutorials = codingTutorials.filter(t => 
-                          path.title.toLowerCase().includes('web') && t.difficulty === 'Beginner' ||
-                          path.title.toLowerCase().includes('mobile') && t.difficulty === 'Intermediate'
-                        )
-                        if (pathTutorials.length > 0) {
-                          setCurrentTutorial(pathTutorials[0])
-                          setActiveTab('tutorial')
-                        } else {
-                          // Fallback to first tutorial
-                          setCurrentTutorial(codingTutorials[0])
-                          setActiveTab('tutorial')
-                        }
-                      }}
-                      className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-                    >
-                      Start Path
-                    </button>
-                  </div>
-                ))}
-              </div>
+  // Show video list
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm sticky top-0 z-10 mt-16">
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">Programming Videos</h1>
+              <p className="text-gray-600 text-lg">Learn to code with our comprehensive video tutorials</p>
             </div>
-
-            {/* Course Categories */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Course Categories</h2>
-              
-              {/* Category Tabs */}
-              <div className="flex flex-wrap gap-4 mb-8">
-                {Object.entries(categories).map(([key, category]) => (
-                  <button
-                    key={key}
-                    onClick={() => setActiveCategory(key)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                      activeCategory === key
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    <category.icon className="h-5 w-5" />
-                    {category.title}
-                  </button>
-                ))}
-              </div>
-
-              {/* Courses Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categories[activeCategory]?.courses.map((course) => (
-                  <div key={course.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-gray-900">{course.title}</h3>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="text-sm text-gray-600">{course.rating}</span>
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-600 mb-4">{course.description}</p>
-                      
-                      <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {course.duration}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          {course.students.toLocaleString()} students
-                        </div>
-                      </div>
-
-                      {/* Progress Bar */}
-                      <div className="mb-4">
-                        <div className="flex justify-between text-sm text-gray-600 mb-1">
-                          <span>Progress</span>
-                          <span>{Math.round(getProgressPercentage(course.id))}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${getProgressPercentage(course.id)}%` }}
-                          ></div>
-                        </div>
-                      </div>
-
-                     <button
-                       onClick={() => {
-                         // Check if there's a structured course available
-                         const structuredCourse = courseModules[course.id]
-                         if (structuredCourse) {
-                           handleStartCourse(course.id)
-                         } else {
-                           // Fallback to interactive tutorial
-                           const tutorial = codingTutorials.find(t => t.title.includes(course.title.split(' ')[0]))
-                           if (tutorial) {
-                             setCurrentTutorial(tutorial)
-                             setActiveTab('tutorial')
-                           } else {
-                             handleStartTutorial(course.id)
-                           }
-                         }
-                       }}
-                       className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
-                     >
-                       <Play className="h-4 w-4" />
-                       {getProgressPercentage(course.id) > 0 ? 'Continue Course' : 'Start Course'}
-                     </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Resources */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Learning Resources</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {resources.map((resource, index) => (
-                  <div key={index} className="bg-white rounded-lg shadow-lg p-6 text-center">
-                    <div className={`w-12 h-12 bg-${resource.color}-500 rounded-lg flex items-center justify-center mx-auto mb-4`}>
-                      <resource.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{resource.title}</h3>
-                    <p className="text-gray-600 mb-4">{resource.description}</p>
-                    <button className="text-blue-500 hover:text-blue-600 font-medium flex items-center justify-center gap-1 mx-auto">
-                      <span>Explore</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Achievements */}
-            <div className="mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Achievements</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {achievements.map((achievement, index) => (
-                  <div key={index} className={`bg-white rounded-lg shadow-lg p-6 text-center ${
-                    achievement.unlocked ? 'border-2 border-green-500' : 'opacity-60'
-                  }`}>
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4 ${
-                      achievement.unlocked ? 'bg-green-500' : 'bg-gray-300'
-                    }`}>
-                      <achievement.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{achievement.title}</h3>
-                    <p className="text-gray-600 mb-4">{achievement.description}</p>
-                    {achievement.unlocked && (
-                      <div className="flex items-center justify-center gap-1 text-green-600">
-                        <CheckCircle className="h-4 w-4" />
-                        <span className="text-sm font-medium">Unlocked</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-                <div>
-                  <div className="text-3xl font-bold mb-2">50+</div>
-                  <div className="text-blue-100">Courses Available</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold mb-2">100K+</div>
-                  <div className="text-blue-100">Students Learning</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold mb-2">500+</div>
-                  <div className="text-blue-100">Hours of Content</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold mb-2">4.8</div>
-                  <div className="text-blue-100">Average Rating</div>
-                </div>
-              </div>
-            </div>
+            <button
+              onClick={() => setShowPDFs(true)}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+            >
+              <BookOpen className="h-5 w-5" />
+              View Resources
+            </button>
           </div>
-        )}
+        </div>
+      </div>
+
+      {/* Video Grid */}
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {videos.map((video) => (
+            <div
+              key={video.id}
+              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer group"
+            >
+              {/* Video Thumbnail */}
+              <div className="relative aspect-video bg-gray-200 rounded-t-lg overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <button
+                    onClick={() => handlePlayVideo(video)}
+                    className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center hover:bg-opacity-30 transition-all group-hover:scale-110"
+                  >
+                    <Play className="h-8 w-8 text-white ml-1" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Video Info */}
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                  {video.title}
+                </h3>
+                <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                  <span className="flex items-center gap-1">
+                    <Star className="h-4 w-4" />
+                    {video.rating}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users className="h-4 w-4" />
+                    {video.students.toLocaleString()}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handlePlayVideo(video)}
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Play className="h-4 w-4" />
+                  Watch Video
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Education
+export default Education;

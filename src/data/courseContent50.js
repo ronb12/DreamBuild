@@ -13,7 +13,54 @@ export const courseModules = {
     topics: ['HTML', 'CSS', 'Web Design', 'Responsive Design'],
     prerequisites: ['None'],
     outcomes: ['Build responsive websites', 'Understand web standards', 'Create modern layouts'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'javascript-essentials': {
@@ -29,7 +76,54 @@ export const courseModules = {
     topics: ['JavaScript', 'ES6+', 'DOM Manipulation', 'Async Programming'],
     prerequisites: ['HTML & CSS Basics'],
     outcomes: ['Master JavaScript fundamentals', 'Build interactive websites', 'Handle asynchronous operations'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'react-development': {
@@ -45,7 +139,54 @@ export const courseModules = {
     topics: ['React', 'JSX', 'Hooks', 'State Management'],
     prerequisites: ['JavaScript Essentials'],
     outcomes: ['Build React applications', 'Master component architecture', 'Implement state management'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'vue-js-fundamentals': {
@@ -61,7 +202,54 @@ export const courseModules = {
     topics: ['Vue.js', 'Components', 'Directives', 'Vuex'],
     prerequisites: ['JavaScript Essentials'],
     outcomes: ['Build Vue.js applications', 'Master Vue ecosystem', 'Implement reactive data binding'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'angular-complete': {
@@ -77,7 +265,54 @@ export const courseModules = {
     topics: ['Angular', 'TypeScript', 'Services', 'Routing'],
     prerequisites: ['JavaScript Essentials', 'TypeScript Basics'],
     outcomes: ['Build enterprise Angular apps', 'Master TypeScript integration', 'Implement complex routing'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'svelte-development': {
@@ -93,7 +328,54 @@ export const courseModules = {
     topics: ['Svelte', 'Components', 'Reactivity', 'Performance'],
     prerequisites: ['JavaScript Essentials'],
     outcomes: ['Build Svelte applications', 'Master reactive programming', 'Optimize performance'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'next-js-fullstack': {
@@ -109,7 +391,54 @@ export const courseModules = {
     topics: ['Next.js', 'SSR', 'SSG', 'API Routes'],
     prerequisites: ['React Development'],
     outcomes: ['Build full-stack apps', 'Master SSR/SSG', 'Deploy to production'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'nuxt-js-development': {
@@ -125,7 +454,54 @@ export const courseModules = {
     topics: ['Nuxt.js', 'SSR', 'Static Generation', 'Modules'],
     prerequisites: ['Vue.js Fundamentals'],
     outcomes: ['Build universal apps', 'Master SSR', 'Optimize performance'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'gatsby-static-sites': {
@@ -141,7 +517,54 @@ export const courseModules = {
     topics: ['Gatsby', 'GraphQL', 'Static Generation', 'Plugins'],
     prerequisites: ['React Development'],
     outcomes: ['Build static sites', 'Master GraphQL', 'Optimize for speed'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'webpack-bundling': {
@@ -157,7 +580,54 @@ export const courseModules = {
     topics: ['Webpack', 'Loaders', 'Plugins', 'Optimization'],
     prerequisites: ['JavaScript Essentials'],
     outcomes: ['Master bundling', 'Optimize builds', 'Configure complex setups'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   // Backend Development (11-20)
@@ -174,7 +644,54 @@ export const courseModules = {
     topics: ['Node.js', 'Express', 'APIs', 'Database Integration'],
     prerequisites: ['JavaScript Essentials'],
     outcomes: ['Build RESTful APIs', 'Handle server-side logic', 'Integrate with databases'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'python-django': {
@@ -190,7 +707,54 @@ export const courseModules = {
     topics: ['Python', 'Django', 'ORM', 'Authentication'],
     prerequisites: ['Python Basics'],
     outcomes: ['Build Django applications', 'Master Django ORM', 'Implement user authentication'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'python-flask': {
@@ -206,7 +770,54 @@ export const courseModules = {
     topics: ['Python', 'Flask', 'REST APIs', 'Templates'],
     prerequisites: ['Python Basics'],
     outcomes: ['Build Flask applications', 'Create REST APIs', 'Implement templating'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'php-laravel': {
@@ -222,7 +833,54 @@ export const courseModules = {
     topics: ['PHP', 'Laravel', 'Eloquent ORM', 'Blade Templates'],
     prerequisites: ['PHP Basics'],
     outcomes: ['Build Laravel applications', 'Master Eloquent ORM', 'Implement MVC architecture'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'java-spring-boot': {
@@ -238,7 +896,54 @@ export const courseModules = {
     topics: ['Java', 'Spring Boot', 'Microservices', 'Security'],
     prerequisites: ['Java Fundamentals'],
     outcomes: ['Build Spring Boot applications', 'Implement microservices', 'Master enterprise patterns'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'ruby-rails': {
@@ -254,7 +959,54 @@ export const courseModules = {
     topics: ['Ruby', 'Rails', 'MVC', 'ActiveRecord'],
     prerequisites: ['Ruby Programming'],
     outcomes: ['Build Rails applications', 'Master MVC pattern', 'Implement rapid development'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'go-web-development': {
@@ -270,7 +1022,54 @@ export const courseModules = {
     topics: ['Go', 'Gin', 'Goroutines', 'Microservices'],
     prerequisites: ['Go Programming'],
     outcomes: ['Build Go web services', 'Master concurrency', 'Implement microservices'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'rust-web-development': {
@@ -286,7 +1085,54 @@ export const courseModules = {
     topics: ['Rust', 'Actix-web', 'Tokio', 'Performance'],
     prerequisites: ['Rust Programming'],
     outcomes: ['Build Rust web services', 'Master memory safety', 'Achieve high performance'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'elixir-phoenix': {
@@ -302,7 +1148,54 @@ export const courseModules = {
     topics: ['Elixir', 'Phoenix', 'LiveView', 'WebSockets'],
     prerequisites: ['Elixir Programming'],
     outcomes: ['Build real-time apps', 'Master actor model', 'Implement LiveView'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'c-sharp-aspnet': {
@@ -318,7 +1211,54 @@ export const courseModules = {
     topics: ['C#', 'ASP.NET Core', 'Entity Framework', 'Identity'],
     prerequisites: ['C# Programming'],
     outcomes: ['Build ASP.NET apps', 'Master Entity Framework', 'Implement authentication'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   // Mobile Development (21-25)
@@ -335,7 +1275,54 @@ export const courseModules = {
     topics: ['React Native', 'Mobile UI', 'Navigation', 'APIs'],
     prerequisites: ['React Development'],
     outcomes: ['Build mobile applications', 'Deploy to app stores', 'Handle mobile-specific features'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'flutter-development': {
@@ -351,7 +1338,54 @@ export const courseModules = {
     topics: ['Flutter', 'Dart', 'Widgets', 'State Management'],
     prerequisites: ['Dart Basics'],
     outcomes: ['Build Flutter applications', 'Master widget system', 'Implement state management'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'swift-ios': {
@@ -367,7 +1401,54 @@ export const courseModules = {
     topics: ['Swift', 'iOS', 'UIKit', 'SwiftUI'],
     prerequisites: ['macOS Development Environment'],
     outcomes: ['Build iOS applications', 'Master Swift language', 'Implement iOS design patterns'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'kotlin-android': {
@@ -383,7 +1464,54 @@ export const courseModules = {
     topics: ['Kotlin', 'Android', 'Jetpack', 'Material Design'],
     prerequisites: ['Java Basics'],
     outcomes: ['Build Android applications', 'Master Kotlin language', 'Implement modern Android patterns'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'xamarin-cross-platform': {
@@ -399,7 +1527,54 @@ export const courseModules = {
     topics: ['Xamarin', 'C#', 'Xamarin.Forms', 'Native APIs'],
     prerequisites: ['C# Programming'],
     outcomes: ['Build cross-platform apps', 'Share code between platforms', 'Access native features'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   // Data Science & Analytics (26-35)
@@ -416,7 +1591,54 @@ export const courseModules = {
     topics: ['Python', 'Pandas', 'NumPy', 'Matplotlib'],
     prerequisites: ['Python Basics'],
     outcomes: ['Analyze datasets', 'Create visualizations', 'Perform statistical analysis'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'machine-learning-basics': {
@@ -432,7 +1654,54 @@ export const courseModules = {
     topics: ['Machine Learning', 'Scikit-learn', 'Algorithms', 'Model Evaluation'],
     prerequisites: ['Python Data Science'],
     outcomes: ['Build ML models', 'Understand algorithms', 'Evaluate model performance'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'deep-learning-tensorflow': {
@@ -448,7 +1717,54 @@ export const courseModules = {
     topics: ['TensorFlow', 'Neural Networks', 'Deep Learning', 'Computer Vision'],
     prerequisites: ['Machine Learning Basics'],
     outcomes: ['Build neural networks', 'Implement deep learning models', 'Work with TensorFlow'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'r-data-analysis': {
@@ -464,7 +1780,54 @@ export const courseModules = {
     topics: ['R Programming', 'Statistics', 'Data Visualization', 'Regression'],
     prerequisites: ['Statistics Basics'],
     outcomes: ['Perform statistical analysis', 'Create R visualizations', 'Build predictive models'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'sql-database-design': {
@@ -480,7 +1843,54 @@ export const courseModules = {
     topics: ['SQL', 'Database Design', 'Normalization', 'Indexing'],
     prerequisites: ['None'],
     outcomes: ['Design databases', 'Write complex queries', 'Optimize database performance'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'mongodb-nosql': {
@@ -496,7 +1906,54 @@ export const courseModules = {
     topics: ['MongoDB', 'NoSQL', 'Document Design', 'Aggregation'],
     prerequisites: ['Database Concepts'],
     outcomes: ['Design document databases', 'Write MongoDB queries', 'Implement aggregation pipelines'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'postgresql-advanced': {
@@ -512,7 +1969,54 @@ export const courseModules = {
     topics: ['PostgreSQL', 'Advanced Queries', 'Performance Tuning', 'Extensions'],
     prerequisites: ['SQL Database Design'],
     outcomes: ['Master PostgreSQL', 'Optimize performance', 'Use advanced features'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'redis-caching': {
@@ -528,7 +2032,54 @@ export const courseModules = {
     topics: ['Redis', 'Caching', 'Data Structures', 'Pub/Sub'],
     prerequisites: ['Database Concepts'],
     outcomes: ['Implement caching', 'Use Redis data structures', 'Build real-time features'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'elasticsearch-search': {
@@ -544,7 +2095,54 @@ export const courseModules = {
     topics: ['Elasticsearch', 'Search', 'Analytics', 'Kibana'],
     prerequisites: ['Database Concepts'],
     outcomes: ['Implement search', 'Build analytics', 'Optimize search performance'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'apache-kafka-streaming': {
@@ -560,7 +2158,54 @@ export const courseModules = {
     topics: ['Kafka', 'Streaming', 'Event Sourcing', 'Microservices'],
     prerequisites: ['Distributed Systems'],
     outcomes: ['Build streaming pipelines', 'Implement event sourcing', 'Handle real-time data'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   // DevOps & Cloud (36-45)
@@ -577,7 +2222,54 @@ export const courseModules = {
     topics: ['Docker', 'Containers', 'Images', 'Orchestration'],
     prerequisites: ['Linux Basics'],
     outcomes: ['Containerize applications', 'Manage Docker containers', 'Implement CI/CD'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'kubernetes-orchestration': {
@@ -593,7 +2285,54 @@ export const courseModules = {
     topics: ['Kubernetes', 'Pods', 'Services', 'Deployments'],
     prerequisites: ['Docker Containerization'],
     outcomes: ['Deploy to Kubernetes', 'Manage clusters', 'Scale applications'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'aws-cloud-fundamentals': {
@@ -609,7 +2348,54 @@ export const courseModules = {
     topics: ['AWS', 'EC2', 'S3', 'RDS'],
     prerequisites: ['Linux Basics'],
     outcomes: ['Deploy to AWS', 'Manage cloud resources', 'Implement security best practices'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'azure-cloud-platform': {
@@ -625,7 +2411,54 @@ export const courseModules = {
     topics: ['Azure', 'Virtual Machines', 'Storage', 'Networking'],
     prerequisites: ['Cloud Concepts'],
     outcomes: ['Deploy to Azure', 'Manage cloud services', 'Implement hybrid solutions'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'google-cloud-platform': {
@@ -641,7 +2474,54 @@ export const courseModules = {
     topics: ['GCP', 'Compute Engine', 'Cloud Storage', 'BigQuery'],
     prerequisites: ['Cloud Concepts'],
     outcomes: ['Deploy to GCP', 'Use Google Cloud services', 'Implement data solutions'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'terraform-infrastructure': {
@@ -657,7 +2537,54 @@ export const courseModules = {
     topics: ['Terraform', 'Infrastructure as Code', 'State Management', 'Modules'],
     prerequisites: ['Cloud Computing'],
     outcomes: ['Manage infrastructure', 'Implement IaC', 'Automate deployments'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'ansible-automation': {
@@ -673,7 +2600,54 @@ export const courseModules = {
     topics: ['Ansible', 'Playbooks', 'Roles', 'Automation'],
     prerequisites: ['Linux Administration'],
     outcomes: ['Automate configurations', 'Manage servers', 'Implement CI/CD'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'jenkins-cicd': {
@@ -689,7 +2663,54 @@ export const courseModules = {
     topics: ['Jenkins', 'CI/CD', 'Pipelines', 'Automation'],
     prerequisites: ['Docker Containerization'],
     outcomes: ['Implement CI/CD', 'Automate builds', 'Deploy applications'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'gitlab-devops': {
@@ -705,7 +2726,54 @@ export const courseModules = {
     topics: ['GitLab', 'CI/CD', 'Container Registry', 'DevOps'],
     prerequisites: ['Git Basics'],
     outcomes: ['Master GitLab', 'Implement DevOps', 'Manage projects'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'monitoring-observability': {
@@ -721,7 +2789,54 @@ export const courseModules = {
     topics: ['Monitoring', 'Logging', 'Metrics', 'Alerting'],
     prerequisites: ['System Administration'],
     outcomes: ['Implement monitoring', 'Set up alerting', 'Analyze performance'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   // Cybersecurity (46-50)
@@ -738,7 +2853,54 @@ export const courseModules = {
     topics: ['Security Basics', 'Threats', 'Vulnerabilities', 'Risk Management'],
     prerequisites: ['IT Fundamentals'],
     outcomes: ['Understand security threats', 'Implement security measures', 'Assess risks'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'ethical-hacking': {
@@ -754,7 +2916,54 @@ export const courseModules = {
     topics: ['Penetration Testing', 'Vulnerability Assessment', 'Network Security', 'Web Security'],
     prerequisites: ['Cybersecurity Fundamentals'],
     outcomes: ['Perform penetration tests', 'Identify vulnerabilities', 'Secure systems'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'network-security': {
@@ -770,7 +2979,54 @@ export const courseModules = {
     topics: ['Network Protocols', 'Firewalls', 'VPNs', 'Intrusion Detection'],
     prerequisites: ['Networking Basics'],
     outcomes: ['Secure network infrastructure', 'Implement firewalls', 'Monitor network traffic'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'web-application-security': {
@@ -786,7 +3042,54 @@ export const courseModules = {
     topics: ['OWASP', 'Authentication', 'Authorization', 'Input Validation'],
     prerequisites: ['Web Development'],
     outcomes: ['Secure web applications', 'Implement security best practices', 'Prevent common vulnerabilities'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   },
 
   'incident-response': {
@@ -802,7 +3105,54 @@ export const courseModules = {
     topics: ['Incident Response', 'Digital Forensics', 'Evidence Collection', 'Recovery'],
     prerequisites: ['Cybersecurity Fundamentals'],
     outcomes: ['Handle security incidents', 'Perform digital forensics', 'Implement recovery procedures'],
-    modules: []
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Introduction',
+        lessons: [
+          {
+            id: 'lesson-1-1',
+            title: 'Getting Started',
+            duration: '10 minutes',
+            type: 'video',
+            content: {
+              videoUrl: 'educational-content',
+              transcript: 'Welcome to this course. In this lesson, we will cover the fundamentals.',
+              objectives: ['Understand the basics', 'Set up your environment']
+            },
+            completed: false
+          },
+          {
+            id: 'lesson-1-2',
+            title: 'Key Concepts',
+            duration: '15 minutes',
+            type: 'reading',
+            content: {
+              text: 'This lesson covers the key concepts you need to understand.',
+              objectives: ['Learn key concepts', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        title: 'Core Topics',
+        lessons: [
+          {
+            id: 'lesson-2-1',
+            title: 'Deep Dive',
+            duration: '20 minutes',
+            type: 'interactive',
+            content: {
+              instructions: 'Complete this interactive exercise to practice what you\'ve learned.',
+              objectives: ['Practice skills', 'Apply knowledge']
+            },
+            completed: false
+          }
+        ]
+      }
+    ]
   }
 };
 

@@ -147,5 +147,16 @@ service cloud.firestore {
       allow create: if request.auth != null && 
         request.auth.uid == request.resource.data.userId;
     }
+    
+    // ===== APPS =====
+    // Allow anonymous access for demo purposes
+    match /apps/{appId} {
+      // Allow public read access for public apps
+      allow read: if resource.data.isPublic == true;
+      // Allow anonymous write and delete for demo purposes
+      allow write: if true;
+      allow delete: if true;
+      allow create: if true;
+    }
   }
 }

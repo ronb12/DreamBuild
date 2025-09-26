@@ -17,8 +17,9 @@ import simpleAIService from '../services/simpleAIService'
 import aiAgentService from '../services/aiAgentService'
 
 export default function AIPromptCursorStyle() {
-  const { currentProject, updateFile, switchFile } = useProject()
+  const { currentProject, updateFile, switchFile, updateConfig } = useProject()
   const [prompt, setPrompt] = useState('')
+  const [projectName, setProjectName] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const textareaRef = useRef(null)
   const messagesEndRef = useRef(null)
@@ -169,12 +170,28 @@ export default function AIPromptCursorStyle() {
       ))
 
       // Add files to project
+      console.log('🔍 AIPromptCursorStyle: About to add files to project')
+      console.log('🔍 AIPromptCursorStyle: generatedFiles:', generatedFiles)
+      console.log('🔍 AIPromptCursorStyle: generatedFiles keys:', Object.keys(generatedFiles))
+      console.log('🔍 AIPromptCursorStyle: updateFile function:', typeof updateFile)
+      
       let filesAdded = 0
       Object.entries(generatedFiles).forEach(([filename, content]) => {
+        console.log(`🔍 AIPromptCursorStyle: Processing file: ${filename}`)
+        console.log(`🔍 AIPromptCursorStyle: Content type: ${typeof content}`)
+        console.log(`🔍 AIPromptCursorStyle: Content length: ${content?.length || 0}`)
+        
         if (filename && content !== undefined) {
           console.log(`📄 Adding file: ${filename} (${typeof content})`)
-          updateFile(filename, content)
-          filesAdded++
+          try {
+            updateFile(filename, content)
+            filesAdded++
+            console.log(`✅ Successfully added file: ${filename}`)
+          } catch (error) {
+            console.error(`❌ Error adding file ${filename}:`, error)
+          }
+        } else {
+          console.log(`❌ Skipping file ${filename}: filename=${!!filename}, content=${content !== undefined}`)
         }
       })
       console.log(`✅ Added ${filesAdded} files to project`)
@@ -184,6 +201,29 @@ export default function AIPromptCursorStyle() {
       if (firstFile) {
         switchFile(firstFile)
         console.log(`🎯 Set active file: ${firstFile}`)
+      }
+      
+      // Update project name with the user input
+      const finalProjectName = projectName.trim() || appName || 'My App'
+      console.log(`🎯 Setting project name to: ${finalProjectName}`)
+      console.log(`🎯 Project name input: "${projectName}"`)
+      console.log(`🎯 App name from AI: "${appName}"`)
+      console.log(`🎯 Final project name: "${finalProjectName}"`)
+      console.log(`🎯 updateConfig function: ${typeof updateConfig}`)
+      console.log(`🎯 Current project before update:`, currentProject)
+      
+      try {
+        console.log(`🎯 About to call updateConfig with:`, { name: finalProjectName })
+        updateConfig({ name: finalProjectName })
+        console.log(`✅ Successfully updated project name: ${finalProjectName}`)
+        
+        // Verify the update worked
+        setTimeout(() => {
+          console.log(`🔍 Current project name after update: ${currentProject.name}`)
+          console.log(`🔍 Current project after update:`, currentProject)
+        }, 1000)
+      } catch (error) {
+        console.error(`❌ Error updating project name:`, error)
       }
 
     } catch (error) {
@@ -449,6 +489,21 @@ export default function AIPromptCursorStyle() {
       {/* Cursor-Style Input Area - Perfect Match */}
       <div className="border-t border-border/30 bg-background flex-shrink-0">
         <div className="p-4">
+          {/* Project Name Input */}
+          <div className="mb-4">
+            <label htmlFor="project-name" className="block text-sm font-medium text-foreground mb-2">
+              Project Name
+            </label>
+            <input
+              id="project-name"
+              type="text"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder="Enter a name for your project"
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors"
+            />
+          </div>
+          
           {/* Text input field */}
           <div className="relative">
             <textarea

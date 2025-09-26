@@ -22,10 +22,13 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import firebaseAppService from '../services/firebaseAppService'
+import appDeploymentService from '../services/appDeploymentService'
 
 const Preview = () => {
   console.log('🎮 Preview component rendered!')
+  console.log('🎮 Preview component mounted successfully!')
   const { currentProject } = useProject()
+  console.log('🎮 Preview currentProject:', currentProject)
   const [isLoading, setIsLoading] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [deviceType, setDeviceType] = useState('desktop') // 'desktop', 'tablet', 'mobile'
@@ -40,8 +43,24 @@ const Preview = () => {
 
   // Deploy app when component mounts or project changes
   useEffect(() => {
+    console.log('🎮 Preview useEffect triggered')
+    console.log('🎮 Current project:', currentProject)
+    console.log('🎮 Project files:', currentProject?.files)
+    console.log('🎮 Files count:', Object.keys(currentProject?.files || {}).length)
+    
     if (currentProject && Object.keys(currentProject.files).length > 0) {
+      console.log('🎮 Deploying app...')
+      console.log('🎮 Files available for deployment:', Object.keys(currentProject.files))
+      console.log('🎮 Files content preview:', Object.keys(currentProject.files).map(key => ({
+        filename: key,
+        length: currentProject.files[key]?.length || 0,
+        preview: currentProject.files[key]?.substring(0, 100) || 'No content'
+      })))
       deployApp()
+    } else {
+      console.log('🎮 No project or files to deploy')
+      console.log('🎮 Current project:', currentProject)
+      console.log('🎮 Files count:', currentProject ? Object.keys(currentProject.files).length : 'No project')
     }
   }, [currentProject])
 
@@ -63,40 +82,108 @@ const Preview = () => {
   }, [isAutoRefresh, isPreviewPaused, previewMode, refreshInterval, isLoading, appUrl])
 
   const deployApp = async () => {
+    console.log('🎮 deployApp called')
+    console.log('🎮 Current project:', currentProject)
+    console.log('🎮 Files:', currentProject?.files)
+    console.log('🎮 Files count:', Object.keys(currentProject?.files || {}).length)
+    
     if (!currentProject || Object.keys(currentProject.files).length === 0) {
       console.log('🎮 No project files to deploy')
+      setDeploymentStatus('No files to deploy')
       return
     }
 
     setIsLoading(true)
+    setDeploymentStatus('Deploying...')
+    console.log('🎮 Starting deployment process...')
     
     try {
       console.log('🚀 Deploying app...')
+      console.log('🎮 Current project:', currentProject)
+      console.log('🎮 Project files:', Object.keys(currentProject.files))
+      console.log('🎮 Project files content:', currentProject.files)
+      console.log('🎮 Files count:', Object.keys(currentProject.files).length)
       
-      const deploymentResult = await firebaseAppService.deployApp({
-        name: currentProject.name || 'DreamBuild App',
+      // Try Firebase deployment first
+      const appName = currentProject.name || 'DreamBuild Calculator'
+      console.log('🎮 Preview: Current project name:', currentProject.name)
+      console.log('🎮 Preview: Using app name:', appName)
+      console.log('🎮 Preview: Project config:', currentProject.config)
+      let deploymentResult = await firebaseAppService.deployApp({
+        name: appName,
         files: currentProject.files,
+        isPublic: true, // Make app public by default
         preview: {
-          title: currentProject.name || 'DreamBuild App',
+          title: appName,
           description: 'Generated with DreamBuild AI Builder',
           features: ['AI Generated', 'Responsive Design', 'Modern UI']
         },
         dependencies: [],
-        buildInstructions: []
+        buildInstructions: [],
+        tags: ['ai-generated', 'dreambuild', 'calculator']
       })
+
+      console.log('🎮 Firebase deployment result:', deploymentResult)
+      console.log('🎮 Firebase deployment success:', deploymentResult?.success)
+      console.log('🎮 Firebase deployment error:', deploymentResult?.error)
+
+      // If Firebase deployment fails, fallback to in-memory service
+      if (!deploymentResult || !deploymentResult.success) {
+        console.log('🔄 Firebase deployment failed, trying fallback...')
+        console.log('🔄 Firebase error details:', deploymentResult?.error)
+        console.log('🔄 Firebase error message:', deploymentResult?.error?.message)
+        setDeploymentStatus('Firebase failed, trying fallback...')
+        deploymentResult = await appDeploymentService.deployApp({
+          name: appName,
+          files: currentProject.files,
+          preview: {
+            title: appName,
+            description: 'Generated with DreamBuild AI Builder',
+            features: ['AI Generated', 'Responsive Design', 'Modern UI']
+          },
+          dependencies: [],
+          buildInstructions: []
+        })
+        console.log('🎮 Fallback deployment result:', deploymentResult)
+      }
 
       if (deploymentResult.success) {
         setDeployedApp(deploymentResult.appInfo)
         setAppUrl(deploymentResult.url)
         console.log('✅ App deployed successfully:', deploymentResult.url)
-        toast.success('App deployed successfully!')
+        toast.success(`App deployed successfully! URL: ${deploymentResult.url}`, {
+          duration: 6000,
+          icon: '🚀'
+        })
+        console.log('🎮 Toast message URL:', deploymentResult.url)
+        console.log('🎮 Toast message text:', `App deployed successfully! URL: ${deploymentResult.url}`)
+        
+        // Trigger gallery refresh after successful deployment
+        setTimeout(() => {
+          // Dispatch custom event to notify gallery of new app
+          window.dispatchEvent(new CustomEvent('appDeployed', {
+            detail: {
+              appId: deploymentResult.appId,
+              appName: appName,
+              url: deploymentResult.url
+            }
+          }))
+        }, 1000)
+        
+        // Success message handled by toast
       } else {
-        console.error('❌ App deployment failed:', deploymentResult.error)
-        toast.error('App deployment failed')
+        console.error('❌ App deployment failed:', deploymentResult?.error || 'Unknown error')
+        toast.error(`App deployment failed: ${deploymentResult?.error || 'Unknown error'}`)
+        setDeploymentStatus('Deployment failed')
+        
+        // Error message handled by toast
       }
     } catch (error) {
       console.error('❌ Deployment error:', error)
-      toast.error('Deployment error occurred')
+      toast.error(`Deployment error: ${error.message}`)
+      setDeploymentStatus('Deployment error')
+      
+      // Error message handled by toast
     } finally {
       setIsLoading(false)
     }
@@ -164,6 +251,12 @@ const Preview = () => {
     }
   }
 
+  console.log('🎮 Preview component about to render')
+  console.log('🎮 Preview currentProject:', currentProject)
+  console.log('🎮 Preview appUrl:', appUrl)
+  console.log('🎮 Preview isLoading:', isLoading)
+  console.log('🎮 Preview deployedApp:', deployedApp)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -172,30 +265,30 @@ const Preview = () => {
         isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''
       }`}
     >
-      {/* Debug Indicator */}
+      {/* Status Indicator */}
       <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs z-50">
-        PREVIEW LOADED - {deployedApp ? 'DEPLOYED' : 'LOADING'}
+        {deployedApp ? 'DEPLOYED' : 'LOADING'}
       </div>
       
       {/* Advanced Preview Header */}
       <div className="flex items-center justify-between p-3 border-b border-border bg-muted/50">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-sm">Advanced Live Preview</h3>
-          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">DEPLOYED</span>
+          <button
+            onClick={deployApp}
+            disabled={isLoading}
+            className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:opacity-50"
+          >
+            {isLoading ? 'Deploying...' : 'Deploy App'}
+          </button>
+          <h3 className="font-semibold text-sm text-foreground">Live Preview</h3>
+          {deployedApp && (
+            <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">DEPLOYED</span>
+          )}
           {isLoading && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <div className="spinner"></div>
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
               <span>Deploying...</span>
             </div>
-          )}
-          {isAutoRefresh && !isPreviewPaused && (
-            <span className="text-xs bg-orange-500 text-white px-2 py-1 rounded">AUTO-REFRESH</span>
-          )}
-          {previewMode === 'live' && (
-            <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded">LIVE</span>
-          )}
-          {appUrl && (
-            <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded">ONLINE</span>
           )}
         </div>
         
@@ -224,6 +317,13 @@ const Preview = () => {
             >
               <Smartphone className="h-4 w-4" />
             </button>
+          </div>
+          
+          {/* Device Type Labels */}
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <span className={deviceType === 'desktop' ? 'font-semibold' : ''}>Desktop</span>
+            <span className={deviceType === 'tablet' ? 'font-semibold' : ''}>Tablet</span>
+            <span className={deviceType === 'mobile' ? 'font-semibold' : ''}>Mobile</span>
           </div>
           
           {/* Auto-refresh Toggle */}
@@ -315,7 +415,7 @@ const Preview = () => {
             'bg-white'
           }`}>
             <div className={`${getDeviceStyling()} transition-all duration-300 ease-in-out`}>
-              <iframe
+          <iframe
                 id="preview-iframe"
                 src={appUrl}
                 className={`w-full h-full border-0 ${
@@ -325,9 +425,13 @@ const Preview = () => {
                 }`}
                 title="DreamBuild App Preview"
                 sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
-                onLoad={() => setIsLoading(false)}
+                onLoad={() => {
+                  setIsLoading(false)
+                  console.log('🎮 Iframe loaded successfully')
+                }}
                 onError={() => {
                   setIsLoading(false)
+                  console.log('🎮 Iframe failed to load')
                   toast.error('Failed to load app preview')
                 }}
               />
@@ -344,6 +448,20 @@ const Preview = () => {
             >
               Deploy App
             </button>
+            
+            {/* Fallback preview for testing */}
+            {currentProject && Object.keys(currentProject.files).length > 0 && (
+              <div className="mt-8 p-4 bg-muted/50 rounded-lg max-w-2xl w-full">
+                <h4 className="text-lg font-semibold mb-2">Code Preview</h4>
+                <div className="bg-background p-4 rounded border text-left max-h-64 overflow-auto">
+                  <pre className="text-sm font-mono whitespace-pre-wrap">
+                    {Object.entries(currentProject.files).map(([filename, content]) => 
+                      `// ${filename}\n${content}\n\n`
+                    ).join('')}
+                  </pre>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -357,10 +475,10 @@ const Preview = () => {
               <span className="font-mono text-xs">{appUrl}</span>
             </div>
           )}
-          {deployedApp && (
+          {appUrl && (
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-green-600">App Deployed</span>
+              <span className="text-green-600">Live Preview Active</span>
             </div>
           )}
         </div>

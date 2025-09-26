@@ -20,6 +20,8 @@ const AIChatInterface = ({
   textareaRef,
   messagesEndRef 
 }) => {
+  console.log('🔧 AIChatInterface rendering...', { messages: messages.length, prompt, isGenerating });
+  
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();

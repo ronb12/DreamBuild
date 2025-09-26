@@ -11,7 +11,10 @@ class MultiWindowService {
 
   // Create a new window
   createWindow(projectData = null, options = {}) {
+    console.log('🪟 MultiWindowService.createWindow called with:', { projectData, options })
+    
     const windowId = `window_${++this.windowCounter}`
+    console.log('🪟 Generated window ID:', windowId)
     
     const window = {
       id: windowId,
@@ -31,8 +34,13 @@ class MultiWindowService {
       layout: options.layout || 'default'
     }
 
+    console.log('🪟 Window object created:', window)
+    
     this.windows.set(windowId, window)
+    console.log('🪟 Window added to Map. Total windows:', this.windows.size)
+    
     this.setActiveWindow(windowId)
+    console.log('🪟 Window set as active:', windowId)
     
     this.notifyListeners('windowCreated', { windowId, window })
     console.log(`🪟 Window created: ${windowId}`)

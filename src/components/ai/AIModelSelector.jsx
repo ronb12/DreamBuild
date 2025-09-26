@@ -1,46 +1,121 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, Sparkles, Zap, Brain, Code } from 'lucide-react';
+import { ChevronDown, Check, Sparkles, Zap, Brain, Code, Cloud, Server, Loader2 } from 'lucide-react';
+import simpleAIService from '../../services/simpleAIService';
 
 const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKey }) => {
   const [showModelSelector, setShowModelSelector] = useState(false);
+  const [availableModels, setAvailableModels] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const models = [
-    {
-      id: 'auto',
-      name: 'Auto Select',
-      description: 'Automatically selects the best available model',
-      icon: Sparkles,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20'
-    },
-    {
-      id: 'codellama-7b',
-      name: 'CodeLlama 7B',
-      description: 'Fast and efficient code generation',
-      icon: Code,
-      color: 'text-green-500',
-      bgColor: 'bg-green-50 dark:bg-green-900/20'
-    },
-    {
-      id: 'deepseek-coder',
-      name: 'DeepSeek Coder',
-      description: 'Advanced code understanding and generation',
-      icon: Brain,
-      color: 'text-purple-500',
-      bgColor: 'bg-purple-50 dark:bg-purple-900/20'
-    },
-    {
-      id: 'wizardcoder',
-      name: 'WizardCoder',
-      description: 'Specialized in complex programming tasks',
-      icon: Zap,
-      color: 'text-orange-500',
-      bgColor: 'bg-orange-50 dark:bg-orange-900/20'
-    }
-  ];
+  // Load available models from services
+  useEffect(() => {
+    const loadModels = async () => {
+      try {
+        setIsLoading(true);
+        console.log('🔧 Loading AI models...');
+        
+        const services = simpleAIService.getServices();
+        console.log('🔧 Services:', services);
+        
+        const models = [];
+        
+        // Add cloud AI models
+        if (services['cloud-ai'] && services['cloud-ai'].models) {
+          console.log('🔧 Cloud AI models:', services['cloud-ai'].models);
+          services['cloud-ai'].models.forEach(model => {
+            models.push({
+              id: model.model || model.name.toLowerCase().replace(/\s+/g, '-'),
+              name: model.name,
+              description: model.description,
+              icon: Code,
+              color: 'text-blue-500',
+              bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+              type: 'cloud'
+            });
+          });
+        }
+        
+        // Add local AI models
+        if (services['local-ai'] && services['local-ai'].models) {
+          console.log('🔧 Local AI models:', services['local-ai'].models);
+          services['local-ai'].models.forEach(model => {
+            models.push({
+              id: model.model || model.name.toLowerCase().replace(/\s+/g, '-'),
+              name: model.name,
+              description: model.description,
+              icon: Server,
+              color: 'text-green-500',
+              bgColor: 'bg-green-50 dark:bg-green-900/20',
+              type: 'local'
+            });
+          });
+        }
+        
+        // Add auto select option
+        models.unshift({
+          id: 'auto',
+          name: 'Auto Select',
+          description: 'Automatically selects the best available model',
+          icon: Sparkles,
+          color: 'text-purple-500',
+          bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+          type: 'auto'
+        });
+        
+        console.log('🔧 Final models:', models);
+        setAvailableModels(models);
+      } catch (error) {
+        console.error('❌ Error loading models:', error);
+        // Fallback to basic models
+        const fallbackModels = [
+          {
+            id: 'auto',
+            name: 'Auto Select',
+            description: 'Automatically selects the best available model',
+            icon: Sparkles,
+            color: 'text-purple-500',
+            bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+            type: 'auto'
+          },
+          {
+            id: 'codellama-7b',
+            name: 'CodeLlama 7B',
+            description: 'Fast and efficient code generation',
+            icon: Code,
+            color: 'text-blue-500',
+            bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+            type: 'cloud'
+          },
+          {
+            id: 'deepseek-coder',
+            name: 'DeepSeek Coder',
+            description: 'Advanced code understanding and generation',
+            icon: Brain,
+            color: 'text-green-500',
+            bgColor: 'bg-green-50 dark:bg-green-900/20',
+            type: 'cloud'
+          }
+        ];
+        console.log('🔧 Using fallback models:', fallbackModels);
+        setAvailableModels(fallbackModels);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadModels();
+  }, []);
 
-  const selectedModel = models.find(model => model.id === aiModel) || models[0];
+  const selectedModel = availableModels.find(model => model.id === aiModel) || availableModels[0] || {
+    id: 'auto',
+    name: 'Auto Select',
+    description: 'Automatically selects the best available model',
+    icon: Sparkles,
+    color: 'text-purple-500',
+    bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+    type: 'auto'
+  };
 
   // Close model selector when clicking outside
   useEffect(() => {
@@ -85,7 +160,13 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
             className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg z-50 model-selector"
           >
             <div className="p-2">
-              {models.map((model) => {
+              {isLoading ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin mx-auto mb-2" />
+                  Loading models...
+                </div>
+              ) : (
+                availableModels.map((model) => {
                 const Icon = model.icon;
                 const isSelected = model.id === aiModel;
                 
@@ -111,7 +192,8 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
                     </div>
                   </button>
                 );
-              })}
+              })
+              )}
             </div>
           </motion.div>
         )}

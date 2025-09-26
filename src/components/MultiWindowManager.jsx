@@ -24,24 +24,35 @@ import WindowAwareAIBuilder from './WindowAwareAIBuilder'
 import toast from 'react-hot-toast'
 
 const MultiWindowManager = () => {
+  console.log('🪟 MultiWindowManager component rendering...')
+  
   const { currentProject, projects, loadProject } = useProject()
   const [windows, setWindows] = useState([])
   const [activeWindowId, setActiveWindowId] = useState(null)
   const [showWindowMenu, setShowWindowMenu] = useState(null)
   const [isWindowMenuOpen, setIsWindowMenuOpen] = useState(false)
+  
+  console.log('🪟 Current state:', { windows: windows.length, activeWindowId, isWindowMenuOpen })
 
   // Load windows on mount
   useEffect(() => {
     const updateWindows = () => {
-      setWindows(multiWindowService.getAllWindows())
-      setActiveWindowId(multiWindowService.activeWindowId)
+      console.log('🪟 Updating windows state...')
+      const allWindows = multiWindowService.getAllWindows()
+      const activeId = multiWindowService.activeWindowId
+      console.log('🪟 Current windows:', allWindows.length, 'Active:', activeId)
+      setWindows(allWindows)
+      setActiveWindowId(activeId)
     }
 
     // Initial load
     updateWindows()
 
     // Listen for window events
-    const handleWindowEvent = () => updateWindows()
+    const handleWindowEvent = (data) => {
+      console.log('🪟 Window event received:', data)
+      updateWindows()
+    }
     
     multiWindowService.addEventListener('windowCreated', handleWindowEvent)
     multiWindowService.addEventListener('windowClosed', handleWindowEvent)
@@ -59,12 +70,20 @@ const MultiWindowManager = () => {
   // Create new window
   const createNewWindow = useCallback(async (projectData = null) => {
     try {
+      console.log('🪟 Creating new window...', projectData)
       const windowId = multiWindowService.createWindow(projectData)
+      console.log('🪟 Window created with ID:', windowId)
       
       // If project data was provided, load it
       if (projectData && projectData.id) {
         await loadProject(projectData.id)
       }
+      
+      // Update windows state
+      setWindows(multiWindowService.getAllWindows())
+      setActiveWindowId(windowId)
+      
+      console.log('🪟 Windows after creation:', multiWindowService.getAllWindows())
       
       toast.success('New window created!')
       return windowId
@@ -362,8 +381,14 @@ const MultiWindowManager = () => {
         
         <div className="flex items-center gap-2">
           <button
-            onClick={() => createNewWindow()}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('🪟 New Window button clicked!')
+              createNewWindow()
+            }}
             className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm"
+            type="button"
           >
             <Plus className="h-4 w-4" />
             New Window
@@ -397,8 +422,14 @@ const MultiWindowManager = () => {
               Create a new window to start working on your projects
             </p>
             <button
-              onClick={() => createNewWindow()}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                console.log('🪟 Create New Window button clicked!')
+                createNewWindow()
+              }}
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              type="button"
             >
               <Plus className="h-4 w-4" />
               Create New Window

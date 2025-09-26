@@ -19,6 +19,8 @@ import AIModelSelector from './ai/AIModelSelector'
 import AIChatInterface from './ai/AIChatInterface'
 
 export default function AIPromptSimplified() {
+  console.log('🔧 AIPromptSimplified component rendering...')
+  
   const { currentProject, updateFile, switchFile, updateConfig } = useProject()
   const [prompt, setPrompt] = useState('')
   const [projectName, setProjectName] = useState('')
@@ -52,12 +54,21 @@ export default function AIPromptSimplified() {
   // Check if the request is for incremental development
   const isIncrementalRequest = (prompt) => {
     const lowerPrompt = prompt.toLowerCase()
+    
+    // First check if this is a new app creation (not incremental)
+    const newAppKeywords = [
+      'create a', 'build a', 'make a', 'develop a', 'start a', 'new app', 'new project'
+    ]
+    
+    if (newAppKeywords.some(keyword => lowerPrompt.includes(keyword))) {
+      return false // This is a new app, not incremental
+    }
+    
+    // Then check for incremental keywords
     const incrementalKeywords = [
       'add', 'add a', 'add new', 'add the', 'add some',
       'include', 'include a', 'include new',
       'implement', 'implement a', 'implement new',
-      'create', 'create a', 'create new',
-      'build', 'build a', 'build new',
       'feature', 'features',
       'functionality', 'function',
       'capability', 'capabilities',
@@ -91,7 +102,7 @@ export default function AIPromptSimplified() {
 
     try {
       // Check if this is an incremental development request
-      const isIncremental = this.isIncrementalRequest(userPrompt)
+      const isIncremental = isIncrementalRequest(userPrompt)
       
       // Generate AI response
       const response = await simpleAIService.generateCode({
@@ -134,7 +145,9 @@ export default function AIPromptSimplified() {
 
       // Update project files if new files were generated
       if (response.files && Object.keys(response.files).length > 0) {
+        console.log('📁 Updating project files:', Object.keys(response.files))
         Object.entries(response.files).forEach(([filename, content]) => {
+          console.log(`📄 Updating file ${filename} with ${content.length} characters`)
           updateFile(filename, content)
         })
         
@@ -173,6 +186,10 @@ export default function AIPromptSimplified() {
     toast.success('Chat cleared!')
   }
 
+  console.log('🔧 AIPromptSimplified render - currentProject:', currentProject)
+  console.log('🔧 AIPromptSimplified render - prompt:', prompt)
+  console.log('🔧 AIPromptSimplified render - isGenerating:', isGenerating)
+  
   return (
     <div className="h-full flex flex-col bg-card/50 backdrop-blur-sm">
       {/* Header */}

@@ -123,6 +123,8 @@ class CloudAIService {
       console.log('✅ Code generated successfully!')
       console.log('🏷️ App name:', appName)
       console.log('👁️ Preview data generated')
+      console.log('📁 Generated files:', Object.keys(generatedCode))
+      console.log('📄 File contents preview:', Object.entries(generatedCode).map(([name, content]) => ({ name, length: content.length, preview: content.substring(0, 100) })))
       
       // Return enhanced response (like Lovable)
       return {

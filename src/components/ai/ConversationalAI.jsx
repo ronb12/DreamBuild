@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import conversationService from '../../services/conversationService.js'
 import advancedConversationService from '../../services/advancedConversationService.js'
+import enhancedConversationService from '../../services/enhancedConversationService.js'
 import { useProject } from '../../contexts/ProjectContext.jsx'
 
 const ConversationalAI = () => {
@@ -137,13 +138,24 @@ const ConversationalAI = () => {
     setMessages(prev => [...prev, userMsg])
 
     try {
-      // Process message with advanced conversation service
-      const aiResponse = await advancedConversationService.processUserMessage(userMessage)
+      // Process message with enhanced conversation service (includes language understanding)
+      const response = await enhancedConversationService.processUserMessage(
+        'current_user', // In a real app, this would be the actual user ID
+        userMessage,
+        { 
+          projectContext: currentProject,
+          conversationId: conversationId
+        }
+      )
       
       const aiMsg = {
         id: `msg_${Date.now()}_ai`,
         type: 'ai',
-        content: aiResponse,
+        content: response.message,
+        analysis: response.analysis,
+        suggestions: response.suggestions,
+        nextSteps: response.nextSteps,
+        confidence: response.confidence,
         timestamp: new Date()
       }
 
@@ -238,6 +250,40 @@ const ConversationalAI = () => {
                     }`}
                   >
                     <p className="text-sm">{message.content}</p>
+                    
+                    {/* Enhanced AI Response Features */}
+                    {message.type === 'ai' && message.analysis && (
+                      <div className="mt-2 pt-2 border-t border-border/20">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>Intent: {message.analysis.intent?.type || 'Unknown'}</span>
+                          <span className={`${
+                            message.confidence > 0.8 ? 'text-green-500' :
+                            message.confidence > 0.5 ? 'text-yellow-500' : 'text-red-500'
+                          }`}>
+                            {message.confidence > 0.8 ? 'High confidence' :
+                             message.confidence > 0.5 ? 'Medium confidence' : 'Low confidence'}
+                          </span>
+                        </div>
+                        
+                        {message.nextSteps && message.nextSteps.length > 0 && (
+                          <div className="mt-2">
+                            <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground mb-1">
+                              <Target className="h-3 w-3" />
+                              Next Steps:
+                            </div>
+                            <ul className="text-xs text-muted-foreground space-y-1">
+                              {message.nextSteps.map((step, index) => (
+                                <li key={index} className="flex items-start gap-1">
+                                  <span className="text-primary">•</span>
+                                  <span>{step}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     <p className="text-xs opacity-70 mt-1">
                       {new Date(message.timestamp).toLocaleTimeString()}
                     </p>

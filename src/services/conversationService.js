@@ -375,6 +375,12 @@ class ConversationService {
     if (!this.currentConversation) return
 
     try {
+      // Skip saving if no valid conversation ID
+      if (!this.currentConversation.id) {
+        console.log('⚠️ No conversation ID, skipping save')
+        return
+      }
+      
       await firebaseService.saveConversation(this.currentConversation)
       console.log('💾 Conversation saved to Firebase')
     } catch (error) {
@@ -385,6 +391,12 @@ class ConversationService {
   // Load conversation history
   async loadConversationHistory(projectId) {
     try {
+      // Skip loading if projectId is null or undefined
+      if (!projectId) {
+        console.log('⚠️ No projectId provided, skipping conversation history load')
+        return
+      }
+      
       const conversation = await firebaseService.getConversation(projectId)
       if (conversation) {
         this.currentConversation = conversation

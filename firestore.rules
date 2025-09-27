@@ -32,6 +32,13 @@ service cloud.firestore {
       allow create: if true;
     }
     
+    // ===== CONVERSATIONS =====
+    // Allow anonymous access for demo purposes
+    match /conversations/{conversationId} {
+      allow read, write: if true;
+      allow create: if true;
+    }
+    
     // ===== COLLABORATION FEATURES =====
     
     // Project Presence - Users can read/write their own presence

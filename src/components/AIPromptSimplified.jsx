@@ -203,6 +203,7 @@ export default function AIPromptSimplified() {
       
       if (response.type === 'conversational_response') {
         // Handle general questions with direct answers
+        console.log('💬 Conversational response detected:', response.message)
         responseMessage = response.message
         responseText = response.message
         toast.info('Question answered!')
@@ -245,6 +246,7 @@ export default function AIPromptSimplified() {
       }
 
       // Save AI response to conversation
+      console.log('💾 Saving AI response to conversation:', responseMessage)
       await conversationService.addMessage(responseMessage, response, 'assistant')
 
       const aiMessage = {

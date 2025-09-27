@@ -154,7 +154,10 @@ const AIChatInterface = ({
             disabled={isGenerating}
           />
           <button
-            onClick={handleGenerate}
+            onClick={() => {
+              console.log('🔘 Send button clicked!', { prompt: prompt.trim(), isGenerating });
+              handleGenerate();
+            }}
             disabled={!prompt.trim() || isGenerating}
             className="px-4 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
           >

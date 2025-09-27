@@ -120,9 +120,15 @@ export default function AIPromptSimplified() {
   }
 
   const handleGenerate = async () => {
-    if (!prompt.trim() || isGenerating) return
+    console.log('🚀 handleGenerate called!', { prompt: prompt.trim(), isGenerating });
+    
+    if (!prompt.trim() || isGenerating) {
+      console.log('❌ handleGenerate blocked:', { promptEmpty: !prompt.trim(), isGenerating });
+      return
+    }
 
     const userPrompt = prompt
+    console.log('✅ Starting generation with prompt:', userPrompt);
     setPrompt('')
     setIsGenerating(true)
 
@@ -236,13 +242,11 @@ export default function AIPromptSimplified() {
         responseLanguage = 'javascript'
       }
 
-      // Start streaming automatically (only for code generation, not general questions)
-      if (responseText && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0) {
-        setStreamingResponse(responseText)
-        setStreamingType(responseType)
-        setStreamingLanguage(responseLanguage)
-        setShowStreaming(true)
-        setIsStreaming(true)
+      // Simple success message for code generation
+      if (response.files && Object.keys(response.files).length > 0 && response.type !== 'conversational_response') {
+        // Show simple success message
+        setShowStreaming(false)
+        setIsStreaming(false)
       }
 
       // Save AI response to conversation
@@ -564,43 +568,29 @@ export default function AIPromptSimplified() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-60 flex items-center justify-center p-4"
-            onClick={() => setShowStreaming(false)}
+            className="absolute top-4 right-4 bg-card border border-border rounded-xl shadow-2xl max-w-md w-full max-h-[60vh] overflow-hidden z-50"
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[80vh] overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
-                    <Zap className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-foreground">Streaming Response</h2>
-                    <p className="text-sm text-muted-foreground">Real-time response like Cursor</p>
-                  </div>
+            {/* Header */}
+            <div className="flex items-center justify-between p-3 border-b border-border">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
+                  <Zap className="w-3 h-3 text-primary-foreground" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
-                    <Zap className="w-2 h-2" />
-                    <span>Auto Stream</span>
-                  </div>
-                  <button
-                    onClick={() => setShowStreaming(false)}
-                    className="p-2 hover:bg-muted rounded-lg transition-colors"
-                  >
-                    <X className="w-5 h-5 text-muted-foreground" />
-                  </button>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Streaming</h3>
+                  <p className="text-xs text-muted-foreground">Generating code...</p>
                 </div>
               </div>
+              <button
+                onClick={() => setShowStreaming(false)}
+                className="p-1 hover:bg-muted rounded-lg transition-colors"
+              >
+                <X className="w-3 h-3 text-muted-foreground" />
+              </button>
+            </div>
 
-              {/* Content */}
-              <div className="p-6 overflow-y-auto max-h-[calc(80vh-120px)]">
+            {/* Content */}
+            <div className="p-3 overflow-y-auto max-h-[calc(60vh-60px)]">
                 <StreamingResponse
                   response={streamingResponse}
                   type={streamingType}
@@ -616,8 +606,7 @@ export default function AIPromptSimplified() {
                   showControls={true}
                   autoStart={true}
                 />
-              </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

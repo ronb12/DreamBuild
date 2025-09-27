@@ -120,7 +120,7 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-10 flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div

@@ -600,7 +600,7 @@ Please implement this suggestion in my current project.`
             
             {/* Model Dropdown */}
             {showModelSelector && (
-              <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-border rounded-md shadow-lg z-50">
+              <div className="absolute top-full left-0 mt-1 w-64 bg-background border border-border rounded-md shadow-lg z-10">
                 <div className="p-2">
                   <div className="text-xs text-muted-foreground mb-2 px-2">AI Model</div>
                   <div className="max-h-60 overflow-y-auto">
@@ -660,7 +660,7 @@ Please implement this suggestion in my current project.`
               
               {/* Model Dropdown */}
               {showModelSelector && (
-                <div className="absolute top-full right-0 mt-1 w-72 bg-background border border-border rounded-lg shadow-lg z-50">
+                <div className="absolute top-full right-0 mt-1 w-72 bg-background border border-border rounded-lg shadow-lg z-10">
                   <div className="p-3 border-b border-border">
                     <h4 className="text-sm font-medium text-foreground">AI Model</h4>
                     <p className="text-xs text-muted-foreground mt-0.5">Choose the AI model for code generation</p>
@@ -988,7 +988,7 @@ Please implement this suggestion in my current project.`
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10"
             onClick={() => setShowAISettings(false)}
           >
             <motion.div

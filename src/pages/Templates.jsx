@@ -1040,7 +1040,7 @@ export default App`
             padding: '1rem',
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
             backdropFilter: 'blur(4px)',
-            zIndex: 9999,
+            zIndex: 10,
             visibility: 'visible',
             opacity: 1,
             pointerEvents: 'auto'

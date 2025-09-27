@@ -55,7 +55,7 @@ const WebSearchPanel = ({ isOpen, onClose, searchResults, prompt }) => {
         initial={{ opacity: 0, y: 300 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 300 }}
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-xl z-50 max-h-[70vh] flex flex-col"
+        className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-xl z-10 max-h-[70vh] flex flex-col"
       >
         {/* Header */}
         <div className="p-4 border-b border-gray-200 bg-gray-50">

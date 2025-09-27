@@ -219,7 +219,7 @@ Type "help" for available commands`
       className="h-full flex flex-col bg-gray-900 text-green-400 font-mono"
     >
       {/* Debug indicator */}
-      <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs z-50">
+      <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs z-5">
         TERMINAL ACTIVE
       </div>
       {/* Terminal Header */}

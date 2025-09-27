@@ -637,7 +637,7 @@ export default function AIPromptCursorStyle() {
 
       {/* Context Usage Modal */}
       {showContextUsage && (
-        <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-50 min-w-80">
+        <div className="absolute bottom-20 left-4 bg-background border border-border rounded-lg shadow-lg p-4 z-10 min-w-80">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-foreground">Context Usage</h3>
             <button
@@ -704,7 +704,7 @@ export default function AIPromptCursorStyle() {
 
       {/* Context Mode Selector Modal */}
       {showContextModeSelector && (
-        <div className="absolute bottom-20 right-4 bg-background border border-border rounded-lg shadow-lg p-4 z-50 min-w-72">
+        <div className="absolute bottom-20 right-4 bg-background border border-border rounded-lg shadow-lg p-4 z-10 min-w-72">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-foreground">Context Mode</h3>
             <button
@@ -807,7 +807,7 @@ export default function AIPromptCursorStyle() {
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 z-40" 
+            className="fixed inset-0 z-5" 
             onClick={(e) => {
               // Only close if clicking on the backdrop itself, not on child elements
               if (e.target === e.currentTarget) {
@@ -818,7 +818,7 @@ export default function AIPromptCursorStyle() {
           
           {/* Compact Dropdown Container */}
           <div 
-            className="fixed bottom-16 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl w-72 z-50"
+            className="fixed bottom-16 left-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl w-72 z-10"
             style={{ height: '300px', display: 'flex', flexDirection: 'column' }}
             onClick={(e) => e.stopPropagation()}
           >

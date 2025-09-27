@@ -286,7 +286,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-10 flex items-center justify-center p-4"
             onClick={() => setShowModal(false)}
           >
             <motion.div
@@ -311,7 +311,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
               {/* Scrollable content */}
               <div className="flex-1 overflow-hidden relative">
                 {/* Scroll progress bar */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-30">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 z-5">
                   <div 
                     className="h-full bg-primary transition-all duration-200"
                     style={{ width: `${scrollProgress * 100}%` }}
@@ -320,7 +320,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
                 
                 {/* Scroll to top indicator */}
                 {showScrollTop && (
-                  <div className="absolute top-2 left-0 right-0 bg-gradient-to-b from-card via-card/90 to-transparent p-2 z-20 rounded-t-xl">
+                  <div className="absolute top-2 left-0 right-0 bg-gradient-to-b from-card via-card/90 to-transparent p-2 z-5 rounded-t-xl">
                     <button
                       onClick={scrollToTop}
                       className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card/80 backdrop-blur-sm rounded-lg py-2 border border-border/50"
@@ -344,7 +344,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
                 >
                   {/* Scroll indicator overlay */}
                   {showScrollBottom && (
-                    <div className="absolute bottom-4 right-4 bg-primary/20 backdrop-blur-sm rounded-full p-2 z-20 shadow-lg border border-primary/30">
+                    <div className="absolute bottom-4 right-4 bg-primary/20 backdrop-blur-sm rounded-full p-2 z-5 shadow-lg border border-primary/30">
                       <ChevronDown className="h-4 w-4 text-primary animate-bounce" />
                     </div>
                   )}
@@ -393,7 +393,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
                 
                 {/* Scroll to bottom indicator */}
                 {showScrollBottom && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card via-card/90 to-transparent p-2 z-20 rounded-b-xl">
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-card via-card/90 to-transparent p-2 z-5 rounded-b-xl">
                     <button
                       onClick={scrollToBottom}
                       className="w-full flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors bg-card/80 backdrop-blur-sm rounded-lg py-2 border border-border/50"
@@ -405,7 +405,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
                 )}
                 
                 {/* Floating scroll buttons */}
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 z-20">
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col gap-2 z-5">
                   {showScrollTop && (
                     <button
                       onClick={scrollToTop}

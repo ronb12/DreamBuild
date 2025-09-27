@@ -108,7 +108,7 @@ const RecommendationPanel = ({ isOpen, onClose }) => {
         initial={{ opacity: 0, x: 300 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 300 }}
-        className="fixed right-0 top-0 h-full w-96 bg-white border-l border-gray-200 shadow-xl z-50 flex flex-col"
+        className="fixed right-0 top-0 h-full w-96 bg-white border-l border-gray-200 shadow-xl z-10 flex flex-col"
       >
         {/* Header */}
         <div className="p-4 border-b border-gray-200 bg-gray-50">

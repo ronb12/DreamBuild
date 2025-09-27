@@ -284,7 +284,7 @@ const MultiWindowManager = () => {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
-        className="absolute top-12 right-4 bg-card border border-border rounded-lg shadow-xl z-50 min-w-64"
+        className="absolute top-12 right-4 bg-card border border-border rounded-lg shadow-xl z-10 min-w-64"
       >
         <div className="p-2">
           <div className="text-xs font-semibold text-muted-foreground px-2 py-1 mb-2">

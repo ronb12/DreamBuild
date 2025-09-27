@@ -278,13 +278,13 @@ const Preview = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={`h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden ${
-        isFullscreen ? 'fixed inset-0 z-50 rounded-none' : ''
+        isFullscreen ? 'fixed inset-0 z-10 rounded-none' : ''
       }`}
     >
       {/* Preview Header - Two Row Layout */}
       <div className="border-b border-border bg-muted/50 relative">
         {/* Status Indicator - Repositioned */}
-        <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded text-xs z-10 shadow-sm">
+        <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded text-xs z-5 shadow-sm">
           {deployedApp ? 'DEPLOYED' : 'READY'}
         </div>
         

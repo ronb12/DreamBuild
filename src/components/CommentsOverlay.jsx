@@ -77,7 +77,7 @@ const CommentsOverlay = ({ editorRef, fileId }) => {
           background-color: #F59E0B;
           border-radius: 50%;
           cursor: pointer;
-          z-index: 1000;
+          z-index: 10;
           border: 2px solid white;
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         `
@@ -96,7 +96,7 @@ const CommentsOverlay = ({ editorRef, fileId }) => {
     <div ref={overlayRef} className="comments-overlay">
       {/* Add Comment Modal */}
       {showAddComment && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">Add Comment</h3>

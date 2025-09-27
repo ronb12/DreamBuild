@@ -664,7 +664,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10"
             onClick={() => setShowNewFileDialog(false)}
           >
             <motion.div
@@ -729,7 +729,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10"
             onClick={() => setShowProjectDialog(false)}
           >
             <motion.div
@@ -859,7 +859,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10"
             onClick={() => setShowDeployDialog(false)}
           >
             <motion.div
@@ -984,7 +984,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             ref={contextMenuRef}
-            className="fixed z-50 bg-card border border-border rounded-lg shadow-lg py-1 min-w-[160px]"
+            className="fixed z-10 bg-card border border-border rounded-lg shadow-lg py-1 min-w-[160px]"
             style={{
               left: contextMenu.x,
               top: contextMenu.y,

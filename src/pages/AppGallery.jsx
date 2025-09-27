@@ -136,7 +136,7 @@ const AppGallery = () => {
       if (publicApps.length === 0) {
         console.log('⚠️ No public apps found in Firebase')
         const debugDiv = document.createElement('div')
-        debugDiv.className = 'fixed top-20 left-4 bg-yellow-500 text-white px-4 py-2 rounded shadow-lg z-50'
+        debugDiv.className = 'fixed top-20 left-4 bg-yellow-500 text-white px-4 py-2 rounded shadow-lg z-10'
         debugDiv.textContent = 'No apps found in Firebase'
         debugDiv.id = 'no-apps-debug'
         document.body.appendChild(debugDiv)

@@ -59,7 +59,7 @@ const CursorTracker = ({ editorRef, fileId }) => {
       width: 2px;
       height: ${lineHeight}px;
       background-color: ${getCursorColor(cursor.userId)};
-      z-index: 1000;
+      z-index: 10;
       pointer-events: none;
       animation: blink 1s infinite;
     `

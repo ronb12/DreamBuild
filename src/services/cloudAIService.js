@@ -148,8 +148,13 @@ class CloudAIService {
       lowerPrompt.includes(keyword)
     )
     
-    // If it has general keywords but no code keywords, it's likely a general question
-    if (hasGeneralKeywords && !hasCodeKeywords) {
+    // If it has code keywords, it's definitely a code generation request
+    if (hasCodeKeywords) {
+      return false
+    }
+    
+    // If it has general keywords, it's likely a general question
+    if (hasGeneralKeywords) {
       return true
     }
     

@@ -825,7 +825,7 @@ input:hover, textarea:hover, select:hover {
   justify-content: center !important;
   background-color: rgba(0, 0, 0, 0.8) !important;
   backdrop-filter: blur(4px) !important;
-  z-index: 9999 !important;
+  z-index: 10 !important;
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;

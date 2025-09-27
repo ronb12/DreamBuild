@@ -1262,7 +1262,9 @@ Generate practical, working applications that users can immediately use.`
 
   // Check if the prompt is a general question (not a code generation request)
   isGeneralQuestion(prompt) {
-    const lowerPrompt = prompt.toLowerCase()
+    // Ensure prompt is a string
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase()
     
     // General question indicators
     const generalQuestionKeywords = [
@@ -1361,7 +1363,9 @@ Generate practical, working applications that users can immediately use.`
 
   // Create conversational response for general questions
   createConversationalResponse(prompt, context = {}) {
-    const lowerPrompt = prompt.toLowerCase()
+    // Ensure prompt is a string
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase()
     
     // Weather questions
     if (lowerPrompt.includes('weather') || lowerPrompt.includes('temperature') || lowerPrompt.includes('forecast')) {
@@ -1438,20 +1442,23 @@ Generate practical, working applications that users can immediately use.`
   createFallbackResponse(prompt, context = {}) {
     console.log('🔄 Creating fallback response for prompt:', prompt)
     
+    // Ensure prompt is a string
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    
     // Check if this is a general question (not a code generation request)
-    if (this.isGeneralQuestion(prompt)) {
+    if (this.isGeneralQuestion(promptString)) {
       console.log('❓ General question detected, providing conversational response...')
-      return this.createConversationalResponse(prompt, context)
+      return this.createConversationalResponse(promptString, context)
     }
     
     // For code generation, return a proper response structure
-    const fallbackCode = this.generateFallbackCode(prompt, context)
+    const fallbackCode = this.generateFallbackCode(promptString, context)
     
     return {
       type: 'code_generation',
       files: fallbackCode,
-      message: `I've generated a ${this.extractAppType(prompt)} application based on your request. This is a working template that you can customize further.`,
-      prompt: prompt,
+      message: `I've generated a ${this.extractAppType(promptString)} application based on your request. This is a working template that you can customize further.`,
+      prompt: promptString,
       generatedAt: new Date().toISOString(),
       context: context
     }
@@ -1460,8 +1467,11 @@ Generate practical, working applications that users can immediately use.`
   // Generate fallback code based on prompt
   generateFallbackCode(prompt, context = {}) {
     
+    // Ensure prompt is a string
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    
     // Analyze prompt to determine template
-    const lowerPrompt = prompt.toLowerCase()
+    const lowerPrompt = promptString.toLowerCase()
     
     if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('analytics')) {
       return this.generateTemplateById('react-dashboard', context)
@@ -1501,7 +1511,7 @@ Generate practical, working applications that users can immediately use.`
 <body>
     <div class="header">
         <h1>Welcome to Your DreamBuild App!</h1>
-        <p>Generated based on: "${prompt}"</p>
+        <p>Generated based on: "${promptString}"</p>
     </div>
     
     <div class="content">
@@ -1568,7 +1578,9 @@ Generate practical, working applications that users can immediately use.`
   
   // Extract app type from prompt
   extractAppType(prompt) {
-    const lowerPrompt = prompt.toLowerCase()
+    // Ensure prompt is a string
+    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    const lowerPrompt = promptString.toLowerCase()
     if (lowerPrompt.includes('todo')) return 'todo list'
     if (lowerPrompt.includes('calculator')) return 'calculator'
     if (lowerPrompt.includes('dashboard')) return 'dashboard'

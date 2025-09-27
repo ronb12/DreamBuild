@@ -113,17 +113,21 @@ class CloudAIService {
       'where is', 'where are', 'where was', 'where will', 'where does', 'where do',
       'why is', 'why are', 'why was', 'why will', 'why does', 'why do',
       'who is', 'who are', 'who was', 'who will', 'who does', 'who do',
-      'weather', 'temperature', 'forecast', 'climate',
-      'news', 'current events', 'today', 'recent',
-      'cook', 'recipe', 'food', 'ingredients',
-      'travel', 'vacation', 'destination', 'hotel',
-      'health', 'medicine', 'exercise', 'fitness',
-      'education', 'learn', 'study', 'school',
-      'science', 'research', 'study', 'theory',
-      'history', 'historical', 'past', 'ancient',
-      'business', 'finance', 'economy', 'market',
-      'sports', 'game', 'team', 'player',
-      'entertainment', 'movie', 'music', 'book'
+      'weather', 'temperature', 'forecast', 'climate', 'rain', 'sunny', 'cloudy',
+      'news', 'current events', 'today', 'recent', 'latest', 'breaking',
+      'cook', 'recipe', 'food', 'ingredients', 'cooking', 'bake', 'fry', 'boil',
+      'travel', 'vacation', 'destination', 'hotel', 'flight', 'trip', 'visit',
+      'health', 'medicine', 'exercise', 'fitness', 'doctor', 'hospital', 'sick',
+      'education', 'learn', 'study', 'school', 'university', 'college', 'course',
+      'science', 'research', 'study', 'theory', 'experiment', 'discovery',
+      'history', 'historical', 'past', 'ancient', 'century', 'war', 'battle',
+      'business', 'finance', 'economy', 'market', 'stock', 'investment', 'money',
+      'sports', 'game', 'team', 'player', 'football', 'basketball', 'soccer',
+      'entertainment', 'movie', 'music', 'book', 'film', 'song', 'album',
+      'explain', 'tell me about', 'describe', 'define', 'meaning', 'definition',
+      'help me understand', 'can you explain', 'what does it mean', 'how does it work',
+      'is it', 'are you', 'do you', 'can you', 'will you', 'would you',
+      'should i', 'could i', 'would i', 'might i', 'may i'
     ]
     
     // Code generation indicators
@@ -161,7 +165,35 @@ class CloudAIService {
     // If it starts with question words, it's likely a general question
     if (lowerPrompt.startsWith('what') || lowerPrompt.startsWith('how') || 
         lowerPrompt.startsWith('when') || lowerPrompt.startsWith('where') || 
-        lowerPrompt.startsWith('why') || lowerPrompt.startsWith('who')) {
+        lowerPrompt.startsWith('why') || lowerPrompt.startsWith('who') ||
+        lowerPrompt.startsWith('is') || lowerPrompt.startsWith('are') ||
+        lowerPrompt.startsWith('do') || lowerPrompt.startsWith('does') ||
+        lowerPrompt.startsWith('can') || lowerPrompt.startsWith('will') ||
+        lowerPrompt.startsWith('would') || lowerPrompt.startsWith('should') ||
+        lowerPrompt.startsWith('could') || lowerPrompt.startsWith('explain') ||
+        lowerPrompt.startsWith('tell') || lowerPrompt.startsWith('describe') ||
+        lowerPrompt.startsWith('define')) {
+      return true
+    }
+    
+    // If it ends with a question mark, it's likely a general question
+    if (lowerPrompt.endsWith('?')) {
+      return true
+    }
+    
+    // If it contains question patterns, it's likely a general question
+    if (lowerPrompt.includes('?') && (
+        lowerPrompt.includes('what') || lowerPrompt.includes('how') ||
+        lowerPrompt.includes('when') || lowerPrompt.includes('where') ||
+        lowerPrompt.includes('why') || lowerPrompt.includes('who') ||
+        lowerPrompt.includes('is') || lowerPrompt.includes('are') ||
+        lowerPrompt.includes('do') || lowerPrompt.includes('does') ||
+        lowerPrompt.includes('can') || lowerPrompt.includes('will') ||
+        lowerPrompt.includes('would') || lowerPrompt.includes('should') ||
+        lowerPrompt.includes('could') || lowerPrompt.includes('explain') ||
+        lowerPrompt.includes('tell') || lowerPrompt.includes('describe') ||
+        lowerPrompt.includes('define')
+      )) {
       return true
     }
     

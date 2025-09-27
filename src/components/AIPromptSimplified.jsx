@@ -235,8 +235,8 @@ export default function AIPromptSimplified() {
         responseLanguage = 'javascript'
       }
 
-      // Start streaming automatically (only for code generation)
-      if (responseText && response.type !== 'conversational_response') {
+      // Start streaming automatically (only for code generation, not general questions)
+      if (responseText && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0) {
         setStreamingResponse(responseText)
         setStreamingType(responseType)
         setStreamingLanguage(responseLanguage)
@@ -264,7 +264,7 @@ export default function AIPromptSimplified() {
       setAiRecommendations(recommendations)
 
       // Store app explanation if available (only for code generation)
-      if (response.explanation && response.type !== 'conversational_response') {
+      if (response.explanation && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0) {
         setAppExplanation(response.explanation)
         setShowExplanation(true)
       }
@@ -413,7 +413,7 @@ export default function AIPromptSimplified() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm z-30 flex items-center justify-center p-4"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setShowExplanation(false)}
           >
             <motion.div
@@ -546,7 +546,7 @@ export default function AIPromptSimplified() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="absolute top-0 left-0 right-0 bottom-0 bg-card/95 backdrop-blur-sm z-20 rounded-lg border border-border shadow-lg"
+            className="absolute top-0 left-0 right-0 bottom-0 bg-card/95 backdrop-blur-sm z-40 rounded-lg border border-border shadow-lg"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-border">

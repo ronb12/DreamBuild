@@ -1146,7 +1146,7 @@ export const styles = StyleSheet.create({
       // In production, skip local AI and use fallback directly
       if (this.isProduction && !this.isLocalhost) {
         console.log('🌐 Production environment - using template fallback')
-        return this.createFallbackResponse(prompt, context)
+        return await this.createFallbackResponse(prompt, context)
       }
       
       // Try to use local AI if available
@@ -1154,11 +1154,11 @@ export const styles = StyleSheet.create({
         return await this.generateWithLocalAI(prompt, context)
       } else {
         console.log('⚠️ Local AI not available, using template fallback')
-        return this.createFallbackResponse(prompt, context)
+        return await this.createFallbackResponse(prompt, context)
       }
     } catch (error) {
       console.error('❌ Code generation failed:', error)
-      return this.createFallbackResponse(prompt, context)
+      return await this.createFallbackResponse(prompt, context)
     }
   }
 
@@ -1197,7 +1197,7 @@ export const styles = StyleSheet.create({
 
       if (response.data && response.data.message && response.data.message.content) {
         const content = response.data.message.content
-        return this.parseAIResponse(content, prompt)
+        return await this.parseAIResponse(content, prompt)
       } else {
         throw new Error('Invalid response from local AI')
       }
@@ -1241,7 +1241,7 @@ Generate practical, working applications that users can immediately use.`
   }
 
   // Parse AI response
-  parseAIResponse(content, originalPrompt) {
+  async parseAIResponse(content, originalPrompt) {
     try {
       // Try to extract JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/)
@@ -1253,10 +1253,10 @@ Generate practical, working applications that users can immediately use.`
       }
       
       // If no valid JSON, create fallback response
-      return this.createFallbackResponse(originalPrompt, {})
+      return await this.createFallbackResponse(originalPrompt, {})
     } catch (error) {
       console.error('❌ Failed to parse AI response:', error)
-      return this.createFallbackResponse(originalPrompt, {})
+      return await this.createFallbackResponse(originalPrompt, {})
     }
   }
 
@@ -1445,7 +1445,7 @@ Generate practical, working applications that users can immediately use.`
   }
 
   // Create fallback response
-  createFallbackResponse(prompt, context = {}) {
+  async createFallbackResponse(prompt, context = {}) {
     console.log('🔄 Creating fallback response for prompt:', prompt)
     
     // Ensure prompt is a string and handle null/undefined
@@ -1461,7 +1461,7 @@ Generate practical, working applications that users can immediately use.`
     }
     
     // For code generation, return a proper response structure
-    const fallbackCode = this.generateFallbackCode(promptString, context)
+    const fallbackCode = await this.generateFallbackCode(promptString, context)
     
     return {
       type: 'code_generation',
@@ -1474,7 +1474,7 @@ Generate practical, working applications that users can immediately use.`
   }
   
   // Generate fallback code based on prompt
-  generateFallbackCode(prompt, context = {}) {
+  async generateFallbackCode(prompt, context = {}) {
     
     // Ensure prompt is a string and handle null/undefined
     if (prompt === null || prompt === undefined) {
@@ -1486,11 +1486,11 @@ Generate practical, working applications that users can immediately use.`
     const lowerPrompt = promptString.toLowerCase()
     
     if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('analytics')) {
-      return this.generateTemplateById('react-dashboard', context)
+      return await this.generateTemplateById('react-dashboard', context)
     } else if (lowerPrompt.includes('todo') || lowerPrompt.includes('task')) {
-      return this.generateTemplateById('todo-app', context)
+      return await this.generateTemplateById('todo-app', context)
     } else if (lowerPrompt.includes('ecommerce') || lowerPrompt.includes('store') || lowerPrompt.includes('shop')) {
-      return this.generateTemplateById('ecommerce-store', context)
+      return await this.generateTemplateById('ecommerce-store', context)
     } else {
       // Default web app
       return {

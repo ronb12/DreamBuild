@@ -3029,6 +3029,12 @@ ${themedCSS}`
   async createFallbackResponse(prompt, context = {}) {
     console.log('🔄 Creating AI-generated fallback response for prompt:', prompt)
     
+    // Check if this is a general question (not a code generation request)
+    if (this.isGeneralQuestion(prompt)) {
+      console.log('❓ General question detected, providing conversational response...')
+      return this.createConversationalResponse(prompt, context)
+    }
+    
     try {
       // Try to generate code using AI with a simpler prompt
       const simplePrompt = `Create a complete web application based on this request: ${prompt}. 

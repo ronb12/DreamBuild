@@ -71,6 +71,20 @@ class SimpleAIService {
     this.usageStats.totalRequests++
     
     try {
+      // Check if this is a general question first
+      if (localAIService.isGeneralQuestion(prompt)) {
+        console.log('❓ General question detected, using local AI for conversational response...')
+        const response = await localAIService.generateCode(prompt, context)
+        
+        // Track successful generation
+        const duration = Date.now() - startTime
+        this.usageStats.successfulRequests++
+        this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
+        
+        console.log('✅ Conversational response generated successfully!')
+        return response
+      }
+      
       console.log('🚀 Generating code with Local AI...')
       
       // Try local AI first (primary - no API keys required)

@@ -259,9 +259,13 @@ export default function AIPromptSimplified() {
 
       setMessages(prev => [...prev, aiMessage])
 
-      // Generate feature recommendations for continuous conversation
-      const recommendations = await conversationService.generateFeatureRecommendations()
-      setAiRecommendations(recommendations)
+      // Generate feature recommendations only for code generation (not general questions)
+      if (response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0 && responseText.length > 100) {
+        const recommendations = await conversationService.generateFeatureRecommendations()
+        setAiRecommendations(recommendations)
+      } else {
+        setAiRecommendations([]) // Clear recommendations for general questions
+      }
 
       // Store app explanation if available (only for code generation)
       if (response.explanation && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0 && responseText.length > 100) {

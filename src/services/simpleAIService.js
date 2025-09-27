@@ -97,9 +97,42 @@ class SimpleAIService {
       console.error('❌ AI generation failed:', error)
       this.usageStats.failedRequests++
       
-      // Fallback to local AI template generation
+      // Fallback to local AI template generation only
       console.log('🔄 Falling back to local AI template generation...')
-      return localAIService.createFallbackResponse(prompt, context)
+      try {
+        return await localAIService.createFallbackResponse(prompt, context)
+      } catch (fallbackError) {
+        console.error('❌ Local AI fallback also failed:', fallbackError)
+        // Return a basic fallback response
+        return {
+          type: 'code_generation',
+          files: {
+            'index.html': `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamBuild App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to DreamBuild</h1>
+        <p>Your app is being generated. Please try again in a moment.</p>
+    </div>
+</body>
+</html>`
+          },
+          message: 'Generated a basic web application. Please try your request again.',
+          prompt: prompt,
+          generatedAt: new Date().toISOString(),
+          context: context
+        }
+      }
     }
   }
 

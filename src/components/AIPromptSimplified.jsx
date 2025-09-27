@@ -245,7 +245,7 @@ export default function AIPromptSimplified() {
       }
 
       // Save AI response to conversation
-      await conversationService.addMessage(responseMessage, null, 'assistant')
+      await conversationService.addMessage(responseMessage, response, 'assistant')
 
       const aiMessage = {
         id: Date.now() + 1,

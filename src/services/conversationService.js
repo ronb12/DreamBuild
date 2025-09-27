@@ -95,6 +95,13 @@ class ConversationService {
   async generateFeatureRecommendations() {
     if (!this.currentConversation) return []
 
+    // Check if the last message was a general question (not code generation)
+    const lastMessage = this.currentConversation.messages[this.currentConversation.messages.length - 1]
+    if (lastMessage && lastMessage.aiResponse && lastMessage.aiResponse.type === 'conversational_response') {
+      console.log('❓ Last message was conversational, skipping feature recommendations')
+      return []
+    }
+
     const context = this.getConversationContext()
     const currentFeatures = context.currentFeatures || []
     const appType = context.appType || 'web'

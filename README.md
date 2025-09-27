@@ -22,7 +22,7 @@ DreamBuild is the **first AI coding platform** to combine the best of Cursor and
 - ✅ **One-click Deployment** (5 hosting providers)
 - ✅ **VS Code Extension** (Native IDE integration)
 - ✅ **Firebase Memory System** (Unlimited cloud storage)
-- ✅ **Web Search Integration** (Real-time knowledge)
+- ✅ **Live Web Search Integration** (Real-time knowledge for ANY question)
 - ✅ **Component-Based Generation** (Advanced architecture)
 - ✅ **Progressive Enhancement** (6-phase development)
 - ✅ **Interactive Education Platform** (Comprehensive learning system)
@@ -45,6 +45,7 @@ DreamBuild is the **first AI coding platform** to combine the best of Cursor and
 | **Deployment Pipeline** | ✅ Advanced | ❌ None | ✅ Advanced |
 | **VS Code Integration** | ✅ Native | ✅ Native | ❌ None |
 | **Memory System** | ✅ Firebase | ✅ Built-in | ✅ Built-in |
+| **Live Web Search** | ✅ **ANY Question** | ❌ Limited | ❌ Limited |
 | **Component Generation** | ✅ Advanced | ✅ Basic | ✅ Advanced |
 | **Template Database** | ✅ Firebase | ❌ None | ✅ Built-in |
 | **Progressive Enhancement** | ✅ 6-phase | ❌ None | ✅ Basic |
@@ -195,12 +196,14 @@ npm run firebase:deploy:all
 - **Search Capability**: Search through conversation history
 - **Export/Import**: Backup and restore conversation memory
 
-### **7. Web Search Integration**
-- **Real-time Search**: Search web for current best practices
-- **25+ Technology Categories**: React, Vue, Angular, Node.js, etc.
+### **7. Live Web Search Integration**
+- **Real-time Search**: Search web for ANY question (cooking, geography, health, etc.)
+- **General Knowledge**: Cooking, travel, health, education, science, history, etc.
+- **Technology Categories**: React, Vue, Angular, Node.js, etc.
 - **Industry-Specific**: Healthcare, Fintech, Education, etc.
-- **Code Examples**: Real code examples for each technology
-- **Best Practices**: Current 2024 best practices
+- **Live Information**: Current information from live web sources
+- **Best Practices**: Current 2024 best practices and standards
+- **Not Limited**: Unlike ChatGPT's training data cutoff, always current
 
 ### **8. Interactive Education Platform**
 - **Comprehensive Learning System**: Complete coding education platform

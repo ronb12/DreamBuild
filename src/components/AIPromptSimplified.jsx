@@ -236,7 +236,7 @@ export default function AIPromptSimplified() {
       }
 
       // Start streaming automatically (only for code generation, not general questions)
-      if (responseText && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0) {
+      if (responseText && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0 && responseText.length > 100) {
         setStreamingResponse(responseText)
         setStreamingType(responseType)
         setStreamingLanguage(responseLanguage)
@@ -264,13 +264,13 @@ export default function AIPromptSimplified() {
       setAiRecommendations(recommendations)
 
       // Store app explanation if available (only for code generation)
-      if (response.explanation && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0) {
+      if (response.explanation && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0 && responseText.length > 100) {
         setAppExplanation(response.explanation)
         setShowExplanation(true)
       }
 
       // Update project files if new files were generated (only for code generation)
-      if (response.files && Object.keys(response.files).length > 0 && response.type !== 'conversational_response') {
+      if (response.files && Object.keys(response.files).length > 0 && response.type !== 'conversational_response' && responseText.length > 100) {
         console.log('📁 Updating project files:', Object.keys(response.files))
         Object.entries(response.files).forEach(([filename, content]) => {
           console.log(`📄 Updating file ${filename} with ${content.length} characters`)

@@ -16,35 +16,33 @@ const AppHost = () => {
 
   const loadApp = async (id) => {
     try {
+      console.log('🔍 AppHost: Loading app with ID:', id)
       setIsLoading(true)
       
       // Get app data from Firebase
       const app = await firebaseAppService.getApp(id)
+      console.log('🔍 AppHost: Retrieved app data:', app)
       
       if (app) {
-        setAppData(app)
-        
         // Generate HTML content
         const htmlContent = firebaseAppService.generateAppHTML(app)
+        console.log('🔍 AppHost: Generated HTML content length:', htmlContent.length)
         
         // Increment view count
         await firebaseAppService.incrementViews(id)
         
-        // Create a blob URL for the HTML content
-        const blob = new Blob([htmlContent], { type: 'text/html' })
-        const url = URL.createObjectURL(blob)
-        
-        // Update the page content
-        document.title = app.name
-        document.body.innerHTML = htmlContent
+        // Set the app data for rendering
+        setAppData({ ...app, htmlContent })
         
         setIsLoading(false)
+        console.log('✅ AppHost: App loaded successfully')
       } else {
+        console.log('❌ AppHost: App not found')
         setError('App not found')
         setIsLoading(false)
       }
     } catch (err) {
-      console.error('Error loading app:', err)
+      console.error('❌ AppHost: Error loading app:', err)
       setError('Failed to load app')
       setIsLoading(false)
     }
@@ -80,8 +78,17 @@ const AppHost = () => {
     )
   }
 
-  // The app content will be injected by the useEffect
-  return null
+  // Render the app content
+  return (
+    <div className="min-h-screen">
+      {appData && (
+        <div 
+          dangerouslySetInnerHTML={{ __html: appData.htmlContent }}
+          className="w-full h-full"
+        />
+      )}
+    </div>
+  )
 }
 
 export default AppHost

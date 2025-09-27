@@ -135,6 +135,7 @@ class FirebaseAppService {
       if (appDoc.exists()) {
         const appData = { id: appDoc.id, ...appDoc.data() }
         console.log('🔍 FirebaseAppService: App found:', appData)
+        console.log('🔍 FirebaseAppService: App files:', Object.keys(appData.files || {}))
         return appData
       }
       console.log('🔍 FirebaseAppService: App not found in Firestore')

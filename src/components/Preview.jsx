@@ -441,7 +441,7 @@ const Preview = () => {
                   ''
                 }`}
                 title="DreamBuild App Preview"
-                sandbox="allow-scripts allow-forms allow-popups allow-same-origin"
+                sandbox="allow-scripts allow-forms allow-popups"
                 onLoad={() => {
                   setIsLoading(false)
                   console.log('🎮 Iframe loaded successfully')

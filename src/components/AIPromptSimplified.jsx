@@ -371,28 +371,8 @@ export default function AIPromptSimplified() {
         />
       </div>
 
-      {/* Feature Recommendations */}
-      {aiRecommendations.length > 0 && (
-        <div className="p-4 border-b border-border/50">
-          <h3 className="text-sm font-medium text-muted-foreground mb-3">💡 Suggested Features</h3>
-          <div className="space-y-2">
-            {aiRecommendations.slice(0, 3).map((rec, index) => (
-              <button
-                key={index}
-                onClick={() => handleCorrection(`Add ${rec.name.toLowerCase()}: ${rec.description}`)}
-                className="w-full text-left p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-border/50"
-              >
-                <div className="font-medium text-sm">{rec.name}</div>
-                <div className="text-xs text-muted-foreground mt-1">{rec.description}</div>
-                <div className="text-xs text-primary mt-1">Click to add this feature</div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Chat Interface */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative">
         <AIChatInterface
           messages={messages}
           prompt={prompt}
@@ -404,6 +384,28 @@ export default function AIPromptSimplified() {
           appExplanation={appExplanation}
           setShowExplanation={setShowExplanation}
         />
+        
+        {/* Feature Recommendations - Overlay */}
+        {aiRecommendations.length > 0 && (
+          <div className="absolute bottom-20 left-4 right-4 z-10">
+            <div className="bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">💡 Suggested Features</h3>
+              <div className="space-y-2">
+                {aiRecommendations.slice(0, 3).map((rec, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleCorrection(`Add ${rec.name.toLowerCase()}: ${rec.description}`)}
+                    className="w-full text-left p-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-border/50 text-xs"
+                  >
+                    <div className="font-medium">{rec.name}</div>
+                    <div className="text-muted-foreground mt-1">{rec.description}</div>
+                    <div className="text-primary mt-1">Click to add this feature</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* App Explanation Modal */}

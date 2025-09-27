@@ -260,21 +260,37 @@ export default function AIPromptSimplified() {
       setMessages(prev => [...prev, aiMessage])
 
       // Generate feature recommendations only for code generation (not general questions)
-      if (response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0 && responseText.length > 100) {
+      // Only show suggestions when AI actually generates code files
+      if (response.type !== 'conversational_response' && 
+          response.files && 
+          Object.keys(response.files).length > 0 && 
+          responseText.length > 100 &&
+          !response.type?.includes('conversational')) {
         const recommendations = await conversationService.generateFeatureRecommendations()
         setAiRecommendations(recommendations)
       } else {
-        setAiRecommendations([]) // Clear recommendations for general questions
+        // Always clear recommendations for general questions and conversational responses
+        setAiRecommendations([])
+        console.log('🧹 Cleared suggested features - not a code generation request')
       }
 
       // Store app explanation if available (only for code generation)
-      if (response.explanation && response.type !== 'conversational_response' && response.files && Object.keys(response.files).length > 0 && responseText.length > 100) {
+      if (response.explanation && 
+          response.type !== 'conversational_response' && 
+          response.files && 
+          Object.keys(response.files).length > 0 && 
+          responseText.length > 100 &&
+          !response.type?.includes('conversational')) {
         setAppExplanation(response.explanation)
         setShowExplanation(true)
       }
 
       // Update project files if new files were generated (only for code generation)
-      if (response.files && Object.keys(response.files).length > 0 && response.type !== 'conversational_response' && responseText.length > 100) {
+      if (response.files && 
+          Object.keys(response.files).length > 0 && 
+          response.type !== 'conversational_response' && 
+          responseText.length > 100 &&
+          !response.type?.includes('conversational')) {
         console.log('📁 Updating project files:', Object.keys(response.files))
         Object.entries(response.files).forEach(([filename, content]) => {
           console.log(`📄 Updating file ${filename} with ${content.length} characters`)

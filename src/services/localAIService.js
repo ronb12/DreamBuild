@@ -1262,8 +1262,11 @@ Generate practical, working applications that users can immediately use.`
 
   // Check if the prompt is a general question (not a code generation request)
   isGeneralQuestion(prompt) {
-    // Ensure prompt is a string
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    // Ensure prompt is a string and handle null/undefined
+    if (prompt === null || prompt === undefined) {
+      return false
+    }
+    const promptString = typeof prompt === 'string' ? prompt : String(prompt)
     const lowerPrompt = promptString.toLowerCase()
     
     // General question indicators
@@ -1363,8 +1366,11 @@ Generate practical, working applications that users can immediately use.`
 
   // Create conversational response for general questions
   createConversationalResponse(prompt, context = {}) {
-    // Ensure prompt is a string
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    // Ensure prompt is a string and handle null/undefined
+    if (prompt === null || prompt === undefined) {
+      prompt = 'general question'
+    }
+    const promptString = typeof prompt === 'string' ? prompt : String(prompt)
     const lowerPrompt = promptString.toLowerCase()
     
     // Weather questions
@@ -1442,8 +1448,11 @@ Generate practical, working applications that users can immediately use.`
   createFallbackResponse(prompt, context = {}) {
     console.log('🔄 Creating fallback response for prompt:', prompt)
     
-    // Ensure prompt is a string
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    // Ensure prompt is a string and handle null/undefined
+    if (prompt === null || prompt === undefined) {
+      prompt = 'web application'
+    }
+    const promptString = typeof prompt === 'string' ? prompt : String(prompt)
     
     // Check if this is a general question (not a code generation request)
     if (this.isGeneralQuestion(promptString)) {
@@ -1467,8 +1476,11 @@ Generate practical, working applications that users can immediately use.`
   // Generate fallback code based on prompt
   generateFallbackCode(prompt, context = {}) {
     
-    // Ensure prompt is a string
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    // Ensure prompt is a string and handle null/undefined
+    if (prompt === null || prompt === undefined) {
+      prompt = 'web application'
+    }
+    const promptString = typeof prompt === 'string' ? prompt : String(prompt)
     
     // Analyze prompt to determine template
     const lowerPrompt = promptString.toLowerCase()
@@ -1578,8 +1590,11 @@ Generate practical, working applications that users can immediately use.`
   
   // Extract app type from prompt
   extractAppType(prompt) {
-    // Ensure prompt is a string
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
+    // Ensure prompt is a string and handle null/undefined
+    if (prompt === null || prompt === undefined) {
+      prompt = 'web application'
+    }
+    const promptString = typeof prompt === 'string' ? prompt : String(prompt)
     const lowerPrompt = promptString.toLowerCase()
     if (lowerPrompt.includes('todo')) return 'todo list'
     if (lowerPrompt.includes('calculator')) return 'calculator'

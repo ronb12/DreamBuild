@@ -10,7 +10,12 @@ import {
   Copy,
   ThumbsUp,
   ThumbsDown,
-  Sparkles
+  Sparkles,
+  Info,
+  X,
+  CheckCircle,
+  AlertTriangle,
+  AlertCircle
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import simpleAIService from '../services/simpleAIService'
@@ -34,6 +39,8 @@ export default function AIPromptSimplified() {
   const [aiRecommendations, setAiRecommendations] = useState([])
   const [showChatHistory, setShowChatHistory] = useState(false)
   const [showAIAgent, setShowAIAgent] = useState(false)
+  const [appExplanation, setAppExplanation] = useState(null)
+  const [showExplanation, setShowExplanation] = useState(false)
   
   // AI Model selection
   const [aiModel, setAIModel] = useState('auto')
@@ -63,6 +70,21 @@ export default function AIPromptSimplified() {
     
     if (newAppKeywords.some(keyword => lowerPrompt.includes(keyword))) {
       return false // This is a new app, not incremental
+    }
+    
+    // Check for bug fixes and corrections (should be incremental)
+    const bugFixKeywords = [
+      'fix', 'fix the', 'fix a', 'fix this', 'fix that',
+      'broken', 'not working', 'doesn\'t work', 'isn\'t working',
+      'error', 'bug', 'issue', 'problem',
+      'button', 'click', 'clicking', 'clicked',
+      'correction', 'correct', 'wrong', 'incorrect',
+      'update', 'change', 'modify', 'adjust',
+      'improve', 'enhance', 'better'
+    ]
+    
+    if (bugFixKeywords.some(keyword => lowerPrompt.includes(keyword))) {
+      return true // This is a bug fix or correction, should be incremental
     }
     
     // Then check for incremental keywords
@@ -147,8 +169,13 @@ export default function AIPromptSimplified() {
         responseMessage = response.message || 'No new features to add - these already exist in your app.'
         toast.info(responseMessage)
       } else {
-        responseMessage = response.message || 'Code generated successfully!'
-        toast.success(responseMessage)
+        // Enhanced response message with explanation summary
+        if (response.explanation && response.explanation.summary) {
+          responseMessage = `Code generated successfully! ${response.explanation.summary}`
+        } else {
+          responseMessage = response.message || 'Code generated successfully!'
+        }
+        toast.success('Code generated successfully!')
       }
 
       // Save AI response to conversation
@@ -169,6 +196,12 @@ export default function AIPromptSimplified() {
       // Generate feature recommendations for continuous conversation
       const recommendations = await conversationService.generateFeatureRecommendations()
       setAiRecommendations(recommendations)
+
+      // Store app explanation if available
+      if (response.explanation) {
+        setAppExplanation(response.explanation)
+        setShowExplanation(true)
+      }
 
       // Update project files if new files were generated
       if (response.files && Object.keys(response.files).length > 0) {
@@ -298,8 +331,143 @@ export default function AIPromptSimplified() {
           handleGenerate={handleGenerate}
           textareaRef={textareaRef}
           messagesEndRef={messagesEndRef}
+          appExplanation={appExplanation}
+          setShowExplanation={setShowExplanation}
         />
       </div>
+
+      {/* App Explanation Modal */}
+      <AnimatePresence>
+        {showExplanation && appExplanation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowExplanation(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-card border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
+                    <Info className="w-5 h-5 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-foreground">App Explanation</h2>
+                    <p className="text-sm text-muted-foreground">What I created for you</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowExplanation(false)}
+                  className="p-2 hover:bg-muted rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                {/* Summary */}
+                {appExplanation.summary && (
+                  <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+                    <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      Summary
+                    </h3>
+                    <p className="text-muted-foreground">{appExplanation.summary}</p>
+                  </div>
+                )}
+
+                {/* Sections */}
+                {appExplanation.sections && Object.entries(appExplanation.sections).map(([key, section]) => (
+                  <div key={key} className="mb-6">
+                    <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                      {key === 'overview' && <Info className="w-4 h-4 text-blue-500" />}
+                      {key === 'features' && <CheckCircle className="w-4 h-4 text-green-500" />}
+                      {key === 'technicalDetails' && <AlertCircle className="w-4 h-4 text-purple-500" />}
+                      {key === 'userExperience' && <Sparkles className="w-4 h-4 text-pink-500" />}
+                      {key === 'performance' && <AlertTriangle className="w-4 h-4 text-orange-500" />}
+                      {key === 'security' && <AlertCircle className="w-4 h-4 text-red-500" />}
+                      {section.title || key.charAt(0).toUpperCase() + key.slice(1)}
+                    </h3>
+                    
+                    {section.content && (
+                      <p className="text-muted-foreground mb-3">{section.content}</p>
+                    )}
+
+                    {section.details && (
+                      <ul className="space-y-2">
+                        {section.details.map((detail, index) => (
+                          <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0" />
+                            {typeof detail === 'string' ? detail : detail.message || detail}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {section.features && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                        {section.features.map((feature, index) => (
+                          <div key={index} className="p-3 bg-muted/30 rounded-lg border border-border">
+                            <h4 className="font-medium text-foreground mb-1">{feature.name}</h4>
+                            <p className="text-sm text-muted-foreground">{feature.description}</p>
+                            {feature.benefits && (
+                              <div className="mt-2">
+                                <p className="text-xs text-muted-foreground mb-1">Benefits:</p>
+                                <ul className="text-xs text-muted-foreground space-y-1">
+                                  {feature.benefits.map((benefit, idx) => (
+                                    <li key={idx} className="flex items-center gap-1">
+                                      <div className="w-1 h-1 bg-primary rounded-full" />
+                                      {benefit}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {/* Recommendations */}
+                {appExplanation.recommendations && appExplanation.recommendations.length > 0 && (
+                  <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                    <h3 className="font-semibold text-amber-800 dark:text-amber-200 mb-3 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" />
+                      Recommendations
+                    </h3>
+                    <div className="space-y-2">
+                      {appExplanation.recommendations.map((rec, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                            rec.priority === 'high' ? 'bg-red-500' : 
+                            rec.priority === 'medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                          }`} />
+                          <div>
+                            <p className="text-sm text-amber-800 dark:text-amber-200">
+                              <span className="font-medium">{rec.category}:</span> {rec.suggestion}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

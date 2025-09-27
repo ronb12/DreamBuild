@@ -1,574 +1,1220 @@
-// DreamBuild Cloud AI Service - Open Source AI Models via Cloud APIs
-// Uses Hugging Face Inference API for open source models
+import{a as k}from"./utils-vendor-ngrFHoWO.js";import{i as A,g as D,f as R,e as B,o as L,A as j,j as l,l as m,h as v,p as w,v as x,q as g,w as f,x as T,t as P}from"./firebase-HQh6JyMG.js";import{e as z,r as $,c as M,g as N}from"./index-By2zDFl_.js";class U{constructor(){this.baseURL="https://api.github.com",this.trendingRepos=[],this.templateCache=new Map,this.cacheExpiry=30*60*1e3,this.isLoading=!1,console.log("🔗 GitHub Template Service initialized")}async getTrendingTemplates(e="javascript",r="stars",t="desc"){if(this.isLoading)return this.trendingRepos;this.isLoading=!0;try{console.log("📡 Fetching trending GitHub templates...");const a=["stars:>100 topic:todo-app","stars:>100 topic:calculator","stars:>100 topic:weather-app","stars:>100 topic:game","stars:>100 topic:portfolio","stars:>100 topic:blog","stars:>100 topic:landing-page","stars:>50 topic:react-tutorial","stars:>50 topic:javascript-project","stars:>50 topic:html-css"],n=[];for(const i of a)try{console.log(`📈 Fetching trending repositories: ${i}`);const c=await fetch(`${this.baseURL}/search/repositories?q=${encodeURIComponent(i)}&sort=stars&order=desc&per_page=20`,{headers:{Accept:"application/vnd.github.v3+json","User-Agent":"DreamBuild-Template-Service"}});if(!c.ok)if(console.error(`GitHub API error for query "${i}": ${c.status}`),c.status===403||c.status===429){console.log("⚠️ Rate limit hit, returning cached/fallback templates");const h=this.getFallbackTemplates();return this.trendingRepos=h,h}else if(c.status===422){console.log(`⚠️ Invalid query "${i}", skipping...`);continue}else{console.log(`⚠️ API error ${c.status} for query "${i}", skipping...`);continue}const d=await c.json();if(d.items&&d.items.length>0){console.log(`📈 Found ${d.items.length} trending template repositories for: ${i}`);const h=d.items.filter(S=>this.isTemplateRepository(S));n.push(...h)}await new Promise(h=>setTimeout(h,500))}catch(c){console.error(`Error fetching templates for ${i}:`,c);continue}const o=this.deduplicateRepos(n),s=this.filterTemplateRepos(o);if(s.length<10){console.log("📦 Adding fallback templates due to limited API results");const i=this.getFallbackTemplates();s.push(...i)}return this.trendingRepos=s.slice(0,25),console.log(`✅ Found ${this.trendingRepos.length} template repositories`),this.trendingRepos}catch(a){return console.error("❌ Failed to fetch trending templates:",a),this.getFallbackTemplates()}finally{this.isLoading=!1}}async getRepositoryTemplate(e){const r=`repo_${e.id}`;if(this.templateCache.has(r)){const t=this.templateCache.get(r);if(Date.now()-t.timestamp<this.cacheExpiry)return t.data}try{console.log(`📦 Processing template: ${e.full_name}`);const t=await this.getRepositoryContents(e.full_name),a=await this.parseRepositoryTemplate(e,t);return this.templateCache.set(r,{data:a,timestamp:Date.now()}),a}catch(t){return console.error(`❌ Failed to process template ${e.full_name}:`,t),null}}async getRepositoryContents(e,r=""){try{const t=await fetch(`${this.baseURL}/repos/${e}/contents/${r}`);if(!t.ok)throw new Error(`GitHub API error: ${t.status}`);return await t.json()}catch(t){return console.error(`Failed to fetch contents for ${e}:`,t),[]}}async parseRepositoryTemplate(e,r){const t=this.transformRepositoryToTemplate(e),a=this.extractKeyFiles(r);return t.files=a,t.fileCount=a.length,t.preview=e.owner?.avatar_url||"/api/placeholder/400/300",t}detectTemplateType(e,r){const t=e.name.toLowerCase(),a=(e.description||"").toLowerCase(),n=(e.topics||[]).join(" ").toLowerCase(),o=`${t} ${a} ${n}`;return o.includes("react-native")||o.includes("expo")||o.includes("flutter")||o.includes("mobile")?"mobile":o.includes("react")||o.includes("nextjs")||o.includes("next.js")||o.includes("gatsby")?"react":o.includes("vue")||o.includes("nuxt")||o.includes("quasar")?"vue":o.includes("angular")||o.includes("ionic")?"angular":o.includes("svelte")||o.includes("sveltekit")?"svelte":o.includes("node")||o.includes("express")||o.includes("koa")||o.includes("fastify")?"nodejs":o.includes("python")||o.includes("django")||o.includes("flask")||o.includes("fastapi")?"python":o.includes("php")||o.includes("laravel")||o.includes("symfony")||o.includes("codeigniter")?"php":o.includes("go")||o.includes("golang")||o.includes("gin")?"go":o.includes("rust")||o.includes("actix")||o.includes("rocket")?"rust":o.includes("java")||o.includes("spring")||o.includes("maven")?"java":o.includes("api")||o.includes("rest")||o.includes("graphql")||o.includes("microservice")?"api":o.includes("dashboard")||o.includes("admin")||o.includes("panel")?"dashboard":o.includes("ecommerce")||o.includes("e-commerce")||o.includes("shop")||o.includes("store")?"ecommerce":o.includes("blog")||o.includes("cms")||o.includes("content")?"blog":o.includes("portfolio")||o.includes("personal")||o.includes("resume")?"portfolio":o.includes("landing")||o.includes("marketing")||o.includes("promo")?"landing":o.includes("cms")||o.includes("content-management")||o.includes("headless")?"cms":o.includes("ui")||o.includes("ux")||o.includes("design-system")||o.includes("component-library")?"ui":o.includes("test")||o.includes("testing")||o.includes("e2e")||o.includes("unit-test")?"testing":o.includes("devops")||o.includes("ci-cd")||o.includes("docker")||o.includes("kubernetes")?"devops":o.includes("database")||o.includes("sql")||o.includes("nosql")||o.includes("mongodb")||o.includes("postgresql")?"database":o.includes("auth")||o.includes("authentication")||o.includes("jwt")||o.includes("oauth")?"auth":o.includes("payment")||o.includes("stripe")||o.includes("paypal")||o.includes("billing")?"payment":o.includes("analytics")||o.includes("tracking")||o.includes("metrics")||o.includes("monitoring")?"analytics":o.includes("documentation")||o.includes("docs")||o.includes("readme")||o.includes("guide")?"documentation":"web"}extractKeyFiles(e){const r=[],t=["package.json","package-lock.json","yarn.lock","index.html","index.js","index.jsx","index.ts","index.tsx","App.js","App.jsx","App.ts","App.tsx","main.js","main.ts","main.jsx","main.tsx","src/","components/","pages/","views/","README.md","readme.md","docker-compose.yml","Dockerfile","tsconfig.json","webpack.config.js","vite.config.js","tailwind.config.js","postcss.config.js"];return e.forEach(a=>{t.some(n=>a.name.toLowerCase()===n.toLowerCase()||a.name.toLowerCase().startsWith(n.toLowerCase()))&&r.push({name:a.name,path:a.path,type:a.type,size:a.size,downloadUrl:a.download_url})}),r.slice(0,20)}generateTemplateName(e){return e.split("-").map(r=>r.charAt(0).toUpperCase()+r.slice(1)).join(" ").replace(/template|starter|boilerplate|example|demo/gi,"").trim()}categorizeTemplate(e,r){return{react:"web-apps",vue:"web-apps",angular:"web-apps",svelte:"web-apps",nodejs:"web-apps",python:"web-apps",php:"web-apps",go:"web-apps",rust:"web-apps",java:"web-apps",mobile:"mobile-apps",api:"apis",dashboard:"dashboards",ecommerce:"e-commerce",blog:"portfolios",portfolio:"portfolios",landing:"landing-pages",cms:"web-apps",ui:"web-apps",testing:"web-apps",devops:"apis",database:"apis",auth:"apis",payment:"apis",analytics:"dashboards",documentation:"portfolios",web:"web-apps"}[e]||"web-apps"}generateTags(e,r){const t=[r];e.language&&t.push(e.language.toLowerCase()),e.topics&&t.push(...e.topics.slice(0,3));const a={react:["react","javascript"],vue:["vue","javascript"],angular:["angular","typescript"],nodejs:["nodejs","express"],python:["python","django"],mobile:["react-native","mobile"]};return a[r]&&t.push(...a[r]),[...new Set(t)].slice(0,5)}deduplicateRepos(e){const r=new Set;return e.filter(t=>r.has(t.id)?!1:(r.add(t.id),!0))}isTemplateRepository(e){const r=e.name.toLowerCase(),t=(e.description||"").toLowerCase(),a=(e.topics||[]).join(" ").toLowerCase(),o=["todo-app","calculator","weather-app","recipe-app","expense-tracker","note-taking","bookmark-manager","task-manager","habit-tracker","budget-planner","calendar-app","contact-book","photo-gallery","music-player","video-player","chat-app","forum","blog","portfolio","landing-page","online-store","restaurant-menu","event-planner","booking-system","survey-form","quiz-app","game","puzzle","memory-game","tic-tac-toe","snake-game","pong","breakout","maze","word-search","sudoku","hangman","trivia","flashcards","timer","stopwatch","pomodoro","countdown","random-generator","password-generator","color-picker","unit-converter","currency-converter","tip-calculator","bmi-calculator","age-calculator","date-calculator","percentage-calculator","loan-calculator","mortgage-calculator","investment-calculator","tax-calculator","grade-calculator","gpa-calculator","starter","template","example","demo","sample","tutorial","beginner","simple","basic"].some(d=>r.includes(d)||t.includes(d)||a.includes(d)),s=e.stargazers_count>=10,i=new Date(e.updated_at)>new Date("2019-01-01"),c=e.description&&e.description.length>10;return o&&s&&i&&c}filterTemplateRepos(e){return e.filter(r=>this.isTemplateRepository(r))}async searchTemplates(e,r="all"){return(await this.getTrendingTemplates()).filter(a=>{const n=a.name.toLowerCase().includes(e.toLowerCase())||a.description.toLowerCase().includes(e.toLowerCase())||a.tags.some(s=>s.toLowerCase().includes(e.toLowerCase())),o=r==="all"||a.category===r;return n&&o})}async getTemplateById(e){const t=(await this.getTrendingTemplates()).find(a=>a.id===e);return t?await this.getRepositoryTemplate(t):null}async getTemplatesByCategory(e){return(await this.getTrendingTemplates()).filter(t=>t.category===e)}async getPopularTemplates(e=10){return(await this.getTrendingTemplates()).sort((t,a)=>a.popularity-t.popularity).slice(0,e)}getFallbackTemplates(){return[{id:"fallback-todo-1",name:"Simple Todo App",description:"A clean and simple todo application with add, edit, and delete functionality.",category:"todo-app",templateType:"web",difficulty:"beginner",estimatedTime:"2-4 hours",tags:["javascript","html","css","todo","task-management"],popularity:85,stars:150,lastUpdated:new Date().toISOString(),source:"github",repositoryUrl:"https://github.com/example/simple-todo-app",features:["Add tasks","Mark complete","Delete tasks","Local storage"],techStack:["HTML","CSS","JavaScript"],isFallback:!0,githubData:{id:999001,fullName:"example/simple-todo-app",htmlUrl:"https://github.com/example/simple-todo-app",cloneUrl:"https://github.com/example/simple-todo-app.git",language:"JavaScript",stargazersCount:150,forksCount:25,topics:["todo","javascript","html","css"],owner:"example"}},{id:"fallback-calculator-1",name:"Basic Calculator",description:"A functional calculator with basic arithmetic operations.",category:"calculator",templateType:"web",difficulty:"beginner",estimatedTime:"1-2 hours",tags:["javascript","html","css","calculator","math"],popularity:90,stars:200,lastUpdated:new Date().toISOString(),source:"github",repositoryUrl:"https://github.com/example/basic-calculator",features:["Basic operations","Clear function","Responsive design"],techStack:["HTML","CSS","JavaScript"],isFallback:!0,githubData:{id:999002,fullName:"example/basic-calculator",htmlUrl:"https://github.com/example/basic-calculator",cloneUrl:"https://github.com/example/basic-calculator.git",language:"JavaScript",stargazersCount:200,forksCount:30,topics:["calculator","javascript","math"],owner:"example"}},{id:"fallback-weather-1",name:"Weather Dashboard",description:"A weather app that displays current conditions and forecast.",category:"weather-app",templateType:"web",difficulty:"intermediate",estimatedTime:"3-5 hours",tags:["javascript","api","weather","dashboard"],popularity:75,stars:120,lastUpdated:new Date().toISOString(),source:"github",repositoryUrl:"https://github.com/example/weather-dashboard",features:["Current weather","5-day forecast","Location search"],techStack:["HTML","CSS","JavaScript","Weather API"],isFallback:!0,githubData:{id:999003,fullName:"example/weather-dashboard",htmlUrl:"https://github.com/example/weather-dashboard",cloneUrl:"https://github.com/example/weather-dashboard.git",language:"JavaScript",stargazersCount:120,forksCount:20,topics:["weather","api","dashboard"],owner:"example"}},{id:"fallback-portfolio-1",name:"Personal Portfolio",description:"A modern, responsive portfolio website template.",category:"portfolio",templateType:"web",difficulty:"intermediate",estimatedTime:"4-6 hours",tags:["html","css","javascript","portfolio","responsive"],popularity:95,stars:300,lastUpdated:new Date().toISOString(),source:"github",repositoryUrl:"https://github.com/example/personal-portfolio",features:["Responsive design","Project showcase","Contact form"],techStack:["HTML","CSS","JavaScript"],isFallback:!0,githubData:{id:999004,fullName:"example/personal-portfolio",htmlUrl:"https://github.com/example/personal-portfolio",cloneUrl:"https://github.com/example/personal-portfolio.git",language:"HTML",stargazersCount:300,forksCount:50,topics:["portfolio","responsive","html","css"],owner:"example"}},{id:"fallback-game-1",name:"Snake Game",description:"Classic Snake game built with vanilla JavaScript.",category:"game",templateType:"web",difficulty:"intermediate",estimatedTime:"3-4 hours",tags:["javascript","game","canvas","snake"],popularity:80,stars:180,lastUpdated:new Date().toISOString(),source:"github",repositoryUrl:"https://github.com/example/snake-game",features:["Keyboard controls","Score tracking","Game over screen"],techStack:["HTML","CSS","JavaScript","Canvas"],isFallback:!0,githubData:{id:999005,fullName:"example/snake-game",htmlUrl:"https://github.com/example/snake-game",cloneUrl:"https://github.com/example/snake-game.git",language:"JavaScript",stargazersCount:180,forksCount:35,topics:["game","snake","canvas","javascript"],owner:"example"}}]}transformRepositoryToTemplate(e,r="web"){return{id:`github_${e.id}`,name:this.generateTemplateName(e.name),description:e.description||`Template based on ${e.full_name}`,category:this.categorizeTemplate(this.detectTemplateType(e,[]),e),templateType:this.detectTemplateType(e,[]),difficulty:this.estimateDifficulty(e),estimatedTime:this.estimateTime(e),tags:this.generateTags(e,this.detectTemplateType(e,[])),popularity:Math.min(Math.floor(e.stargazers_count/100),100),stars:e.stargazers_count,lastUpdated:e.updated_at,createdAt:e.created_at,source:"github",repositoryUrl:e.html_url,features:this.extractFeatures(e),techStack:this.extractTechStack(e),githubData:{id:e.id,fullName:e.full_name,htmlUrl:e.html_url,cloneUrl:e.clone_url,language:e.language,stargazersCount:e.stargazers_count,forksCount:e.forks_count,topics:e.topics||[],owner:e.owner?.login}}}estimateDifficulty(e){return e.stargazers_count>500?"advanced":e.stargazers_count>100?"intermediate":"beginner"}estimateTime(e){const r=e.stargazers_count;return r>500?"6-8 hours":r>100?"3-5 hours":"1-3 hours"}extractFeatures(e){const r=[],t=e.name.toLowerCase(),a=(e.description||"").toLowerCase();return(t.includes("todo")||a.includes("todo"))&&r.push("Task management","Add/Edit tasks","Mark complete"),(t.includes("calculator")||a.includes("calculator"))&&r.push("Basic operations","Clear function"),(t.includes("weather")||a.includes("weather"))&&r.push("Current weather","Forecast","Location search"),(t.includes("portfolio")||a.includes("portfolio"))&&r.push("Project showcase","Responsive design","Contact form"),(t.includes("game")||a.includes("game"))&&r.push("Interactive gameplay","Score tracking"),r.length>0?r:["Modern design","Responsive layout"]}extractTechStack(e){const r=[];e.language&&r.push(e.language);const t=e.topics||[];return t.includes("react")&&r.push("React"),t.includes("vue")&&r.push("Vue"),t.includes("angular")&&r.push("Angular"),t.includes("html")&&r.push("HTML"),t.includes("css")&&r.push("CSS"),t.includes("javascript")&&r.push("JavaScript"),t.includes("typescript")&&r.push("TypeScript"),r.length>0?r:["HTML","CSS","JavaScript"]}clearCache(){this.templateCache.clear(),this.trendingRepos=[],console.log("🗑️ GitHub template cache cleared")}}const b=new U,E={"codellama-7b":{name:"CodeLlama 7B",type:"Code Generation",baseURL:"http://localhost:11434/api",model:"codellama:7b",description:"Fast and efficient code generation (7B parameters)",languages:["python","javascript","java","cpp","go","rust","php","ruby"],strengths:["speed","efficiency","general-purpose"],ram_required:"8GB"},auto:{name:"Auto Select",type:"Auto Selection",baseURL:"http://localhost:11434/api",model:"auto",description:"Automatically selects the best available model",languages:["all"],strengths:["smart-selection","availability"],ram_required:"variable"}},C={"web-apps":{name:"Web Applications",description:"Full-stack web applications",templates:[{id:"react-dashboard",name:"React Dashboard",description:"Modern React dashboard with charts and analytics",category:"web-apps",files:["index.html","App.jsx","styles.css","package.json"]},{id:"ecommerce-store",name:"E-commerce Store",description:"Complete online store with cart and checkout",category:"web-apps",files:["index.html","App.jsx","styles.css","package.json"]}]},"mobile-apps":{name:"Mobile Applications",description:"React Native mobile applications",templates:[{id:"todo-app",name:"Todo App",description:"Simple todo application with React Native",category:"mobile-apps",files:["App.js","components/TodoItem.js","styles.js"]}]}};class O{constructor(){if(this.isHealthy=!1,this.modelHealth={},this.availableModels=Object.keys(E),this.baseURL="http://localhost:11434/api",this.isProduction=window.location.protocol==="https:",this.isLocalhost=window.location.hostname==="localhost"||window.location.hostname==="127.0.0.1",this.isProduction&&!this.isLocalhost){console.log("🌐 Production environment detected - skipping local AI detection"),this.isHealthy=!1;return}console.log("🔍 Initializing local AI health monitoring..."),this.checkHealth(),setInterval(()=>{this.checkHealthQuiet()},3e4)}async checkHealth(){if(!(this.isProduction&&!this.isLocalhost))try{const e=await k.get(`${this.baseURL}/tags`,{timeout:3e3});if(e.status===200){const r=this.isHealthy;this.isHealthy=!0,r||console.log("✅ Local AI service is healthy");const t=e.data.models||[];this.modelHealth={},t.forEach(a=>{this.modelHealth[a.name]={isHealthy:!0,size:a.size,modified_at:a.modified_at}})}else{const r=this.isHealthy;this.isHealthy=!1,r&&console.log("⚠️ Local AI service is not responding")}}catch(e){const r=this.isHealthy;this.isHealthy=!1,e.code==="ERR_NETWORK"||e.message.includes("CORS")?r||console.log("🔒 Local AI not accessible (CORS/Network) - using cloud AI"):e.code==="ECONNREFUSED"?r||console.log("💻 Ollama not running locally - using cloud AI"):r||console.log("⚠️ Local AI service not available:",e.message)}}async checkHealthQuiet(){if(!(this.isProduction&&!this.isLocalhost))try{const e=await k.get(`${this.baseURL}/tags`,{timeout:3e3});if(e.status===200){const r=this.isHealthy;this.isHealthy=!0;const t=e.data.models||[];this.modelHealth={},t.forEach(a=>{this.modelHealth[a.name]={isHealthy:!0,size:a.size,modified_at:a.modified_at}})}else this.isHealthy=!1}catch{this.isHealthy=!1}}getAvailableModels(){return Object.values(E)}getHealthyModels(){return Object.keys(this.modelHealth).filter(e=>this.modelHealth[e].isHealthy)}getTemplateCategories(){return C}getTemplatesByCategory(e){return C[e]?.templates||[]}async getAllTemplates(){const e=[];Object.values(C).forEach(a=>{e.push(...a.templates)});const t=(await b.getTrendingTemplates()).map(a=>b.transformRepositoryToTemplate(a));return[...e,...t]}async searchTemplates(e){const r=[];Object.values(C).forEach(o=>{r.push(...o.templates)});const a=(await b.searchTemplates(e)).map(o=>b.transformRepositoryToTemplate(o));return[...r,...a].filter(o=>o.name.toLowerCase().includes(e.toLowerCase())||(o.description||"").toLowerCase().includes(e.toLowerCase()))}async getPopularTemplates(){const e=[];Object.values(C).forEach(n=>{e.push(...n.templates)});const t=(await b.getPopularTemplates(5)).map(n=>b.transformRepositoryToTemplate(n));return[...e,...t].sort((n,o)=>(o.popularity||0)-(n.popularity||0)).slice(0,10)}async generateTemplateById(e,r={}){if(e.startsWith("github_"))return await this.generateGitHubTemplate(e,r);const t=[];Object.values(C).forEach(n=>{t.push(...n.templates)});const a=t.find(n=>n.id===e);if(!a)throw new Error(`Template ${e} not found`);return this.createTemplateFiles(a,r)}async generateGitHubTemplate(e,r={}){try{console.log(`🚀 Generating GitHub template: ${e}`);const t=await b.getTemplateById(e);if(!t)throw new Error(`GitHub template ${e} not found`);const a=await this.createGitHubTemplateFiles(t,r);return console.log(`✅ Generated ${Object.keys(a).length} files from GitHub template`),a}catch(t){throw console.error(`❌ Failed to generate GitHub template ${e}:`,t),t}}async createGitHubTemplateFiles(e,r={}){const t={};try{const{githubData:a}=e;return t["README.md"]=`# ${e.name}
 
-import axios from 'axios'
-import incrementalDevelopmentService from './incrementalDevelopmentService.js'
-import appNamingService from './appNamingService.js'
-import colorThemeService from './colorThemeService.js'
-import appValidationService from './appValidationService.js'
-import explanationService from './explanationService.js'
+${e.description}
 
-class CloudAIService {
-  constructor() {
-    this.isHealthy = true
-    this.baseURL = 'https://api-inference.huggingface.co/models'
-    this.apiKey = import.meta.env.VITE_HUGGINGFACE_API_KEY || 'hf_your_api_key_here'
-    
-    // Open source models available via Hugging Face
-    this.availableModels = {
-      'codellama-7b': {
-        name: 'CodeLlama 7B',
-        model: 'codellama/CodeLlama-7b-Python-hf',
-        description: 'Fast and efficient code generation',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'codellama-13b': {
-        name: 'CodeLlama 13B', 
-        model: 'codellama/CodeLlama-13b-Python-hf',
-        description: 'Higher quality code generation',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'starcoder-15b': {
-        name: 'StarCoder 15B',
-        model: 'bigcode/starcoder',
-        description: 'Excellent code completion',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'deepseek-coder': {
-        name: 'DeepSeek Coder',
-        model: 'deepseek-ai/deepseek-coder-6.7b-instruct',
-        description: 'High-performance generation',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'wizardcoder-7b': {
-        name: 'WizardCoder 7B',
-        model: 'WizardLM/WizardCoder-15B-V1.0',
-        description: 'Great at following instructions',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'phi3-mini': {
-        name: 'Phi-3 Mini',
-        model: 'microsoft/Phi-3-mini-4k-instruct',
-        description: 'Lightweight but powerful',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'llama3-8b': {
-        name: 'Llama 3 8B',
-        model: 'meta-llama/Llama-3-8B-Instruct',
-        description: 'General purpose model',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'mistral-7b': {
-        name: 'Mistral 7B',
-        model: 'mistralai/Mistral-7B-Instruct-v0.1',
-        description: 'Fast and efficient coding assistant',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'gemma-7b': {
-        name: 'Gemma 7B',
-        model: 'google/gemma-7b-it',
-        description: 'Google\'s lightweight model',
-        maxTokens: 2048,
-        temperature: 0.7
-      },
-      'qwen-7b': {
-        name: 'Qwen 7B',
-        model: 'Qwen/Qwen-7B-Chat',
-        description: 'Alibaba\'s coding model',
-        maxTokens: 2048,
-        temperature: 0.7
-      }
+## GitHub Repository
+- **Source**: [${a.fullName}](${a.htmlUrl})
+- **Stars**: ${a.stargazersCount}
+- **Language**: ${a.language||"JavaScript"}
+
+## Getting Started
+
+This template is based on the GitHub repository: ${a.fullName}
+
+### Installation
+\`\`\`bash
+git clone ${a.cloneUrl}
+cd ${a.fullName}
+npm install
+\`\`\`
+
+### Development
+\`\`\`bash
+npm start
+\`\`\`
+
+## Template Information
+- **Type**: ${e.templateType}
+- **Category**: ${e.category}
+- **Tags**: ${e.tags.join(", ")}
+- **Files**: ${e.fileCount}
+
+## Customization
+You can customize this template by modifying the files or using the AI prompt to generate additional features.
+`,t["package.json"]=this.createPackageJson(e,r),t[this.getMainFileName(e)]=this.createMainFile(e,r),(e.templateType==="react"||e.templateType==="vue"||e.templateType==="web")&&(t["index.html"]=this.createIndexHtml(e,r)),Object.entries(r).forEach(([n,o])=>{typeof o=="string"&&(t[n]=o)}),t}catch(a){throw console.error("Failed to create GitHub template files:",a),a}}createPackageJson(e,r={}){const t={name:e.name.toLowerCase().replace(/\s+/g,"-"),version:"1.0.0",description:e.description,main:this.getMainFileName(e),scripts:{start:"npm run dev",dev:this.getDevScript(e),build:this.getBuildScript(e),test:'echo "No tests specified" && exit 0'},keywords:e.tags,author:r.author||"DreamBuild User",license:"MIT",repository:{type:"git",url:e.githubData.cloneUrl}};return t.dependencies=this.getTemplateDependencies(e),t.devDependencies=this.getTemplateDevDependencies(e),JSON.stringify(t,null,2)}getMainFileName(e){return{react:"src/App.jsx",vue:"src/main.js",angular:"src/main.ts",nodejs:"index.js",python:"main.py",mobile:"App.js",web:"index.js"}[e.templateType]||"index.js"}getDevScript(e){return{react:"react-scripts start",vue:"vue-cli-service serve",angular:"ng serve",nodejs:"nodemon index.js",python:"python main.py",mobile:"expo start",web:"live-server"}[e.templateType]||"node index.js"}getBuildScript(e){return{react:"react-scripts build",vue:"vue-cli-service build",angular:"ng build",nodejs:'echo "No build step needed"',python:'echo "No build step needed"',mobile:"expo build",web:'echo "No build step needed"'}[e.templateType]||'echo "No build step needed"'}getTemplateDependencies(e){return{react:{react:"^18.0.0","react-dom":"^18.0.0"},vue:{vue:"^3.0.0"},angular:{"@angular/core":"^15.0.0","@angular/common":"^15.0.0"},svelte:{svelte:"^3.0.0"},nodejs:{express:"^4.18.0"},python:{},php:{},go:{},rust:{},java:{},mobile:{"react-native":"^0.70.0",expo:"~47.0.0"},api:{express:"^4.18.0"},dashboard:{react:"^18.0.0","react-dom":"^18.0.0"},ecommerce:{react:"^18.0.0","react-dom":"^18.0.0"},blog:{next:"^13.0.0",react:"^18.0.0"},portfolio:{react:"^18.0.0","react-dom":"^18.0.0"},landing:{react:"^18.0.0","react-dom":"^18.0.0"},web:{}}[e.templateType]||{}}getTemplateDevDependencies(e){return{react:{"react-scripts":"5.0.1"},vue:{"@vue/cli-service":"^5.0.0"},angular:{"@angular/cli":"^15.0.0"},svelte:{vite:"^4.0.0"},nodejs:{nodemon:"^2.0.0"},python:{},php:{},go:{},rust:{},java:{},mobile:{},api:{nodemon:"^2.0.0"},dashboard:{"react-scripts":"5.0.1"},ecommerce:{"react-scripts":"5.0.1"},blog:{next:"^13.0.0"},portfolio:{"react-scripts":"5.0.1"},landing:{"react-scripts":"5.0.1"},web:{"live-server":"^1.2.0"}}[e.templateType]||{}}createMainFile(e,r={}){const t={react:`import React from 'react';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>${e.name}</h1>
+        <p>${e.description}</p>
+        <p>
+          Template based on: <a href="${e.githubData.htmlUrl}">${e.githubData.fullName}</a>
+        </p>
+      </header>
+    </div>
+  );
+}
+
+export default App;`,vue:`import { createApp } from 'vue';
+import App from './App.vue';
+
+createApp(App).mount('#app');`,angular:`import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  template: \`
+    <div class="app">
+      <h1>${e.name}</h1>
+      <p>${e.description}</p>
+      <p>Template based on: <a href="${e.githubData.htmlUrl}">${e.githubData.fullName}</a></p>
+    </div>
+  \`,
+  styles: []
+})
+export class AppComponent {
+  title = '${e.name}';
+}`,svelte:`<script>
+  export let name = '${e.name}';
+<\/script>
+
+<main>
+  <h1>${e.name}</h1>
+  <p>${e.description}</p>
+  <p>Template based on: <a href="${e.githubData.htmlUrl}">${e.githubData.fullName}</a></p>
+</main>`,nodejs:`const express = require('express');
+const app = express();
+// PORT removed - not needed in browser code
+
+app.get('/', (req, res) => {
+  res.send(\`
+    <h1>${e.name}</h1>
+    <p>${e.description}</p>
+    <p>Template based on: <a href="${e.githubData.htmlUrl}">${e.githubData.fullName}</a></p>
+  \`);
+});
+
+app.listen(PORT, () => {
+
+});`,python:`from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('index.html', 
+                         title='${e.name}',
+                         description='${e.description}',
+                         github_url='${e.githubData.htmlUrl}')
+
+if __name__ == '__main__':
+    app.run(debug=True)`,php:`<?php
+echo "<h1>${e.name}</h1>";
+echo "<p>${e.description}</p>";
+echo "<p>Template based on: <a href='${e.githubData.htmlUrl}'>${e.githubData.fullName}</a></p>";
+?>`,go:`package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "<h1>%s</h1><p>%s</p><p>Template based on: <a href='%s'>%s</a></p>", 
+                "${e.name}", "${e.description}", "${e.githubData.htmlUrl}", "${e.githubData.fullName}")
+}
+
+func main() {
+    http.HandleFunc("/", handler)
+    http.ListenAndServe(":8080", nil)
+}`,rust:`use std::io;
+
+fn main() {
+    println!("Hello from {}!", "${e.name}");
+    println!("{}", "${e.description}");
+    println!("Template based on: {}", "${e.githubData.fullName}");
+}`,java:`public class Main {
+    public static void main(String[] args) {
+        System.out.println("${e.name}");
+        System.out.println("${e.description}");
+        System.out.println("Template based on: ${e.githubData.fullName}");
     }
-    
-    console.log('☁️ Cloud AI Service initialized with open source models!')
-  }
+}`,api:`const express = require('express');
+const app = express();
+// PORT removed - not needed in browser code
 
-  // Get available models
-  getAvailableModels() {
-    return Object.values(this.availableModels)
-  }
+app.use(express.json());
 
-  // Get healthy models (all cloud models are considered healthy)
-  getHealthyModels() {
-    return Object.keys(this.availableModels)
-  }
+app.get('/api', (req, res) => {
+  res.json({
+    name: '${e.name}',
+    description: '${e.description}',
+    github: '${e.githubData.fullName}'
+  });
+});
 
-  // Generate code using cloud AI with context awareness
-  async generateCode(prompt, context = {}) {
-    console.log('🚀 Generating code with Cloud AI...')
-    
-    try {
-      // Check if this is an incremental development request
-      if (context.isIncremental && context.existingProject) {
-        return await this.generateIncrementalCode(prompt, context)
-      }
-      
-      // Enhanced context analysis with conversation history
-      const enhancedContext = this.analyzeProjectContext(context)
-      
-      // Add conversation context if available
-      if (context.conversationContext) {
-        enhancedContext.conversationHistory = context.conversationHistory || []
-        enhancedContext.recentMessages = context.conversationContext.recentMessages || []
-        enhancedContext.projectContext = context.conversationContext
-      }
-      
-      console.log('🧠 Enhanced context analysis:', enhancedContext)
-      
-      // Generate code with full context awareness
-      const generatedCode = await this.generateContextAwareCode(prompt, enhancedContext)
-      
-      // Generate intelligent app name
-      const appName = appNamingService.generateAppName(prompt, enhancedContext)
-      
-      // Automatically select and apply color theme
-      const selectedTheme = this.selectAutomaticTheme(prompt, enhancedContext)
-      const themedCode = this.applyAutomaticTheme(generatedCode, selectedTheme)
-      
-      // Add real-time preview support
-      const previewData = this.generatePreviewData(themedCode, appName)
-      
-      // Validate the generated app
-      console.log('🔍 Validating generated app...')
-      const validationResults = await appValidationService.validateApp(themedCode, appName, prompt)
-      
-      // Generate comprehensive explanation
-      console.log('📝 Generating app explanation...')
-      const explanation = await explanationService.generateExplanation(themedCode, appName, prompt, validationResults)
-      
-      console.log('✅ Code generated successfully!')
-      console.log('🏷️ App name:', appName)
-      console.log('🎨 Selected theme:', selectedTheme.name)
-      console.log('👁️ Preview data generated')
-      console.log('🔍 Validation completed:', validationResults.summary?.overallScore || 'N/A', 'score')
-      console.log('📝 Explanation generated:', explanation.summary ? 'Yes' : 'No')
-      console.log('📁 Generated files:', Object.keys(themedCode))
-      console.log('📄 File contents preview:', Object.entries(themedCode).map(([name, content]) => ({ name, length: content.length, preview: content.substring(0, 100) })))
-      
-      // Return enhanced response (like Lovable)
-      return {
-        files: themedCode,
-        appName: appName,
-        validation: validationResults,
-        explanation: explanation,
-        prompt: prompt,
-        generatedAt: new Date().toISOString(),
-        preview: previewData,
-        context: enhancedContext,
-        iterations: [], // For iterative development
-        dependencies: this.extractDependencies(themedCode),
-        buildInstructions: this.generateBuildInstructions(themedCode),
-        theme: selectedTheme
-      }
-      
-    } catch (error) {
-      console.error('❌ Code generation failed:', error)
-      // Enhanced fallback
-      const fallbackCode = await this.createFallbackResponse(prompt, context)
-      const appName = appNamingService.generateAppName(prompt, context)
-      
-      // Apply automatic theme to fallback code
-      const selectedTheme = this.selectAutomaticTheme(prompt, context)
-      const themedFallbackCode = this.applyAutomaticTheme(fallbackCode, selectedTheme)
-      
-      // Validate the fallback app
-      console.log('🔍 Validating fallback app...')
-      const validationResults = await appValidationService.validateApp(themedFallbackCode, appName, prompt)
-      
-      // Generate comprehensive explanation for fallback
-      console.log('📝 Generating fallback app explanation...')
-      const explanation = await explanationService.generateExplanation(themedFallbackCode, appName, prompt, validationResults)
-      
-      return {
-        files: themedFallbackCode,
-        appName: appName,
-        validation: validationResults,
-        explanation: explanation,
-        prompt: prompt,
-        generatedAt: new Date().toISOString(),
-        preview: this.generatePreviewData(themedFallbackCode, appName),
-        context: this.analyzeProjectContext(context),
-        iterations: [],
-        dependencies: this.extractDependencies(themedFallbackCode),
-        buildInstructions: this.generateBuildInstructions(themedFallbackCode),
-        theme: selectedTheme
-      }
-    }
-  }
+app.listen(PORT, () => {
 
-  // Generate incremental code for existing projects
-  async generateIncrementalCode(prompt, context) {
-    console.log('🔄 Generating incremental code...')
-    
-    try {
-      // Initialize incremental development service
-      await incrementalDevelopmentService.initializeProject(context.existingProject)
-      
-      // Process the feature request
-      const result = await incrementalDevelopmentService.processFeatureRequest(prompt, context)
-      
-      if (result.type === 'no_new_features') {
-        return {
-          type: 'no_changes',
-          message: result.message,
-          existingFeatures: result.existingFeatures,
-          files: context.existingProject.files || {}
+});`,dashboard:`import React from 'react';
+import './Dashboard.css';
+
+function Dashboard() {
+  return (
+    <div className="dashboard">
+      <header className="dashboard-header">
+        <h1>${e.name}</h1>
+        <p>${e.description}</p>
+      </header>
+      <main className="dashboard-content">
+        <div className="stats-grid">
+          <div className="stat-card">Users</div>
+          <div className="stat-card">Revenue</div>
+          <div className="stat-card">Orders</div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export default Dashboard;`,mobile:`import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>${e.name}</Text>
+      <Text style={styles.description}>${e.description}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  description: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+});`,web:`// ${e.name}
+// ${e.description}
+
+// Template based on: ${e.githubData.fullName}
+// Repository: ${e.githubData.htmlUrl}`};return t[e.templateType]||t.web}createIndexHtml(e,r={}){return`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${e.name}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
         }
-      }
-      
-      if (result.type === 'incremental_update') {
-        // Merge new code with existing files
-        const updatedFiles = { ...context.existingProject.files, ...result.code }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        a {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .github-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>${e.name}</h1>
+        <p>${e.description}</p>
         
-        return {
-          type: 'incremental_update',
-          files: updatedFiles,
-          newFeatures: result.newFeatures,
-          updatedFiles: result.updatedFiles,
-          message: result.message,
-          appName: context.existingProject.name || 'Updated App',
-          prompt: prompt,
-          generatedAt: new Date().toISOString(),
-          preview: this.generatePreviewData(updatedFiles, context.existingProject.name),
-          context: this.analyzeProjectContext(context),
-          iterations: incrementalDevelopmentService.featureHistory,
-          dependencies: this.extractDependencies(updatedFiles),
-          buildInstructions: this.generateBuildInstructions(updatedFiles)
-        }
-      }
+        <div class="github-info">
+            <h3>GitHub Repository</h3>
+            <p><strong>Source:</strong> <a href="${e.githubData.htmlUrl}">${e.githubData.fullName}</a></p>
+            <p><strong>Stars:</strong> ${e.githubData.stargazersCount}</p>
+            <p><strong>Language:</strong> ${e.githubData.language||"JavaScript"}</p>
+            <p><strong>Template Type:</strong> ${e.templateType}</p>
+        </div>
+        
+        <p>🚀 Generated with DreamBuild's GitHub Template Integration</p>
+    </div>
+</body>
+</html>`}createTemplateFiles(e,r={}){const t={};switch(e.id){case"react-dashboard":t["index.html"]=`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"><\/script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"><\/script>
+    <script src="App.jsx"><\/script>
+</body>
+</html>`,t["App.jsx"]=`import React, { useState } from 'react';
+
+function Dashboard() {
+  const [stats, setStats] = useState({
+    users: 1250,
+    revenue: 45230,
+    orders: 89,
+    growth: 12.5
+  });
+
+  return (
+    <div className="dashboard">
+      <header className="dashboard-header">
+        <h1>Analytics Dashboard</h1>
+        <p>Welcome to your business dashboard</p>
+      </header>
       
+      <div className="stats-grid">
+        <div className="stat-card">
+          <h3>Total Users</h3>
+          <p className="stat-number">{stats.users.toLocaleString()}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Revenue</h3>
+          <p className="stat-number">$${stats.revenue.toLocaleString()}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Orders</h3>
+          <p className="stat-number">{stats.orders}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Growth</h3>
+          <p className="stat-number">+{stats.growth}%</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<Dashboard />, document.getElementById('root'));`,t["styles.css"]=`* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: white;
+}
+
+.dashboard-header h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card h3 {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+}`,t["package.json"]=`{
+  "name": "react-dashboard",
+  "version": "1.0.0",
+  "description": "Modern React Dashboard",
+  "main": "App.jsx",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "keywords": ["react", "dashboard", "analytics"],
+  "author": "DreamBuild",
+  "license": "MIT"
+}`;break;case"todo-app":t["App.js"]=`import React, { useState } from 'react';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+
+export default function TodoApp() {
+  const [todos, setTodos] = useState([]);
+  const [text, setText] = useState('');
+
+  const addTodo = () => {
+    if (text.trim()) {
+      setTodos([...todos, { id: Date.now(), text: text.trim(), completed: false }]);
+      setText('');
+    }
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(todos.map(todo => 
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Todo App</Text>
+      
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          value={text}
+          onChangeText={setText}
+          placeholder="Add a new todo..."
+          onSubmitEditing={addTodo}
+        />
+        <TouchableOpacity style={styles.addButton} onPress={addTodo}>
+          <Text style={styles.addButtonText}>Add</Text>
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={todos}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={[styles.todoItem, item.completed && styles.completedTodo]}>
+            <TouchableOpacity
+              style={styles.todoText}
+              onPress={() => toggleTodo(item.id)}
+            >
+              <Text style={[styles.todoText, item.completed && styles.completedText]}>
+                {item.text}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => deleteTodo(item.id)}
+            >
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+    </View>
+  );
+}`,t["styles.js"]=`import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    padding: 20,
+    paddingTop: 60,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#333',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: 'white',
+    marginRight: 10,
+  },
+  addButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+    justifyContent: 'center',
+  },
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  todoItem: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  completedTodo: {
+    backgroundColor: '#f0f0f0',
+  },
+  todoText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  completedText: {
+    textDecorationLine: 'line-through',
+    color: '#999',
+  },
+  deleteButton: {
+    backgroundColor: '#FF3B30',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+});`;break;default:t["index.html"]=`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamBuild App</title>
+</head>
+<body>
+    <h1>Welcome to DreamBuild!</h1>
+    <p>Your application has been generated successfully.</p>
+</body>
+</html>`}return t}async generateCode(e,r={}){console.log("🚀 Starting code generation for prompt:",e);try{return this.isProduction&&!this.isLocalhost?(console.log("🌐 Production environment - using template fallback"),this.createFallbackResponse(e,r)):this.isHealthy?await this.generateWithLocalAI(e,r):(console.log("⚠️ Local AI not available, using template fallback"),this.createFallbackResponse(e,r))}catch(t){return console.error("❌ Code generation failed:",t),this.createFallbackResponse(e,r)}}async generateWithLocalAI(e,r={}){const t=this.getBestAvailableModel(),a=this.createSystemPrompt(r),n={model:t,messages:[{role:"system",content:a},{role:"user",content:e}],stream:!1,options:{temperature:.7,top_p:.9,max_tokens:4e3}};try{const o=await k.post(`${this.baseURL}/chat`,n,{timeout:3e4,headers:{"Content-Type":"application/json"}});if(o.data&&o.data.message&&o.data.message.content){const s=o.data.message.content;return this.parseAIResponse(s,e)}else throw new Error("Invalid response from local AI")}catch(o){throw console.error("❌ Local AI generation failed:",o),o}}getBestAvailableModel(){const e=this.getHealthyModels();return e.includes("codellama:7b")?"codellama:7b":e.includes("codellama:13b")?"codellama:13b":e.includes("codellama:34b")?"codellama:34b":e[0]||"codellama:7b"}createSystemPrompt(e={}){return`You are an expert software developer and code generator. Generate complete, working applications based on user requests.
+
+Guidelines:
+1. Always generate complete, runnable code
+2. Include all necessary files (HTML, CSS, JS, etc.)
+3. Use modern best practices
+4. Make the code clean and well-commented
+5. Ensure the application is functional and user-friendly
+
+Return your response as a JSON object with this structure:
+{
+  "files": {
+    "filename1.ext": "file content here",
+    "filename2.ext": "file content here"
+  },
+  "description": "Brief description of what was generated",
+  "instructions": "How to run or use the generated code"
+}
+
+Generate practical, working applications that users can immediately use.`}parseAIResponse(e,r){try{const t=e.match(/\{[\s\S]*\}/);if(t){const a=JSON.parse(t[0]);if(a.files)return a.files}return this.createFallbackResponse(r,{})}catch(t){return console.error("❌ Failed to parse AI response:",t),this.createFallbackResponse(r,{})}}createFallbackResponse(e,r={}){console.log("🔄 Creating fallback response for prompt:",e);const t=e.toLowerCase();return t.includes("dashboard")||t.includes("analytics")?this.generateTemplateById("react-dashboard",r):t.includes("todo")||t.includes("task")?this.generateTemplateById("todo-app",r):t.includes("ecommerce")||t.includes("store")||t.includes("shop")?this.generateTemplateById("ecommerce-store",r):{"index.html":`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamBuild App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to Your DreamBuild App!</h1>
+        <p>Generated based on: "${e}"</p>
+    </div>
+    
+    <div class="content">
+        <h2>Your Application</h2>
+        <p>This is a starter application generated by DreamBuild. You can customize it further by editing the files in your project.</p>
+        
+        <h3>Features:</h3>
+        <ul>
+            <li>Responsive design</li>
+            <li>Modern styling</li>
+            <li>Clean code structure</li>
+        </ul>
+        
+        <p>To run this application, simply open the index.html file in your web browser.</p>
+    </div>
+</body>
+</html>`,"styles.css":`/* Additional styles for your DreamBuild app */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.button {
+    background: #007bff;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background: #0056b3;
+}
+
+.card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}`,"package.json":`{
+  "name": "dreambuild-app",
+  "version": "1.0.0",
+  "description": "Generated by DreamBuild",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": ["dreambuild", "generated", "web-app"],
+  "author": "DreamBuild",
+  "license": "MIT"
+}`}}}const u=new O;class H{constructor(){this.app=null,this.db=null,this.storage=null,this.auth=null,this.user=null,this.isInitialized=!1}async initialize(){try{if(this.isInitialized)return;const e={apiKey:"your-api-key",authDomain:"your-project.firebaseapp.com",projectId:"your-project-id",storageBucket:"your-project.appspot.com",messagingSenderId:"123456789",appId:"your-app-id"};try{this.app=A(e)}catch(r){if(r.code==="app/duplicate-app")this.app=D();else if(r.code==="app/no-options")try{this.app=D()}catch{this.app=A({apiKey:"demo-key",authDomain:"demo.firebaseapp.com",projectId:"demo-project"})}else throw r}this.db=R(this.app),this.storage=z(this.app),this.auth=B(this.app),L(this.auth,r=>{this.user=r,console.log("Firebase auth state changed:",r?"authenticated":"not authenticated")});try{await j(this.auth),console.log("✅ Firebase anonymous auth successful")}catch(r){console.log("⚠️ Firebase auth not available, continuing without authentication:",r.message),this.user=null}this.isInitialized=!0,console.log("🔥 Firebase initialized successfully")}catch(e){console.error("❌ Failed to initialize Firebase:",e),this.isInitialized=!1,this.user=null,console.log("⚠️ Continuing without Firebase services")}}async storeProjectContext(e,r){try{await this.initialize();const t=l(this.db,"projectContexts",e);await m(t,{...r,userId:this.user?.uid||"anonymous",storedAt:new Date().toISOString(),dataSize:JSON.stringify(r).length}),console.log("✅ Project context stored successfully")}catch(t){throw console.error("❌ Failed to store project context:",t),t}}async loadProjectContext(e){try{await this.initialize();const r=l(this.db,"projectContexts",e),t=await v(r);return t.exists()?(console.log("✅ Project context loaded successfully"),t.data()):(console.log("❌ Project context not found"),null)}catch(r){return console.error("❌ Failed to load project context:",r),null}}async storeProjectFiles(e,r){try{await this.initialize();const t=l(this.db,"projectFiles",e);await m(t,{projectId:e,files:r,fileCount:Object.keys(r).length,totalSize:JSON.stringify(r).length,userId:this.user?.uid||"anonymous",storedAt:new Date().toISOString()}),console.log("✅ Project files stored successfully")}catch(t){throw console.error("❌ Failed to store project files:",t),t}}async loadProjectFiles(e){try{await this.initialize();const r=l(this.db,"projectFiles",e),t=await v(r);return t.exists()?(console.log("✅ Project files loaded successfully"),t.data().files):(console.log("❌ Project files not found"),null)}catch(r){return console.error("❌ Failed to load project files:",r),null}}async storeTemplate(e){try{await this.initialize();const r=l(this.db,"templates",e.id);await m(r,{...e,userId:this.user?.uid||"anonymous",updatedAt:new Date().toISOString()}),console.log("✅ Template stored successfully")}catch(r){throw console.error("❌ Failed to store template:",r),r}}async loadTemplates(){try{await this.initialize();const e=w(this.db,"templates"),r=await x(e),t=[];return r.forEach(a=>{t.push(a.data())}),console.log("✅ Templates loaded successfully"),t}catch(e){return console.error("❌ Failed to load templates:",e),[]}}async searchTemplates(e,r,t){try{await this.initialize();const a=w(this.db,"templates");let n=g(a);e&&e.length>0&&(n=g(n,f("keywords","array-contains-any",e))),r&&r.length>0&&(n=g(n,f("technologies","array-contains-any",r))),t&&t.length>0&&(n=g(n,f("patterns","array-contains-any",t)));const o=await x(n),s=[];return o.forEach(i=>{s.push(i.data())}),console.log("✅ Templates searched successfully"),s}catch(a){return console.error("❌ Failed to search templates:",a),[]}}async storeLargeFile(e,r,t){try{await this.initialize();const a=$(this.storage,`projects/${e}/${r}`),n=new Blob([t],{type:"text/plain"});await M(a,n);const o=await N(a);return console.log("✅ Large file stored successfully"),o}catch(a){throw console.error("❌ Failed to store large file:",a),a}}async loadLargeFile(e){try{const t=await(await fetch(e)).text();return console.log("✅ Large file loaded successfully"),t}catch(r){return console.error("❌ Failed to load large file:",r),null}}async getUserProjects(){try{await this.initialize();const e=w(this.db,"projectContexts"),r=g(e,f("userId","==",this.user?.uid||"anonymous")),t=await x(r),a=[];return t.forEach(n=>{a.push({id:n.id,...n.data()})}),console.log("✅ User projects loaded successfully"),a}catch(e){return console.error("❌ Failed to load user projects:",e),[]}}async deleteProject(e){try{await this.initialize();const r=l(this.db,"projectContexts",e);await T(r);const t=l(this.db,"projectFiles",e);await T(t),console.log("✅ Project deleted successfully")}catch(r){throw console.error("❌ Failed to delete project:",r),r}}async getStorageStats(){try{await this.initialize();const e=await this.getUserProjects();let r=0,t=0;for(const a of e)r+=a.dataSize||0,t+=a.fileCount||0;return{totalProjects:e.length,totalFiles:t,totalSize:r,totalSizeMB:Math.round(r/(1024*1024)*100)/100}}catch(e){return console.error("❌ Failed to get storage stats:",e),{totalProjects:0,totalFiles:0,totalSize:0,totalSizeMB:0}}}async storeConversationMemory(e,r){try{await this.initialize();const t=JSON.stringify(r),a=8e5;if(t.length>a){console.log("⚠️ Conversation data too large, storing in chunks");const n=this.chunkData(r,a);for(let o=0;o<n.length;o++){const s=l(this.db,"conversationMemory",`${e}_chunk_${o}`);await m(s,{projectId:e,chunkIndex:o,totalChunks:n.length,conversation:n[o],userId:this.user?.uid||"anonymous",lastUpdated:new Date().toISOString()})}console.log(`🧠 Conversation memory stored in ${n.length} chunks`)}else{const n=l(this.db,"conversationMemory",e);await m(n,{projectId:e,conversation:r,userId:this.user?.uid||"anonymous",lastUpdated:new Date().toISOString(),memorySize:t.length}),console.log("🧠 Conversation memory stored successfully")}}catch(t){throw console.error("❌ Failed to store conversation memory:",t),t}}chunkData(e,r){const t=[],a=JSON.stringify(e);let n=0;for(;n<a.length;){let o=Math.min(n+r,a.length);if(o<a.length){let s=a.lastIndexOf("}",o),i=a.lastIndexOf("]",o),c=a.lastIndexOf(",",o);const d=Math.max(s,i,c);d>n+r*.8&&(o=d+1)}try{t.push(JSON.parse(a.slice(n,o)))}catch{t.push(a.slice(n,o))}n=o}return t}async loadConversationMemory(e){try{await this.initialize();const r=l(this.db,"conversationMemory",e),t=await v(r);if(t.exists())return console.log("🧠 Conversation memory loaded successfully"),t.data().conversation;const a=w(this.db,"conversationMemory"),n=g(a,f("projectId","==",e)),o=await x(n);if(!o.empty){const s=[];o.forEach(c=>{s.push({index:c.data().chunkIndex,data:c.data().conversation})}),s.sort((c,d)=>c.index-d.index);const i=s.map(c=>c.data);return console.log(`🧠 Conversation memory loaded from ${s.length} chunks`),i}return console.log("❌ Conversation memory not found"),null}catch(r){return console.error("❌ Failed to load conversation memory:",r),null}}async addPromptToMemory(e,r,t,a){try{await this.initialize();let n=await this.loadConversationMemory(e)||{projectId:e,prompts:[],responses:[],context:{},createdAt:new Date().toISOString(),lastUpdated:new Date().toISOString()};return n.prompts.push({id:`prompt-${Date.now()}`,text:r,timestamp:new Date().toISOString(),context:a}),n.responses.push({id:`response-${Date.now()}`,promptId:n.prompts[n.prompts.length-1].id,text:t,timestamp:new Date().toISOString(),context:a}),n.context={...n.context,...a},n.lastUpdated=new Date().toISOString(),await this.storeConversationMemory(e,n),console.log("🧠 Prompt added to memory successfully"),n}catch(n){throw console.error("❌ Failed to add prompt to memory:",n),n}}async getConversationHistory(e,r=50){try{await this.initialize();const t=await this.loadConversationMemory(e);if(!t)return[];const a=t.prompts.slice(-r),n=t.responses.slice(-r);return{prompts:a,responses:n,context:t.context,totalPrompts:t.prompts.length,totalResponses:t.responses.length}}catch(t){return console.error("❌ Failed to get conversation history:",t),[]}}async searchConversationMemory(e,r){try{await this.initialize();const t=await this.loadConversationMemory(e);if(!t)return[];const a=[],n=r.toLowerCase();return t.prompts.forEach(o=>{o.text.toLowerCase().includes(n)&&a.push({type:"prompt",id:o.id,text:o.text,timestamp:o.timestamp,context:o.context})}),t.responses.forEach(o=>{o.text.toLowerCase().includes(n)&&a.push({type:"response",id:o.id,text:o.text,timestamp:o.timestamp,context:o.context})}),console.log("🔍 Conversation memory searched successfully"),a}catch(t){return console.error("❌ Failed to search conversation memory:",t),[]}}async getConversationContext(e,r){try{await this.initialize();const t=await this.loadConversationMemory(e);if(!t)return null;const a={projectId:e,currentPrompt:r,previousPrompts:t.prompts.slice(-10),previousResponses:t.responses.slice(-10),projectContext:t.context,conversationSummary:this.generateConversationSummary(t),relevantHistory:this.findRelevantHistory(t,r)};return console.log("🧠 Conversation context generated successfully"),a}catch(t){return console.error("❌ Failed to get conversation context:",t),null}}generateConversationSummary(e){const r=e.prompts,t=e.responses;return r.length===0?"No previous conversation":{totalPrompts:r.length,totalResponses:t.length,firstPrompt:r[0]?.text||"",lastPrompt:r[r.length-1]?.text||"",keyTopics:this.extractKeyTopics(r),projectEvolution:this.trackProjectEvolution(e)}}extractKeyTopics(e){const r=new Set;return e.forEach(t=>{t.text.toLowerCase().split(" ").forEach(n=>{n.length>4&&!this.isCommonWord(n)&&r.add(n)})}),Array.from(r).slice(0,10)}isCommonWord(e){return["the","and","for","are","but","not","you","all","can","had","her","was","one","our","out","day","get","has","him","his","how","its","may","new","now","old","see","two","way","who","boy","did","man","men","put","say","she","too","use"].includes(e)}trackProjectEvolution(e){const r=[],t=e.prompts,a=e.responses;for(let n=0;n<t.length;n++){const o=t[n],s=a[n];r.push({phase:n+1,prompt:o.text,response:s.text,timestamp:o.timestamp,context:o.context})}return r}findRelevantHistory(e,r){const t=[],a=r.toLowerCase().split(" ");return e.prompts.forEach((n,o)=>{const s=n.text.toLowerCase().split(" "),i=a.filter(c=>s.includes(c));i.length>2&&t.push({prompt:n.text,response:e.responses[o]?.text||"",relevance:i.length,timestamp:n.timestamp})}),t.sort((n,o)=>o.relevance-n.relevance).slice(0,5)}async storeAILearningPattern(e,r){try{await this.initialize();const t=l(this.db,"aiLearningPatterns",`${e}-${Date.now()}`);await m(t,{projectId:e,pattern:r,userId:this.user?.uid||"anonymous",createdAt:new Date().toISOString()}),console.log("🧠 AI learning pattern stored successfully")}catch(t){throw console.error("❌ Failed to store AI learning pattern:",t),t}}async getAILearningPatterns(e){try{await this.initialize();const r=w(this.db,"aiLearningPatterns"),t=g(r,f("projectId","==",e)),a=await x(t),n=[];return a.forEach(o=>{n.push(o.data())}),console.log("🧠 AI learning patterns loaded successfully"),n}catch(r){return console.error("❌ Failed to load AI learning patterns:",r),[]}}async clearConversationMemory(e){try{await this.initialize();const r=l(this.db,"conversationMemory",e);await T(r),console.log("🧠 Conversation memory cleared successfully")}catch(r){throw console.error("❌ Failed to clear conversation memory:",r),r}}async saveConversation(e){try{await this.initialize();const r=l(this.db,"conversations",e.id);await m(r,{...e,userId:this.user?.uid||"anonymous",updatedAt:new Date().toISOString()}),console.log("💬 Conversation saved successfully")}catch(r){throw console.error("❌ Failed to save conversation:",r),r}}async getConversation(e){try{await this.initialize();const r=l(this.db,"conversations",e),t=await v(r);return t.exists()?(console.log("💬 Conversation loaded successfully"),t.data()):null}catch(r){return console.error("❌ Failed to load conversation:",r),null}}async getUserConversations(){try{await this.initialize();const e=w(this.db,"conversations"),r=g(e,f("userId","==",this.user?.uid||"anonymous"),P("lastModified","desc")),t=await x(r),a=[];return t.forEach(n=>{a.push({id:n.id,...n.data()})}),console.log("💬 User conversations loaded successfully"),a}catch(e){return console.error("❌ Failed to load user conversations:",e),[]}}async saveFeatureRecommendations(e,r){try{await this.initialize();const t=l(this.db,"featureRecommendations",e);await m(t,{conversationId:e,recommendations:r,userId:this.user?.uid||"anonymous",createdAt:new Date().toISOString()}),console.log("🎯 Feature recommendations saved successfully")}catch(t){throw console.error("❌ Failed to save feature recommendations:",t),t}}async getFeatureRecommendations(e){try{await this.initialize();const r=l(this.db,"featureRecommendations",e),t=await v(r);return t.exists()?(console.log("🎯 Feature recommendations loaded successfully"),t.data().recommendations):[]}catch(r){return console.error("❌ Failed to load feature recommendations:",r),[]}}async saveIndustryStandardsCheck(e,r){try{await this.initialize();const t=l(this.db,"industryStandards",e);await m(t,{conversationId:e,standardsCheck:r,userId:this.user?.uid||"anonymous",checkedAt:new Date().toISOString()}),console.log("📊 Industry standards check saved successfully")}catch(t){throw console.error("❌ Failed to save industry standards check:",t),t}}async getIndustryStandardsCheck(e){try{await this.initialize();const r=l(this.db,"industryStandards",e),t=await v(r);return t.exists()?(console.log("📊 Industry standards check loaded successfully"),t.data().standardsCheck):null}catch(r){return console.error("❌ Failed to load industry standards check:",r),null}}}const F=new H;class q{constructor(){this.currentConversation=null,this.conversationHistory=[],this.projectContext={},this.featureRecommendations=[],this.industryStandards=this.getIndustryStandards()}async initializeConversation(e,r={}){try{return this.currentConversation={id:e||`conv_${Date.now()}`,projectData:r,messages:[],context:{currentFeatures:r.features||[],techStack:r.techStack||[],appType:r.appType||"web",complexity:r.complexity||"basic",industry:r.industry||"general"},createdAt:new Date,lastModified:new Date},await this.loadConversationHistory(e),console.log("🔄 Conversation initialized for project:",e),this.currentConversation}catch(t){throw console.error("Failed to initialize conversation:",t),t}}async addMessage(e,r=null,t="user"){if(!this.currentConversation)throw new Error("No active conversation. Initialize conversation first.");const a={id:`msg_${Date.now()}_${Math.random().toString(36).substr(2,9)}`,type:t,content:e,aiResponse:r,timestamp:new Date,context:{projectState:{...this.currentConversation.context},features:[...this.currentConversation.context.currentFeatures]}};return this.currentConversation.messages.push(a),this.currentConversation.lastModified=new Date,await this.saveConversation(),a}getConversationContext(){if(!this.currentConversation)return null;const e=this.currentConversation.messages.slice(-10);return{project:this.currentConversation.projectData,currentFeatures:this.currentConversation.context.currentFeatures,techStack:this.currentConversation.context.techStack,appType:this.currentConversation.context.appType,complexity:this.currentConversation.context.complexity,industry:this.currentConversation.context.industry,recentMessages:e.map(t=>({type:t.type,content:t.content,timestamp:t.timestamp})),conversationId:this.currentConversation.id}}async generateFeatureRecommendations(){if(!this.currentConversation)return[];const e=this.getConversationContext(),r=e.currentFeatures||[],t=e.appType||"web",a=e.industry||"general",n=e.complexity||"basic",o=this.getIndustrySpecificRecommendations(a,t),s=this.getComplexityBasedRecommendations(n,t),i=this.getEssentialFeatureRecommendations(r,t),c=this.getAdvancedFeatureRecommendations(r,t,a),d=[...i,...o,...s,...c],h=this.deduplicateRecommendations(d,r),S=this.prioritizeRecommendations(h,e);return this.featureRecommendations=S.slice(0,10),this.featureRecommendations}getIndustrySpecificRecommendations(e,r){const t={ecommerce:[{name:"Shopping Cart",description:"Add shopping cart functionality with add/remove items",priority:"high",category:"core"},{name:"Payment Integration",description:"Integrate payment processing (Stripe, PayPal)",priority:"high",category:"payment"},{name:"Product Search",description:"Add search and filter functionality for products",priority:"medium",category:"search"},{name:"User Reviews",description:"Allow customers to review and rate products",priority:"medium",category:"social"},{name:"Inventory Management",description:"Track product stock and availability",priority:"high",category:"management"}],healthcare:[{name:"Patient Records",description:"Secure patient data management system",priority:"high",category:"data"},{name:"Appointment Scheduling",description:"Calendar system for booking appointments",priority:"high",category:"scheduling"},{name:"HIPAA Compliance",description:"Ensure healthcare data privacy compliance",priority:"critical",category:"security"},{name:"Prescription Management",description:"Digital prescription tracking and management",priority:"medium",category:"management"},{name:"Telemedicine",description:"Video consultation capabilities",priority:"medium",category:"communication"}],education:[{name:"Course Management",description:"Create and manage educational courses",priority:"high",category:"content"},{name:"Progress Tracking",description:"Track student learning progress and analytics",priority:"high",category:"analytics"},{name:"Quiz System",description:"Interactive quizzes and assessments",priority:"medium",category:"assessment"},{name:"Discussion Forums",description:"Student and teacher discussion boards",priority:"medium",category:"social"},{name:"Certificate Generation",description:"Automated certificate creation and delivery",priority:"low",category:"certification"}],finance:[{name:"Transaction History",description:"Detailed financial transaction tracking",priority:"high",category:"data"},{name:"Budget Planning",description:"Personal or business budget management tools",priority:"high",category:"planning"},{name:"Security Features",description:"Two-factor authentication and encryption",priority:"critical",category:"security"},{name:"Reporting Dashboard",description:"Financial reports and analytics dashboard",priority:"medium",category:"analytics"},{name:"Investment Tracking",description:"Portfolio and investment performance tracking",priority:"medium",category:"investment"}],general:[{name:"User Authentication",description:"Secure user login and registration system",priority:"high",category:"auth"},{name:"Data Validation",description:"Input validation and error handling",priority:"high",category:"validation"},{name:"Responsive Design",description:"Mobile-friendly responsive layout",priority:"high",category:"ui"},{name:"Search Functionality",description:"Search and filter capabilities",priority:"medium",category:"search"},{name:"Analytics Integration",description:"User behavior and performance analytics",priority:"medium",category:"analytics"}]};return t[e]||t.general}getComplexityBasedRecommendations(e,r){const t={basic:[{name:"Basic CRUD Operations",description:"Create, Read, Update, Delete functionality",priority:"high",category:"core"},{name:"Form Validation",description:"Client-side and server-side form validation",priority:"high",category:"validation"},{name:"Error Handling",description:"Comprehensive error handling and user feedback",priority:"medium",category:"ux"}],intermediate:[{name:"API Integration",description:"Connect to external APIs and services",priority:"high",category:"integration"},{name:"State Management",description:"Advanced state management (Redux, Context)",priority:"medium",category:"architecture"},{name:"Caching Strategy",description:"Implement caching for better performance",priority:"medium",category:"performance"},{name:"Testing Suite",description:"Unit and integration tests",priority:"medium",category:"testing"}],advanced:[{name:"Microservices Architecture",description:"Break down into microservices",priority:"high",category:"architecture"},{name:"Real-time Features",description:"WebSocket or Server-Sent Events",priority:"high",category:"realtime"},{name:"Advanced Security",description:"OAuth, JWT, rate limiting, security headers",priority:"high",category:"security"},{name:"Performance Optimization",description:"Code splitting, lazy loading, CDN",priority:"high",category:"performance"},{name:"Monitoring & Logging",description:"Application monitoring and logging system",priority:"medium",category:"monitoring"}]};return t[e]||t.basic}getEssentialFeatureRecommendations(e,r){return[{name:"Error Boundaries",description:"React error boundaries for graceful error handling",priority:"high",category:"reliability"},{name:"Loading States",description:"Loading indicators and skeleton screens",priority:"high",category:"ux"},{name:"Accessibility (a11y)",description:"WCAG compliance and screen reader support",priority:"high",category:"accessibility"},{name:"SEO Optimization",description:"Meta tags, structured data, sitemap",priority:"medium",category:"seo"},{name:"Performance Monitoring",description:"Core Web Vitals and performance tracking",priority:"medium",category:"performance"}].filter(a=>!e.some(n=>n.toLowerCase().includes(a.name.toLowerCase())||a.name.toLowerCase().includes(n.toLowerCase())))}getAdvancedFeatureRecommendations(e,r,t){return[{name:"PWA Support",description:"Progressive Web App capabilities",priority:"medium",category:"mobile"},{name:"Offline Support",description:"Service worker for offline functionality",priority:"medium",category:"offline"},{name:"Internationalization",description:"Multi-language support (i18n)",priority:"low",category:"localization"},{name:"Dark Mode",description:"Theme switching and dark mode support",priority:"low",category:"ui"},{name:"Advanced Analytics",description:"User behavior tracking and heatmaps",priority:"low",category:"analytics"}]}deduplicateRecommendations(e,r){const t=new Set;return e.filter(a=>{const n=a.name.toLowerCase();return t.has(n)||r.some(o=>o.toLowerCase().includes(n)||n.includes(o.toLowerCase()))?!1:(t.add(n),!0)})}prioritizeRecommendations(e,r){return e.sort((t,a)=>{const n={critical:4,high:3,medium:2,low:1},o=n[t.priority]||0,s=n[a.priority]||0;if(o!==s)return s-o;const i={core:4,security:4,auth:3,validation:3,ux:2,performance:2},c=i[t.category]||1;return(i[a.category]||1)-c})}getIndustryStandards(){return{security:["Input validation and sanitization","HTTPS enforcement","Authentication and authorization","Rate limiting and DDoS protection","Security headers (CSP, HSTS, etc.)","Regular security audits"],performance:["Core Web Vitals optimization","Image optimization and lazy loading","Code splitting and tree shaking","CDN implementation","Caching strategies","Database query optimization"],accessibility:["WCAG 2.1 AA compliance","Keyboard navigation support","Screen reader compatibility","Color contrast ratios","Alt text for images","Focus management"],code_quality:["TypeScript implementation","ESLint and Prettier configuration","Unit and integration tests","Code documentation","Error handling and logging","Code review process"],deployment:["CI/CD pipeline setup","Environment configuration","Monitoring and alerting","Backup and recovery","Scalability planning","Documentation and runbooks"]}}async checkIndustryStandards(e){const r=this.getIndustryStandards(),t=e.features||[],a={};return Object.keys(r).forEach(n=>{a[n]={total:r[n].length,implemented:0,missing:[],score:0},r[n].forEach(o=>{t.some(i=>i.toLowerCase().includes(o.toLowerCase())||o.toLowerCase().includes(i.toLowerCase()))?a[n].implemented++:a[n].missing.push(o)}),a[n].score=Math.round(a[n].implemented/a[n].total*100)}),a}generateConversationSummary(){if(!this.currentConversation)return null;const e=this.currentConversation.messages,r=this.currentConversation.context.currentFeatures,t=this.featureRecommendations;return{conversationId:this.currentConversation.id,messageCount:e.length,currentFeatures:r,recommendations:t.slice(0,5),lastActivity:this.currentConversation.lastModified,projectType:this.currentConversation.context.appType,industry:this.currentConversation.context.industry}}async saveConversation(){if(this.currentConversation)try{await F.saveConversation(this.currentConversation),console.log("💾 Conversation saved to Firebase")}catch(e){console.error("Failed to save conversation:",e)}}async loadConversationHistory(e){try{const r=await F.getConversation(e);r&&(this.currentConversation=r,this.conversationHistory=r.messages||[],console.log("📚 Conversation history loaded"))}catch(r){console.error("Failed to load conversation history:",r)}}getConversationHistory(){return this.currentConversation?this.currentConversation.messages:[]}clearConversation(){this.currentConversation=null,this.conversationHistory=[],this.projectContext={},this.featureRecommendations=[]}}const Q=new q;class G{constructor(){this.currentProject=null,this.existingFeatures=[],this.featureHistory=[]}async initializeProject(e){this.currentProject=e,this.existingFeatures=this.extractExistingFeatures(e),this.featureHistory=[],console.log("🔄 Incremental development initialized"),console.log("📋 Existing features:",this.existingFeatures)}extractExistingFeatures(e){const r=[],t=e.files||{};return Object.entries(t).forEach(([a,n])=>{if(typeof n=="string"){const o=this.analyzeFileForFeatures(a,n);r.push(...o)}}),[...new Set(r)]}analyzeFileForFeatures(e,r){const t=[],a=r.toLowerCase();return(a.includes("login")||a.includes("auth")||a.includes("signin"))&&t.push("Authentication"),(a.includes("database")||a.includes("firebase")||a.includes("mongodb"))&&t.push("Database"),(a.includes("responsive")||a.includes("mobile")||a.includes("@media"))&&t.push("Responsive Design"),(a.includes("fetch")||a.includes("axios")||a.includes("api"))&&t.push("API Integration"),(a.includes("form")||a.includes("input")||a.includes("submit"))&&t.push("Form Handling"),(a.includes("router")||a.includes("route")||a.includes("navigate"))&&t.push("Routing"),(a.includes("useState")||a.includes("useContext")||a.includes("redux"))&&t.push("State Management"),(a.includes("test")||a.includes("jest")||a.includes("spec"))&&t.push("Testing"),(a.includes("todo")||a.includes("task"))&&t.push("Todo Management"),(a.includes("shopping")||a.includes("cart")||a.includes("product"))&&t.push("E-commerce"),(a.includes("calendar")||a.includes("schedule")||a.includes("appointment"))&&t.push("Scheduling"),(a.includes("chat")||a.includes("message")||a.includes("conversation"))&&t.push("Messaging"),t}async processFeatureRequest(e,r){console.log("🔄 Processing feature request:",e);const t=this.analyzeRequestedFeatures(e);console.log("🎯 Requested features:",t);const a=this.filterNewFeatures(t);if(console.log("✨ New features to add:",a),a.length===0)return{type:"no_new_features",message:"These features already exist in your app. Would you like to enhance or modify them instead?",existingFeatures:this.existingFeatures};const n=await this.generateIncrementalCode(a,e,r);return this.existingFeatures.push(...a),this.featureHistory.push({timestamp:new Date,features:a,prompt:e}),{type:"incremental_update",newFeatures:a,code:n,updatedFiles:this.getUpdatedFiles(n),message:`Added ${a.length} new feature(s): ${a.join(", ")}`}}analyzeRequestedFeatures(e){const r=e.toLowerCase(),t=[];return(r.includes("login")||r.includes("auth")||r.includes("sign in")||r.includes("register"))&&t.push("Authentication"),(r.includes("database")||r.includes("store data")||r.includes("save data"))&&t.push("Database"),(r.includes("responsive")||r.includes("mobile")||r.includes("mobile-friendly"))&&t.push("Responsive Design"),(r.includes("api")||r.includes("fetch data")||r.includes("external data"))&&t.push("API Integration"),(r.includes("form")||r.includes("input")||r.includes("submit"))&&t.push("Form Handling"),(r.includes("navigation")||r.includes("pages")||r.includes("routing"))&&t.push("Routing"),(r.includes("state")||r.includes("manage data")||r.includes("global state"))&&t.push("State Management"),(r.includes("test")||r.includes("testing")||r.includes("unit test"))&&t.push("Testing"),(r.includes("todo")||r.includes("task")||r.includes("checklist"))&&t.push("Todo Management"),(r.includes("shopping")||r.includes("cart")||r.includes("ecommerce")||r.includes("store"))&&t.push("E-commerce"),(r.includes("calendar")||r.includes("schedule")||r.includes("booking"))&&t.push("Scheduling"),(r.includes("chat")||r.includes("message")||r.includes("communication"))&&t.push("Messaging"),(r.includes("search")||r.includes("filter")||r.includes("find"))&&t.push("Search Functionality"),(r.includes("notification")||r.includes("alert")||r.includes("reminder"))&&t.push("Notifications"),(r.includes("upload")||r.includes("file")||r.includes("image"))&&t.push("File Upload"),(r.includes("payment")||r.includes("stripe")||r.includes("paypal")||r.includes("billing"))&&t.push("Payment Processing"),t}filterNewFeatures(e){return e.filter(r=>!this.existingFeatures.some(t=>t.toLowerCase().includes(r.toLowerCase())||r.toLowerCase().includes(t.toLowerCase())))}async generateIncrementalCode(e,r,t){const a={};for(const n of e){const o=await this.generateFeatureCode(n,r,t);Object.assign(a,o)}return a}async generateFeatureCode(e,r,t){const n={Authentication:()=>this.generateAuthCode(),Database:()=>this.generateDatabaseCode(),"Responsive Design":()=>this.generateResponsiveCode(),"API Integration":()=>this.generateAPICode(),"Form Handling":()=>this.generateFormCode(),Routing:()=>this.generateRoutingCode(),"State Management":()=>this.generateStateCode(),Testing:()=>this.generateTestingCode(),"Todo Management":()=>this.generateTodoCode(),"E-commerce":()=>this.generateEcommerceCode(),Scheduling:()=>this.generateSchedulingCode(),Messaging:()=>this.generateMessagingCode(),"Search Functionality":()=>this.generateSearchCode(),Notifications:()=>this.generateNotificationCode(),"File Upload":()=>this.generateFileUploadCode(),"Payment Processing":()=>this.generatePaymentCode()}[e];return n?await n():this.generateGenericFeatureCode(e,r)}generateAuthCode(){return{"auth.js":`// Authentication Service
+class AuthService {
+  constructor() {
+    this.isAuthenticated = false
+    this.user = null
+  }
+
+  async login(email, password) {
+    try {
+      // Simulate API call
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      
+      if (response.ok) {
+        const userData = await response.json()
+        this.isAuthenticated = true
+        this.user = userData.user
+        localStorage.setItem('authToken', userData.token)
+        return { success: true, user: userData.user }
+      } else {
+        throw new Error('Login failed')
+      }
     } catch (error) {
-      console.error('❌ Incremental code generation failed:', error)
+      console.error('Login error:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  async register(userData) {
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      })
+      
+      if (response.ok) {
+        return { success: true }
+      } else {
+        throw new Error('Registration failed')
+      }
+    } catch (error) {
+      console.error('Registration error:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  logout() {
+    this.isAuthenticated = false
+    this.user = null
+    localStorage.removeItem('authToken')
+  }
+
+  getCurrentUser() {
+    return this.user
+  }
+
+  isLoggedIn() {
+    return this.isAuthenticated
+  }
+}
+
+// Export for use in other files
+window.AuthService = AuthService`,"auth.css":`/* Authentication Styles */
+.auth-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.auth-button {
+  padding: 0.75rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.auth-button:hover {
+  background: #0056b3;
+}
+
+.auth-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.auth-success {
+  color: #28a745;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}`}}generateDatabaseCode(){return{"database.js":`// Database Service
+class DatabaseService {
+  constructor() {
+    this.baseURL = '/api'
+  }
+
+  async create(collection, data) {
+    try {
+      const response = await fetch(\`\${this.baseURL}/\${collection}\`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      return await response.json()
+    } catch (error) {
+      console.error('Create error:', error)
       throw error
     }
   }
 
-  // Enhanced context analysis (like Cursor)
-  analyzeProjectContext(context) {
-    return {
-      // Project structure analysis
-      projectType: this.detectProjectType(context),
-      existingFiles: context.previousFiles || [],
-      dependencies: this.analyzeDependencies(context),
-      codingStandards: this.detectCodingStandards(context),
-      architecture: this.detectArchitecture(context),
-      frameworks: this.detectFrameworks(context),
-      // User preferences
-      userPreferences: this.extractUserPreferences(context),
-      // Development environment
-      environment: this.detectEnvironment(context)
-    }
-  }
-
-  // Context-aware code generation (like Cursor)
-  async generateContextAwareCode(prompt, context) {
-    console.log('🧠 Context-aware generation:', context)
-    
-    // Use context to inform code generation
-    const analysis = this.analyzeUserRequest(prompt)
-    const contextualCode = await this.generateSpecificCode(prompt, analysis)
-    
-    // Enhance with context awareness
-    const enhancedCode = this.enhanceWithContext(contextualCode, context)
-    
-    console.log('🔧 Enhanced code generated with context awareness')
-    return enhancedCode
-  }
-
-  // Generate preview data (like Lovable)
-  generatePreviewData(generatedCode, appName) {
-    return {
-      title: appName,
-      description: `A ${appName} application generated by DreamBuild AI`,
-      features: this.extractFeatures(generatedCode),
-      screenshots: this.generateScreenshots(generatedCode),
-      liveDemo: this.generateLiveDemo(generatedCode),
-      techStack: this.extractTechStack(generatedCode),
-      deployment: this.generateDeploymentInfo(generatedCode)
-    }
-  }
-
-  // Extract dependencies (like Lovable)
-  extractDependencies(generatedCode) {
-    const dependencies = new Set()
-    
-    Object.values(generatedCode).forEach(content => {
-      // Check for React
-      if (content.includes('React') || content.includes('react')) {
-        dependencies.add('react')
-        dependencies.add('react-dom')
-      }
-      // Check for Vue
-      if (content.includes('Vue') || content.includes('vue')) {
-        dependencies.add('vue')
-      }
-      // Check for Angular
-      if (content.includes('Angular') || content.includes('angular')) {
-        dependencies.add('@angular/core')
-      }
-      // Check for Node.js
-      if (content.includes('express') || content.includes('node')) {
-        dependencies.add('express')
-      }
-      // Check for CSS frameworks
-      if (content.includes('tailwind') || content.includes('bootstrap')) {
-        dependencies.add('tailwindcss')
-      }
-    })
-    
-    return Array.from(dependencies)
-  }
-
-  // Generate build instructions (like Lovable)
-  generateBuildInstructions(generatedCode) {
-    const hasReact = Object.values(generatedCode).some(content => 
-      content.includes('React') || content.includes('react')
-    )
-    const hasNode = Object.values(generatedCode).some(content => 
-      content.includes('express') || content.includes('node')
-    )
-    
-    if (hasReact) {
-      return {
-        install: 'npm install',
-        start: 'npm start',
-        build: 'npm run build',
-        dev: 'npm run dev'
-      }
-    } else if (hasNode) {
-      return {
-        install: 'npm install',
-        start: 'node server.js',
-        dev: 'nodemon server.js'
-      }
-    } else {
-      return {
-        install: 'No dependencies required',
-        start: 'Open index.html in browser',
-        build: 'No build process required'
-      }
-    }
-  }
-
-  // Generate intelligent code based on prompt analysis
-  generateIntelligentCode(prompt, context = {}) {
-    console.log('🧠 Analyzing prompt:', prompt)
-    
-    // Parse the user's request to understand what they actually want
-    const analysis = this.analyzeUserRequest(prompt)
-    console.log('📋 Analysis result:', analysis)
-    
-    // Generate code based on the specific request
-    return this.generateSpecificCode(prompt, analysis)
-  }
-
-  // Analyze what the user actually wants
-  analyzeUserRequest(prompt) {
-    // Ensure prompt is a string
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const lowerPrompt = promptString.toLowerCase()
-    
-    return {
-      // Detect specific functionality
-      hasButton: lowerPrompt.includes('button') || lowerPrompt.includes('click'),
-      hasForm: lowerPrompt.includes('form') || lowerPrompt.includes('input') || lowerPrompt.includes('submit'),
-      hasCalculator: lowerPrompt.includes('calculator') || lowerPrompt.includes('calculate') || lowerPrompt.includes('math'),
-      hasColorChange: lowerPrompt.includes('color') || lowerPrompt.includes('change color'),
-      hasCounter: lowerPrompt.includes('counter') || lowerPrompt.includes('count') || lowerPrompt.includes('increment'),
-      hasTodo: lowerPrompt.includes('todo') || lowerPrompt.includes('task') || lowerPrompt.includes('list'),
-      hasGame: lowerPrompt.includes('game') || lowerPrompt.includes('play') || lowerPrompt.includes('guess'),
-      hasAnimation: lowerPrompt.includes('animation') || lowerPrompt.includes('animate') || lowerPrompt.includes('spinning'),
-      hasAPI: lowerPrompt.includes('api') || lowerPrompt.includes('fetch') || lowerPrompt.includes('request'),
-      
-      // Detect technology preferences
-      wantsReact: lowerPrompt.includes('react') || lowerPrompt.includes('component'),
-      wantsVue: lowerPrompt.includes('vue'),
-      wantsAngular: lowerPrompt.includes('angular'),
-      wantsPython: lowerPrompt.includes('python') || lowerPrompt.includes('flask') || lowerPrompt.includes('django'),
-      wantsNode: lowerPrompt.includes('node') || lowerPrompt.includes('express'),
-      
-      // Detect specific features
-      wantsDatabase: lowerPrompt.includes('database') || lowerPrompt.includes('store') || lowerPrompt.includes('save'),
-      wantsAuth: lowerPrompt.includes('login') || lowerPrompt.includes('auth') || lowerPrompt.includes('user'),
-      wantsResponsive: lowerPrompt.includes('responsive') || lowerPrompt.includes('mobile'),
-      wantsStyling: lowerPrompt.includes('css') || lowerPrompt.includes('style') || lowerPrompt.includes('design'),
-      
-      // Extract specific requirements
-      specificFeature: this.extractSpecificFeature(prompt),
-      appName: this.extractAppName(prompt),
-      targetLanguage: this.detectTargetLanguage(prompt)
-    }
-  }
-
-  // Extract specific feature from prompt
-  extractSpecificFeature(prompt) {
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const lowerPrompt = promptString.toLowerCase()
-    
-    if (lowerPrompt.includes('factorial')) return 'factorial'
-    if (lowerPrompt.includes('fibonacci')) return 'fibonacci'
-    if (lowerPrompt.includes('prime')) return 'prime'
-    if (lowerPrompt.includes('sort')) return 'sort'
-    if (lowerPrompt.includes('search')) return 'search'
-    if (lowerPrompt.includes('timer')) return 'timer'
-    if (lowerPrompt.includes('clock')) return 'clock'
-    if (lowerPrompt.includes('weather')) return 'weather'
-    if (lowerPrompt.includes('chat')) return 'chat'
-    if (lowerPrompt.includes('quiz')) return 'quiz'
-    
-    return null
-  }
-
-  // Detect target programming language
-  detectTargetLanguage(prompt) {
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const lowerPrompt = promptString.toLowerCase()
-    
-    if (lowerPrompt.includes('python')) return 'python'
-    if (lowerPrompt.includes('javascript') || lowerPrompt.includes('js')) return 'javascript'
-    if (lowerPrompt.includes('react')) return 'react'
-    if (lowerPrompt.includes('vue')) return 'vue'
-    if (lowerPrompt.includes('angular')) return 'angular'
-    if (lowerPrompt.includes('html')) return 'html'
-    if (lowerPrompt.includes('css')) return 'css'
-    
-    return 'html' // Default to HTML
-  }
-
-  // Generate specific code based on analysis using AI
-  async generateSpecificCode(prompt, analysis) {
-    console.log('🎯 Generating specific code for:', analysis.specificFeature || 'general app')
-    
+  async read(collection, id = null) {
     try {
-      // Use AI to generate code based on the actual prompt
-      const systemPrompt = this.createSystemPrompt({
-        projectType: 'web',
-        existingFiles: [],
-        dependencies: [],
-        architecture: 'monolithic',
-        frameworks: ['html', 'css', 'javascript']
+      const url = id ? \`\${this.baseURL}/\${collection}/\${id}\` : \`\${this.baseURL}/\${collection}\`
+      const response = await fetch(url)
+      return await response.json()
+    } catch (error) {
+      console.error('Read error:', error)
+      throw error
+    }
+  }
+
+  async update(collection, id, data) {
+    try {
+      const response = await fetch(\`\${this.baseURL}/\${collection}/\${id}\`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      return await response.json()
+    } catch (error) {
+      console.error('Update error:', error)
+      throw error
+    }
+  }
+
+  async delete(collection, id) {
+    try {
+      const response = await fetch(\`\${this.baseURL}/\${collection}/\${id}\`, {
+        method: 'DELETE'
+      })
+      return await response.json()
+    } catch (error) {
+      console.error('Delete error:', error)
+      throw error
+    }
+  }
+}
+
+window.DatabaseService = DatabaseService`}}generateResponsiveCode(){return{"responsive.css":`/* Responsive Design Utilities */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-mobile {
+    flex-direction: column;
+  }
+  
+  .text-mobile {
+    font-size: 0.875rem;
+  }
+  
+  .button-mobile {
+    width: 100%;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+  }
+  
+  .text-small {
+    font-size: 0.75rem;
+  }
+  
+  .button-small {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Mobile-first approach */
+.mobile-first {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .mobile-first {
+    display: flex;
+  }
+}`}}generateAPICode(){return{"api.js":`// API Service
+class APIService {
+  constructor(baseURL = 'https://api.example.com') {
+    this.baseURL = baseURL
+    this.headers = {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  setAuthToken(token) {
+    this.headers['Authorization'] = \`Bearer \${token}\`
+  }
+
+  async get(endpoint) {
+    try {
+      const response = await fetch(\`\${this.baseURL}\${endpoint}\`, {
+        method: 'GET',
+        headers: this.headers
       })
       
-      const fullPrompt = `${systemPrompt}\n\nUser Request: ${prompt}\n\nGenerate a complete, working application with all the features requested. Return the code as a JSON object with files.`
-      
-      // Select the best model for the task
-      const model = this.selectBestModel(prompt, {})
-      const modelKey = this.availableModels[model]?.model || 'codellama/CodeLlama-7b-Python-hf'
-      
-      console.log('🤖 Using AI model:', modelKey)
-      console.log('📝 Full prompt:', fullPrompt)
-      
-      // Call AI API to generate code
-      const aiResponse = await this.callHuggingFaceAPI(
-        modelKey,
-        fullPrompt,
-        2048, // max tokens
-        0.7   // temperature
-      )
-      
-      console.log('🤖 AI Response received:', aiResponse)
-      
-      // Parse AI response
-      const generatedCode = await this.parseAIResponse(aiResponse, prompt)
-      
-      if (generatedCode && Object.keys(generatedCode).length > 0) {
-        console.log('✅ AI generated code successfully')
-        return generatedCode
-      } else {
-        console.log('⚠️ AI response was empty, using fallback')
-        return await this.createFallbackResponse(prompt, {})
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
       }
       
+      return await response.json()
     } catch (error) {
-      console.error('❌ AI code generation failed:', error)
-      console.log('🔄 Falling back to template generation...')
-      
-      // Fallback to templates only if AI fails
-      if (analysis.hasTodo) {
-        return this.createTodoTemplate(prompt)
-      }
-      
-      if (analysis.hasAPI) {
-        return this.createAPITemplate(prompt)
-      }
-      
-      if (analysis.specificFeature === 'weather') {
-        return this.generateWeatherApp(prompt)
-      }
-      
-      // Default fallback
-      return this.createDefaultTemplate(prompt)
+      console.error('GET request failed:', error)
+      throw error
     }
   }
 
-  // Select the best model for the task
-  selectBestModel(prompt, context) {
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const lowerPrompt = promptString.toLowerCase()
-    
-    // Code-specific models
-    if (lowerPrompt.includes('python') || lowerPrompt.includes('django') || lowerPrompt.includes('flask')) {
-      return 'codellama-7b'
-    }
-    if (lowerPrompt.includes('javascript') || lowerPrompt.includes('react') || lowerPrompt.includes('node')) {
-      return 'starcoder-15b'
-    }
-    if (lowerPrompt.includes('java') || lowerPrompt.includes('spring')) {
-      return 'deepseek-coder'
-    }
-    if (lowerPrompt.includes('c++') || lowerPrompt.includes('cpp') || lowerPrompt.includes('rust')) {
-      return 'codellama-13b'
-    }
-    if (lowerPrompt.includes('web') || lowerPrompt.includes('html') || lowerPrompt.includes('css')) {
-      return 'wizardcoder-7b'
-    }
-    
-    // Default to CodeLlama 7B for general code generation
-    return 'codellama-7b'
-  }
-
-  // Call Hugging Face Inference API
-  async callHuggingFaceAPI(model, prompt, maxTokens, temperature) {
-    const response = await axios.post(
-      `${this.baseURL}/${model}`,
-      {
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: maxTokens,
-          temperature: temperature,
-          return_full_text: false,
-          do_sample: true
-        }
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000
+  async post(endpoint, data) {
+    try {
+      const response = await fetch(\`\${this.baseURL}\${endpoint}\`, {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify(data)
+      })
+      
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
       }
-    )
-    
-    return response.data
+      
+      return await response.json()
+    } catch (error) {
+      console.error('POST request failed:', error)
+      throw error
+    }
   }
 
-  // Create system prompt
-  createSystemPrompt(context = {}) {
-    const conversationContext = context.conversationHistory?.length > 0 ? 
-      `\n\nConversation Context:
-- Previous messages: ${context.conversationHistory.length} messages
-- Recent conversation: ${context.recentMessages?.slice(-3).map(msg => `${msg.type}: ${msg.content}`).join('\n') || 'none'}
-- Project context: ${JSON.stringify(context.projectContext || {})}` : ''
+  async put(endpoint, data) {
+    try {
+      const response = await fetch(\`\${this.baseURL}\${endpoint}\`, {
+        method: 'PUT',
+        headers: this.headers,
+        body: JSON.stringify(data)
+      })
+      
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('PUT request failed:', error)
+      throw error
+    }
+  }
 
-    return `You are an expert software developer and code generator with advanced conversation capabilities. Generate complete, working applications based on user requests and maintain context across conversations.
+  async delete(endpoint) {
+    try {
+      const response = await fetch(\`\${this.baseURL}\${endpoint}\`, {
+        method: 'DELETE',
+        headers: this.headers
+      })
+      
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('DELETE request failed:', error)
+      throw error
+    }
+  }
+}
+
+window.APIService = APIService`}}generateFormCode(){return{"forms.js":`// Form Handling Utilities
+class FormHandler {
+  constructor(formId) {
+    this.form = document.getElementById(formId)
+    this.validators = {}
+    this.init()
+  }
+
+  init() {
+    if (this.form) {
+      this.form.addEventListener('submit', this.handleSubmit.bind(this))
+      this.setupValidation()
+    }
+  }
+
+  setupValidation() {
+    const inputs = this.form.querySelectorAll('input, textarea, select')
+    inputs.forEach(input => {
+      input.addEventListener('blur', () => this.validateField(input))
+      input.addEventListener('input', () => this.clearFieldError(input))
+    })
+  }
+
+  addValidator(fieldName, validator) {
+    this.validators[fieldName] = validator
+  }
+
+  validateField(field) {
+    const fieldName = field.name
+    const value = field.value
+    const validator = this.validators[fieldName]
+
+    if (validator) {
+      const result = validator(value)
+      if (!result.valid) {
+        this.showFieldError(field, result.message)
+        return false
+      }
+    }
+
+    this.clearFieldError(field)
+    return true
+  }
+
+  showFieldError(field, message) {
+    this.clearFieldError(field)
+    field.classList.add('error')
+    
+    const errorDiv = document.createElement('div')
+    errorDiv.className = 'field-error'
+    errorDiv.textContent = message
+    field.parentNode.appendChild(errorDiv)
+  }
+
+  clearFieldError(field) {
+    field.classList.remove('error')
+    const errorDiv = field.parentNode.querySelector('.field-error')
+    if (errorDiv) {
+      errorDiv.remove()
+    }
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()
+    
+    const formData = new FormData(this.form)
+    const data = Object.fromEntries(formData.entries())
+    
+    // Validate all fields
+    let isValid = true
+    const inputs = this.form.querySelectorAll('input, textarea, select')
+    inputs.forEach(input => {
+      if (!this.validateField(input)) {
+        isValid = false
+      }
+    })
+
+    if (isValid) {
+      this.onSubmit(data)
+    }
+  }
+
+  onSubmit(data) {
+    console.log('Form submitted:', data)
+    // Override this method in your implementation
+  }
+}
+
+// Common validators
+const validators = {
+  required: (value) => ({
+    valid: value.trim().length > 0,
+    message: 'This field is required'
+  }),
+  
+  email: (value) => ({
+    valid: /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value),
+    message: 'Please enter a valid email address'
+  }),
+  
+  minLength: (min) => (value) => ({
+    valid: value.length >= min,
+    message: \`Must be at least \${min} characters long\`
+  }),
+  
+  maxLength: (max) => (value) => ({
+    valid: value.length <= max,
+    message: \`Must be no more than \${max} characters long\`
+  })
+}
+
+window.FormHandler = FormHandler
+window.validators = validators`}}generateRoutingCode(){return{"router.js":`// Simple Router
+class Router {
+  constructor() {
+    this.routes = {}
+    this.currentRoute = null
+    this.init()
+  }
+
+  init() {
+    window.addEventListener('popstate', () => this.handleRoute())
+    this.handleRoute()
+  }
+
+  addRoute(path, handler) {
+    this.routes[path] = handler
+  }
+
+  navigate(path) {
+    window.history.pushState({}, '', path)
+    this.handleRoute()
+  }
+
+  handleRoute() {
+    const path = window.location.pathname
+    const handler = this.routes[path] || this.routes['*']
+    
+    if (handler) {
+      this.currentRoute = path
+      handler()
+    }
+  }
+}
+
+window.Router = Router`}}generateStateCode(){return{"state.js":`// Simple State Management
+class StateManager {
+  constructor(initialState = {}) {
+    this.state = initialState
+    this.listeners = []
+  }
+
+  getState() {
+    return { ...this.state }
+  }
+
+  setState(newState) {
+    this.state = { ...this.state, ...newState }
+    this.notifyListeners()
+  }
+
+  subscribe(listener) {
+    this.listeners.push(listener)
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener)
+    }
+  }
+
+  notifyListeners() {
+    this.listeners.forEach(listener => listener(this.state))
+  }
+}
+
+window.StateManager = StateManager`}}generateTestingCode(){return{"tests.js":`// Simple Testing Framework
+class TestRunner {
+  constructor() {
+    this.tests = []
+    this.results = []
+  }
+
+  test(name, fn) {
+    this.tests.push({ name, fn })
+  }
+
+  async run() {
+    console.log('Running tests...')
+    
+    for (const test of this.tests) {
+      try {
+        await test.fn()
+        this.results.push({ name: test.name, status: 'PASS' })
+        console.log(\`✅ \${test.name}\`)
+      } catch (error) {
+        this.results.push({ name: test.name, status: 'FAIL', error })
+        console.log(\`❌ \${test.name}: \${error.message}\`)
+      }
+    }
+    
+    this.printSummary()
+  }
+
+  printSummary() {
+    const passed = this.results.filter(r => r.status === 'PASS').length
+    const failed = this.results.filter(r => r.status === 'FAIL').length
+    
+    console.log(\`\\nTest Summary: \${passed} passed, \${failed} failed\`)
+  }
+}
+
+// Assertion helpers
+const assert = {
+  equal: (actual, expected) => {
+    if (actual !== expected) {
+      throw new Error(\`Expected \${expected}, but got \${actual}\`)
+    }
+  },
+  
+  true: (value) => {
+    if (value !== true) {
+      throw new Error(\`Expected true, but got \${value}\`)
+    }
+  },
+  
+  false: (value) => {
+    if (value !== false) {
+      throw new Error(\`Expected false, but got \${value}\`)
+    }
+  }
+}
+
+window.TestRunner = TestRunner
+window.assert = assert`}}generateGenericFeatureCode(e,r){return{[`${e.toLowerCase().replace(/\s+/g,"_")}.js`]:`// ${e} Implementation
+// Generated based on: "${r}"
+
+class ${e.replace(/\s+/g,"")} {
+  constructor() {
+    this.initialized = false
+    this.init()
+  }
+
+  init() {
+    console.log('${e} initialized')
+    this.initialized = true
+  }
+
+  // Add your ${e} methods here
+  // This is a template - customize based on your specific needs
+}
+
+// Export for use
+window.${e.replace(/\s+/g,"")} = ${e.replace(/\s+/g,"")}`}}getUpdatedFiles(e){return Object.keys(e)}getCurrentProject(){return{...this.currentProject,features:this.existingFeatures,featureHistory:this.featureHistory}}reset(){this.currentProject=null,this.existingFeatures=[],this.featureHistory=[]}}const I=new G;class W{constructor(){this.isHealthy=!0,this.baseURL="https://api-inference.huggingface.co/models",this.apiKey="hf_your_api_key_here",this.availableModels={"codellama-7b":{name:"CodeLlama 7B",model:"codellama/CodeLlama-7b-Python-hf",description:"Fast and efficient code generation",maxTokens:2048,temperature:.7},"codellama-13b":{name:"CodeLlama 13B",model:"codellama/CodeLlama-13b-Python-hf",description:"Higher quality code generation",maxTokens:2048,temperature:.7},"starcoder-15b":{name:"StarCoder 15B",model:"bigcode/starcoder",description:"Excellent code completion",maxTokens:2048,temperature:.7},"deepseek-coder":{name:"DeepSeek Coder",model:"deepseek-ai/deepseek-coder-6.7b-instruct",description:"High-performance generation",maxTokens:2048,temperature:.7},"wizardcoder-7b":{name:"WizardCoder 7B",model:"WizardLM/WizardCoder-15B-V1.0",description:"Great at following instructions",maxTokens:2048,temperature:.7},"phi3-mini":{name:"Phi-3 Mini",model:"microsoft/Phi-3-mini-4k-instruct",description:"Lightweight but powerful",maxTokens:2048,temperature:.7},"llama3-8b":{name:"Llama 3 8B",model:"meta-llama/Llama-3-8B-Instruct",description:"General purpose model",maxTokens:2048,temperature:.7},"mistral-7b":{name:"Mistral 7B",model:"mistralai/Mistral-7B-Instruct-v0.1",description:"Fast and efficient coding assistant",maxTokens:2048,temperature:.7},"gemma-7b":{name:"Gemma 7B",model:"google/gemma-7b-it",description:"Google's lightweight model",maxTokens:2048,temperature:.7},"qwen-7b":{name:"Qwen 7B",model:"Qwen/Qwen-7B-Chat",description:"Alibaba's coding model",maxTokens:2048,temperature:.7}},console.log("☁️ Cloud AI Service initialized with open source models!")}getAvailableModels(){return Object.values(this.availableModels)}getHealthyModels(){return Object.keys(this.availableModels)}async generateCode(e,r={}){console.log("🚀 Generating code with Cloud AI...");try{if(r.isIncremental&&r.existingProject)return await this.generateIncrementalCode(e,r);const t=this.analyzeProjectContext(r);r.conversationContext&&(t.conversationHistory=r.conversationHistory||[],t.recentMessages=r.conversationContext.recentMessages||[],t.projectContext=r.conversationContext),console.log("🧠 Enhanced context analysis:",t);const a=await this.generateContextAwareCode(e,t),n=this.generateAppName(e),o=this.generatePreviewData(a,n);return console.log("✅ Code generated successfully!"),console.log("🏷️ App name:",n),console.log("👁️ Preview data generated"),console.log("📁 Generated files:",Object.keys(a)),console.log("📄 File contents preview:",Object.entries(a).map(([s,i])=>({name:s,length:i.length,preview:i.substring(0,100)}))),{files:a,appName:n,prompt:e,generatedAt:new Date().toISOString(),preview:o,context:t,iterations:[],dependencies:this.extractDependencies(a),buildInstructions:this.generateBuildInstructions(a)}}catch(t){console.error("❌ Code generation failed:",t);const a=await this.createFallbackResponse(e,r),n=this.generateAppName(e);return{files:a,appName:n,prompt:e,generatedAt:new Date().toISOString(),preview:this.generatePreviewData(a,n),context:this.analyzeProjectContext(r),iterations:[],dependencies:this.extractDependencies(a),buildInstructions:this.generateBuildInstructions(a)}}}async generateIncrementalCode(e,r){console.log("🔄 Generating incremental code...");try{await I.initializeProject(r.existingProject);const t=await I.processFeatureRequest(e,r);if(t.type==="no_new_features")return{type:"no_changes",message:t.message,existingFeatures:t.existingFeatures,files:r.existingProject.files||{}};if(t.type==="incremental_update"){const a={...r.existingProject.files,...t.code};return{type:"incremental_update",files:a,newFeatures:t.newFeatures,updatedFiles:t.updatedFiles,message:t.message,appName:r.existingProject.name||"Updated App",prompt:e,generatedAt:new Date().toISOString(),preview:this.generatePreviewData(a,r.existingProject.name),context:this.analyzeProjectContext(r),iterations:I.featureHistory,dependencies:this.extractDependencies(a),buildInstructions:this.generateBuildInstructions(a)}}}catch(t){throw console.error("❌ Incremental code generation failed:",t),t}}analyzeProjectContext(e){return{projectType:this.detectProjectType(e),existingFiles:e.previousFiles||[],dependencies:this.analyzeDependencies(e),codingStandards:this.detectCodingStandards(e),architecture:this.detectArchitecture(e),frameworks:this.detectFrameworks(e),userPreferences:this.extractUserPreferences(e),environment:this.detectEnvironment(e)}}async generateContextAwareCode(e,r){console.log("🧠 Context-aware generation:",r);const t=this.analyzeUserRequest(e),a=await this.generateSpecificCode(e,t),n=this.enhanceWithContext(a,r);return console.log("🔧 Enhanced code generated with context awareness"),n}generatePreviewData(e,r){return{title:r,description:`A ${r} application generated by DreamBuild AI`,features:this.extractFeatures(e),screenshots:this.generateScreenshots(e),liveDemo:this.generateLiveDemo(e),techStack:this.extractTechStack(e),deployment:this.generateDeploymentInfo(e)}}extractDependencies(e){const r=new Set;return Object.values(e).forEach(t=>{(t.includes("React")||t.includes("react"))&&(r.add("react"),r.add("react-dom")),(t.includes("Vue")||t.includes("vue"))&&r.add("vue"),(t.includes("Angular")||t.includes("angular"))&&r.add("@angular/core"),(t.includes("express")||t.includes("node"))&&r.add("express"),(t.includes("tailwind")||t.includes("bootstrap"))&&r.add("tailwindcss")}),Array.from(r)}generateBuildInstructions(e){const r=Object.values(e).some(a=>a.includes("React")||a.includes("react")),t=Object.values(e).some(a=>a.includes("express")||a.includes("node"));return r?{install:"npm install",start:"npm start",build:"npm run build",dev:"npm run dev"}:t?{install:"npm install",start:"node server.js",dev:"nodemon server.js"}:{install:"No dependencies required",start:"Open index.html in browser",build:"No build process required"}}generateIntelligentCode(e,r={}){console.log("🧠 Analyzing prompt:",e);const t=this.analyzeUserRequest(e);return console.log("📋 Analysis result:",t),this.generateSpecificCode(e,t)}analyzeUserRequest(e){const t=(typeof e=="string"?e:JSON.stringify(e)).toLowerCase();return{hasButton:t.includes("button")||t.includes("click"),hasForm:t.includes("form")||t.includes("input")||t.includes("submit"),hasCalculator:t.includes("calculator")||t.includes("calculate")||t.includes("math"),hasColorChange:t.includes("color")||t.includes("change color"),hasCounter:t.includes("counter")||t.includes("count")||t.includes("increment"),hasTodo:t.includes("todo")||t.includes("task")||t.includes("list"),hasGame:t.includes("game")||t.includes("play")||t.includes("guess"),hasAnimation:t.includes("animation")||t.includes("animate")||t.includes("spinning"),hasAPI:t.includes("api")||t.includes("fetch")||t.includes("request"),wantsReact:t.includes("react")||t.includes("component"),wantsVue:t.includes("vue"),wantsAngular:t.includes("angular"),wantsPython:t.includes("python")||t.includes("flask")||t.includes("django"),wantsNode:t.includes("node")||t.includes("express"),wantsDatabase:t.includes("database")||t.includes("store")||t.includes("save"),wantsAuth:t.includes("login")||t.includes("auth")||t.includes("user"),wantsResponsive:t.includes("responsive")||t.includes("mobile"),wantsStyling:t.includes("css")||t.includes("style")||t.includes("design"),specificFeature:this.extractSpecificFeature(e),appName:this.extractAppName(e),targetLanguage:this.detectTargetLanguage(e)}}extractSpecificFeature(e){const t=(typeof e=="string"?e:JSON.stringify(e)).toLowerCase();return t.includes("factorial")?"factorial":t.includes("fibonacci")?"fibonacci":t.includes("prime")?"prime":t.includes("sort")?"sort":t.includes("search")?"search":t.includes("timer")?"timer":t.includes("clock")?"clock":t.includes("weather")?"weather":t.includes("chat")?"chat":t.includes("quiz")?"quiz":null}detectTargetLanguage(e){const t=(typeof e=="string"?e:JSON.stringify(e)).toLowerCase();return t.includes("python")?"python":t.includes("javascript")||t.includes("js")?"javascript":t.includes("react")?"react":t.includes("vue")?"vue":t.includes("angular")?"angular":t.includes("html")?"html":t.includes("css")?"css":"html"}async generateSpecificCode(e,r){console.log("🎯 Generating specific code for:",r.specificFeature||"general app");try{const a=`${this.createSystemPrompt({projectType:"web",existingFiles:[],dependencies:[],architecture:"monolithic",frameworks:["html","css","javascript"]})}
+
+User Request: ${e}
+
+Generate a complete, working application with all the features requested. Return the code as a JSON object with files.`,n=this.selectBestModel(e,{}),o=this.availableModels[n]?.model||"codellama/CodeLlama-7b-Python-hf";console.log("🤖 Using AI model:",o),console.log("📝 Full prompt:",a);const s=await this.callHuggingFaceAPI(o,a,2048,.7);console.log("🤖 AI Response received:",s);const i=await this.parseAIResponse(s,e);return i&&Object.keys(i).length>0?(console.log("✅ AI generated code successfully"),i):(console.log("⚠️ AI response was empty, using fallback"),await this.createFallbackResponse(e,{}))}catch(t){return console.error("❌ AI code generation failed:",t),console.log("🔄 Falling back to template generation..."),r.hasTodo?this.createTodoTemplate(e):r.hasAPI?this.createAPITemplate(e):r.specificFeature==="weather"?this.generateWeatherApp(e):this.createDefaultTemplate(e)}}selectBestModel(e,r){const a=(typeof e=="string"?e:JSON.stringify(e)).toLowerCase();return a.includes("python")||a.includes("django")||a.includes("flask")?"codellama-7b":a.includes("javascript")||a.includes("react")||a.includes("node")?"starcoder-15b":a.includes("java")||a.includes("spring")?"deepseek-coder":a.includes("c++")||a.includes("cpp")||a.includes("rust")?"codellama-13b":a.includes("web")||a.includes("html")||a.includes("css")?"wizardcoder-7b":"codellama-7b"}async callHuggingFaceAPI(e,r,t,a){return(await k.post(`${this.baseURL}/${e}`,{inputs:r,parameters:{max_new_tokens:t,temperature:a,return_full_text:!1,do_sample:!0}},{headers:{Authorization:`Bearer ${this.apiKey}`,"Content-Type":"application/json"},timeout:3e4})).data}createSystemPrompt(e={}){const r=e.conversationHistory?.length>0?`
+
+Conversation Context:
+- Previous messages: ${e.conversationHistory.length} messages
+- Recent conversation: ${e.recentMessages?.slice(-3).map(t=>`${t.type}: ${t.content}`).join(`
+`)||"none"}
+- Project context: ${JSON.stringify(e.projectContext||{})}`:"";return`You are an expert software developer and code generator with advanced conversation capabilities. Generate complete, working applications based on user requests and maintain context across conversations.
 
 Guidelines:
 1. Always generate complete, runnable code
@@ -582,11 +1228,11 @@ Guidelines:
 9. Suggest additional features based on context
 
 Context:
-- Project Type: ${context.projectType || 'web'}
-- Existing Files: ${context.existingFiles?.length || 0} files
-- Dependencies: ${context.dependencies?.join(', ') || 'none'}
-- Architecture: ${context.architecture || 'monolithic'}
-- Frameworks: ${context.frameworks?.join(', ') || 'vanilla'}${conversationContext}
+- Project Type: ${e.projectType||"web"}
+- Existing Files: ${e.existingFiles?.length||0} files
+- Dependencies: ${e.dependencies?.join(", ")||"none"}
+- Architecture: ${e.architecture||"monolithic"}
+- Frameworks: ${e.frameworks?.join(", ")||"vanilla"}${r}
 
 Return your response as a JSON object with this structure:
 {
@@ -600,59 +1246,18 @@ Return your response as a JSON object with this structure:
   "suggestions": ["Additional feature suggestions based on context"]
 }
 
-Generate practical, working applications that users can immediately use. If this is a correction or improvement request, modify the existing code appropriately while maintaining functionality.`
-  }
-
-  // Parse AI response
-  async parseAIResponse(response, originalPrompt) {
-    try {
-      // Handle different response formats from Hugging Face
-      let content = ''
-      
-      if (Array.isArray(response) && response.length > 0) {
-        content = response[0].generated_text || response[0].text || ''
-      } else if (response.generated_text) {
-        content = response.generated_text
-      } else if (response.text) {
-        content = response.text
-      } else {
-        content = JSON.stringify(response)
-      }
-      
-      // Try to extract JSON from the response
-      const jsonMatch = content.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0])
-        if (parsed.files) {
-          return parsed.files
-        }
-      }
-      
-      // If no valid JSON, create fallback response
-      return await this.createFallbackResponse(originalPrompt, {})
-      
-    } catch (error) {
-      console.error('❌ Failed to parse AI response:', error)
-      return await this.createFallbackResponse(originalPrompt, {})
-    }
-  }
-
-  // Generate Web Application
-  generateWebApp(prompt) {
-    const appName = this.extractAppName(prompt) || 'Web App'
-    return {
-      'index.html': `<!DOCTYPE html>
+Generate practical, working applications that users can immediately use. If this is a correction or improvement request, modify the existing code appropriately while maintaining functionality.`}async parseAIResponse(e,r){try{let t="";Array.isArray(e)&&e.length>0?t=e[0].generated_text||e[0].text||"":e.generated_text?t=e.generated_text:e.text?t=e.text:t=JSON.stringify(e);const a=t.match(/\{[\s\S]*\}/);if(a){const n=JSON.parse(a[0]);if(n.files)return n.files}return await this.createFallbackResponse(r,{})}catch(t){return console.error("❌ Failed to parse AI response:",t),await this.createFallbackResponse(r,{})}}generateWebApp(e){const r=this.extractAppName(e)||"Web App";return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${appName}</title>
+    <title>${r}</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>${appName}</h1>
-        <p>Generated based on: "${prompt}"</p>
+        <h1>${r}</h1>
+        <p>Generated based on: "${e}"</p>
         
         <div class="content">
             <button id="colorButton" class="btn">Click me to change color!</button>
@@ -660,10 +1265,9 @@ Generate practical, working applications that users can immediately use. If this
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <script src="script.js"><\/script>
 </body>
-</html>`,
-      'styles.css': `* {
+</html>`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -717,8 +1321,7 @@ h1 {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
   min-height: 100px;
-}`,
-      'script.js': `// ${appName} - Generated by DreamBuild AI
+}`,"script.js":`// ${r} - Generated by DreamBuild AI
 document.addEventListener('DOMContentLoaded', function() {
     const button = document.getElementById('colorButton');
     const output = document.getElementById('output');
@@ -743,9 +1346,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 150);
     });
 
-});`,
-      'package.json': `{
-  "name": "${appName.toLowerCase().replace(/\s+/g, '-')}",
+});`,"package.json":`{
+  "name": "${r.toLowerCase().replace(/\s+/g,"-")}",
   "version": "1.0.0",
   "description": "Generated by DreamBuild AI",
   "main": "index.html",
@@ -756,33 +1358,24 @@ document.addEventListener('DOMContentLoaded', function() {
   "keywords": ["web", "html", "javascript"],
   "author": "DreamBuild AI",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Generate React Application
-  generateReactApp(prompt) {
-    const appName = this.extractAppName(prompt) || 'React App'
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}generateReactApp(e){const r=this.extractAppName(e)||"React App";return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${appName}</title>
+    <title>${r}</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="root"></div>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel" src="App.jsx"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"><\/script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"><\/script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>
+    <script type="text/babel" src="App.jsx"><\/script>
 </body>
-</html>`,
-      'App.jsx': `import React, { useState } from 'react';
+</html>`,"App.jsx":`import React, { useState } from 'react';
 
-function ${appName.replace(/\s+/g, '')}() {
+function ${r.replace(/\s+/g,"")}() {
   const [count, setCount] = useState(0);
   const [message, setMessage] = useState('Hello from React!');
 
@@ -794,8 +1387,8 @@ function ${appName.replace(/\s+/g, '')}() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>${appName}</h1>
-        <p>Generated based on: "${prompt}"</p>
+        <h1>${r}</h1>
+        <p>Generated based on: "${e}"</p>
       </header>
       
       <main className="app-content">
@@ -821,8 +1414,7 @@ function ${appName.replace(/\s+/g, '')}() {
   );
 }
 
-ReactDOM.render(<${appName.replace(/\s+/g, '')} />, document.getElementById('root'));`,
-      'styles.css': `* {
+ReactDOM.render(<${r.replace(/\s+/g,"")} />, document.getElementById('root'));`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -909,9 +1501,8 @@ li:before {
   content: "✓ ";
   color: #4ecdc4;
   font-weight: bold;
-}`,
-      'package.json': `{
-  "name": "${appName.toLowerCase().replace(/\s+/g, '-')}",
+}`,"package.json":`{
+  "name": "${r.toLowerCase().replace(/\s+/g,"-")}",
   "version": "1.0.0",
   "description": "Generated by DreamBuild AI",
   "main": "index.html",
@@ -922,26 +1513,18 @@ li:before {
   "keywords": ["react", "javascript", "frontend"],
   "author": "DreamBuild AI",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Generate JavaScript Application
-  generateJavaScriptApp(prompt) {
-    const appName = this.extractAppName(prompt) || 'JavaScript App'
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}generateJavaScriptApp(e){const r=this.extractAppName(e)||"JavaScript App";return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${appName}</title>
+    <title>${r}</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>${appName}</h1>
-        <p>Generated based on: "${prompt}"</p>
+        <h1>${r}</h1>
+        <p>Generated based on: "${e}"</p>
         
         <div class="content">
             <div class="input-group">
@@ -952,11 +1535,10 @@ li:before {
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <script src="script.js"><\/script>
 </body>
-</html>`,
-      'script.js': `// ${appName} - Generated by DreamBuild AI
-class ${appName.replace(/\s+/g, '')} {
+</html>`,"script.js":`// ${r} - Generated by DreamBuild AI
+class ${r.replace(/\s+/g,"")} {
     constructor() {
         this.input = document.getElementById('userInput');
         this.button = document.getElementById('processBtn');
@@ -1022,9 +1604,8 @@ class ${appName.replace(/\s+/g, '')} {
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
-    new ${appName.replace(/\s+/g, '')}();
-});`,
-      'styles.css': `* {
+    new ${r.replace(/\s+/g,"")}();
+});`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -1107,9 +1688,8 @@ input {
 .results {
   margin-top: 1rem;
   line-height: 1.6;
-}`,
-      'package.json': `{
-  "name": "${appName.toLowerCase().replace(/\s+/g, '-')}",
+}`,"package.json":`{
+  "name": "${r.toLowerCase().replace(/\s+/g,"-")}",
   "version": "1.0.0",
   "description": "Generated by DreamBuild AI",
   "main": "index.html",
@@ -1120,55 +1700,17 @@ input {
   "keywords": ["javascript", "web", "interactive"],
   "author": "DreamBuild AI",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Generate specific features
-  generateSpecificFeature(prompt, feature) {
-    console.log('🎯 Generating specific feature:', feature)
-    
-    switch (feature) {
-      case 'factorial':
-        return this.generateFactorialApp(prompt)
-      case 'fibonacci':
-        return this.generateFibonacciApp(prompt)
-      case 'prime':
-        return this.generatePrimeApp(prompt)
-      case 'sort':
-        return this.generateSortApp(prompt)
-      case 'search':
-        return this.generateSearchApp(prompt)
-      case 'timer':
-        return this.generateTimerApp(prompt)
-      case 'clock':
-        return this.generateClockApp(prompt)
-      case 'weather':
-        return this.generateWeatherApp(prompt)
-      case 'chat':
-        return this.generateChatApp(prompt)
-      case 'quiz':
-        return this.generateQuizApp(prompt)
-      default:
-        return this.generateWebApp(prompt)
-    }
-  }
-
-  // Generate Factorial Calculator
-  generateFactorialApp(prompt) {
-    const appName = this.extractAppName(prompt) || 'Factorial Calculator'
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}generateSpecificFeature(e,r){switch(console.log("🎯 Generating specific feature:",r),r){case"factorial":return this.generateFactorialApp(e);case"fibonacci":return this.generateFibonacciApp(e);case"prime":return this.generatePrimeApp(e);case"sort":return this.generateSortApp(e);case"search":return this.generateSearchApp(e);case"timer":return this.generateTimerApp(e);case"clock":return this.generateClockApp(e);case"weather":return this.generateWeatherApp(e);case"chat":return this.generateChatApp(e);case"quiz":return this.generateQuizApp(e);default:return this.generateWebApp(e)}}generateFactorialApp(e){const r=this.extractAppName(e)||"Factorial Calculator";return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${appName}</title>
+    <title>${r}</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>${appName}</h1>
+        <h1>${r}</h1>
         <p>Calculate the factorial of any number</p>
         
         <div class="calculator">
@@ -1191,10 +1733,9 @@ input {
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <script src="script.js"><\/script>
 </body>
-</html>`,
-      'script.js': `// ${appName} - Generated by DreamBuild AI
+</html>`,"script.js":`// ${r} - Generated by DreamBuild AI
 class FactorialCalculator {
     constructor() {
         this.input = document.getElementById('numberInput');
@@ -1234,7 +1775,7 @@ class FactorialCalculator {
             <h3>Result: \${number}!</h3>
             <p class="factorial-result">\${this.formatNumber(factorial)}</p>
             <p class="time-taken">Calculated in \${timeTaken}ms</p>
-            <p class="explanation">\${this.getExplanation(number, factorial)}\</p>
+            <p class="explanation">\${this.getExplanation(number, factorial)}</p>
         \`, 'success');
     }
     
@@ -1267,8 +1808,7 @@ class FactorialCalculator {
 // Initialize the calculator
 document.addEventListener('DOMContentLoaded', () => {
     new FactorialCalculator();
-});`,
-      'styles.css': `* {
+});`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -1394,9 +1934,8 @@ input {
   padding: 0.5rem 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-family: monospace;
-}`,
-      'package.json': `{
-  "name": "${appName.toLowerCase().replace(/\s+/g, '-')}",
+}`,"package.json":`{
+  "name": "${r.toLowerCase().replace(/\s+/g,"-")}",
   "version": "1.0.0",
   "description": "Generated by DreamBuild AI",
   "main": "index.html",
@@ -1407,25 +1946,17 @@ input {
   "keywords": ["factorial", "calculator", "math"],
   "author": "DreamBuild AI",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Generate Fibonacci Calculator
-  generateFibonacciApp(prompt) {
-    const appName = this.extractAppName(prompt) || 'Fibonacci Calculator'
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}generateFibonacciApp(e){const r=this.extractAppName(e)||"Fibonacci Calculator";return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${appName}</title>
+    <title>${r}</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>${appName}</h1>
+        <h1>${r}</h1>
         <p>Generate Fibonacci sequence up to any number</p>
         
         <div class="calculator">
@@ -1444,10 +1975,9 @@ input {
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <script src="script.js"><\/script>
 </body>
-</html>`,
-      'script.js': `// ${appName} - Generated by DreamBuild AI
+</html>`,"script.js":`// ${r} - Generated by DreamBuild AI
 class FibonacciCalculator {
     constructor() {
         this.input = document.getElementById('numberInput');
@@ -1525,8 +2055,7 @@ class FibonacciCalculator {
 // Initialize the calculator
 document.addEventListener('DOMContentLoaded', () => {
     new FibonacciCalculator();
-});`,
-      'styles.css': `* {
+});`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -1651,9 +2180,8 @@ input {
 .examples h3 {
   margin-bottom: 1rem;
   color: #4ecdc4;
-}`,
-      'package.json': `{
-  "name": "${appName.toLowerCase().replace(/\s+/g, '-')}",
+}`,"package.json":`{
+  "name": "${r.toLowerCase().replace(/\s+/g,"-")}",
   "version": "1.0.0",
   "description": "Generated by DreamBuild AI",
   "main": "index.html",
@@ -1664,25 +2192,17 @@ input {
   "keywords": ["fibonacci", "sequence", "math"],
   "author": "DreamBuild AI",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Generate Weather App
-  generateWeatherApp(prompt) {
-    const appName = this.extractAppName(prompt) || 'Weather App'
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}generateWeatherApp(e){const r=this.extractAppName(e)||"Weather App";return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${appName}</title>
+    <title>${r}</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>${appName}</h1>
+        <h1>${r}</h1>
         <p>Get current weather and forecast for any city</p>
         
         <div class="weather-app">
@@ -1746,10 +2266,9 @@ input {
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <script src="script.js"><\/script>
 </body>
-</html>`,
-      'script.js': `// ${appName} - Generated by DreamBuild AI
+</html>`,"script.js":`// ${r} - Generated by DreamBuild AI
 class WeatherApp {
     constructor() {
         this.apiKey = 'demo'; // In production, use a real API key
@@ -1945,8 +2464,7 @@ class WeatherApp {
 // Initialize the weather app
 document.addEventListener('DOMContentLoaded', () => {
     new WeatherApp();
-});`,
-      'styles.css': `* {
+});`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -2184,9 +2702,8 @@ input {
   .weather-details {
     grid-template-columns: 1fr;
   }
-}`,
-      'package.json': `{
-  "name": "${appName.toLowerCase().replace(/\s+/g, '-')}",
+}`,"package.json":`{
+  "name": "${r.toLowerCase().replace(/\s+/g,"-")}",
   "version": "1.0.0",
   "description": "Generated by DreamBuild AI",
   "main": "index.html",
@@ -2197,623 +2714,13 @@ input {
   "keywords": ["weather", "forecast", "api"],
   "author": "DreamBuild AI",
   "license": "MIT"
-}`
-    }
-  }
+}`}}detectProjectType(e){const r=e.previousFiles||[];return r.some(t=>t.includes("package.json"))?"node":r.some(t=>t.includes(".jsx")||t.includes(".tsx"))?"react":r.some(t=>t.includes(".vue"))?"vue":(r.some(t=>t.includes(".html")),"web")}analyzeDependencies(e){return e.dependencies||[]}detectCodingStandards(e){return{indentation:"2 spaces",quotes:"single",semicolons:!0,trailingCommas:!0}}detectArchitecture(e){const r=e.previousFiles||[];return r.some(t=>t.includes("components"))?"component-based":r.some(t=>t.includes("pages"))?"page-based":"monolithic"}detectFrameworks(e){const r=[],t=e.previousFiles||[];return t.some(a=>a.includes("react"))&&r.push("react"),t.some(a=>a.includes("vue"))&&r.push("vue"),t.some(a=>a.includes("angular"))&&r.push("angular"),t.some(a=>a.includes("express"))&&r.push("express"),r}extractUserPreferences(e){return{preferredFramework:"react",styling:"tailwind",stateManagement:"hooks",testing:"jest"}}detectEnvironment(e){return{nodeVersion:"18+",packageManager:"npm",bundler:"vite",deployment:"firebase"}}enhanceWithContext(e,r){console.log("🔧 Enhancing code with context:",r);const t={...e};return Object.keys(t).forEach(a=>{if(a.endsWith(".js")||a.endsWith(".jsx")){const n=t[a],o=`// Generated by DreamBuild AI with context awareness
+// Project Type: ${r.projectType||"web"}
+// Architecture: ${r.architecture||"monolithic"}
+// Frameworks: ${r.frameworks?.join(", ")||"vanilla"}
+// Environment: ${r.environment?.nodeVersion||"18+"}
 
-  // Helper methods for context analysis
-  detectProjectType(context) {
-    const files = context.previousFiles || []
-    if (files.some(f => f.includes('package.json'))) return 'node'
-    if (files.some(f => f.includes('.jsx') || f.includes('.tsx'))) return 'react'
-    if (files.some(f => f.includes('.vue'))) return 'vue'
-    if (files.some(f => f.includes('.html'))) return 'web'
-    return 'web'
-  }
-
-  analyzeDependencies(context) {
-    // Analyze existing dependencies from context
-    return context.dependencies || []
-  }
-
-  detectCodingStandards(context) {
-    // Detect coding standards from existing code
-    return {
-      indentation: '2 spaces',
-      quotes: 'single',
-      semicolons: true,
-      trailingCommas: true
-    }
-  }
-
-  detectArchitecture(context) {
-    // Detect project architecture
-    const files = context.previousFiles || []
-    if (files.some(f => f.includes('components'))) return 'component-based'
-    if (files.some(f => f.includes('pages'))) return 'page-based'
-    return 'monolithic'
-  }
-
-  detectFrameworks(context) {
-    const frameworks = []
-    const files = context.previousFiles || []
-    
-    if (files.some(f => f.includes('react'))) frameworks.push('react')
-    if (files.some(f => f.includes('vue'))) frameworks.push('vue')
-    if (files.some(f => f.includes('angular'))) frameworks.push('angular')
-    if (files.some(f => f.includes('express'))) frameworks.push('express')
-    
-    return frameworks
-  }
-
-  extractUserPreferences(context) {
-    return {
-      preferredFramework: 'react',
-      styling: 'tailwind',
-      stateManagement: 'hooks',
-      testing: 'jest'
-    }
-  }
-
-  detectEnvironment(context) {
-    return {
-      nodeVersion: '18+',
-      packageManager: 'npm',
-      bundler: 'vite',
-      deployment: 'firebase'
-    }
-  }
-
-  enhanceWithContext(code, context) {
-    console.log('🔧 Enhancing code with context:', context)
-    
-    // Add context-aware enhancements
-    const enhancedCode = { ...code }
-    
-    // Add context-aware comments to files
-    Object.keys(enhancedCode).forEach(filename => {
-      if (filename.endsWith('.js') || filename.endsWith('.jsx')) {
-        const originalContent = enhancedCode[filename]
-        const contextComment = `// Generated by DreamBuild AI with context awareness
-// Project Type: ${context.projectType || 'web'}
-// Architecture: ${context.architecture || 'monolithic'}
-// Frameworks: ${context.frameworks?.join(', ') || 'vanilla'}
-// Environment: ${context.environment?.nodeVersion || '18+'}
-
-${originalContent}`
-        enhancedCode[filename] = contextComment
-      }
-    })
-    
-    console.log('✅ Code enhanced with context awareness')
-    return enhancedCode
-  }
-
-  extractFeatures(generatedCode) {
-    const features = []
-    const content = Object.values(generatedCode).join(' ').toLowerCase()
-    
-    console.log('🔍 Extracting features from generated code...')
-    
-    // Interactive features
-    if (content.includes('addeventlistener') || content.includes('onclick') || content.includes('onchange')) {
-      features.push('Interactive Elements')
-    }
-    
-    // Data persistence
-    if (content.includes('localstorage') || content.includes('sessionstorage') || content.includes('indexeddb')) {
-      features.push('Data Persistence')
-    }
-    
-    // API integration
-    if (content.includes('fetch') || content.includes('axios') || content.includes('xhr') || content.includes('api')) {
-      features.push('API Integration')
-    }
-    
-    // Responsive design
-    if (content.includes('responsive') || content.includes('mobile') || content.includes('media query') || content.includes('@media')) {
-      features.push('Responsive Design')
-    }
-    
-    // Animations
-    if (content.includes('animation') || content.includes('transition') || content.includes('transform') || content.includes('keyframes')) {
-      features.push('Animations')
-    }
-    
-    // Forms
-    if (content.includes('form') || content.includes('input') || content.includes('textarea') || content.includes('select')) {
-      features.push('Form Handling')
-    }
-    
-    // Authentication
-    if (content.includes('login') || content.includes('auth') || content.includes('password') || content.includes('token')) {
-      features.push('Authentication')
-    }
-    
-    // Real-time features
-    if (content.includes('websocket') || content.includes('socket') || content.includes('realtime') || content.includes('live')) {
-      features.push('Real-time Updates')
-    }
-    
-    // File handling
-    if (content.includes('file') || content.includes('upload') || content.includes('download') || content.includes('blob')) {
-      features.push('File Handling')
-    }
-    
-    // Default features if none detected
-    if (features.length === 0) {
-      features.push('Modern UI', 'Interactive Elements', 'Responsive Design')
-    }
-    
-    console.log('✅ Features extracted:', features)
-    return features
-  }
-
-  generateScreenshots(generatedCode) {
-    // Generate mock screenshots for preview
-    return [
-      'https://via.placeholder.com/800x600/4F46E5/FFFFFF?text=App+Preview+1',
-      'https://via.placeholder.com/800x600/7C3AED/FFFFFF?text=App+Preview+2'
-    ]
-  }
-
-  generateLiveDemo(generatedCode) {
-    // Generate live demo URL
-    return 'https://dreambuild-2024-app.web.app/preview'
-  }
-
-  extractTechStack(generatedCode) {
-    const techStack = []
-    const content = Object.values(generatedCode).join(' ').toLowerCase()
-    
-    console.log('🔍 Extracting tech stack from generated code...')
-    
-    // Frontend frameworks
-    if (content.includes('react') || content.includes('jsx')) techStack.push('React')
-    if (content.includes('vue') || content.includes('vue.js')) techStack.push('Vue.js')
-    if (content.includes('angular')) techStack.push('Angular')
-    if (content.includes('svelte')) techStack.push('Svelte')
-    
-    // Backend frameworks
-    if (content.includes('express') || content.includes('node')) techStack.push('Node.js')
-    if (content.includes('django') || content.includes('flask')) techStack.push('Python')
-    if (content.includes('spring') || content.includes('java')) techStack.push('Java')
-    
-    // Web technologies
-    if (content.includes('html')) techStack.push('HTML5')
-    if (content.includes('css')) techStack.push('CSS3')
-    if (content.includes('javascript') || content.includes('js')) techStack.push('JavaScript')
-    if (content.includes('typescript') || content.includes('ts')) techStack.push('TypeScript')
-    
-    // CSS frameworks
-    if (content.includes('tailwind') || content.includes('tailwindcss')) techStack.push('Tailwind CSS')
-    if (content.includes('bootstrap')) techStack.push('Bootstrap')
-    if (content.includes('material') || content.includes('mui')) techStack.push('Material-UI')
-    
-    // Databases
-    if (content.includes('mongodb') || content.includes('mongo')) techStack.push('MongoDB')
-    if (content.includes('mysql') || content.includes('sql')) techStack.push('SQL')
-    if (content.includes('firebase')) techStack.push('Firebase')
-    
-    // Default tech stack if none detected
-    if (techStack.length === 0) {
-      techStack.push('HTML5', 'CSS3', 'JavaScript')
-    }
-    
-    console.log('✅ Tech stack extracted:', techStack)
-    return techStack
-  }
-
-  generateDeploymentInfo(generatedCode) {
-    return {
-      platform: 'Firebase Hosting',
-      url: 'https://dreambuild-2024-app.web.app',
-      status: 'Ready to deploy',
-      instructions: 'Click deploy to publish your app'
-    }
-  }
-
-  // Extract app name from prompt
-  extractAppName(prompt) {
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const words = promptString.split(' ');
-    const nameIndex = words.findIndex(word => 
-      word.toLowerCase().includes('app') || 
-      word.toLowerCase().includes('application') ||
-      word.toLowerCase().includes('website') ||
-      word.toLowerCase().includes('page')
-    );
-    
-    if (nameIndex > 0) {
-      return words.slice(0, nameIndex).join(' ');
-    }
-    
-    return null;
-  }
-
-  // Generate a creative app name based on the prompt
-  generateAppName(prompt) {
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const lowerPrompt = promptString.toLowerCase();
-    
-    // Extract key words from the prompt
-    const keyWords = promptString.split(' ').filter(word => 
-      word.length > 3 && 
-      !['create', 'build', 'make', 'generate', 'app', 'application', 'website', 'page'].includes(word.toLowerCase())
-    );
-    
-    // Generate creative names based on content
-    if (lowerPrompt.includes('weather')) {
-      return 'WeatherCast Pro';
-    }
-    if (lowerPrompt.includes('calculator')) {
-      return 'CalcMaster';
-    }
-    if (lowerPrompt.includes('todo') || lowerPrompt.includes('task')) {
-      return 'TaskFlow';
-    }
-    if (lowerPrompt.includes('game')) {
-      return 'GameZone';
-    }
-    if (lowerPrompt.includes('chat')) {
-      return 'ChatConnect';
-    }
-    if (lowerPrompt.includes('dashboard')) {
-      return 'DashBoard Pro';
-    }
-    if (lowerPrompt.includes('ecommerce') || lowerPrompt.includes('store')) {
-      return 'ShopMaster';
-    }
-    if (lowerPrompt.includes('blog')) {
-      return 'BlogCraft';
-    }
-    if (lowerPrompt.includes('portfolio')) {
-      return 'Portfolio Pro';
-    }
-    if (lowerPrompt.includes('social')) {
-      return 'SocialConnect';
-    }
-    if (lowerPrompt.includes('music')) {
-      return 'MusicHub';
-    }
-    if (lowerPrompt.includes('photo') || lowerPrompt.includes('image')) {
-      return 'PhotoGallery';
-    }
-    if (lowerPrompt.includes('news')) {
-      return 'NewsReader';
-    }
-    if (lowerPrompt.includes('recipe')) {
-      return 'RecipeBook';
-    }
-    if (lowerPrompt.includes('fitness') || lowerPrompt.includes('workout')) {
-      return 'FitTracker';
-    }
-    if (lowerPrompt.includes('finance') || lowerPrompt.includes('budget')) {
-      return 'FinanceTracker';
-    }
-    if (lowerPrompt.includes('education') || lowerPrompt.includes('learn')) {
-      return 'LearnHub';
-    }
-    if (lowerPrompt.includes('travel')) {
-      return 'TravelGuide';
-    }
-    if (lowerPrompt.includes('food') || lowerPrompt.includes('restaurant')) {
-      return 'FoodFinder';
-    }
-    if (lowerPrompt.includes('book') || lowerPrompt.includes('library')) {
-      return 'BookShelf';
-    }
-    if (lowerPrompt.includes('calendar') || lowerPrompt.includes('schedule')) {
-      return 'SchedulePro';
-    }
-    
-    // Use key words to create a name
-    if (keyWords.length > 0) {
-      const firstWord = keyWords[0].charAt(0).toUpperCase() + keyWords[0].slice(1);
-      const secondWord = keyWords.length > 1 ? keyWords[1].charAt(0).toUpperCase() + keyWords[1].slice(1) : 'App';
-      return `${firstWord}${secondWord}`;
-    }
-    
-    // Default creative names
-    const creativeNames = [
-      'DreamApp', 'InnovateHub', 'CreativeSpace', 'TechFlow', 'SmartApp',
-      'NextGen', 'FutureApp', 'ProApp', 'EliteApp', 'MasterApp',
-      'UltimateApp', 'PrimeApp', 'SuperApp', 'MegaApp', 'TurboApp'
-    ];
-    
-    return creativeNames[Math.floor(Math.random() * creativeNames.length)];
-  }
-
-  // Select automatic theme based on prompt and context
-  selectAutomaticTheme(prompt, context = {}) {
-    console.log('🎨 Selecting automatic theme for prompt:', prompt)
-    
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const lowerPrompt = promptString.toLowerCase()
-    
-    // Theme selection logic based on app type and context
-    const themeSelection = {
-      // Business/Professional apps
-      business: {
-        keywords: ['business', 'dashboard', 'admin', 'management', 'enterprise', 'professional', 'corporate'],
-        theme: 'monochrome',
-        confidence: 0.9
-      },
-      
-      // Entertainment/Gaming apps
-      entertainment: {
-        keywords: ['game', 'entertainment', 'fun', 'play', 'music', 'video', 'media'],
-        theme: 'vibrant',
-        confidence: 0.9
-      },
-      
-      // Health/Fitness apps
-      health: {
-        keywords: ['health', 'fitness', 'workout', 'medical', 'wellness', 'care', 'diet'],
-        theme: 'forest',
-        confidence: 0.8
-      },
-      
-      // Education/Learning apps
-      education: {
-        keywords: ['learn', 'education', 'study', 'course', 'tutorial', 'knowledge', 'school'],
-        theme: 'ocean',
-        confidence: 0.8
-      },
-      
-      // Creative/Design apps
-      creative: {
-        keywords: ['design', 'art', 'creative', 'draw', 'paint', 'edit', 'photo', 'image'],
-        theme: 'purple',
-        confidence: 0.8
-      },
-      
-      // Communication/Social apps
-      communication: {
-        keywords: ['chat', 'social', 'message', 'connect', 'network', 'community', 'talk'],
-        theme: 'sunset',
-        confidence: 0.7
-      },
-      
-      // Utility/Tool apps
-      utility: {
-        keywords: ['calculator', 'tool', 'utility', 'helper', 'converter', 'widget'],
-        theme: 'modern',
-        confidence: 0.6
-      },
-      
-      // Dark theme preference
-      dark: {
-        keywords: ['dark', 'night', 'minimal', 'simple', 'clean'],
-        theme: 'dark',
-        confidence: 0.9
-      },
-      
-      // Color-specific requests
-      colorSpecific: {
-        keywords: ['blue', 'green', 'red', 'purple', 'orange', 'pink', 'yellow'],
-        theme: 'custom',
-        confidence: 0.8
-      }
-    }
-    
-    // Check for specific theme requests
-    if (lowerPrompt.includes('dark theme') || lowerPrompt.includes('dark mode')) {
-      return {
-        name: 'dark',
-        colors: colorThemeService.getThemeColors('dark'),
-        reason: 'Dark theme requested',
-        confidence: 1.0
-      }
-    }
-    
-    if (lowerPrompt.includes('light theme') || lowerPrompt.includes('bright')) {
-      return {
-        name: 'modern',
-        colors: colorThemeService.getThemeColors('modern'),
-        reason: 'Light theme requested',
-        confidence: 1.0
-      }
-    }
-    
-    // Check for color-specific requests
-    if (lowerPrompt.includes('blue')) {
-      return {
-        name: 'ocean',
-        colors: colorThemeService.getThemeColors('ocean'),
-        reason: 'Blue color requested',
-        confidence: 0.9
-      }
-    }
-    
-    if (lowerPrompt.includes('green')) {
-      return {
-        name: 'forest',
-        colors: colorThemeService.getThemeColors('forest'),
-        reason: 'Green color requested',
-        confidence: 0.9
-      }
-    }
-    
-    if (lowerPrompt.includes('purple')) {
-      return {
-        name: 'purple',
-        colors: colorThemeService.getThemeColors('purple'),
-        reason: 'Purple color requested',
-        confidence: 0.9
-      }
-    }
-    
-    if (lowerPrompt.includes('orange') || lowerPrompt.includes('sunset')) {
-      return {
-        name: 'sunset',
-        colors: colorThemeService.getThemeColors('sunset'),
-        reason: 'Orange/sunset color requested',
-        confidence: 0.9
-      }
-    }
-    
-    // Analyze prompt for app type
-    let bestMatch = { theme: 'modern', confidence: 0.5, reason: 'Default modern theme' }
-    
-    Object.entries(themeSelection).forEach(([category, config]) => {
-      const keywordMatches = config.keywords.filter(keyword => 
-        lowerPrompt.includes(keyword)
-      ).length
-      
-      if (keywordMatches > 0 && config.confidence > bestMatch.confidence) {
-        bestMatch = {
-          theme: config.theme,
-          confidence: config.confidence,
-          reason: `${category} app detected (${keywordMatches} keywords)`
-        }
-      }
-    })
-    
-    // Get theme colors
-    const themeColors = colorThemeService.getThemeColors(bestMatch.theme)
-    
-    const selectedTheme = {
-      name: bestMatch.theme,
-      colors: themeColors,
-      reason: bestMatch.reason,
-      confidence: bestMatch.confidence
-    }
-    
-    console.log('🎨 Selected theme:', selectedTheme)
-    return selectedTheme
-  }
-
-  // Apply automatic theme to generated code
-  applyAutomaticTheme(generatedCode, theme) {
-    console.log('🎨 Applying theme to generated code:', theme.name)
-    
-    const themedCode = {}
-    
-    Object.entries(generatedCode).forEach(([filename, content]) => {
-      if (typeof content === 'string') {
-        // Apply theme to CSS files
-        if (filename.endsWith('.css')) {
-          themedCode[filename] = this.applyThemeToCSS(content, theme)
-        }
-        // Apply theme to HTML files
-        else if (filename.endsWith('.html')) {
-          themedCode[filename] = this.applyThemeToHTML(content, theme)
-        }
-        // Apply theme to JavaScript files (for inline styles)
-        else if (filename.endsWith('.js') || filename.endsWith('.jsx')) {
-          themedCode[filename] = this.applyThemeToJS(content, theme)
-        }
-        // Keep other files as-is
-        else {
-          themedCode[filename] = content
-        }
-      } else {
-        themedCode[filename] = content
-      }
-    })
-    
-    return themedCode
-  }
-
-  // Apply theme to CSS content
-  applyThemeToCSS(cssContent, theme) {
-    let themedCSS = cssContent
-    
-    // Replace common color patterns with theme colors
-    const colorReplacements = {
-      '#667eea': theme.colors.primary,
-      '#764ba2': theme.colors.secondary,
-      '#f093fb': theme.colors.accent,
-      '#f8fafc': theme.colors.background,
-      '#ffffff': theme.colors.surface,
-      '#1a202c': theme.colors.text,
-      '#4a5568': theme.colors.textSecondary,
-      '#48bb78': theme.colors.success,
-      '#ed8936': theme.colors.warning,
-      '#f56565': theme.colors.error,
-      '#4299e1': theme.colors.info
-    }
-    
-    Object.entries(colorReplacements).forEach(([oldColor, newColor]) => {
-      themedCSS = themedCSS.replace(new RegExp(oldColor, 'g'), newColor)
-    })
-    
-    // Add theme-specific CSS variables if not present
-    if (!themedCSS.includes('--primary-color')) {
-      const themeVariables = `
-/* Theme Variables */
-:root {
-  --primary-color: ${theme.colors.primary};
-  --secondary-color: ${theme.colors.secondary};
-  --accent-color: ${theme.colors.accent};
-  --background-color: ${theme.colors.background};
-  --surface-color: ${theme.colors.surface};
-  --text-color: ${theme.colors.text};
-  --text-secondary-color: ${theme.colors.textSecondary};
-  --success-color: ${theme.colors.success};
-  --warning-color: ${theme.colors.warning};
-  --error-color: ${theme.colors.error};
-  --info-color: ${theme.colors.info};
-}
-
-${themedCSS}`
-      return themeVariables
-    }
-    
-    return themedCSS
-  }
-
-  // Apply theme to HTML content
-  applyThemeToHTML(htmlContent, theme) {
-    let themedHTML = htmlContent
-    
-    // Update title if it contains generic names
-    if (themedHTML.includes('Web App') || themedHTML.includes('React App') || themedHTML.includes('JavaScript App')) {
-      // Title will be updated by the app naming service
-    }
-    
-    // Add theme-specific meta tags
-    if (themedHTML.includes('<head>')) {
-      const themeMeta = `
-    <meta name="theme-color" content="${theme.colors.primary}">
-    <meta name="color-scheme" content="${theme.name === 'dark' ? 'dark' : 'light'}">`
-      
-      themedHTML = themedHTML.replace('<head>', `<head>${themeMeta}`)
-    }
-    
-    return themedHTML
-  }
-
-  // Apply theme to JavaScript content
-  applyThemeToJS(jsContent, theme) {
-    let themedJS = jsContent
-    
-    // Replace hardcoded colors in JavaScript
-    const colorReplacements = {
-      '#667eea': theme.colors.primary,
-      '#764ba2': theme.colors.secondary,
-      '#f093fb': theme.colors.accent,
-      '#f8fafc': theme.colors.background,
-      '#ffffff': theme.colors.surface,
-      '#1a202c': theme.colors.text,
-      '#4a5568': theme.colors.textSecondary
-    }
-    
-    Object.entries(colorReplacements).forEach(([oldColor, newColor]) => {
-      themedJS = themedJS.replace(new RegExp(oldColor, 'g'), newColor)
-    })
-    
-    return themedJS
-  }
-
-  // Create fallback response using AI generation
-  async createFallbackResponse(prompt, context = {}) {
-    console.log('🔄 Creating AI-generated fallback response for prompt:', prompt)
-    
-    try {
-      // Try to generate code using AI with a simpler prompt
-      const simplePrompt = `Create a complete web application based on this request: ${prompt}. 
+${n}`;t[a]=o}}),console.log("✅ Code enhanced with context awareness"),t}extractFeatures(e){const r=[],t=Object.values(e).join(" ").toLowerCase();return console.log("🔍 Extracting features from generated code..."),(t.includes("addeventlistener")||t.includes("onclick")||t.includes("onchange"))&&r.push("Interactive Elements"),(t.includes("localstorage")||t.includes("sessionstorage")||t.includes("indexeddb"))&&r.push("Data Persistence"),(t.includes("fetch")||t.includes("axios")||t.includes("xhr")||t.includes("api"))&&r.push("API Integration"),(t.includes("responsive")||t.includes("mobile")||t.includes("media query")||t.includes("@media"))&&r.push("Responsive Design"),(t.includes("animation")||t.includes("transition")||t.includes("transform")||t.includes("keyframes"))&&r.push("Animations"),(t.includes("form")||t.includes("input")||t.includes("textarea")||t.includes("select"))&&r.push("Form Handling"),(t.includes("login")||t.includes("auth")||t.includes("password")||t.includes("token"))&&r.push("Authentication"),(t.includes("websocket")||t.includes("socket")||t.includes("realtime")||t.includes("live"))&&r.push("Real-time Updates"),(t.includes("file")||t.includes("upload")||t.includes("download")||t.includes("blob"))&&r.push("File Handling"),r.length===0&&r.push("Modern UI","Interactive Elements","Responsive Design"),console.log("✅ Features extracted:",r),r}generateScreenshots(e){return["https://via.placeholder.com/800x600/4F46E5/FFFFFF?text=App+Preview+1","https://via.placeholder.com/800x600/7C3AED/FFFFFF?text=App+Preview+2"]}generateLiveDemo(e){return"https://dreambuild-2024-app.web.app/preview"}extractTechStack(e){const r=[],t=Object.values(e).join(" ").toLowerCase();return console.log("🔍 Extracting tech stack from generated code..."),(t.includes("react")||t.includes("jsx"))&&r.push("React"),(t.includes("vue")||t.includes("vue.js"))&&r.push("Vue.js"),t.includes("angular")&&r.push("Angular"),t.includes("svelte")&&r.push("Svelte"),(t.includes("express")||t.includes("node"))&&r.push("Node.js"),(t.includes("django")||t.includes("flask"))&&r.push("Python"),(t.includes("spring")||t.includes("java"))&&r.push("Java"),t.includes("html")&&r.push("HTML5"),t.includes("css")&&r.push("CSS3"),(t.includes("javascript")||t.includes("js"))&&r.push("JavaScript"),(t.includes("typescript")||t.includes("ts"))&&r.push("TypeScript"),(t.includes("tailwind")||t.includes("tailwindcss"))&&r.push("Tailwind CSS"),t.includes("bootstrap")&&r.push("Bootstrap"),(t.includes("material")||t.includes("mui"))&&r.push("Material-UI"),(t.includes("mongodb")||t.includes("mongo"))&&r.push("MongoDB"),(t.includes("mysql")||t.includes("sql"))&&r.push("SQL"),t.includes("firebase")&&r.push("Firebase"),r.length===0&&r.push("HTML5","CSS3","JavaScript"),console.log("✅ Tech stack extracted:",r),r}generateDeploymentInfo(e){return{platform:"Firebase Hosting",url:"https://dreambuild-2024-app.web.app",status:"Ready to deploy",instructions:"Click deploy to publish your app"}}extractAppName(e){const t=(typeof e=="string"?e:JSON.stringify(e)).split(" "),a=t.findIndex(n=>n.toLowerCase().includes("app")||n.toLowerCase().includes("application")||n.toLowerCase().includes("website")||n.toLowerCase().includes("page"));return a>0?t.slice(0,a).join(" "):null}generateAppName(e){const r=typeof e=="string"?e:JSON.stringify(e),t=r.toLowerCase(),a=r.split(" ").filter(o=>o.length>3&&!["create","build","make","generate","app","application","website","page"].includes(o.toLowerCase()));if(t.includes("weather"))return"WeatherCast Pro";if(t.includes("calculator"))return"CalcMaster";if(t.includes("todo")||t.includes("task"))return"TaskFlow";if(t.includes("game"))return"GameZone";if(t.includes("chat"))return"ChatConnect";if(t.includes("dashboard"))return"DashBoard Pro";if(t.includes("ecommerce")||t.includes("store"))return"ShopMaster";if(t.includes("blog"))return"BlogCraft";if(t.includes("portfolio"))return"Portfolio Pro";if(t.includes("social"))return"SocialConnect";if(t.includes("music"))return"MusicHub";if(t.includes("photo")||t.includes("image"))return"PhotoGallery";if(t.includes("news"))return"NewsReader";if(t.includes("recipe"))return"RecipeBook";if(t.includes("fitness")||t.includes("workout"))return"FitTracker";if(t.includes("finance")||t.includes("budget"))return"FinanceTracker";if(t.includes("education")||t.includes("learn"))return"LearnHub";if(t.includes("travel"))return"TravelGuide";if(t.includes("food")||t.includes("restaurant"))return"FoodFinder";if(t.includes("book")||t.includes("library"))return"BookShelf";if(t.includes("calendar")||t.includes("schedule"))return"SchedulePro";if(a.length>0){const o=a[0].charAt(0).toUpperCase()+a[0].slice(1),s=a.length>1?a[1].charAt(0).toUpperCase()+a[1].slice(1):"App";return`${o}${s}`}const n=["DreamApp","InnovateHub","CreativeSpace","TechFlow","SmartApp","NextGen","FutureApp","ProApp","EliteApp","MasterApp","UltimateApp","PrimeApp","SuperApp","MegaApp","TurboApp"];return n[Math.floor(Math.random()*n.length)]}async createFallbackResponse(e,r={}){console.log("🔄 Creating AI-generated fallback response for prompt:",e);try{const n=`Create a complete web application based on this request: ${e}. 
       
       Generate HTML, CSS, and JavaScript files that implement the requested features. 
       Return the code as a JSON object with this structure:
@@ -2825,56 +2732,7 @@ ${themedCSS}`
         }
       }
       
-      Make sure the application is fully functional and includes all requested features.`
-      
-      // Use a reliable model for fallback
-      const modelKey = 'codellama/CodeLlama-7b-Python-hf'
-      
-      console.log('🤖 Fallback: Using AI model:', modelKey)
-      
-      const aiResponse = await this.callHuggingFaceAPI(
-        modelKey,
-        simplePrompt,
-        1500, // max tokens
-        0.5   // lower temperature for more consistent output
-      )
-      
-      console.log('🤖 Fallback AI Response received:', aiResponse)
-      
-      // Parse AI response
-      const generatedCode = await this.parseAIResponse(aiResponse, prompt)
-      
-      if (generatedCode && Object.keys(generatedCode).length > 0) {
-        console.log('✅ Fallback AI generated code successfully')
-        return generatedCode
-      }
-      
-    } catch (error) {
-      console.error('❌ Fallback AI generation failed:', error)
-    }
-    
-    // Only use templates as absolute last resort
-    console.log('⚠️ Using template as absolute last resort')
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const lowerPrompt = promptString.toLowerCase()
-    
-    if (lowerPrompt.includes('todo') || lowerPrompt.includes('task')) {
-      return this.createTodoTemplate(prompt)
-    } else if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('analytics')) {
-      return this.createDashboardTemplate(prompt)
-    } else if (lowerPrompt.includes('ecommerce') || lowerPrompt.includes('store') || lowerPrompt.includes('shop')) {
-      return this.createEcommerceTemplate(prompt)
-    } else if (lowerPrompt.includes('api') || lowerPrompt.includes('backend')) {
-      return this.createAPITemplate(prompt)
-    } else {
-      return this.createDefaultTemplate(prompt)
-    }
-  }
-
-  // Create dashboard template
-  createDashboardTemplate(prompt) {
-    return {
-      'index.html': `<!DOCTYPE html>
+      Make sure the application is fully functional and includes all requested features.`,o="codellama/CodeLlama-7b-Python-hf";console.log("🤖 Fallback: Using AI model:",o);const s=await this.callHuggingFaceAPI(o,n,1500,.5);console.log("🤖 Fallback AI Response received:",s);const i=await this.parseAIResponse(s,e);if(i&&Object.keys(i).length>0)return console.log("✅ Fallback AI generated code successfully"),i}catch(n){console.error("❌ Fallback AI generation failed:",n)}console.log("⚠️ Using template as absolute last resort");const a=(typeof e=="string"?e:JSON.stringify(e)).toLowerCase();return a.includes("todo")||a.includes("task")?this.createTodoTemplate(e):a.includes("dashboard")||a.includes("analytics")?this.createDashboardTemplate(e):a.includes("ecommerce")||a.includes("store")||a.includes("shop")?this.createEcommerceTemplate(e):a.includes("api")||a.includes("backend")?this.createAPITemplate(e):this.createDefaultTemplate(e)}createDashboardTemplate(e){return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -3250,10 +3108,9 @@ ${themedCSS}`
         
         // Also try on window load as fallback
         window.addEventListener('load', initDashboardWithEvents);
-    </script>
+    <\/script>
 </body>
-</html>`,
-      'App.jsx': `import React, { useState } from 'react';
+</html>`,"App.jsx":`import React, { useState } from 'react';
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -3292,8 +3149,7 @@ function Dashboard() {
   );
 }
 
-ReactDOM.render(<Dashboard />, document.getElementById('root'));`,
-      'styles.css': `* {
+ReactDOM.render(<Dashboard />, document.getElementById('root'));`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -3359,8 +3215,7 @@ body {
   font-size: 2.5rem;
   font-weight: 700;
   color: #333;
-}`,
-      'package.json': `{
+}`,"package.json":`{
   "name": "dashboard-app",
   "version": "1.0.0",
   "description": "Generated by DreamBuild",
@@ -3372,14 +3227,7 @@ body {
   "keywords": ["dashboard", "analytics", "react"],
   "author": "DreamBuild",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Create comprehensive todo template with 10+ features
-  createTodoTemplate(prompt) {
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}createTodoTemplate(e){return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -4053,10 +3901,9 @@ body {
         } else {
             initApp();
         }
-    </script>
+    <\/script>
 </body>
-</html>`,
-      'styles.css': `/* Advanced Todo App Styles */
+</html>`,"styles.css":`/* Advanced Todo App Styles */
 .todo-app {
   max-width: 800px;
   margin: 0 auto;
@@ -4353,8 +4200,7 @@ button:active {
     width: 100%;
     justify-content: space-between;
   }
-}`,
-      'package.json': `{
+}`,"package.json":`{
   "name": "advanced-todo-app",
   "version": "2.0.0",
   "description": "A comprehensive todo list application with 10+ advanced features",
@@ -4378,14 +4224,7 @@ button:active {
     "Local storage persistence",
     "Responsive mobile design"
   ]
-}`
-    }
-  }
-
-  // Create ecommerce template
-  createEcommerceTemplate(prompt) {
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}createEcommerceTemplate(e){return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -4750,10 +4589,9 @@ button:active {
         
         // Also try on window load as fallback
         window.addEventListener('load', initAppWithEvents);
-    </script>
+    <\/script>
 </body>
-</html>`,
-      'App.jsx': `import React, { useState } from 'react';
+</html>`,"App.jsx":`import React, { useState } from 'react';
 
 function EcommerceStore() {
   const [cart, setCart] = useState([]);
@@ -4811,8 +4649,7 @@ function EcommerceStore() {
   );
 }
 
-ReactDOM.render(<EcommerceStore />, document.getElementById('root'));`,
-      'styles.css': `* {
+ReactDOM.render(<EcommerceStore />, document.getElementById('root'));`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -4928,8 +4765,7 @@ header h1 {
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
   cursor: pointer;
-}`,
-      'package.json': `{
+}`,"package.json":`{
   "name": "ecommerce-store",
   "version": "1.0.0",
   "description": "Generated by DreamBuild",
@@ -4941,14 +4777,7 @@ header h1 {
   "keywords": ["ecommerce", "store", "react"],
   "author": "DreamBuild",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Create API template
-  createAPITemplate(prompt) {
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}createAPITemplate(e){return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5375,10 +5204,9 @@ header h1 {
         
         // Also try on window load as fallback
         window.addEventListener('load', initAPIAppWithEvents);
-    </script>
+    <\/script>
 </body>
-</html>`,
-      'server.js': `const express = require('express');
+</html>`,"server.js":`const express = require('express');
 const cors = require('cors');
 const app = express();
 
@@ -5408,8 +5236,7 @@ app.post('/api/users', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(\`Server running on port \${PORT}\`);
-});`,
-      'package.json': `{
+});`,"package.json":`{
   "name": "api-server",
   "version": "1.0.0",
   "description": "Generated by DreamBuild",
@@ -5428,14 +5255,7 @@ app.listen(PORT, () => {
   "keywords": ["api", "express", "nodejs"],
   "author": "DreamBuild",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Create default template
-  createDefaultTemplate(prompt) {
-    return {
-      'index.html': `<!DOCTYPE html>
+}`}}createDefaultTemplate(e){return{"index.html":`<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5541,7 +5361,7 @@ app.listen(PORT, () => {
 <body>
     <div class="container">
         <h1>Welcome to Your DreamBuild App!</h1>
-        <p>Generated based on: "${prompt}"</p>
+        <p>Generated based on: "${e}"</p>
         
         <div class="content">
             <h2>Your Application</h2>
@@ -5667,10 +5487,9 @@ app.listen(PORT, () => {
             showAlert,
             getCounter: () => counter
         };
-    </script>
+    <\/script>
 </body>
-</html>`,
-      'styles.css': `* {
+</html>`,"styles.css":`* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -5727,8 +5546,7 @@ li:before {
   content: "✓ ";
   color: #4CAF50;
   font-weight: bold;
-}`,
-      'package.json': `{
+}`,"package.json":`{
   "name": "dreambuild-app",
   "version": "1.0.0",
   "description": "Generated by DreamBuild",
@@ -5740,25 +5558,4 @@ li:before {
   "keywords": ["dreambuild", "generated", "web-app"],
   "author": "DreamBuild",
   "license": "MIT"
-}`
-    }
-  }
-
-  // Get service health status
-  getServiceHealth() {
-    return { 'cloud-ai': { isHealthy: this.isHealthy } }
-  }
-
-  // Get usage statistics
-  getUsageStats() {
-    return {
-      totalRequests: 0,
-      successfulRequests: 0,
-      failedRequests: 0,
-      averageResponseTime: 0
-    }
-  }
-}
-
-// Export singleton instance
-export default new CloudAIService()
+}`}}getServiceHealth(){return{"cloud-ai":{isHealthy:this.isHealthy}}}getUsageStats(){return{totalRequests:0,successfulRequests:0,failedRequests:0,averageResponseTime:0}}}const p=new W;class _{constructor(){this.currentService="cloud-ai",this.usageStats={totalRequests:0,successfulRequests:0,failedRequests:0,averageResponseTime:0},console.log("🤖 Simple AI Service initialized - Cloud AI with Open Source Models!")}getServices(){return{"cloud-ai":{name:"Cloud AI Models",type:"Cloud",description:"Open source AI models via Hugging Face - no API keys required",models:p.getAvailableModels()},"local-ai":{name:"Local AI Models",type:"Local",description:"Self-hosted AI models - no API keys required",models:u.getAvailableModels()}}}getTemplateCategories(){return u.getTemplateCategories()}getTemplatesByCategory(e){return u.getTemplatesByCategory(e)}async getAllTemplates(){return await u.getAllTemplates()}async generateTemplateById(e,r={}){return await u.generateTemplateById(e,r)}async searchTemplates(e){return await u.searchTemplates(e)}async getPopularTemplates(){return await u.getPopularTemplates()}async generateCode(e,r={}){const t=Date.now();this.usageStats.totalRequests++;try{if(console.log("🚀 Generating code with Cloud AI..."),this.currentService==="cloud-ai"){const a=await p.generateCode(e,r),n=Date.now()-t;return this.usageStats.successfulRequests++,this.usageStats.averageResponseTime=(this.usageStats.averageResponseTime+n)/2,console.log("✅ Code generated successfully with Cloud AI!"),a}if(u.isHealthy){console.log("🔄 Falling back to Local AI...");const a=await u.generateCode(e,r),n=Date.now()-t;return this.usageStats.successfulRequests++,this.usageStats.averageResponseTime=(this.usageStats.averageResponseTime+n)/2,console.log("✅ Code generated successfully with Local AI!"),a}return console.log("⚠️ No AI services available, using template fallback"),p.createFallbackResponse(e,r)}catch(a){return console.error("❌ AI generation failed:",a),this.usageStats.failedRequests++,console.log("🔄 Falling back to template generation..."),p.createFallbackResponse(e,r)}}getServiceHealth(){return{"cloud-ai":p.getServiceHealth(),"local-ai":u.modelHealth}}getUsageStats(){return this.usageStats}getUserPreferences(){return{preferredService:"cloud-ai",fallbackEnabled:!0,autoHealthCheck:!0}}updateUserPreferences(e){localStorage.setItem("dreambuild-preferences",JSON.stringify(e))}loadUserPreferences(){const e=localStorage.getItem("dreambuild-preferences");return e?JSON.parse(e):this.getUserPreferences()}getServiceStatus(){return{"cloud-ai":{isHealthy:p.isHealthy,models:p.getHealthyModels().length,totalModels:p.getAvailableModels().length},"local-ai":{isHealthy:u.isHealthy,models:u.getHealthyModels().length,totalModels:u.getAvailableModels().length}}}resetServiceHealth(){u.modelHealth={}}getFallbackOrder(){return["cloud-ai","local-ai"]}isFallbackEnabled(){return!0}setFallbackEnabled(e){return!0}getSetupInstructions(){return{"cloud-ai":{title:"Cloud AI Setup",description:"Open source AI models via Hugging Face - no setup required",steps:["1. Cloud AI is ready to use with open source models","2. No API keys or installation required","3. Models include CodeLlama, StarCoder, DeepSeek, and more","4. Start generating code immediately!"],isSetup:p.isHealthy},"local-ai":{title:"Local AI Setup",description:"Set up local AI models for code generation",steps:["1. Install Ollama from https://ollama.ai","2. Run: ollama pull codellama:7b","3. Run: ollama serve","4. Refresh DreamBuild to start using local AI"],isSetup:u.isHealthy}}}getServicesNeedingSetup(){const e=[];return p.isHealthy||e.push("cloud-ai"),u.isHealthy||e.push("local-ai"),e}hasValidApiKey(e){return e==="cloud-ai"||e==="local-ai"}setService(e){(e==="cloud-ai"||e==="local-ai")&&(this.currentService=e)}getCurrentService(){return this.currentService}}const J=new _,X=Object.freeze(Object.defineProperty({__proto__:null,default:J},Symbol.toStringTag,{value:"Module"}));export{X as a,Q as c,F as f,J as s};

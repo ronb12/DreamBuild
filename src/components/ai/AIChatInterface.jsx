@@ -7,7 +7,8 @@ import {
   Copy,
   ThumbsUp,
   ThumbsDown,
-  Loader2
+  Loader2,
+  Info
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -18,7 +19,9 @@ const AIChatInterface = ({
   isGenerating, 
   handleGenerate,
   textareaRef,
-  messagesEndRef 
+  messagesEndRef,
+  appExplanation,
+  setShowExplanation
 }) => {
   console.log('🔧 AIChatInterface rendering...', { messages: messages.length, prompt, isGenerating });
   
@@ -78,6 +81,15 @@ const AIChatInterface = ({
                   {/* Message Actions */}
                   {message.type === 'assistant' && (
                     <div className="flex items-center gap-2 mt-2">
+                      {appExplanation && (
+                        <button
+                          onClick={() => setShowExplanation(true)}
+                          className="p-1 hover:bg-white/10 rounded transition-colors"
+                          title="View detailed explanation"
+                        >
+                          <Info className="h-3 w-3" />
+                        </button>
+                      )}
                       <button
                         onClick={() => copyToClipboard(message.content)}
                         className="p-1 hover:bg-white/10 rounded transition-colors"

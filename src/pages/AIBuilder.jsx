@@ -9,14 +9,16 @@ import ConversationalAI from '../components/ai/ConversationalAI'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import TemplateSelector from '../components/TemplateSelector'
 import Terminal from '../components/Terminal'
+import DebugPanel from '../components/DebugPanel'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug } from 'lucide-react'
 
 const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('editor')
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [showDebugPanel, setShowDebugPanel] = useState(false)
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
@@ -127,6 +129,18 @@ const AIBuilder = () => {
               </motion.button>
             )
           })}
+          
+          {/* Debug Panel Button */}
+          <motion.button
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowDebugPanel(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative group text-muted-foreground hover:text-foreground hover:bg-background/80 hover:shadow-sm"
+            title="Advanced Debug Panel - Analyze and fix code issues"
+          >
+            <Bug className="h-4 w-4 transition-transform duration-300 group-hover:scale-105" />
+            <span>Debug</span>
+          </motion.button>
         </div>
       </div>
 
@@ -281,6 +295,17 @@ const AIBuilder = () => {
         onClose={() => setShowTemplateSelector(false)}
         onTemplateSelect={(template, files) => {
           setShowTemplateSelector(false)
+        }}
+      />
+
+      {/* Debug Panel Modal */}
+      <DebugPanel
+        isOpen={showDebugPanel}
+        onClose={() => setShowDebugPanel(false)}
+        projectFiles={{}}
+        onFixApplied={(fixedFiles) => {
+          console.log('Debug fix applied:', fixedFiles)
+          // Handle the fixed files - update project context
         }}
       />
     </div>

@@ -102,9 +102,17 @@ class IncrementalDevelopmentService {
     return features
   }
 
-  // Process a new feature request
+  // Process a new feature request or bug fix
   async processFeatureRequest(userPrompt, conversationContext) {
     console.log('🔄 Processing feature request:', userPrompt)
+    
+    // Check if this is a bug fix or correction
+    const isBugFix = this.isBugFixRequest(userPrompt)
+    console.log('🐛 Is bug fix request:', isBugFix)
+    
+    if (isBugFix) {
+      return await this.processBugFix(userPrompt, conversationContext)
+    }
     
     // Analyze what the user wants to add
     const requestedFeatures = this.analyzeRequestedFeatures(userPrompt)
@@ -140,6 +148,99 @@ class IncrementalDevelopmentService {
       updatedFiles: this.getUpdatedFiles(incrementalCode),
       message: `Added ${newFeatures.length} new feature(s): ${newFeatures.join(', ')}`
     }
+  }
+
+  // Check if this is a bug fix request
+  isBugFixRequest(prompt) {
+    const lowerPrompt = prompt.toLowerCase()
+    
+    const bugFixKeywords = [
+      'fix', 'fix the', 'fix a', 'fix this', 'fix that',
+      'broken', 'not working', 'doesn\'t work', 'isn\'t working',
+      'error', 'bug', 'issue', 'problem',
+      'button', 'click', 'clicking', 'clicked',
+      'correction', 'correct', 'wrong', 'incorrect',
+      'update', 'change', 'modify', 'adjust',
+      'improve', 'enhance', 'better'
+    ]
+    
+    return bugFixKeywords.some(keyword => lowerPrompt.includes(keyword))
+  }
+
+  // Process a bug fix request
+  async processBugFix(userPrompt, conversationContext) {
+    console.log('🐛 Processing bug fix request:', userPrompt)
+    
+    // Generate bug fix code using AI
+    const bugFixCode = await this.generateBugFixCode(userPrompt, conversationContext)
+    
+    // Update feature tracking
+    this.featureHistory.push({
+      timestamp: new Date(),
+      type: 'bug_fix',
+      prompt: userPrompt,
+      description: 'Bug fix applied'
+    })
+
+    return {
+      type: 'incremental_update',
+      newFeatures: ['Bug Fix'],
+      code: bugFixCode,
+      updatedFiles: this.getUpdatedFiles(bugFixCode),
+      message: `Fixed the issue: ${userPrompt}`
+    }
+  }
+
+  // Generate bug fix code using AI
+  async generateBugFixCode(userPrompt, conversationContext) {
+    console.log('🔧 Generating bug fix code for:', userPrompt)
+    
+    // Create a focused prompt for bug fixing
+    const bugFixPrompt = `Fix this issue in the existing code: ${userPrompt}
+
+    Current project files:
+    ${JSON.stringify(this.currentProject?.files || {}, null, 2)}
+
+    Please analyze the existing code and fix the specific issue mentioned. 
+    Return the corrected code as a JSON object with files.
+    
+    Focus on:
+    1. Identifying the root cause of the issue
+    2. Fixing the specific problem without breaking existing functionality
+    3. Ensuring the fix is clean and follows best practices
+    4. Making sure all buttons and interactions work properly
+    
+    Return the complete corrected files.`
+    
+    // Use AI to generate the fix
+    try {
+      // Import cloudAIService to use AI generation
+      const { default: cloudAIService } = await import('./cloudAIService.js')
+      
+      const aiResponse = await cloudAIService.callHuggingFaceAPI(
+        'codellama/CodeLlama-7b-Python-hf',
+        bugFixPrompt,
+        2048,
+        0.3 // Lower temperature for more focused fixes
+      )
+      
+      console.log('🤖 Bug fix AI response:', aiResponse)
+      
+      // Parse the AI response
+      const fixedCode = await cloudAIService.parseAIResponse(aiResponse, userPrompt)
+      
+      if (fixedCode && Object.keys(fixedCode).length > 0) {
+        console.log('✅ Bug fix code generated successfully')
+        return fixedCode
+      }
+      
+    } catch (error) {
+      console.error('❌ AI bug fix generation failed:', error)
+    }
+    
+    // Fallback: return original files (no changes)
+    console.log('⚠️ Using fallback for bug fix')
+    return this.currentProject?.files || {}
   }
 
   // Analyze what features the user is requesting

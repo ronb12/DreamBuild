@@ -534,71 +534,58 @@ export default function AIPromptSimplified() {
         )}
       </AnimatePresence>
 
-      {/* Streaming Response Modal */}
+      {/* Streaming Response - Contained within response area */}
       <AnimatePresence>
         {showStreaming && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setShowStreaming(false)}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="absolute top-0 left-0 right-0 bottom-0 bg-card/95 backdrop-blur-sm z-40 rounded-lg border border-border shadow-lg"
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card border border-border rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
-                    {streamingEnabled ? (
-                      <Zap className="w-4 h-4 text-primary-foreground" />
-                    ) : (
-                      <ZapOff className="w-4 h-4 text-primary-foreground" />
-                    )}
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold text-foreground">Streaming Response</h2>
-                    <p className="text-sm text-muted-foreground">Real-time response like Cursor</p>
-                  </div>
+            {/* Header */}
+            <div className="flex items-center justify-between p-3 border-b border-border">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
+                  <Zap className="w-3 h-3 text-primary-foreground" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs">
-                    <Zap className="w-3 h-3" />
-                    <span>Auto Stream</span>
-                  </div>
-                  <button
-                    onClick={() => setShowStreaming(false)}
-                    className="p-2 hover:bg-muted rounded-lg transition-colors"
-                  >
-                    <X className="w-4 h-4 text-muted-foreground" />
-                  </button>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Streaming Response</h3>
+                  <p className="text-xs text-muted-foreground">Real-time response like Cursor</p>
                 </div>
               </div>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
+                  <Zap className="w-2 h-2" />
+                  <span>Auto Stream</span>
+                </div>
+                <button
+                  onClick={() => setShowStreaming(false)}
+                  className="p-1 hover:bg-muted rounded transition-colors"
+                >
+                  <X className="w-3 h-3 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
 
-              {/* Content */}
-              <div className="flex-1 overflow-hidden">
-                <StreamingResponse
-                  response={streamingResponse}
-                  type={streamingType}
-                  language={streamingLanguage}
-                  onComplete={(finalText) => {
-                    console.log('✅ Streaming completed:', finalText)
-                    setIsStreaming(false)
-                  }}
-                  onError={(error) => {
-                    console.error('❌ Streaming error:', error)
-                    setIsStreaming(false)
-                  }}
-                  showControls={true}
-                  autoStart={true}
-                />
-              </div>
-            </motion.div>
+            {/* Content */}
+            <div className="flex-1 overflow-hidden p-3">
+              <StreamingResponse
+                response={streamingResponse}
+                type={streamingType}
+                language={streamingLanguage}
+                onComplete={(finalText) => {
+                  console.log('✅ Streaming completed:', finalText)
+                  setIsStreaming(false)
+                }}
+                onError={(error) => {
+                  console.error('❌ Streaming error:', error)
+                  setIsStreaming(false)
+                }}
+                showControls={true}
+                autoStart={true}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

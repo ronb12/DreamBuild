@@ -1164,6 +1164,12 @@ export const styles = StyleSheet.create({
 
   // Generate with local AI
   async generateWithLocalAI(prompt, context = {}) {
+    // Check if this is a general question first
+    if (this.isGeneralQuestion(prompt)) {
+      console.log('❓ General question detected, providing conversational response...')
+      return this.createConversationalResponse(prompt, context)
+    }
+    
     const model = this.getBestAvailableModel()
     const systemPrompt = this.createSystemPrompt(context)
     

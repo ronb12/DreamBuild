@@ -206,8 +206,8 @@ export default function AIPromptSimplified() {
         responseLanguage = 'javascript'
       }
 
-      // Start streaming if enabled
-      if (streamingEnabled && responseText) {
+      // Start streaming automatically
+      if (responseText) {
         setStreamingResponse(responseText)
         setStreamingType(responseType)
         setStreamingLanguage(responseLanguage)
@@ -318,17 +318,10 @@ export default function AIPromptSimplified() {
         </div>
         
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setStreamingEnabled(!streamingEnabled)}
-            className={`p-2 rounded-lg transition-colors ${
-              streamingEnabled 
-                ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-            title={streamingEnabled ? 'Disable streaming' : 'Enable streaming'}
-          >
-            {streamingEnabled ? <Zap className="h-4 w-4" /> : <ZapOff className="h-4 w-4" />}
-          </button>
+          <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs">
+            <Zap className="h-3 w-3" />
+            <span>Auto Stream</span>
+          </div>
           <button
             onClick={clearChat}
             className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -550,17 +543,10 @@ export default function AIPromptSimplified() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setStreamingEnabled(!streamingEnabled)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      streamingEnabled 
-                        ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                    title={streamingEnabled ? 'Disable streaming' : 'Enable streaming'}
-                  >
-                    {streamingEnabled ? <Zap className="w-4 h-4" /> : <ZapOff className="w-4 h-4" />}
-                  </button>
+                  <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs">
+                    <Zap className="w-3 h-3" />
+                    <span>Auto Stream</span>
+                  </div>
                   <button
                     onClick={() => setShowStreaming(false)}
                     className="p-2 hover:bg-muted rounded-lg transition-colors"

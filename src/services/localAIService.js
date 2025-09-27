@@ -1448,6 +1448,7 @@ Generate practical, working applications that users can immediately use.`
     const fallbackCode = this.generateFallbackCode(prompt, context)
     
     return {
+      type: 'code_generation',
       files: fallbackCode,
       message: `I've generated a ${this.extractAppType(prompt)} application based on your request. This is a working template that you can customize further.`,
       prompt: prompt,

@@ -413,7 +413,7 @@ export default function AIPromptSimplified() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm z-10 flex items-center justify-center p-4"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm z-30 flex items-center justify-center p-4"
             onClick={() => setShowExplanation(false)}
           >
             <motion.div
@@ -546,7 +546,7 @@ export default function AIPromptSimplified() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="absolute top-0 left-0 right-0 bottom-0 bg-card/95 backdrop-blur-sm z-5 rounded-lg border border-border shadow-lg"
+            className="absolute top-0 left-0 right-0 bottom-0 bg-card/95 backdrop-blur-sm z-20 rounded-lg border border-border shadow-lg"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-border">

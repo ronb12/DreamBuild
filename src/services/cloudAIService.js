@@ -105,6 +105,14 @@ class CloudAIService {
   async generateCode(prompt, context = {}) {
     console.log('🚀 Generating code with Cloud AI...')
     
+    // Check if web context is available
+    if (context.webContext) {
+      console.log('🌐 Web context available:', context.webContext.summary)
+      console.log('📊 Best practices found:', context.webContext.bestPractices?.length || 0)
+      console.log('🔗 Resources found:', context.webContext.resources?.length || 0)
+      console.log('💡 Recommendations:', context.webContext.recommendations?.length || 0)
+    }
+    
     try {
       // Check if this is an incremental development request
       if (context.isIncremental && context.existingProject) {
@@ -568,6 +576,16 @@ class CloudAIService {
 - Recent conversation: ${context.recentMessages?.slice(-3).map(msg => `${msg.type}: ${msg.content}`).join('\n') || 'none'}
 - Project context: ${JSON.stringify(context.projectContext || {})}` : ''
 
+    // Add web context if available
+    const webContext = context.webContext ? 
+      `\n\nWeb Search Context (Current Information):
+- Summary: ${context.webContext.summary || 'No summary available'}
+- Best Practices: ${context.webContext.bestPractices?.slice(0, 5).join(', ') || 'None found'}
+- Current Resources: ${context.webContext.resources?.length || 0} resources found
+- Recommendations: ${context.webContext.recommendations?.slice(0, 3).join(', ') || 'None found'}
+- Current Trends: ${context.webContext.trends?.length || 0} trends identified
+- Key Information: ${context.webContext.currentInfo?.slice(0, 3).map(info => info.title).join(', ') || 'None found'}` : ''
+
     return `You are an expert software developer and code generator with advanced conversation capabilities. Generate complete, working applications based on user requests and maintain context across conversations.
 
 Guidelines:
@@ -580,13 +598,17 @@ Guidelines:
 7. Handle corrections and improvements intelligently
 8. Provide incremental updates when requested
 9. Suggest additional features based on context
+10. Use web search context to provide current, accurate information
+11. Incorporate best practices from web search results
+12. Reference current trends and technologies when relevant
+13. Apply industry-specific knowledge from web context
 
 Context:
 - Project Type: ${context.projectType || 'web'}
 - Existing Files: ${context.existingFiles?.length || 0} files
 - Dependencies: ${context.dependencies?.join(', ') || 'none'}
 - Architecture: ${context.architecture || 'monolithic'}
-- Frameworks: ${context.frameworks?.join(', ') || 'vanilla'}${conversationContext}
+- Frameworks: ${context.frameworks?.join(', ') || 'vanilla'}${conversationContext}${webContext}
 
 Return your response as a JSON object with this structure:
 {

@@ -10,9 +10,10 @@ import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import TemplateSelector from '../components/TemplateSelector'
 import Terminal from '../components/Terminal'
 import DebugPanel from '../components/DebugPanel'
+import WebBrowsingInterface from '../components/WebBrowsingInterface'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug, Globe } from 'lucide-react'
 
 const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('editor')
@@ -274,8 +275,14 @@ const AIBuilder = () => {
               </div>
               
               {/* Panel Content */}
-              <div className="flex-1 overflow-hidden">
-                <AIPromptSimplified />
+              <div className="flex-1 overflow-hidden flex flex-col">
+                {/* Web Browsing Interface */}
+                <div className="p-4 border-b border-border/50">
+                  <WebBrowsingInterface />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <AIPromptSimplified />
+                </div>
               </div>
             </div>
           </ResizablePanel>

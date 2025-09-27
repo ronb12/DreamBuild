@@ -24,6 +24,7 @@ import simpleAIService from '../services/simpleAIService'
 import aiAgentService from '../services/aiAgentService'
 import conversationService from '../services/conversationService'
 import streamingService from '../services/streamingService'
+import realTimeWebBrowsingService from '../services/realTimeWebBrowsingService'
 import AIModelSelector from './ai/AIModelSelector'
 import AIChatInterface from './ai/AIChatInterface'
 import StreamingResponse from './StreamingResponse'
@@ -149,6 +150,28 @@ export default function AIPromptSimplified() {
     setMessages(prev => [...prev, userMessage])
     await conversationService.addMessage(userPrompt)
 
+    // Auto-search web for context (like ChatGPT)
+    console.log('🌐 Auto-searching web for context...')
+    let webContext = null
+    try {
+      const webSearchResult = await realTimeWebBrowsingService.searchForContext(userPrompt, {
+        techStack: currentProject.techStack || [],
+        appType: currentProject.appType || 'web',
+        complexity: currentProject.complexity || 'basic',
+        industry: currentProject.industry || 'general',
+        features: currentProject.features || []
+      })
+      
+      if (webSearchResult.success) {
+        webContext = webSearchResult.knowledge
+        console.log('✅ Web context found:', webContext.summary)
+      } else {
+        console.log('⚠️ No web context found:', webSearchResult.reason)
+      }
+    } catch (error) {
+      console.error('❌ Web search failed:', error)
+    }
+
     try {
       // Check if this is an incremental development request
       const isIncremental = isIncrementalRequest(userPrompt)
@@ -156,7 +179,7 @@ export default function AIPromptSimplified() {
       // Get conversation context for better AI responses
       const conversationContext = conversationService.getConversationContext()
       
-      // Generate AI response with conversation context
+      // Generate AI response with conversation context and web search results
       const response = await simpleAIService.generateCode({
         prompt: userPrompt,
         projectName: projectName || currentProject.name,
@@ -167,7 +190,8 @@ export default function AIPromptSimplified() {
           isIncremental: isIncremental,
           existingProject: isIncremental ? currentProject : null,
           conversationContext: conversationContext,
-          conversationHistory: conversationService.getConversationHistory()
+          conversationHistory: conversationService.getConversationHistory(),
+          webContext: webContext // Include web search results
         }
       })
 

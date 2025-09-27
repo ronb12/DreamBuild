@@ -1438,6 +1438,21 @@ Generate practical, working applications that users can immediately use.`
       return this.createConversationalResponse(prompt, context)
     }
     
+    // For code generation, return a proper response structure
+    const fallbackCode = this.generateFallbackCode(prompt, context)
+    
+    return {
+      files: fallbackCode,
+      message: `I've generated a ${this.extractAppType(prompt)} application based on your request. This is a working template that you can customize further.`,
+      prompt: prompt,
+      generatedAt: new Date().toISOString(),
+      context: context
+    }
+  }
+  
+  // Generate fallback code based on prompt
+  generateFallbackCode(prompt, context = {}) {
+    
     // Analyze prompt to determine template
     const lowerPrompt = prompt.toLowerCase()
     
@@ -1542,6 +1557,17 @@ Generate practical, working applications that users can immediately use.`
 }`
       }
     }
+  }
+  
+  // Extract app type from prompt
+  extractAppType(prompt) {
+    const lowerPrompt = prompt.toLowerCase()
+    if (lowerPrompt.includes('todo')) return 'todo list'
+    if (lowerPrompt.includes('calculator')) return 'calculator'
+    if (lowerPrompt.includes('dashboard')) return 'dashboard'
+    if (lowerPrompt.includes('ecommerce')) return 'e-commerce store'
+    if (lowerPrompt.includes('blog')) return 'blog'
+    return 'web application'
   }
 }
 

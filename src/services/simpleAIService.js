@@ -6,7 +6,7 @@ import cloudAIService from './cloudAIService.js'
 
 class SimpleAIService {
   constructor() {
-    this.currentService = 'cloud-ai'
+    this.currentService = 'local-ai' // Default to local AI (no API keys required)
     this.usageStats = {
       totalRequests: 0,
       successfulRequests: 0,
@@ -14,23 +14,23 @@ class SimpleAIService {
       averageResponseTime: 0
     }
     
-    console.log('🤖 Simple AI Service initialized - Cloud AI with Open Source Models!')
+    console.log('🤖 Simple AI Service initialized - Local AI with Open Source Models (No API Keys Required)!')
   }
 
-  // Get available services (cloud AI + local AI)
+  // Get available services (local AI + cloud AI)
   getServices() {
     return {
-      'cloud-ai': {
-        name: 'Cloud AI Models',
-        type: 'Cloud',
-        description: 'Open source AI models via Hugging Face - no API keys required',
-        models: cloudAIService.getAvailableModels()
-      },
       'local-ai': {
         name: 'Local AI Models',
         type: 'Local',
         description: 'Self-hosted AI models - no API keys required',
         models: localAIService.getAvailableModels()
+      },
+      'cloud-ai': {
+        name: 'Cloud AI Models',
+        type: 'Cloud',
+        description: 'Open source AI models via Hugging Face - API key required',
+        models: cloudAIService.getAvailableModels()
       }
     }
   }
@@ -65,30 +65,16 @@ class SimpleAIService {
     return await localAIService.getPopularTemplates()
   }
 
-  // Generate code using cloud AI (primary) or local AI (fallback)
+  // Generate code using local AI (primary) or cloud AI (fallback)
   async generateCode(prompt, context = {}) {
     const startTime = Date.now()
     this.usageStats.totalRequests++
     
     try {
-      console.log('🚀 Generating code with Cloud AI...')
+      console.log('🚀 Generating code with Local AI...')
       
-      // Try cloud AI first (primary)
-      if (this.currentService === 'cloud-ai') {
-        const response = await cloudAIService.generateCode(prompt, context)
-        
-        // Track successful generation
-        const duration = Date.now() - startTime
-        this.usageStats.successfulRequests++
-        this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
-        
-        console.log('✅ Code generated successfully with Cloud AI!')
-        return response
-      }
-      
-      // Fallback to local AI if cloud AI fails
-      if (localAIService.isHealthy) {
-        console.log('🔄 Falling back to Local AI...')
+      // Try local AI first (primary - no API keys required)
+      if (this.currentService === 'local-ai' || this.currentService === 'auto') {
         const response = await localAIService.generateCode(prompt, context)
         
         // Track successful generation
@@ -97,6 +83,20 @@ class SimpleAIService {
         this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
         
         console.log('✅ Code generated successfully with Local AI!')
+        return response
+      }
+      
+      // Fallback to cloud AI if local AI fails (requires API key)
+      if (this.currentService === 'cloud-ai') {
+        console.log('🔄 Falling back to Cloud AI...')
+        const response = await cloudAIService.generateCode(prompt, context)
+        
+        // Track successful generation
+        const duration = Date.now() - startTime
+        this.usageStats.successfulRequests++
+        this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
+        
+        console.log('✅ Code generated successfully with Cloud AI!')
         return response
       }
       

@@ -15,14 +15,18 @@ import {
   X,
   CheckCircle,
   AlertTriangle,
-  AlertCircle
+  AlertCircle,
+  Zap,
+  ZapOff
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import simpleAIService from '../services/simpleAIService'
 import aiAgentService from '../services/aiAgentService'
 import conversationService from '../services/conversationService'
+import streamingService from '../services/streamingService'
 import AIModelSelector from './ai/AIModelSelector'
 import AIChatInterface from './ai/AIChatInterface'
+import StreamingResponse from './StreamingResponse'
 
 export default function AIPromptSimplified() {
   console.log('🔧 AIPromptSimplified component rendering...')
@@ -41,6 +45,14 @@ export default function AIPromptSimplified() {
   const [showAIAgent, setShowAIAgent] = useState(false)
   const [appExplanation, setAppExplanation] = useState(null)
   const [showExplanation, setShowExplanation] = useState(false)
+  
+  // Streaming state
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [streamingResponse, setStreamingResponse] = useState('')
+  const [streamingType, setStreamingType] = useState('text')
+  const [streamingLanguage, setStreamingLanguage] = useState('javascript')
+  const [showStreaming, setShowStreaming] = useState(false)
+  const [streamingEnabled, setStreamingEnabled] = useState(true)
   
   // AI Model selection
   const [aiModel, setAIModel] = useState('auto')
@@ -161,21 +173,46 @@ export default function AIPromptSimplified() {
 
       // Add AI response to conversation
       let responseMessage = 'Code generated successfully!'
+      let responseText = ''
+      let responseType = 'text'
+      let responseLanguage = 'javascript'
       
       if (response.type === 'incremental_update') {
         responseMessage = response.message || `Added ${response.newFeatures?.length || 0} new feature(s) to your existing app!`
+        responseText = responseMessage
         toast.success(responseMessage)
       } else if (response.type === 'no_changes') {
         responseMessage = response.message || 'No new features to add - these already exist in your app.'
+        responseText = responseMessage
         toast.info(responseMessage)
       } else {
         // Enhanced response message with explanation summary
         if (response.explanation && response.explanation.summary) {
           responseMessage = `Code generated successfully! ${response.explanation.summary}`
+          responseText = response.explanation.summary
         } else {
           responseMessage = response.message || 'Code generated successfully!'
+          responseText = response.message || 'Code generated successfully!'
         }
         toast.success('Code generated successfully!')
+      }
+
+      // Prepare streaming response for code
+      if (response.files && Object.keys(response.files).length > 0) {
+        responseText = Object.entries(response.files)
+          .map(([filename, content]) => `// ${filename}\n${content}`)
+          .join('\n\n')
+        responseType = 'code'
+        responseLanguage = 'javascript'
+      }
+
+      // Start streaming if enabled
+      if (streamingEnabled && responseText) {
+        setStreamingResponse(responseText)
+        setStreamingType(responseType)
+        setStreamingLanguage(responseLanguage)
+        setShowStreaming(true)
+        setIsStreaming(true)
       }
 
       // Save AI response to conversation
@@ -267,7 +304,7 @@ export default function AIPromptSimplified() {
   console.log('🔧 AIPromptSimplified render - isGenerating:', isGenerating)
   
   return (
-    <div className="h-full flex flex-col bg-card/50 backdrop-blur-sm">
+    <div className="h-full flex flex-col bg-card/50 backdrop-blur-sm relative">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border/50">
         <div className="flex items-center gap-3">
@@ -281,6 +318,17 @@ export default function AIPromptSimplified() {
         </div>
         
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setStreamingEnabled(!streamingEnabled)}
+            className={`p-2 rounded-lg transition-colors ${
+              streamingEnabled 
+                ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+            title={streamingEnabled ? 'Disable streaming' : 'Enable streaming'}
+          >
+            {streamingEnabled ? <Zap className="h-4 w-4" /> : <ZapOff className="h-4 w-4" />}
+          </button>
           <button
             onClick={clearChat}
             className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -343,14 +391,14 @@ export default function AIPromptSimplified() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setShowExplanation(false)}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-card border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+              className="bg-card border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[80vh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -373,7 +421,7 @@ export default function AIPromptSimplified() {
               </div>
 
               {/* Content */}
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <div className="p-6 overflow-y-auto max-h-[calc(80vh-120px)]">
                 {/* Summary */}
                 {appExplanation.summary && (
                   <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
@@ -463,6 +511,82 @@ export default function AIPromptSimplified() {
                     </div>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Streaming Response Modal */}
+      <AnimatePresence>
+        {showStreaming && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowStreaming(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-card border border-border rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
+                    {streamingEnabled ? (
+                      <Zap className="w-4 h-4 text-primary-foreground" />
+                    ) : (
+                      <ZapOff className="w-4 h-4 text-primary-foreground" />
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground">Streaming Response</h2>
+                    <p className="text-sm text-muted-foreground">Real-time response like Cursor</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setStreamingEnabled(!streamingEnabled)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      streamingEnabled 
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    title={streamingEnabled ? 'Disable streaming' : 'Enable streaming'}
+                  >
+                    {streamingEnabled ? <Zap className="w-4 h-4" /> : <ZapOff className="w-4 h-4" />}
+                  </button>
+                  <button
+                    onClick={() => setShowStreaming(false)}
+                    className="p-2 hover:bg-muted rounded-lg transition-colors"
+                  >
+                    <X className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-hidden">
+                <StreamingResponse
+                  response={streamingResponse}
+                  type={streamingType}
+                  language={streamingLanguage}
+                  onComplete={(finalText) => {
+                    console.log('✅ Streaming completed:', finalText)
+                    setIsStreaming(false)
+                  }}
+                  onError={(error) => {
+                    console.error('❌ Streaming error:', error)
+                    setIsStreaming(false)
+                  }}
+                  showControls={true}
+                  autoStart={true}
+                />
               </div>
             </motion.div>
           </motion.div>

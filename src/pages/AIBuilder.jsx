@@ -24,7 +24,6 @@ const AIBuilder = () => {
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
     { id: 'preview', label: 'Live Preview', icon: Eye, description: 'View your application in real-time' },
     { id: 'terminal', label: 'Terminal', icon: TerminalIcon, description: 'Command line interface' },
-    { id: 'conversation', label: 'AI Assistant', icon: Brain, description: 'Continuous conversation with AI for iterative development' },
     { id: 'workspace', label: 'Advanced Workspace', icon: Sparkles, description: 'Full-featured workspace with collaboration, visual editor, and deployment' }
   ]
 
@@ -38,10 +37,6 @@ const AIBuilder = () => {
         setIsWorkspaceVisible(true)
         setActiveTab(tabId)
       }
-    } else if (tabId === 'conversation') {
-      // For conversation tab, just switch normally
-      setActiveTab(tabId)
-      setIsWorkspaceVisible(false)
     } else {
       // For other tabs, just switch normally
       setActiveTab(tabId)
@@ -200,7 +195,6 @@ const AIBuilder = () => {
                 {activeTab === 'editor' && <CodeEditor />}
                 {activeTab === 'preview' && <Preview />}
                 {activeTab === 'terminal' && <Terminal />}
-                {activeTab === 'conversation' && <ConversationalAI />}
                 {activeTab === 'workspace' && !isWorkspaceVisible && (
                   <div className="h-full flex items-center justify-center bg-muted/20">
                     <div className="text-center">

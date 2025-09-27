@@ -201,7 +201,12 @@ export default function AIPromptSimplified() {
       let responseType = 'text'
       let responseLanguage = 'javascript'
       
-      if (response.type === 'incremental_update') {
+      if (response.type === 'conversational_response') {
+        // Handle general questions with direct answers
+        responseMessage = response.message
+        responseText = response.message
+        toast.info('Question answered!')
+      } else if (response.type === 'incremental_update') {
         responseMessage = response.message || `Added ${response.newFeatures?.length || 0} new feature(s) to your existing app!`
         responseText = responseMessage
         toast.success(responseMessage)
@@ -221,7 +226,7 @@ export default function AIPromptSimplified() {
         toast.success('Code generated successfully!')
       }
 
-      // Prepare streaming response for code
+      // Prepare streaming response for code (only for code generation, not general questions)
       if (response.files && Object.keys(response.files).length > 0) {
         responseText = Object.entries(response.files)
           .map(([filename, content]) => `// ${filename}\n${content}`)
@@ -230,8 +235,8 @@ export default function AIPromptSimplified() {
         responseLanguage = 'javascript'
       }
 
-      // Start streaming automatically
-      if (responseText) {
+      // Start streaming automatically (only for code generation)
+      if (responseText && response.type !== 'conversational_response') {
         setStreamingResponse(responseText)
         setStreamingType(responseType)
         setStreamingLanguage(responseLanguage)
@@ -258,14 +263,14 @@ export default function AIPromptSimplified() {
       const recommendations = await conversationService.generateFeatureRecommendations()
       setAiRecommendations(recommendations)
 
-      // Store app explanation if available
-      if (response.explanation) {
+      // Store app explanation if available (only for code generation)
+      if (response.explanation && response.type !== 'conversational_response') {
         setAppExplanation(response.explanation)
         setShowExplanation(true)
       }
 
-      // Update project files if new files were generated
-      if (response.files && Object.keys(response.files).length > 0) {
+      // Update project files if new files were generated (only for code generation)
+      if (response.files && Object.keys(response.files).length > 0 && response.type !== 'conversational_response') {
         console.log('📁 Updating project files:', Object.keys(response.files))
         Object.entries(response.files).forEach(([filename, content]) => {
           console.log(`📄 Updating file ${filename} with ${content.length} characters`)

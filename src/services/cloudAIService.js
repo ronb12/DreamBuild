@@ -101,9 +101,168 @@ class CloudAIService {
     return Object.keys(this.availableModels)
   }
 
+  // Check if the prompt is a general question (not a code generation request)
+  isGeneralQuestion(prompt) {
+    const lowerPrompt = prompt.toLowerCase()
+    
+    // General question indicators
+    const generalQuestionKeywords = [
+      'what is', 'what are', 'what was', 'what will', 'what does', 'what do',
+      'how is', 'how are', 'how was', 'how will', 'how does', 'how do',
+      'when is', 'when are', 'when was', 'when will', 'when does', 'when do',
+      'where is', 'where are', 'where was', 'where will', 'where does', 'where do',
+      'why is', 'why are', 'why was', 'why will', 'why does', 'why do',
+      'who is', 'who are', 'who was', 'who will', 'who does', 'who do',
+      'weather', 'temperature', 'forecast', 'climate',
+      'news', 'current events', 'today', 'recent',
+      'cook', 'recipe', 'food', 'ingredients',
+      'travel', 'vacation', 'destination', 'hotel',
+      'health', 'medicine', 'exercise', 'fitness',
+      'education', 'learn', 'study', 'school',
+      'science', 'research', 'study', 'theory',
+      'history', 'historical', 'past', 'ancient',
+      'business', 'finance', 'economy', 'market',
+      'sports', 'game', 'team', 'player',
+      'entertainment', 'movie', 'music', 'book'
+    ]
+    
+    // Code generation indicators
+    const codeGenerationKeywords = [
+      'build', 'create', 'make', 'develop', 'generate', 'code',
+      'app', 'application', 'website', 'web app', 'mobile app',
+      'component', 'function', 'class', 'module', 'library',
+      'api', 'database', 'server', 'backend', 'frontend',
+      'react', 'vue', 'angular', 'node', 'python', 'javascript',
+      'html', 'css', 'js', 'ts', 'jsx', 'tsx',
+      'todo', 'calculator', 'dashboard', 'portfolio', 'blog',
+      'ecommerce', 'shop', 'store', 'landing page'
+    ]
+    
+    // Check for general question patterns
+    const hasGeneralKeywords = generalQuestionKeywords.some(keyword => 
+      lowerPrompt.includes(keyword)
+    )
+    
+    // Check for code generation patterns
+    const hasCodeKeywords = codeGenerationKeywords.some(keyword => 
+      lowerPrompt.includes(keyword)
+    )
+    
+    // If it has general keywords but no code keywords, it's likely a general question
+    if (hasGeneralKeywords && !hasCodeKeywords) {
+      return true
+    }
+    
+    // If it starts with question words, it's likely a general question
+    if (lowerPrompt.startsWith('what') || lowerPrompt.startsWith('how') || 
+        lowerPrompt.startsWith('when') || lowerPrompt.startsWith('where') || 
+        lowerPrompt.startsWith('why') || lowerPrompt.startsWith('who')) {
+      return true
+    }
+    
+    return false
+  }
+
+  // Answer general questions directly (like ChatGPT)
+  async answerGeneralQuestion(prompt, context) {
+    console.log('💬 Answering general question:', prompt)
+    
+    try {
+      // Use web context if available
+      let webContext = context.webContext
+      
+      // If no web context, try to get it
+      if (!webContext) {
+        console.log('🌐 No web context available, searching for information...')
+        // This would typically call the web search service
+        // For now, we'll create a basic response
+      }
+      
+      // Create a conversational response
+      const response = await this.createConversationalResponse(prompt, webContext)
+      
+      return {
+        type: 'conversational_response',
+        message: response.message,
+        summary: response.summary,
+        details: response.details,
+        sources: response.sources,
+        prompt: prompt,
+        generatedAt: new Date().toISOString(),
+        context: context
+      }
+      
+    } catch (error) {
+      console.error('❌ Failed to answer general question:', error)
+      
+      // Fallback response
+      return {
+        type: 'conversational_response',
+        message: `I understand you're asking about "${prompt}". While I'm primarily designed for code generation, I can help with general questions when I have access to current information. For the most accurate and up-to-date answers, I'd recommend checking reliable sources or using a general-purpose AI assistant.`,
+        summary: 'General question response',
+        details: ['This is a general question that requires current information'],
+        sources: [],
+        prompt: prompt,
+        generatedAt: new Date().toISOString(),
+        context: context
+      }
+    }
+  }
+
+  // Create conversational response for general questions
+  async createConversationalResponse(prompt, webContext) {
+    const lowerPrompt = prompt.toLowerCase()
+    
+    // Weather questions
+    if (lowerPrompt.includes('weather') || lowerPrompt.includes('temperature') || lowerPrompt.includes('forecast')) {
+      return {
+        message: `I'd be happy to help with weather information for your location. However, I don't have access to real-time weather data. For current weather conditions, I recommend checking a reliable weather service like Weather.com, AccuWeather, or your local weather app.`,
+        summary: 'Weather information request',
+        details: [
+          'Weather data requires real-time access to meteorological services',
+          'Recommended sources: Weather.com, AccuWeather, local weather apps',
+          'For accurate forecasts, use official weather services'
+        ],
+        sources: ['Weather.com', 'AccuWeather', 'National Weather Service']
+      }
+    }
+    
+    // Cooking questions
+    if (lowerPrompt.includes('cook') || lowerPrompt.includes('recipe') || lowerPrompt.includes('food')) {
+      return {
+        message: `I can help with cooking questions! For recipes and cooking techniques, I recommend checking reliable cooking websites like AllRecipes.com, Food Network, or Serious Eats. These sources provide tested recipes and expert cooking advice.`,
+        summary: 'Cooking and recipe information',
+        details: [
+          'Cooking requires specific recipes and techniques',
+          'Recommended sources: AllRecipes.com, Food Network, Serious Eats',
+          'Always follow food safety guidelines when cooking'
+        ],
+        sources: ['AllRecipes.com', 'Food Network', 'Serious Eats']
+      }
+    }
+    
+    // General information questions
+    return {
+      message: `I understand you're asking about "${prompt}". While I'm primarily designed for code generation and development tasks, I can provide general information when I have access to current data. For the most accurate and up-to-date information, I recommend checking reliable sources or using a general-purpose AI assistant.`,
+      summary: 'General information request',
+      details: [
+        'This appears to be a general knowledge question',
+        'For current information, check reliable sources',
+        'I can help with code generation and development tasks'
+      ],
+      sources: ['Wikipedia', 'Reliable news sources', 'Official websites']
+    }
+  }
+
   // Generate code using cloud AI with context awareness
   async generateCode(prompt, context = {}) {
     console.log('🚀 Generating code with Cloud AI...')
+    
+    // Check if this is a general question (not a code generation request)
+    if (this.isGeneralQuestion(prompt)) {
+      console.log('❓ General question detected, providing direct answer...')
+      return await this.answerGeneralQuestion(prompt, context)
+    }
     
     // Check if web context is available
     if (context.webContext) {

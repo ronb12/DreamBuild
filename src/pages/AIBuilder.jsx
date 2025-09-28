@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import FileManager from '../components/FileManager'
+import SimpleAdvancedFileManager from '../components/SimpleAdvancedFileManager'
+import advancedFileManagementService from '../services/advancedFileManagementService'
 import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
 import PreviewSimple from '../components/PreviewSimple'
@@ -19,6 +21,14 @@ const AIBuilder = () => {
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [showDebugPanel, setShowDebugPanel] = useState(false)
+  
+  // Advanced File Management State
+  const [files, setFiles] = useState([])
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [showAdvancedFileManager, setShowAdvancedFileManager] = useState(false)
+  const [fileManagerMode, setFileManagerMode] = useState('tree') // tree, search, collaboration, history
+  const [collaborators, setCollaborators] = useState([])
+  const [fileHistory, setFileHistory] = useState([])
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
@@ -26,6 +36,109 @@ const AIBuilder = () => {
     { id: 'terminal', label: 'Terminal', icon: TerminalIcon, description: 'Command line interface' },
     { id: 'workspace', label: 'Advanced Workspace', icon: Sparkles, description: 'Full-featured workspace with collaboration, visual editor, and deployment' }
   ]
+
+  // File Management Handlers
+  const handleFileSelect = (file) => {
+    setSelectedFile(file)
+    if (file.type === 'file') {
+      // Load file content into editor
+      console.log('Selected file:', file)
+    }
+  }
+
+  const handleFileCreate = async (fileName, fileType) => {
+    try {
+      const file = await advancedFileManagementService.createFile(fileName, fileType)
+      setFiles(prev => [...prev, file])
+      console.log('Created file:', file)
+    } catch (error) {
+      console.error('Error creating file:', error)
+    }
+  }
+
+  const handleFileDelete = async (file) => {
+    try {
+      await advancedFileManagementService.deleteFile(file.path)
+      setFiles(prev => prev.filter(f => f.path !== file.path))
+      if (selectedFile?.path === file.path) {
+        setSelectedFile(null)
+      }
+      console.log('Deleted file:', file)
+    } catch (error) {
+      console.error('Error deleting file:', error)
+    }
+  }
+
+  const handleFileRename = async (file, newName) => {
+    try {
+      const updatedFile = await advancedFileManagementService.renameFile(file.path, newName)
+      setFiles(prev => prev.map(f => f.path === file.path ? updatedFile : f))
+      if (selectedFile?.path === file.path) {
+        setSelectedFile(updatedFile)
+      }
+      console.log('Renamed file:', updatedFile)
+    } catch (error) {
+      console.error('Error renaming file:', error)
+    }
+  }
+
+  const handleFileMove = async (file, newPath) => {
+    try {
+      const updatedFile = await advancedFileManagementService.moveFile(file.path, newPath)
+      setFiles(prev => prev.map(f => f.path === file.path ? updatedFile : f))
+      if (selectedFile?.path === file.path) {
+        setSelectedFile(updatedFile)
+      }
+      console.log('Moved file:', updatedFile)
+    } catch (error) {
+      console.error('Error moving file:', error)
+    }
+  }
+
+  const handleFileCopy = async (file) => {
+    try {
+      const newPath = file.path.replace(/(\.[^.]+)$/, '_copy$1')
+      const copiedFile = await advancedFileManagementService.copyFile(file.path, newPath)
+      setFiles(prev => [...prev, copiedFile])
+      console.log('Copied file:', copiedFile)
+    } catch (error) {
+      console.error('Error copying file:', error)
+    }
+  }
+
+  const handleFileUpload = async (uploadedFiles) => {
+    try {
+      for (const file of uploadedFiles) {
+        const content = await file.text()
+        const createdFile = await advancedFileManagementService.createFile(file.name, file.name.split('.').pop(), content)
+        setFiles(prev => [...prev, createdFile])
+      }
+      console.log('Uploaded files:', uploadedFiles)
+    } catch (error) {
+      console.error('Error uploading files:', error)
+    }
+  }
+
+  const handleFileDownload = (file) => {
+    const blob = new Blob([file.content || ''], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = file.name
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleFileShare = (file, options) => {
+    console.log('Sharing file:', file, options)
+    // Implement file sharing logic
+  }
+
+  const handleFileHistory = (file) => {
+    const history = advancedFileManagementService.getFileHistory(file.path)
+    setFileHistory(history)
+    console.log('File history:', history)
+  }
 
   const handleTabClick = (tabId) => {
     if (tabId === 'workspace') {
@@ -92,9 +205,42 @@ const AIBuilder = () => {
           </Link>
         </div>
 
-        {/* Center - Spacer */}
-        <div className="flex-1 max-w-md mx-8">
-          {/* AI Model Selector is now in the AIPromptSimplified component */}
+        {/* Center - File Management Controls */}
+        <div className="flex-1 max-w-md mx-8 flex items-center gap-2">
+          <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg">
+            <button
+              onClick={() => setFileManagerMode('tree')}
+              className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                fileManagerMode === 'tree' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+              }`}
+            >
+              Tree
+            </button>
+            <button
+              onClick={() => setFileManagerMode('search')}
+              className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                fileManagerMode === 'search' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+              }`}
+            >
+              Search
+            </button>
+            <button
+              onClick={() => setFileManagerMode('collaboration')}
+              className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                fileManagerMode === 'collaboration' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+              }`}
+            >
+              Collaborate
+            </button>
+            <button
+              onClick={() => setFileManagerMode('history')}
+              className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                fileManagerMode === 'history' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+              }`}
+            >
+              History
+            </button>
+          </div>
         </div>
 
         {/* Right Side - Enhanced Tab Navigation */}
@@ -165,7 +311,63 @@ const AIBuilder = () => {
               
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden">
-                <FileManager />
+                <div className="h-full flex">
+                  {/* Advanced File Manager */}
+                  <div className="w-80 border-r border-border">
+                    <SimpleAdvancedFileManager
+                      files={files}
+                      onFileSelect={handleFileSelect}
+                      onFileCreate={handleFileCreate}
+                      onFileDelete={handleFileDelete}
+                      onFileRename={handleFileRename}
+                      onFileMove={handleFileMove}
+                      onFileCopy={handleFileCopy}
+                      onFileUpload={handleFileUpload}
+                      onFileDownload={handleFileDownload}
+                      onFileShare={handleFileShare}
+                      onFileHistory={handleFileHistory}
+                      selectedFile={selectedFile}
+                    />
+                  </div>
+                  
+                  {/* File Details Panel */}
+                  <div className="flex-1 flex flex-col">
+                    {selectedFile ? (
+                      <div className="p-4">
+                        <h3 className="text-lg font-semibold mb-4">File Details</h3>
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-sm font-medium text-muted-foreground">Name</label>
+                            <p className="text-sm">{selectedFile.name}</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-muted-foreground">Path</label>
+                            <p className="text-sm">{selectedFile.path}</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-muted-foreground">Type</label>
+                            <p className="text-sm">{selectedFile.type}</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-muted-foreground">Size</label>
+                            <p className="text-sm">{selectedFile.size || 0} bytes</p>
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-muted-foreground">Modified</label>
+                            <p className="text-sm">{selectedFile.modified ? new Date(selectedFile.modified).toLocaleString() : 'Unknown'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex-1 flex items-center justify-center text-muted-foreground">
+                        <div className="text-center">
+                          <Folder className="h-12 w-12 mx-auto mb-4" />
+                          <p>Select a file to view details</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </ResizablePanel>

@@ -10,7 +10,6 @@ import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import TemplateSelector from '../components/TemplateSelector'
 import Terminal from '../components/Terminal'
 import DebugPanel from '../components/DebugPanel'
-import AIModelSelector from '../components/AIModelSelector'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
 import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug } from 'lucide-react'
@@ -20,7 +19,6 @@ const AIBuilder = () => {
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [showDebugPanel, setShowDebugPanel] = useState(false)
-  const [selectedModel, setSelectedModel] = useState('auto')
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
@@ -94,12 +92,9 @@ const AIBuilder = () => {
           </Link>
         </div>
 
-        {/* Center - AI Model Selector */}
+        {/* Center - Spacer */}
         <div className="flex-1 max-w-md mx-8">
-          <AIModelSelector
-            selectedModel={selectedModel}
-            onModelChange={setSelectedModel}
-          />
+          {/* AI Model Selector is now in the AIPromptSimplified component */}
         </div>
 
         {/* Right Side - Enhanced Tab Navigation */}

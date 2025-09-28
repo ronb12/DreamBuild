@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { 
-  Download, 
+  Download as DownloadIcon, 
   Apple, 
   CheckCircle, 
   Monitor,
@@ -188,7 +188,7 @@ const DownloadPage = () => {
                     href="/templates"
                     className="inline-flex items-center gap-3 px-8 py-4 border-2 border-primary/20 text-primary rounded-xl hover:bg-primary/5 hover:border-primary/40 transition-all duration-300 text-lg font-semibold"
                   >
-                    <Download className="h-5 w-5" />
+                    <DownloadIcon className="h-5 w-5" />
                     Browse Templates
                   </a>
                 </div>

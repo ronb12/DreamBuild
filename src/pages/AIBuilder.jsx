@@ -339,6 +339,7 @@ const AIBuilder = () => {
   // Context Menu Handlers
   const handleContextMenu = (e, type = 'main') => {
     e.preventDefault()
+    e.stopPropagation() // Prevent multiple menus
     setContextMenuType(type)
     setShowContextMenu({
       x: e.clientX,
@@ -350,6 +351,31 @@ const AIBuilder = () => {
     setShowContextMenu(null)
     setContextMenuType('main')
   }
+
+  // Close context menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (showContextMenu && !e.target.closest('[data-context-menu]')) {
+        closeContextMenu()
+      }
+    }
+
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && showContextMenu) {
+        closeContextMenu()
+      }
+    }
+
+    if (showContextMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('keydown', handleEscape)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showContextMenu])
 
   const handleContextAction = (action) => {
     switch (action) {
@@ -784,18 +810,33 @@ const AIBuilder = () => {
       {/* Professional Context Menu - Like Cursor IDE */}
       {showContextMenu && (
         <div
-          className="fixed bg-card border border-border rounded-lg shadow-xl z-50 py-1 min-w-[240px] backdrop-blur-sm"
+          data-context-menu
+          className="fixed bg-card border border-border rounded-lg shadow-xl z-50 py-1 min-w-[240px] max-w-[280px] max-h-[400px] backdrop-blur-sm overflow-y-auto"
           style={{
-            left: showContextMenu.x,
-            top: showContextMenu.y
+            left: Math.min(showContextMenu.x, window.innerWidth - 280),
+            top: Math.min(showContextMenu.y, window.innerHeight - 400)
           }}
-          onClick={closeContextMenu}
         >
+          {/* Context Menu Header */}
+          <div className="flex items-center justify-between px-3 py-2 border-b border-border/50">
+            <span className="text-xs font-medium text-muted-foreground">Quick Actions</span>
+            <button
+              onClick={closeContextMenu}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              title="Close (Esc)"
+            >
+              ✕
+            </button>
+          </div>
+          
           {/* File Management */}
           <div className="px-2 py-1">
             <div className="text-xs font-medium text-muted-foreground px-2 py-1">File Management</div>
             <button
-              onClick={() => handleContextAction('file-tree')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('file-tree')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -805,7 +846,10 @@ const AIBuilder = () => {
               <span className="text-xs text-muted-foreground">⌘T</span>
             </button>
             <button
-              onClick={() => handleContextAction('file-search')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('file-search')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -815,7 +859,10 @@ const AIBuilder = () => {
               <span className="text-xs text-muted-foreground">⌘F</span>
             </button>
             <button
-              onClick={() => handleContextAction('file-collaborate')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('file-collaborate')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -825,7 +872,10 @@ const AIBuilder = () => {
               <span className="text-xs text-muted-foreground">⌘C</span>
             </button>
             <button
-              onClick={() => handleContextAction('file-history')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('file-history')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -842,7 +892,10 @@ const AIBuilder = () => {
           <div className="px-2 py-1">
             <div className="text-xs font-medium text-muted-foreground px-2 py-1">AI & Development</div>
             <button
-              onClick={() => handleContextAction('ai-intelligence')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('ai-intelligence')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -852,7 +905,10 @@ const AIBuilder = () => {
               <span className="text-xs text-muted-foreground">⌘I</span>
             </button>
             <button
-              onClick={() => handleContextAction('git-integration')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('git-integration')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -862,7 +918,10 @@ const AIBuilder = () => {
               <span className="text-xs text-muted-foreground">⌘G</span>
             </button>
             <button
-              onClick={() => handleContextAction('terminal')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('terminal')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -879,7 +938,10 @@ const AIBuilder = () => {
           <div className="px-2 py-1">
             <div className="text-xs font-medium text-muted-foreground px-2 py-1">Desktop Integration</div>
             <button
-              onClick={() => handleContextAction('desktop-terminal')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('desktop-terminal')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -889,7 +951,10 @@ const AIBuilder = () => {
               <span className="text-xs text-muted-foreground">⌘D</span>
             </button>
             <button
-              onClick={() => handleContextAction('desktop-files')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('desktop-files')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">
@@ -905,7 +970,10 @@ const AIBuilder = () => {
           {/* Advanced Tools */}
           <div className="px-2 py-1">
             <button
-              onClick={() => handleContextAction('debug-panel')}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('debug-panel')
+              }}
               className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
             >
               <div className="flex items-center gap-3">

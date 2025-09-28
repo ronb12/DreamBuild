@@ -551,7 +551,7 @@ const AIBuilder = () => {
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden">
                 <div className="h-full flex">
-                  {/* Advanced File Manager */}
+                  {/* File Manager */}
                   <div className="w-80 border-r border-border">
                     <SimpleAdvancedFileManager
                       files={files}

@@ -236,7 +236,7 @@ const SimpleAdvancedFileManager = ({
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold">Advanced File Manager</h3>
+          <h3 className="text-lg font-semibold">File Manager</h3>
           <div className="flex items-center gap-2">
             {/* Sync Status */}
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -265,14 +265,14 @@ const SimpleAdvancedFileManager = ({
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search files..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full pl-4 pr-10 py-2 border border-border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
+          <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         </div>
       </div>
 

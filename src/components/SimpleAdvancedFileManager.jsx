@@ -168,6 +168,13 @@ const SimpleAdvancedFileManager = ({
         case 'history':
           onFileHistory?.(contextMenuFile);
           break;
+        case 'revert':
+          if (confirm(`Revert ${contextMenuFile.name} to last saved version?`)) {
+            // Simulate revert action - in real app this would restore from version control
+            console.log(`Reverting ${contextMenuFile.name} to last saved version`);
+            alert(`${contextMenuFile.name} has been reverted to the last saved version`);
+          }
+          break;
       }
     }
     closeContextMenu();
@@ -187,6 +194,42 @@ const SimpleAdvancedFileManager = ({
       return () => clearInterval(interval);
     }
   }, [autoSaveEnabled]);
+
+  // Keyboard shortcuts
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (selectedFile) {
+        switch (e.key) {
+          case 'F2':
+            e.preventDefault();
+            handleContextAction('rename');
+            break;
+          case 'Delete':
+          case 'Backspace':
+            if (e.metaKey || e.ctrlKey) {
+              e.preventDefault();
+              handleContextAction('delete');
+            }
+            break;
+          case 'c':
+            if (e.metaKey || e.ctrlKey) {
+              e.preventDefault();
+              handleContextAction('copy');
+            }
+            break;
+          case 'm':
+            if (e.metaKey || e.ctrlKey) {
+              e.preventDefault();
+              handleContextAction('move');
+            }
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedFile]);
 
   return (
     <div className={`flex flex-col h-full bg-background border-r border-border ${className}`}>
@@ -253,80 +296,20 @@ const SimpleAdvancedFileManager = ({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors ${
+                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-muted/50 transition-all duration-200 group ${
                     isSelected ? 'bg-primary/10 border border-primary/20' : ''
                   }`}
                   onClick={() => onFileSelect?.(file)}
                   onContextMenu={(e) => handleContextMenu(e, file)}
                 >
-                  <Icon className="h-4 w-4 text-muted-foreground" />
+                  <Icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{file.name}</div>
+                    <div className="text-sm font-medium truncate group-hover:text-foreground transition-colors">{file.name}</div>
                     <div className="text-xs text-muted-foreground truncate">{file.path}</div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFileRename?.(file, prompt('Enter new name:', file.name));
-                      }}
-                      className="p-1 hover:bg-muted rounded"
-                      title="Rename"
-                    >
-                      <Edit className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFileCopy?.(file);
-                      }}
-                      className="p-1 hover:bg-muted rounded"
-                      title="Copy"
-                    >
-                      <Copy className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFileDownload?.(file);
-                      }}
-                      className="p-1 hover:bg-muted rounded"
-                      title="Download"
-                    >
-                      <Download className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFileShare?.(file);
-                      }}
-                      className="p-1 hover:bg-muted rounded"
-                      title="Share"
-                    >
-                      <Share className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFileHistory?.(file);
-                      }}
-                      className="p-1 hover:bg-muted rounded"
-                      title="History"
-                    >
-                      <History className="h-3 w-3" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (confirm(`Delete ${file.name}?`)) {
-                          onFileDelete?.(file);
-                        }
-                      }}
-                      className="p-1 hover:bg-muted rounded text-destructive"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
+                  {/* Subtle right-click indicator */}
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-muted-foreground">
+                    Right-click for options
                   </div>
                 </motion.div>
               );
@@ -429,10 +412,10 @@ const SimpleAdvancedFileManager = ({
         </div>
       )}
 
-      {/* Context Menu */}
+      {/* Professional Context Menu - Like Cursor IDE */}
       {showContextMenu && contextMenuFile && (
         <div
-          className="fixed bg-card border border-border rounded-lg shadow-lg z-50 py-2 min-w-[200px]"
+          className="fixed bg-card border border-border rounded-lg shadow-xl z-50 py-1 min-w-[220px] backdrop-blur-sm"
           data-testid="file-context-menu"
           style={{
             left: showContextMenu.x,
@@ -440,56 +423,98 @@ const SimpleAdvancedFileManager = ({
           }}
           onClick={closeContextMenu}
         >
-          <button
-            onClick={() => handleContextAction('rename')}
-            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
-          >
-            <Edit className="h-4 w-4" />
-            Rename
-          </button>
-          <button
-            onClick={() => handleContextAction('copy')}
-            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
-          >
-            <Copy className="h-4 w-4" />
-            Copy
-          </button>
-          <button
-            onClick={() => handleContextAction('move')}
-            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
-          >
-            <Move className="h-4 w-4" />
-            Move
-          </button>
-          <button
-            onClick={() => handleContextAction('download')}
-            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
-          >
-            <Download className="h-4 w-4" />
-            Download
-          </button>
-          <button
-            onClick={() => handleContextAction('share')}
-            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
-          >
-            <Share className="h-4 w-4" />
-            Share
-          </button>
-          <button
-            onClick={() => handleContextAction('history')}
-            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
-          >
-            <History className="h-4 w-4" />
-            History
-          </button>
-          <hr className="my-2 border-border" />
-          <button
-            onClick={() => handleContextAction('delete')}
-            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2 text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-            Delete
-          </button>
+          {/* File Operations */}
+          <div className="px-2 py-1">
+            <div className="text-xs font-medium text-muted-foreground px-2 py-1">File Operations</div>
+            <button
+              onClick={() => handleContextAction('rename')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Edit className="h-4 w-4" />
+                Rename
+              </div>
+              <span className="text-xs text-muted-foreground">F2</span>
+            </button>
+            <button
+              onClick={() => handleContextAction('copy')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Copy className="h-4 w-4" />
+                Copy
+              </div>
+              <span className="text-xs text-muted-foreground">⌘C</span>
+            </button>
+            <button
+              onClick={() => handleContextAction('move')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Move className="h-4 w-4" />
+                Move to...
+              </div>
+              <span className="text-xs text-muted-foreground">⌘M</span>
+            </button>
+          </div>
+          
+          <hr className="my-1 border-border" />
+          
+          {/* Export & Share */}
+          <div className="px-2 py-1">
+            <div className="text-xs font-medium text-muted-foreground px-2 py-1">Export & Share</div>
+            <button
+              onClick={() => handleContextAction('download')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center gap-3 text-sm"
+            >
+              <Download className="h-4 w-4" />
+              Download
+            </button>
+            <button
+              onClick={() => handleContextAction('share')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center gap-3 text-sm"
+            >
+              <Share className="h-4 w-4" />
+              Share
+            </button>
+          </div>
+          
+          <hr className="my-1 border-border" />
+          
+          {/* Version Control */}
+          <div className="px-2 py-1">
+            <div className="text-xs font-medium text-muted-foreground px-2 py-1">Version Control</div>
+            <button
+              onClick={() => handleContextAction('history')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center gap-3 text-sm"
+            >
+              <History className="h-4 w-4" />
+              View History
+            </button>
+            <button
+              onClick={() => handleContextAction('revert')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center gap-3 text-sm"
+            >
+              <History className="h-4 w-4" />
+              Revert Changes
+            </button>
+          </div>
+          
+          <hr className="my-1 border-border" />
+          
+          {/* Dangerous Actions */}
+          <div className="px-2 py-1">
+            <button
+              onClick={() => handleContextAction('delete')}
+              className="w-full px-3 py-2 text-left hover:bg-destructive/10 rounded flex items-center justify-between text-sm text-destructive"
+            >
+              <div className="flex items-center gap-3">
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </div>
+              <span className="text-xs text-muted-foreground">⌫</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

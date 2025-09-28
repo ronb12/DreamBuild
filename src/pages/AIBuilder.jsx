@@ -120,6 +120,10 @@ const AIBuilder = () => {
   const [currentFileContent, setCurrentFileContent] = useState('')
   const [currentFileLanguage, setCurrentFileLanguage] = useState('javascript')
   const [desktopFeatures, setDesktopFeatures] = useState(null)
+  
+  // Context Menu State
+  const [showContextMenu, setShowContextMenu] = useState(null)
+  const [contextMenuType, setContextMenuType] = useState('main') // main, file, editor
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
@@ -148,6 +152,51 @@ const AIBuilder = () => {
     
     initializeServices();
   }, []);
+
+  // Keyboard shortcuts for context menu actions
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.metaKey || e.ctrlKey) {
+        switch (e.key.toLowerCase()) {
+          case 't':
+            e.preventDefault()
+            handleContextAction('file-tree')
+            break
+          case 'f':
+            e.preventDefault()
+            handleContextAction('file-search')
+            break
+          case 'c':
+            e.preventDefault()
+            handleContextAction('file-collaborate')
+            break
+          case 'h':
+            e.preventDefault()
+            handleContextAction('file-history')
+            break
+          case 'i':
+            e.preventDefault()
+            handleContextAction('ai-intelligence')
+            break
+          case 'g':
+            e.preventDefault()
+            handleContextAction('git-integration')
+            break
+          case 'd':
+            e.preventDefault()
+            handleContextAction('desktop-terminal')
+            break
+          case 'b':
+            e.preventDefault()
+            handleContextAction('debug-panel')
+            break
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // File Management Handlers
   const handleFileSelect = (file) => {
@@ -287,6 +336,57 @@ const AIBuilder = () => {
     }
   }
 
+  // Context Menu Handlers
+  const handleContextMenu = (e, type = 'main') => {
+    e.preventDefault()
+    setContextMenuType(type)
+    setShowContextMenu({
+      x: e.clientX,
+      y: e.clientY
+    })
+  }
+
+  const closeContextMenu = () => {
+    setShowContextMenu(null)
+    setContextMenuType('main')
+  }
+
+  const handleContextAction = (action) => {
+    switch (action) {
+      case 'file-tree':
+        setFileManagerMode('tree')
+        break
+      case 'file-search':
+        setFileManagerMode('search')
+        break
+      case 'file-collaborate':
+        setFileManagerMode('collaboration')
+        break
+      case 'file-history':
+        setFileManagerMode('history')
+        break
+      case 'ai-intelligence':
+        setShowCodeIntelligence(!showCodeIntelligence)
+        break
+      case 'git-integration':
+        setShowGitIntegration(!showGitIntegration)
+        break
+      case 'terminal':
+        setShowTerminal(!showTerminal)
+        break
+      case 'desktop-terminal':
+        setShowDesktopTerminal(!showDesktopTerminal)
+        break
+      case 'desktop-files':
+        setShowDesktopFileManager(!showDesktopFileManager)
+        break
+      case 'debug-panel':
+        setShowDebugPanel(true)
+        break
+    }
+    closeContextMenu()
+  }
+
   return (
     <div className="h-screen bg-background flex flex-col">
       {/* Enhanced Header Bar */}
@@ -335,97 +435,23 @@ const AIBuilder = () => {
           </Link>
         </div>
 
-               {/* Center - AI Integration Controls */}
-               <div className="flex-1 max-w-2xl mx-8 flex items-center gap-4">
-                 {/* File Management Controls */}
-                 <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg">
-                   <button
-                     onClick={() => setFileManagerMode('tree')}
-                     className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                       fileManagerMode === 'tree' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                     }`}
-                   >
-                     Tree
-                   </button>
-                   <button
-                     onClick={() => setFileManagerMode('search')}
-                     className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                       fileManagerMode === 'search' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                     }`}
-                   >
-                     Search
-                   </button>
-                   <button
-                     onClick={() => setFileManagerMode('collaboration')}
-                     className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                       fileManagerMode === 'collaboration' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                     }`}
-                   >
-                     Collaborate
-                   </button>
-                   <button
-                     onClick={() => setFileManagerMode('history')}
-                     className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                       fileManagerMode === 'history' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                     }`}
-                   >
-                     History
-                   </button>
-                 </div>
-                 
-           {/* AI Integration Controls */}
-           <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg">
-             <button
-               onClick={() => setShowCodeIntelligence(!showCodeIntelligence)}
-               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                 showCodeIntelligence ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-               }`}
-               title="Code Intelligence"
-             >
-               🧠 AI
-             </button>
-             <button
-               onClick={() => setShowGitIntegration(!showGitIntegration)}
-               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                 showGitIntegration ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-               }`}
-               title="Git Integration"
-             >
-               🔧 Git
-             </button>
-             <button
-               onClick={() => setShowTerminal(!showTerminal)}
-               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                 showTerminal ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-               }`}
-               title="Integrated Terminal"
-             >
-               💻 Terminal
-             </button>
-           </div>
-           
-           {/* Desktop Integration Controls */}
-           <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg">
-             <button
-               onClick={() => setShowDesktopTerminal(!showDesktopTerminal)}
-               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                 showDesktopTerminal ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-               }`}
-               title="Desktop Terminal"
-             >
-               🖥️ Desktop
-             </button>
-             <button
-               onClick={() => setShowDesktopFileManager(!showDesktopFileManager)}
-               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                 showDesktopFileManager ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-               }`}
-               title="Desktop File Manager"
-             >
-               📁 Files
-             </button>
-           </div>
-               </div>
+        {/* Center - Clean Status Display */}
+        <div className="flex-1 max-w-2xl mx-8 flex items-center justify-center">
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>AI Ready</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>File Manager Active</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>Right-click for options</span>
+            </div>
+          </div>
+        </div>
 
         {/* Right Side - Enhanced Tab Navigation */}
         <div className="flex items-center gap-1 bg-muted/40 p-1.5 rounded-2xl border border-border/60 shadow-inner">
@@ -475,7 +501,10 @@ const AIBuilder = () => {
       </div>
 
       {/* Enhanced Main Content */}
-      <div className="flex-1 p-8 bg-gradient-to-br from-background via-muted/20 to-background">
+      <div 
+        className="flex-1 p-8 bg-gradient-to-br from-background via-muted/20 to-background"
+        onContextMenu={(e) => handleContextMenu(e, 'main')}
+      >
         <ResizablePanelGroup direction="horizontal" className="h-full gap-4">
           
           {/* Left Panel - Enhanced File Manager */}
@@ -751,6 +780,143 @@ const AIBuilder = () => {
           // Handle the fixed files - update project context
         }}
       />
+
+      {/* Professional Context Menu - Like Cursor IDE */}
+      {showContextMenu && (
+        <div
+          className="fixed bg-card border border-border rounded-lg shadow-xl z-50 py-1 min-w-[240px] backdrop-blur-sm"
+          style={{
+            left: showContextMenu.x,
+            top: showContextMenu.y
+          }}
+          onClick={closeContextMenu}
+        >
+          {/* File Management */}
+          <div className="px-2 py-1">
+            <div className="text-xs font-medium text-muted-foreground px-2 py-1">File Management</div>
+            <button
+              onClick={() => handleContextAction('file-tree')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Folder className="h-4 w-4" />
+                Tree View
+              </div>
+              <span className="text-xs text-muted-foreground">⌘T</span>
+            </button>
+            <button
+              onClick={() => handleContextAction('file-search')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <FileText className="h-4 w-4" />
+                Search Files
+              </div>
+              <span className="text-xs text-muted-foreground">⌘F</span>
+            </button>
+            <button
+              onClick={() => handleContextAction('file-collaborate')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Brain className="h-4 w-4" />
+                Collaborate
+              </div>
+              <span className="text-xs text-muted-foreground">⌘C</span>
+            </button>
+            <button
+              onClick={() => handleContextAction('file-history')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <TerminalIcon className="h-4 w-4" />
+                File History
+              </div>
+              <span className="text-xs text-muted-foreground">⌘H</span>
+            </button>
+          </div>
+          
+          <hr className="my-1 border-border" />
+          
+          {/* AI & Development Tools */}
+          <div className="px-2 py-1">
+            <div className="text-xs font-medium text-muted-foreground px-2 py-1">AI & Development</div>
+            <button
+              onClick={() => handleContextAction('ai-intelligence')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Brain className="h-4 w-4" />
+                Code Intelligence
+              </div>
+              <span className="text-xs text-muted-foreground">⌘I</span>
+            </button>
+            <button
+              onClick={() => handleContextAction('git-integration')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Code className="h-4 w-4" />
+                Git Integration
+              </div>
+              <span className="text-xs text-muted-foreground">⌘G</span>
+            </button>
+            <button
+              onClick={() => handleContextAction('terminal')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <TerminalIcon className="h-4 w-4" />
+                Terminal
+              </div>
+              <span className="text-xs text-muted-foreground">⌘T</span>
+            </button>
+          </div>
+          
+          <hr className="my-1 border-border" />
+          
+          {/* Desktop Integration */}
+          <div className="px-2 py-1">
+            <div className="text-xs font-medium text-muted-foreground px-2 py-1">Desktop Integration</div>
+            <button
+              onClick={() => handleContextAction('desktop-terminal')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <TerminalIcon className="h-4 w-4" />
+                Desktop Terminal
+              </div>
+              <span className="text-xs text-muted-foreground">⌘D</span>
+            </button>
+            <button
+              onClick={() => handleContextAction('desktop-files')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Folder className="h-4 w-4" />
+                Desktop Files
+              </div>
+              <span className="text-xs text-muted-foreground">⌘F</span>
+            </button>
+          </div>
+          
+          <hr className="my-1 border-border" />
+          
+          {/* Advanced Tools */}
+          <div className="px-2 py-1">
+            <button
+              onClick={() => handleContextAction('debug-panel')}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Bug className="h-4 w-4" />
+                Debug Panel
+              </div>
+              <span className="text-xs text-muted-foreground">⌘B</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

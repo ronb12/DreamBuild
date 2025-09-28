@@ -11,7 +11,7 @@ import {
   Shield
 } from 'lucide-react'
 
-const Download = () => {
+const DownloadPage = () => {
   const features = [
     {
       icon: Terminal,
@@ -201,4 +201,4 @@ const Download = () => {
   )
 }
 
-export default Download
+export default DownloadPage

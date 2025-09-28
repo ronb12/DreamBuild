@@ -70,8 +70,15 @@ class FirebaseService {
         console.log('✅ Firebase anonymous auth successful')
       } catch (authError) {
         console.log('⚠️ Firebase auth not available, continuing without authentication:', authError.message)
+        console.log('⚠️ Auth error code:', authError.code)
         // Don't throw error, just continue without auth
         this.user = null
+        
+        // If it's an admin-restricted-operation error, it means anonymous auth is disabled
+        if (authError.code === 'auth/admin-restricted-operation') {
+          console.log('⚠️ Anonymous authentication is disabled in Firebase project')
+          console.log('⚠️ Continuing without authentication - apps collection allows anonymous access')
+        }
       }
 
       this.isInitialized = true

@@ -318,7 +318,7 @@ const Education = () => {
 
   // Show video list
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" data-testid="education">
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10 mt-16">
         <div className="container mx-auto px-6 py-8">
@@ -344,7 +344,8 @@ const Education = () => {
           {videos.map((video) => (
             <div
               key={video.id}
-              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer group"
+              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer group course-item"
+              data-testid="course-item"
             >
               {/* Video Thumbnail */}
               <div className="relative aspect-video bg-gray-200 rounded-t-lg overflow-hidden">

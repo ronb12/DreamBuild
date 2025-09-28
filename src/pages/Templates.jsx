@@ -850,7 +850,7 @@ export default App`
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTemplates.map((template, index) => (
               <motion.div
-                key={template.id}
+                key={`${template.id}-${index}`}
                 data-template-id={template.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -932,7 +932,7 @@ export default App`
           <div className="space-y-4">
             {filteredTemplates.map((template, index) => (
               <motion.div
-                key={template.id}
+                key={`${template.id}-list-${index}`}
                 data-template-id={template.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}

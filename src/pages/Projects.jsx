@@ -202,7 +202,7 @@ const Projects = () => {
   // Error boundary for debugging
   try {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100" style={{ paddingTop: '100px' }}>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100" style={{ paddingTop: '100px' }} data-testid="projects">
         <div className="w-full px-1 sm:px-2 lg:px-3 py-8">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-8">
@@ -292,7 +292,8 @@ const Projects = () => {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: index * 0.1, duration: 0.3 }}
                 whileHover={{ y: -4, scale: 1.02 }}
-                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 group relative overflow-hidden"
+                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 group relative overflow-hidden project-item"
+                data-testid="project-item"
               >
                 {/* Background gradient on hover */}
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

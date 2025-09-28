@@ -120,9 +120,15 @@ class FirebaseAppService {
       }
     } catch (error) {
       console.error('❌ Firestore deployment failed:', error)
+      console.error('❌ Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      })
       return {
         success: false,
-        error: error.message
+        error: error.message || 'Unknown deployment error',
+        code: error.code || 'UNKNOWN_ERROR'
       }
     }
   }
@@ -313,9 +319,7 @@ class FirebaseAppService {
     const { files, name } = appData
     
     console.log('🔍 FirebaseAppService: generateAppHTML called')
-    console.log('🔍 FirebaseAppService: appData:', appData)
     console.log('🔍 FirebaseAppService: files keys:', Object.keys(files))
-    console.log('🔍 FirebaseAppService: files content:', files)
     
     // Find the main HTML file
     const htmlFile = files['index.html'] || files['app.html'] || files['main.html']
@@ -331,92 +335,106 @@ class FirebaseAppService {
       return this.generateFallbackHTML(name)
     }
 
-    let html = htmlFile
+    // Check if htmlFile is a complete HTML document or just body content
+    const isCompleteHTML = htmlFile.includes('<!DOCTYPE html>') || (htmlFile.includes('<html') && htmlFile.includes('<head>'))
     
-    // Inject CSS if available
-    if (cssFile) {
-      html = html.replace('</head>', `<style>${cssFile}</style></head>`)
-    }
     
-    // Inject JavaScript if available
-    if (jsFile) {
-      html = html.replace('</body>', `<script>${jsFile}</script></body>`)
+    
+    let html
+    if (isCompleteHTML) {
+      // It's a complete HTML document, extract only the body content for direct rendering
+      const bodyMatch = htmlFile.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
+      if (bodyMatch) {
+        html = bodyMatch[1]
+        console.log('🔍 FirebaseAppService: Extracted body content from complete HTML')
+      } else {
+        // Fallback: remove HTML document structure
+        html = htmlFile
+          .replace(/<!DOCTYPE[^>]*>/gi, '')
+          .replace(/<html[^>]*>/gi, '')
+          .replace(/<\/html>/gi, '')
+          .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, '')
+          .replace(/<body[^>]*>/gi, '')
+          .replace(/<\/body>/gi, '')
+        console.log('🔍 FirebaseAppService: Stripped HTML document structure')
+      }
+      
+      // Inject JavaScript if available
+      if (jsFile) {
+        html += `<script>${jsFile}</script>`
+      }
+    } else {
+      // It's just body content, return only the body content for direct rendering
+      // Note: CSS will be injected separately in the React component
+      html = htmlFile
+      console.log('🔍 FirebaseAppService: Using body content directly')
+      
+      // Inject JavaScript if available
+      if (jsFile) {
+        html += `<script>${jsFile}</script>`
+      }
     }
     
     // Add DreamBuild branding with app info
-    html = html.replace('</body>', `
+    html += `
       <div style="position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; z-index: 10;">
         Built with <a href="https://dreambuild-2024-app.web.app" style="color: #60a5fa;">DreamBuild</a>
         <br><small>App: ${name}</small>
-      </div>
-    </body>`)
+      </div>`
     
     return html
   }
 
-  // Generate fallback HTML
+  // Generate fallback HTML (body content only for direct rendering)
   generateFallbackHTML(appName) {
     return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${appName}</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            text-align: center;
-            max-width: 600px;
-        }
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #fff, #f0f0f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 8px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        .btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>${appName}</h1>
-        <p>Your DreamBuild app is ready! This is a placeholder for your generated application.</p>
-        <a href="https://dreambuild-2024-app.web.app" class="btn">Back to DreamBuild</a>
-    </div>
-</body>
-</html>
-    `
+<div class="container">
+    <h1>${appName}</h1>
+    <p>Your DreamBuild app is ready! This is a placeholder for your generated application.</p>
+    <a href="https://dreambuild-2024-app.web.app" class="btn">Back to DreamBuild</a>
+</div>
+<style>
+    .container {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        max-width: 600px;
+    }
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #fff, #f0f0f0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background: rgba(255,255,255,0.2);
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn:hover {
+        background: rgba(255,255,255,0.3);
+        transform: translateY(-2px);
+    }
+</style>`
   }
 }
 

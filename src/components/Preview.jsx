@@ -25,10 +25,7 @@ import firebaseAppService from '../services/firebaseAppService'
 import appDeploymentService from '../services/appDeploymentService'
 
 const Preview = () => {
-  console.log('🎮 Preview component rendered!')
-  console.log('🎮 Preview component mounted successfully!')
   const { currentProject } = useProject()
-  console.log('🎮 Preview currentProject:', currentProject)
   const [isLoading, setIsLoading] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [deviceType, setDeviceType] = useState('desktop') // 'desktop', 'tablet', 'mobile'
@@ -39,8 +36,17 @@ const Preview = () => {
   const [isPreviewPaused, setIsPreviewPaused] = useState(false)
   const [deployedApp, setDeployedApp] = useState(null)
   const [appUrl, setAppUrl] = useState(null)
+  const [appContent, setAppContent] = useState(null)
+  const [appCss, setAppCss] = useState(null)
   const [deploymentStatus, setDeploymentStatus] = useState(null)
   const [isDeploying, setIsDeploying] = useState(false)
+
+  // Debug logging
+  console.log('🎮 Preview component rendered!')
+  console.log('🎮 Preview currentProject:', currentProject)
+  console.log('🎮 Preview appContent:', appContent ? 'EXISTS' : 'NULL')
+  console.log('🎮 Preview appUrl:', appUrl)
+  console.log('🎮 Preview isLoading:', isLoading)
 
   // Deploy app when component mounts or project changes - with debouncing
   useEffect(() => {
@@ -141,6 +147,7 @@ const Preview = () => {
       console.log('🎮 Firebase deployment result:', deploymentResult)
       console.log('🎮 Firebase deployment success:', deploymentResult?.success)
       console.log('🎮 Firebase deployment error:', deploymentResult?.error)
+      console.log('🎮 Firebase deployment error code:', deploymentResult?.code)
 
       // If Firebase deployment fails, fallback to in-memory service
       if (!deploymentResult || !deploymentResult.success) {
@@ -165,6 +172,28 @@ const Preview = () => {
       if (deploymentResult.success) {
         setDeployedApp(deploymentResult.appInfo)
         setAppUrl(deploymentResult.url)
+        
+        // Generate app content for direct rendering
+        try {
+          const appData = {
+            name: appName,
+            files: currentProject.files
+          }
+          const htmlContent = firebaseAppService.generateAppHTML(appData)
+          setAppContent(htmlContent)
+          
+          // Extract CSS for separate injection
+          const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
+          if (cssFile) {
+            setAppCss(cssFile)
+            console.log('✅ CSS extracted for separate injection')
+          }
+          
+          console.log('✅ App content generated for direct rendering')
+        } catch (error) {
+          console.error('❌ Error generating app content:', error)
+        }
+        
         console.log('✅ App deployed successfully:', deploymentResult.url)
         toast.success(`App deployed successfully! URL: ${deploymentResult.url}`, {
           duration: 6000,
@@ -206,10 +235,25 @@ const Preview = () => {
   }
 
   const handleRefresh = () => {
-    if (appUrl) {
-      const iframe = document.querySelector('#preview-iframe')
-      if (iframe) {
-        iframe.src = iframe.src
+    if (appContent && currentProject) {
+      // Regenerate app content
+      try {
+        const appData = {
+          name: currentProject.name || 'DreamBuild App',
+          files: currentProject.files
+        }
+        const htmlContent = firebaseAppService.generateAppHTML(appData)
+        setAppContent(htmlContent)
+        
+        // Extract CSS for separate injection
+        const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
+        if (cssFile) {
+          setAppCss(cssFile)
+        }
+        
+        console.log('🔄 App content refreshed')
+      } catch (error) {
+        console.error('❌ Error refreshing app content:', error)
       }
     }
   }
@@ -425,31 +469,31 @@ const Preview = () => {
               <p className="mt-2">This may take a few moments</p>
             </div>
           </div>
-        ) : appUrl ? (
+        ) : appContent ? (
           <div className={`w-full h-full flex items-center justify-center ${
             deviceType === 'mobile' ? 'bg-gray-100' : 
             deviceType === 'tablet' ? 'bg-gray-50' : 
             'bg-white'
           }`}>
             <div className={`${getDeviceStyling()} transition-all duration-300 ease-in-out`}>
-          <iframe
-                id="preview-iframe"
-                src={appUrl}
+              <div 
                 className={`w-full h-full border-0 ${
                   deviceType === 'mobile' ? 'rounded-lg shadow-lg' : 
                   deviceType === 'tablet' ? 'rounded-lg shadow-md' : 
                   ''
                 }`}
+                dangerouslySetInnerHTML={{ 
+                  __html: appCss ? `<style>${appCss}</style>${appContent}` : appContent 
+                }}
                 title="DreamBuild App Preview"
-                sandbox="allow-scripts allow-forms allow-popups"
                 onLoad={() => {
                   setIsLoading(false)
-                  console.log('🎮 Iframe loaded successfully')
+                  console.log('🎮 App content rendered successfully')
                 }}
-                onError={() => {
-                  setIsLoading(false)
-                  console.log('🎮 Iframe failed to load')
-                  toast.error('Failed to load app preview')
+                style={{
+                  // Ensure the content is rendered as HTML, not text
+                  whiteSpace: 'normal',
+                  overflow: 'auto'
                 }}
               />
             </div>

@@ -20,9 +20,10 @@ import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import TemplateSelector from '../components/TemplateSelector'
 import Terminal from '../components/Terminal'
 import DebugPanel from '../components/DebugPanel'
+import ProjectFileBrowser from '../components/ProjectFileBrowser'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug, Plus } from 'lucide-react'
 
 const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('editor')
@@ -124,6 +125,7 @@ const AIBuilder = () => {
   // Context Menu State
   const [showContextMenu, setShowContextMenu] = useState(null)
   const [contextMenuType, setContextMenuType] = useState('main') // main, file, editor
+  const [showProjectBrowser, setShowProjectBrowser] = useState(false)
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
@@ -189,6 +191,10 @@ const AIBuilder = () => {
           case 'b':
             e.preventDefault()
             handleContextAction('debug-panel')
+            break
+          case 'n':
+            e.preventDefault()
+            handleContextAction('new-project')
             break
         }
       }
@@ -409,6 +415,9 @@ const AIBuilder = () => {
       case 'debug-panel':
         setShowDebugPanel(true)
         break
+      case 'new-project':
+        setShowProjectBrowser(true)
+        break
     }
     closeContextMenu()
   }
@@ -479,7 +488,7 @@ const AIBuilder = () => {
           </div>
         </div>
 
-        {/* Right Side - Enhanced Tab Navigation */}
+        {/* Right Side - Tab Navigation */}
         <div className="flex items-center gap-1 bg-muted/40 p-1.5 rounded-2xl border border-border/60 shadow-inner">
           {tabs.map((tab) => {
             const Icon = tab.icon
@@ -884,6 +893,19 @@ const AIBuilder = () => {
               </div>
               <span className="text-xs text-muted-foreground">⌘H</span>
             </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleContextAction('new-project')
+              }}
+              className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-3">
+                <Plus className="h-4 w-4" />
+                New Project
+              </div>
+              <span className="text-xs text-muted-foreground">⌘N</span>
+            </button>
           </div>
           
           <hr className="my-1 border-border" />
@@ -982,6 +1004,29 @@ const AIBuilder = () => {
               </div>
               <span className="text-xs text-muted-foreground">⌘B</span>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Project File Browser Modal */}
+      {showProjectBrowser && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-6xl max-h-[80vh] overflow-hidden">
+            <ProjectFileBrowser
+              onProjectOpen={(project) => {
+                // Open project in new AIBuilder window
+                const newWindow = window.open('/ai-builder', '_blank', 'width=1200,height=800')
+                if (newWindow) {
+                  // Pass project data to new window
+                  newWindow.addEventListener('load', () => {
+                    newWindow.postMessage({ type: 'LOAD_PROJECT', project }, '*')
+                  })
+                }
+                setShowProjectBrowser(false)
+              }}
+              onClose={() => setShowProjectBrowser(false)}
+              className="h-full"
+            />
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 # 🚀 DreamBuild - Advanced AI Coding Platform
 
-**The most powerful AI coding platform that rivals and exceeds Cursor and Lovable with unique advanced capabilities.**
+**The most powerful AI coding platform that rivals and exceeds modern IDEs with unique advanced capabilities.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://reactjs.org/)
@@ -9,12 +9,12 @@
 
 ## 🌟 **Why DreamBuild?**
 
-DreamBuild is the **first AI coding platform** to combine the best of Cursor and Lovable while adding unique advanced capabilities that no other platform offers:
+DreamBuild is the **first AI coding platform** to combine the best of modern IDEs while adding unique advanced capabilities that no other platform offers:
 
 - ✅ **29 Programming Languages** (Most comprehensive language support)
 - ✅ **8 Specialized AI Models** (Optimized for different languages)
 - ✅ **Unlimited File Generation** (50-100+ files per project)
-- ✅ **Multi-Window System** (Like Cursor IDE - work on multiple projects)
+- ✅ **Multi-Window System** (Professional IDE workflow - work on multiple projects)
 - ✅ **Advanced Conversation AI** (Sophisticated back-and-forth communication)
 - ✅ **Incremental Development** (Add features without rebuilding apps)
 - ✅ **Real-time Collaboration** (Multi-user co-editing)
@@ -29,12 +29,12 @@ DreamBuild is the **first AI coding platform** to combine the best of Cursor and
 - ✅ **Coding Challenges** (Programming challenges with leaderboard)
 - ✅ **Learning Progress Tracking** (Analytics and achievements)
 - ✅ **macOS Desktop App** (Native desktop application with full system access)
-- ✅ **Real Terminal Commands** (Execute actual system commands like Cursor IDE)
+- ✅ **Real Terminal Commands** (Execute actual system commands like professional IDEs)
 - ✅ **Complete System Integration** (Full file system and hardware access)
 
 ## 🏆 **Competitive Advantage**
 
-| Feature | DreamBuild | Cursor | Lovable |
+| Feature | DreamBuild | Modern IDEs | Other Platforms |
 |---------|------------|--------|---------|
 | **Programming Languages** | ✅ **29 Languages** | ✅ ~15-20 Languages | ❌ ~5-8 Languages (Web Only) |
 | **AI Models** | ✅ **8 Specialized** | ✅ Multiple | ✅ Multiple |
@@ -137,6 +137,34 @@ npm run build-desktop
 | **File Operations** | Limited | ✅ Full File System |
 | **Performance** | Browser-based | ✅ Native Performance |
 | **Offline Use** | ❌ Requires Internet | ✅ Fully Offline |
+
+## 🪟 **Professional Multi-Window System**
+
+DreamBuild features a **professional multi-window system** that works like modern IDEs, allowing you to work on multiple projects simultaneously:
+
+### **Multi-Window Features:**
+- ✅ **Project File Browser** - Browse and select projects with visual cards
+- ✅ **Grid & List Views** - Toggle between visual project cards and detailed list view
+- ✅ **Search & Filter** - Find projects by name, description, or tags
+- ✅ **Context Menu** - Right-click for project actions (open, duplicate, rename, delete)
+- ✅ **Window Management** - Minimize, maximize, close, and arrange windows
+- ✅ **Keyboard Shortcuts** - Cmd+O (open project), Cmd+N (new window)
+- ✅ **Independent Windows** - Each project opens in its own window
+- ✅ **Professional UI** - Smooth animations and modern design
+
+### **How to Use:**
+1. **Open Project Browser** - Click "Open Project..." or press `⌘O`
+2. **Browse Projects** - Use search, filters, and sorting to find projects
+3. **Open in New Window** - Double-click or right-click → Open
+4. **Manage Windows** - Use window tabs, controls, and arrangement options
+5. **Switch Context** - Easy window switching with visual tabs
+
+### **Window Management:**
+- **Window Tabs** - Visual tabs showing all open windows
+- **Window Controls** - Minimize, maximize, restore, and close
+- **Window Menu** - Advanced arrangement options (cascade, tile)
+- **Keyboard Shortcuts** - Professional IDE-style shortcuts
+- **Context Menus** - Right-click for project and window actions
 
 ## 🚀 **Quick Start**
 

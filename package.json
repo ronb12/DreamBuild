@@ -10,23 +10,35 @@
     "deploy": "firebase deploy --only hosting"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.0",
+    "@monaco-editor/react": "^4.7.0",
+    "axios": "^1.3.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "firebase": "^9.17.0",
     "framer-motion": "^10.0.0",
     "lucide-react": "^0.263.0",
+    "monaco-editor": "^0.53.0",
+    "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
-    "axios": "^1.3.0",
-    "firebase": "^9.17.0"
+    "react-router-dom": "^6.8.0",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@vitejs/plugin-react": "^3.1.0",
-    "vite": "^4.1.0",
-    "puppeteer": "^19.0.0"
+    "puppeteer": "^19.0.0",
+    "vite": "^4.1.0"
   },
-  "keywords": ["ai", "development", "platform", "dreambuild"],
+  "keywords": [
+    "ai",
+    "development",
+    "platform",
+    "dreambuild"
+  ],
   "author": "Bradley Virtual Solutions, LLC",
   "license": "MIT"
 }

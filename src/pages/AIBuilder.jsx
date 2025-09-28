@@ -520,18 +520,6 @@ const AIBuilder = () => {
               </motion.button>
             )
           })}
-          
-          {/* Debug Panel Button */}
-          <motion.button
-            whileHover={{ scale: 1.02, y: -1 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setShowDebugPanel(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative group text-muted-foreground hover:text-foreground hover:bg-background/80 hover:shadow-sm"
-            title="Advanced Debug Panel - Analyze and fix code issues"
-          >
-            <Bug className="h-4 w-4 transition-transform duration-300 group-hover:scale-105" />
-            <span>Debug</span>
-          </motion.button>
         </div>
       </div>
 
@@ -574,6 +562,8 @@ const AIBuilder = () => {
                       onFileDownload={handleFileDownload}
                       onFileShare={handleFileShare}
                       onFileHistory={handleFileHistory}
+                      onNewProject={() => setShowProjectBrowser(true)}
+                      onDebugPanel={() => setShowDebugPanel(true)}
                       selectedFile={selectedFile}
                     />
                   </div>

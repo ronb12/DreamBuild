@@ -18,7 +18,10 @@ import {
   FileText,
   Archive,
   Music,
-  Video
+  FolderPlus,
+  Video,
+  ChevronDown,
+  Bug
 } from 'lucide-react';
 
 const SimpleAdvancedFileManager = ({ 
@@ -33,6 +36,8 @@ const SimpleAdvancedFileManager = ({
   onFileDownload,
   onFileShare,
   onFileHistory,
+  onNewProject,
+  onDebugPanel,
   selectedFile,
   className = ""
 }) => {
@@ -41,10 +46,23 @@ const SimpleAdvancedFileManager = ({
   const [newFileName, setNewFileName] = useState('');
   const [newFileType, setNewFileType] = useState('js');
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showAddDropdown, setShowAddDropdown] = useState(false);
   const [showContextMenu, setShowContextMenu] = useState(null);
   const [contextMenuFile, setContextMenuFile] = useState(null);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [fileSyncStatus, setFileSyncStatus] = useState('synced');
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showAddDropdown && !event.target.closest('.add-dropdown')) {
+        setShowAddDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showAddDropdown]);
 
   // File type icons
   const getFileIcon = (fileName) => {
@@ -246,20 +264,69 @@ const SimpleAdvancedFileManager = ({
               }`}></div>
               <span className="capitalize">{fileSyncStatus}</span>
             </div>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
-              title="Create File"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setShowUploadModal(true)}
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
-              title="Upload Files"
-            >
-              <Upload className="h-4 w-4" />
-            </button>
+            {/* Add Dropdown Button */}
+            <div className="relative add-dropdown">
+              <button
+                onClick={() => setShowAddDropdown(!showAddDropdown)}
+                className="p-2 hover:bg-muted rounded-lg transition-colors flex items-center gap-1"
+                title="Add Files or Project"
+              >
+                <Plus className="h-4 w-4" />
+                <ChevronDown className="h-3 w-3" />
+              </button>
+              
+              {/* Dropdown Menu */}
+              {showAddDropdown && (
+                <div className="absolute top-full right-0 mt-1 w-48 bg-card border border-border rounded-lg shadow-lg z-50">
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setShowCreateModal(true);
+                        setShowAddDropdown(false);
+                      }}
+                      className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Create File
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowUploadModal(true);
+                        setShowAddDropdown(false);
+                      }}
+                      className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Upload Files
+                    </button>
+                    {onNewProject && (
+                      <button
+                        onClick={() => {
+                          onNewProject();
+                          setShowAddDropdown(false);
+                        }}
+                        className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
+                      >
+                        <FolderPlus className="h-4 w-4" />
+                        New Project
+                      </button>
+                    )}
+                    {onDebugPanel && (
+                      <button
+                        onClick={() => {
+                          onDebugPanel();
+                          setShowAddDropdown(false);
+                        }}
+                        className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-sm"
+                      >
+                        <Bug className="h-4 w-4" />
+                        Debug Panel
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

@@ -200,7 +200,7 @@ const Examples = () => {
                   viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Grid3X3 className="h-4 w-4" />
+                <Grid className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}

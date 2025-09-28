@@ -76,25 +76,6 @@ const MultiWindowManager = () => {
     }
   }, [])
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // Cmd/Ctrl + O to open project browser
-      if ((e.metaKey || e.ctrlKey) && e.key === 'o') {
-        e.preventDefault()
-        setShowProjectBrowser(true)
-      }
-      // Cmd/Ctrl + N to create new window
-      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
-        e.preventDefault()
-        createNewWindow()
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [createNewWindow])
-
   // Create new window
   const createNewWindow = useCallback(async (projectData = null) => {
     try {
@@ -139,6 +120,25 @@ const MultiWindowManager = () => {
       toast.error('Failed to open project in new window')
     }
   }, [loadProject])
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Cmd/Ctrl + O to open project browser
+      if ((e.metaKey || e.ctrlKey) && e.key === 'o') {
+        e.preventDefault()
+        setShowProjectBrowser(true)
+      }
+      // Cmd/Ctrl + N to create new window
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+        e.preventDefault()
+        createNewWindow()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [createNewWindow])
 
   // Handle project browser open
   const handleProjectBrowserOpen = useCallback((project, windowId) => {

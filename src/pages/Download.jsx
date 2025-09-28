@@ -2,7 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { 
   Download as DownloadIcon, 
-  Apple, 
+  Monitor as AppleIcon, 
   CheckCircle, 
   Monitor,
   Terminal,
@@ -46,7 +46,7 @@ const DownloadPage = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-8">
-              <Apple className="h-10 w-10 text-primary" />
+              <AppleIcon className="h-10 w-10 text-primary" />
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold mb-6">

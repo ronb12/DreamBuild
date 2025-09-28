@@ -408,7 +408,7 @@ const SimpleAdvancedFileManager = ({
         </div>
       )}
 
-      {/* Professional Context Menu - Like Cursor IDE */}
+      {/* Professional Context Menu - Like Modern IDEs */}
       {showContextMenu && contextMenuFile && (
         <div
           className="fixed bg-card border border-border rounded-lg shadow-xl z-50 py-1 min-w-[220px] backdrop-blur-sm"

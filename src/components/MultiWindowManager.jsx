@@ -21,6 +21,7 @@ import {
 import { useProject } from '../contexts/ProjectContext'
 import multiWindowService from '../services/multiWindowService'
 import WindowAwareAIBuilder from './WindowAwareAIBuilder'
+import ProjectFileBrowser from './ProjectFileBrowser'
 import toast from 'react-hot-toast'
 
 const MultiWindowManager = () => {
@@ -31,6 +32,7 @@ const MultiWindowManager = () => {
   const [activeWindowId, setActiveWindowId] = useState(null)
   const [showWindowMenu, setShowWindowMenu] = useState(null)
   const [isWindowMenuOpen, setIsWindowMenuOpen] = useState(false)
+  const [showProjectBrowser, setShowProjectBrowser] = useState(false)
   
   console.log('🪟 Current state:', { windows: windows.length, activeWindowId, isWindowMenuOpen })
   console.log('🪟 Windows array:', windows)
@@ -74,6 +76,25 @@ const MultiWindowManager = () => {
     }
   }, [])
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Cmd/Ctrl + O to open project browser
+      if ((e.metaKey || e.ctrlKey) && e.key === 'o') {
+        e.preventDefault()
+        setShowProjectBrowser(true)
+      }
+      // Cmd/Ctrl + N to create new window
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+        e.preventDefault()
+        createNewWindow()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [createNewWindow])
+
   // Create new window
   const createNewWindow = useCallback(async (projectData = null) => {
     try {
@@ -111,12 +132,19 @@ const MultiWindowManager = () => {
       const windowId = multiWindowService.createWindow(project)
       await loadProject(project.id)
       toast.success(`Opened "${project.name}" in new window!`)
+      setShowProjectBrowser(false) // Close browser after opening
       return windowId
     } catch (error) {
       console.error('Failed to open project in new window:', error)
       toast.error('Failed to open project in new window')
     }
   }, [loadProject])
+
+  // Handle project browser open
+  const handleProjectBrowserOpen = useCallback((project, windowId) => {
+    setShowProjectBrowser(false)
+    toast.success(`Opened "${project.name}" in new window!`)
+  }, [])
 
   // Close window
   const closeWindow = useCallback((windowId) => {
@@ -304,6 +332,17 @@ const MultiWindowManager = () => {
           
           <button
             onClick={() => {
+              setShowProjectBrowser(true)
+              setIsWindowMenuOpen(false)
+            }}
+            className="w-full flex items-center gap-2 px-2 py-1.5 hover:bg-muted rounded text-sm"
+          >
+            <Folder className="h-4 w-4" />
+            Open Project...
+          </button>
+          
+          <button
+            onClick={() => {
               arrangeWindows('cascade')
               setIsWindowMenuOpen(false)
             }}
@@ -412,6 +451,15 @@ const MultiWindowManager = () => {
             New Window
           </button>
           
+          <button
+            onClick={() => setShowProjectBrowser(true)}
+            className="flex items-center gap-1 px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-lg transition-colors text-sm"
+            type="button"
+          >
+            <Folder className="h-4 w-4" />
+            Open Project...
+          </button>
+          
           <div className="relative">
             <button
               onClick={() => setIsWindowMenuOpen(!isWindowMenuOpen)}
@@ -431,27 +479,64 @@ const MultiWindowManager = () => {
           {windows.map((window) => renderWindow(window))}
         </AnimatePresence>
         
+        {/* Project File Browser Modal */}
+        <AnimatePresence>
+          {showProjectBrowser && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={() => setShowProjectBrowser(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="w-full max-w-6xl max-h-[80vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ProjectFileBrowser
+                  onProjectOpen={handleProjectBrowserOpen}
+                  onClose={() => setShowProjectBrowser(false)}
+                  className="h-full"
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
         {/* Empty State */}
         {windows.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <Monitor className="h-16 w-16 text-muted-foreground mb-4" />
             <h2 className="text-xl font-semibold mb-2">No Windows Open</h2>
             <p className="text-muted-foreground mb-4">
-              Create a new window to start working on your projects
+              Create a new window or open an existing project to get started
             </p>
-            <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                console.log('🪟 Create New Window button clicked!')
-                createNewWindow()
-              }}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              type="button"
-            >
-              <Plus className="h-4 w-4" />
-              Create New Window
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  console.log('🪟 Create New Window button clicked!')
+                  createNewWindow()
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                type="button"
+              >
+                <Plus className="h-4 w-4" />
+                Create New Window
+              </button>
+              <button
+                onClick={() => setShowProjectBrowser(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg transition-colors"
+                type="button"
+              >
+                <Folder className="h-4 w-4" />
+                Open Project...
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -54,7 +54,7 @@ class SystemIntegrationService {
   async executeCommand(command) {
     try {
       // Note: Due to browser security restrictions, we cannot execute real system commands
-      // This is a limitation of web applications vs desktop applications like Cursor
+      // This is a limitation of web applications vs desktop applications
       
       console.log('⚠️ Browser Security Limitation: Cannot execute real system commands');
       console.log('Command requested:', command);
@@ -128,7 +128,7 @@ no changes added to commit (use "git add" and/or "git commit -a")`,
       case 'git log --oneline':
         return {
           success: true,
-          output: `f7cf49c 🚀 IMPLEMENT CURSOR-LEVEL AI INTEGRATION FEATURES
+          output: `f7cf49c 🚀 IMPLEMENT PROFESSIONAL AI INTEGRATION FEATURES
 0029eaf 🎉 ACHIEVE 100% SUCCESS RATE - PERFECT FILE MANAGEMENT SYSTEM
 5d9f932 🚀 Implement advanced file management features
 4c8e721 ✨ Add AI model selection and code generation`,

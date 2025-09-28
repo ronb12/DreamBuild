@@ -55,7 +55,7 @@ const DownloadPage = () => {
             
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
               Get the full desktop experience with complete system access, 
-              just like Cursor IDE. Works on both Intel and Apple Silicon Macs.
+              just like modern IDEs. Works on both Intel and Apple Silicon Macs.
             </p>
           </motion.div>
         </div>
@@ -174,7 +174,7 @@ const DownloadPage = () => {
               
               <div className="text-center">
                 <p className="text-muted-foreground mb-4">
-                  The desktop app provides the same functionality as Cursor IDE with additional AI features
+                  The desktop app provides the same functionality as modern IDEs with additional AI features
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a

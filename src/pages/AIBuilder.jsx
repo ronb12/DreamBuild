@@ -807,7 +807,7 @@ const AIBuilder = () => {
         }}
       />
 
-      {/* Professional Context Menu - Like Cursor IDE */}
+      {/* Professional Context Menu - Like Modern IDEs */}
       {showContextMenu && (
         <div
           data-context-menu

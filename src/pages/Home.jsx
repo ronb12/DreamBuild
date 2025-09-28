@@ -189,7 +189,7 @@ const Home = () => {
                 Download DreamBuild Desktop
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Get the full desktop experience with complete system access, just like Cursor IDE
+                Get the full desktop experience with complete system access, just like modern IDEs
               </p>
             </motion.div>
           </div>
@@ -242,7 +242,7 @@ const Home = () => {
                   </Link>
                   
                   <div className="text-xs text-muted-foreground">
-                    <p>• The desktop app provides full system access like Cursor IDE</p>
+                    <p>• The desktop app provides full system access like modern IDEs</p>
                     <p>• Real terminal commands and file system operations</p>
                     <p>• No App Store required - direct installation</p>
                   </div>

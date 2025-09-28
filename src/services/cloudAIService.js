@@ -455,7 +455,7 @@ class CloudAIService {
     }
   }
 
-  // Enhanced context analysis (like Cursor)
+  // Enhanced context analysis (like modern IDEs)
   analyzeProjectContext(context) {
     return {
       // Project structure analysis
@@ -472,7 +472,7 @@ class CloudAIService {
     }
   }
 
-  // Context-aware code generation (like Cursor)
+  // Context-aware code generation (like modern IDEs)
   async generateContextAwareCode(prompt, context) {
     console.log('🧠 Context-aware generation:', context)
     

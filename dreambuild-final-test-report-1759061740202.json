@@ -1,0 +1,66 @@
+{
+  "timestamp": "2025-09-28T12:15:40.200Z",
+  "summary": {
+    "totalTests": 16,
+    "passedTests": 14,
+    "failedTests": 2,
+    "successRate": "87.50%"
+  },
+  "performance": {
+    "Application Startup": 6329,
+    "Navigation System": 2148,
+    "AI Builder Interface": 4829,
+    "Template System": 6543,
+    "Code Editor": 5467,
+    "Preview System": 3917,
+    "Multi-Window System": 2668,
+    "Responsive Design": 7788,
+    "Performance Metrics": 520,
+    "Error Handling": 2845,
+    "Accessibility": 1088,
+    "Code Generation": 9742,
+    "Security Features": 1550,
+    "Build System": 144
+  },
+  "errors": [
+    {
+      "type": "console_error",
+      "message": "Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s weather-app \n    at div\n    at div\n    at div\n    at Templates (http://localhost:3000/src/pages/Templates.jsx:51:33)\n    at RenderedRoute (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8b1146e9:4088:5)\n    at Routes (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8b1146e9:4558:5)\n    at Suspense\n    at ErrorBoundary (http://localhost:3000/src/components/ErrorBoundary.jsx:9:5)\n    at main\n    at ConditionalMain (http://localhost:3000/src/App.jsx:107:28)\n    at div\n    at Router (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8b1146e9:4501:15)\n    at BrowserRouter (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8b1146e9:5247:5)\n    at ProjectProvider (http://localhost:3000/src/contexts/ProjectContext.jsx:27:35)\n    at AuthProvider (http://localhost:3000/src/contexts/AuthContext.jsx:28:32)\n    at ThemeProvider (http://localhost:3000/src/contexts/ThemeContext.jsx:170:33)\n    at ErrorBoundary (http://localhost:3000/src/components/ErrorBoundary.jsx:9:5)\n    at App",
+      "timestamp": "2025-09-28T12:14:51.792Z"
+    },
+    {
+      "type": "console_error",
+      "message": "Warning: Encountered two children with the same key, `%s`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.%s todo-app \n    at div\n    at div\n    at div\n    at Templates (http://localhost:3000/src/pages/Templates.jsx:51:33)\n    at RenderedRoute (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8b1146e9:4088:5)\n    at Routes (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8b1146e9:4558:5)\n    at Suspense\n    at ErrorBoundary (http://localhost:3000/src/components/ErrorBoundary.jsx:9:5)\n    at main\n    at ConditionalMain (http://localhost:3000/src/App.jsx:107:28)\n    at div\n    at Router (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8b1146e9:4501:15)\n    at BrowserRouter (http://localhost:3000/node_modules/.vite/deps/react-router-dom.js?v=8b1146e9:5247:5)\n    at ProjectProvider (http://localhost:3000/src/contexts/ProjectContext.jsx:27:35)\n    at AuthProvider (http://localhost:3000/src/contexts/AuthContext.jsx:28:32)\n    at ThemeProvider (http://localhost:3000/src/contexts/ThemeContext.jsx:170:33)\n    at ErrorBoundary (http://localhost:3000/src/components/ErrorBoundary.jsx:9:5)\n    at App",
+      "timestamp": "2025-09-28T12:14:51.803Z"
+    },
+    {
+      "test": "Education Platform",
+      "error": "No education elements found",
+      "timestamp": "2025-09-28T12:15:12.029Z"
+    },
+    {
+      "test": "Projects Management",
+      "error": "No project elements found",
+      "timestamp": "2025-09-28T12:15:16.143Z"
+    }
+  ],
+  "screenshots": [
+    "./test-screenshots/failed-Education-Platform-1759061712030.png",
+    "./test-screenshots/failed-Projects-Management-1759061716143.png"
+  ],
+  "criticalIssues": [],
+  "recommendations": [
+    "Fix failed tests to ensure 100% functionality",
+    "Address console and page errors for better stability"
+  ],
+  "productionReadiness": {
+    "isReady": true,
+    "successRate": 0.875,
+    "criticalErrors": 0,
+    "issues": 4,
+    "recommendations": [
+      "Fix failed tests to ensure 100% functionality",
+      "Address console and page errors for better stability"
+    ]
+  }
+}

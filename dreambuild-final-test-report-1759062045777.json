@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-09-28T12:20:45.777Z",
+  "summary": {
+    "totalTests": 16,
+    "passedTests": 15,
+    "failedTests": 1,
+    "successRate": "93.75%"
+  },
+  "performance": {
+    "Application Startup": 6594,
+    "Navigation System": 2216,
+    "AI Builder Interface": 5544,
+    "Template System": 6825,
+    "Code Editor": 8370,
+    "Preview System": 3787,
+    "Multi-Window System": 2983,
+    "Education Platform": 4086,
+    "Responsive Design": 8876,
+    "Performance Metrics": 835,
+    "Error Handling": 3344,
+    "Accessibility": 1394,
+    "Code Generation": 10153,
+    "Security Features": 1958,
+    "Build System": 186
+  },
+  "errors": [
+    {
+      "test": "Projects Management",
+      "error": "No project elements found",
+      "timestamp": "2025-09-28T12:20:18.658Z"
+    }
+  ],
+  "screenshots": [
+    "./test-screenshots/failed-Projects-Management-1759062018662.png"
+  ],
+  "criticalIssues": [],
+  "recommendations": [
+    "Fix failed tests to ensure 100% functionality",
+    "Address console and page errors for better stability"
+  ],
+  "productionReadiness": {
+    "isReady": true,
+    "successRate": 0.9375,
+    "criticalErrors": 0,
+    "issues": 1,
+    "recommendations": [
+      "Fix failed tests to ensure 100% functionality",
+      "Address console and page errors for better stability"
+    ]
+  }
+}

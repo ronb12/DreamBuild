@@ -4,7 +4,6 @@
 import axios from 'axios'
 import githubTemplateService from './githubTemplateService.js'
 import appNamingService from './appNamingService.js'
-import htmlCssEnhancementService from './htmlCssEnhancementService.js'
 
 // Local AI Models Configuration
 const LOCAL_AI_MODELS = {
@@ -87,9 +86,6 @@ class LocalAIService {
     this.modelHealth = {}
     this.availableModels = Object.keys(LOCAL_AI_MODELS)
     this.baseURL = 'http://localhost:11434/api'
-    this.responseCache = new Map() // Added for caching
-    this.cacheTimeout = 5 * 60 * 1000 // 5 minutes cache timeout
-    this.maxCacheSize = 100 // Max 100 cached responses
     
     // Check if we're in production (HTTPS) or development (HTTP)
     this.isProduction = window.location.protocol === 'https:'
@@ -855,10 +851,21 @@ const styles = StyleSheet.create({
     // Default files based on template
     switch (template.id) {
       case 'react-dashboard':
-        files['index.html'] = `<div id="root"></div>
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="App.jsx"></script>`
+        files['index.html'] = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="App.jsx"></script>
+</body>
+</html>`
         
         files['App.jsx'] = `import React, { useState } from 'react';
 
@@ -989,7 +996,16 @@ body {
         break
 
       case 'todo-app':
-        files['index.html'] = `<div class="container">
+        files['index.html'] = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
         <h1>Todo App</h1>
         
         <div class="input-container">
@@ -1010,7 +1026,9 @@ body {
         </div>
     </div>
     
-    <script src="script.js"></script>`
+    <script src="script.js"></script>
+</body>
+</html>`
         
         files['styles.css'] = `* {
     margin: 0;
@@ -1390,7 +1408,16 @@ document.addEventListener('DOMContentLoaded', () => {
         break
 
       case 'ecommerce-store':
-        files['index.html'] = `<div class="container">
+        files['index.html'] = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Store</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
         <header>
             <h1>DreamStore</h1>
             <div class="cart">
@@ -1416,7 +1443,9 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
     
-    <script src="script.js"></script>`
+    <script src="script.js"></script>
+</body>
+</html>`
         
         files['styles.css'] = `* {
     margin: 0;
@@ -1813,7 +1842,16 @@ const store = new EcommerceStore();`
         break
 
       case 'calculator-app':
-        files['index.html'] = `<div class="container">
+        files['index.html'] = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
         <div class="calculator">
             <div class="display">
                 <input type="text" id="result" readonly>
@@ -1844,7 +1882,11 @@ const store = new EcommerceStore();`
                 <button class="btn equals" onclick="calculator.calculate()">=</button>
             </div>
         </div>
-    </div>`
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>`
         
         files['styles.css'] = `* {
     margin: 0;
@@ -1852,7 +1894,7 @@ const store = new EcommerceStore();`
     box-sizing: border-box;
 }
 
-.container {
+body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
@@ -1860,8 +1902,13 @@ const store = new EcommerceStore();`
     align-items: center;
     justify-content: center;
     padding: 20px;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 20px;
+    padding: 30px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.1);
 }
 
@@ -2098,123 +2145,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });`
-        
-        files['script.js'] = `class Calculator {
-    constructor() {
-        this.display = document.getElementById('result');
-        this.currentInput = '';
-        this.operator = null;
-        this.previousInput = '';
-        this.shouldResetDisplay = false;
-    }
-    
-    append(value) {
-        if (this.shouldResetDisplay) {
-            this.display.value = '';
-            this.shouldResetDisplay = false;
-        }
-        
-        if (value === '.' && this.display.value.includes('.')) {
-            return;
-        }
-        
-        if (this.display.value === '0' && value !== '.') {
-            this.display.value = value;
-        } else {
-            this.display.value += value;
-        }
-    }
-    
-    clear() {
-        this.display.value = '0';
-        this.currentInput = '';
-        this.operator = null;
-        this.previousInput = '';
-        this.shouldResetDisplay = false;
-    }
-    
-    delete() {
-        if (this.display.value.length > 1) {
-            this.display.value = this.display.value.slice(0, -1);
-        } else {
-            this.display.value = '0';
-        }
-    }
-    
-    setOperator(op) {
-        if (this.operator && !this.shouldResetDisplay) {
-            this.calculate();
-        }
-        
-        this.previousInput = this.display.value;
-        this.operator = op;
-        this.shouldResetDisplay = true;
-    }
-    
-    calculate() {
-        if (this.operator && this.previousInput) {
-            const prev = parseFloat(this.previousInput);
-            const current = parseFloat(this.display.value);
-            let result;
-            
-            switch (this.operator) {
-                case '+':
-                    result = prev + current;
-                    break;
-                case '-':
-                    result = prev - current;
-                    break;
-                case '*':
-                    result = prev * current;
-                    break;
-                case '/':
-                    if (current === 0) {
-                        this.display.value = 'Error';
-                        return;
-                    }
-                    result = prev / current;
-                    break;
-                case '%':
-                    result = prev % current;
-                    break;
-                default:
-                    return;
-            }
-            
-            this.display.value = result.toString();
-            this.operator = null;
-            this.previousInput = '';
-            this.shouldResetDisplay = true;
-        }
-    }
-    
-    // Handle keyboard input
-    handleKeyPress(event) {
-        const key = event.key;
-        
-        if (key >= '0' && key <= '9' || key === '.') {
-            this.append(key);
-        } else if (key === '+' || key === '-' || key === '*' || key === '/') {
-            this.setOperator(key);
-        } else if (key === 'Enter' || key === '=') {
-            this.calculate();
-        } else if (key === 'Escape' || key === 'c' || key === 'C') {
-            this.clear();
-        } else if (key === 'Backspace') {
-            this.delete();
-        }
-    }
-}
-
-// Initialize calculator when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    const calculator = new Calculator();
-    
-    document.addEventListener('keydown', (event) => {
-        calculator.handleKeyPress(event);
-    });
-});`
-        
         break
 
       case 'crud-app':
@@ -3488,18 +3418,10 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Starting code generation for prompt:', prompt)
     
     try {
-      // Check cache first
-      const cachedResponse = this.getCachedResponse(prompt, context)
-      if (cachedResponse) {
-        return cachedResponse
-      }
-      
       // In production, skip local AI and use fallback directly
       if (this.isProduction && !this.isLocalhost) {
         console.log('🌐 Production environment - using template fallback')
-        const response = await this.createFallbackResponse(prompt, context)
-        this.setCachedResponse(prompt, context, response)
-        return response
+        return await this.createFallbackResponse(prompt, context)
       }
       
       // Try to use local AI if available
@@ -3507,15 +3429,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return await this.generateWithLocalAI(prompt, context)
       } else {
         console.log('⚠️ Local AI not available, using template fallback')
-        const response = await this.createFallbackResponse(prompt, context)
-        this.setCachedResponse(prompt, context, response)
-        return response
+        return await this.createFallbackResponse(prompt, context)
       }
     } catch (error) {
       console.error('❌ Code generation failed:', error)
-      const response = await this.createFallbackResponse(prompt, context)
-      this.setCachedResponse(prompt, context, response)
-      return response
+      return await this.createFallbackResponse(prompt, context)
     }
   }
 
@@ -3938,7 +3856,6 @@ Generate practical, working applications that users can immediately use.`
   
   // Generate fallback code based on prompt
   async generateFallbackCode(prompt, context = {}) {
-    console.log('🔍 generateFallbackCode called with prompt:', prompt)
     
     // Handle object input (extract prompt property)
     let promptString
@@ -3952,57 +3869,52 @@ Generate practical, working applications that users can immediately use.`
       promptString = String(prompt)
     }
     
-    // Ensure promptString is a string
-    if (typeof promptString !== 'string') {
-      promptString = String(promptString)
-    }
-    
-    console.log('🔍 Processed prompt string:', promptString)
-    
     // Analyze prompt to determine template
     const lowerPrompt = promptString.toLowerCase()
-    console.log('🔍 Lowercase prompt:', lowerPrompt)
     
     if (lowerPrompt.includes('dashboard') || lowerPrompt.includes('analytics')) {
-      console.log('🔍 Matched dashboard template')
       return await this.generateTemplateById('react-dashboard', context)
     } else if (lowerPrompt.includes('todo') || lowerPrompt.includes('task')) {
-      console.log('🔍 Matched todo template')
       return await this.generateTemplateById('todo-app', context)
     } else if (lowerPrompt.includes('crud') || lowerPrompt.includes('data management') || lowerPrompt.includes('admin panel')) {
-      console.log('🔍 Matched crud template')
       return await this.generateTemplateById('crud-app', context)
     } else if (lowerPrompt.includes('ecommerce') || lowerPrompt.includes('store') || lowerPrompt.includes('shop')) {
-      console.log('🔍 Matched ecommerce template')
       return await this.generateTemplateById('ecommerce-store', context)
     } else if (lowerPrompt.includes('calculator') || lowerPrompt.includes('calc')) {
-      console.log('🔍 Matched calculator template')
       return await this.generateTemplateById('calculator-app', context)
     } else if (lowerPrompt.includes('weather')) {
-      console.log('🔍 Matched weather template')
       return await this.generateTemplateById('weather-app', context)
-    } else if (lowerPrompt.includes('react') || lowerPrompt.includes('component')) {
-      console.log('🔍 Matched React template')
-      return await this.generateTemplateById('react-dashboard', context)
-    } else if (lowerPrompt.includes('python') || lowerPrompt.includes('flask') || lowerPrompt.includes('django')) {
-      console.log('🔍 Matched Python template')
-      return this.generateSimplePythonTemplate(promptString, context)
-    } else if (lowerPrompt.includes('html') || lowerPrompt.includes('css') || lowerPrompt.includes('landing page')) {
-      console.log('🔍 Matched HTML/CSS template')
-      return htmlCssEnhancementService.getTemplate('landingPage')
-    } else if (lowerPrompt.includes('portfolio')) {
-      console.log('🔍 Matched Portfolio template')
-      return htmlCssEnhancementService.getTemplate('portfolio')
     } else {
-      console.log('🔍 No template matched, using default')
-      return this.generateLegacyDefaultTemplate(promptString)
-    }
-  }
-
-  // Legacy default template (kept for reference)
-  generateLegacyDefaultTemplate(promptString) {
-    return {
-        'index.html': `<div class="header">
+      // Default web app
+      return {
+        'index.html': `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamBuild App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .content {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
         <h1>Welcome to Your DreamBuild App!</h1>
         <p>Generated based on: "${promptString}"</p>
     </div>
@@ -4020,23 +3932,8 @@ Generate practical, working applications that users can immediately use.`
         
         <p>To run this application, simply open the index.html file in your web browser.</p>
     </div>
-<style>
-    .header {
-        text-align: center;
-        margin-bottom: 2rem;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    .content {
-        background: #f8f9fa;
-        padding: 2rem;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        line-height: 1.6;
-    }
-</style>`,
+</body>
+</html>`,
         'styles.css': `/* Additional styles for your DreamBuild app */
 
 .container {
@@ -4086,118 +3983,25 @@ Generate practical, working applications that users can immediately use.`
   
   // Extract app type from prompt
   extractAppType(prompt) {
-    const lowerPrompt = prompt.toLowerCase();
-    if (lowerPrompt.includes('todo')) return 'todo list';
-    if (lowerPrompt.includes('calculator')) return 'calculator';
-    if (lowerPrompt.includes('dashboard')) return 'dashboard';
-    if (lowerPrompt.includes('ecommerce')) return 'e-commerce store';
-    if (lowerPrompt.includes('weather')) return 'weather app';
-    if (lowerPrompt.includes('blog')) return 'blog';
-    return 'web application';
-  }
-
-  // Simple Python template generator
-  generateSimplePythonTemplate(prompt, context = {}) {
-    const appName = prompt.split(' ')[0] || 'PythonApp';
-    return {
-      'app.py': `#!/usr/bin/env python3
-"""
-${appName} - A Python application generated by DreamBuild
-Generated based on: "${prompt}"
-"""
-
-def main():
-    print("Welcome to ${appName}!")
-    print("Generated by DreamBuild AI")
-    
-    # Add your application logic here
-    user_input = input("Enter your name: ")
-    print(f"Hello, {user_input}!")
-
-if __name__ == "__main__":
-    main()
-`,
-      'requirements.txt': `# Python dependencies for ${appName}
-# Add your required packages here
-requests==2.31.0
-`,
-      'README.md': `# ${appName}
-
-A Python application generated by DreamBuild.
-
-## Installation
-
-\`\`\`bash
-pip install -r requirements.txt
-\`\`\`
-
-## Usage
-
-\`\`\`bash
-python app.py
-\`\`\`
-
-## Description
-
-${prompt}
-
-Generated by DreamBuild AI platform.
-`
-    };
-  }
-
-
-  // Performance optimization methods - Cache AI responses
-  generateCacheKey(prompt, context = {}) {
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt);
-    const contextString = JSON.stringify(context);
-    return `${promptString}_${contextString}`.replace(/[^a-zA-Z0-9]/g, '_');
-  }
-
-  getCachedResponse(prompt, context = {}) {
-    const cacheKey = this.generateCacheKey(prompt, context);
-    const cached = this.responseCache.get(cacheKey);
-    
-    if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
-      console.log('🚀 Cache hit for prompt:', prompt.substring(0, 50) + '...');
-      return cached.response;
+    // Handle object input (extract prompt property)
+    let promptString
+    if (typeof prompt === 'object' && prompt.prompt) {
+      promptString = prompt.prompt
+    } else if (typeof prompt === 'string') {
+      promptString = prompt
+    } else if (prompt === null || prompt === undefined) {
+      promptString = 'web application'
+    } else {
+      promptString = String(prompt)
     }
-    
-    if (cached) {
-      this.responseCache.delete(cacheKey);
-    }
-    
-    return null;
-  }
-
-  setCachedResponse(prompt, context = {}, response) {
-    const cacheKey = this.generateCacheKey(prompt, context);
-    
-    // Clean up old cache entries if we're at the limit
-    if (this.responseCache.size >= this.maxCacheSize) {
-      const oldestKey = this.responseCache.keys().next().value;
-      this.responseCache.delete(oldestKey);
-    }
-    
-    this.responseCache.set(cacheKey, {
-      response: response,
-      timestamp: Date.now()
-    });
-    
-    console.log('💾 Cached response for prompt:', prompt.substring(0, 50) + '...');
-  }
-
-  clearCache() {
-    this.responseCache.clear();
-    console.log('🗑️ Cache cleared');
-  }
-
-  getCacheStats() {
-    return {
-      size: this.responseCache.size,
-      maxSize: this.maxCacheSize,
-      timeout: this.cacheTimeout
-    };
+    const lowerPrompt = promptString.toLowerCase()
+    if (lowerPrompt.includes('todo')) return 'todo list'
+    if (lowerPrompt.includes('calculator')) return 'calculator'
+    if (lowerPrompt.includes('dashboard')) return 'dashboard'
+    if (lowerPrompt.includes('ecommerce')) return 'e-commerce store'
+    if (lowerPrompt.includes('weather')) return 'weather app'
+    if (lowerPrompt.includes('blog')) return 'blog'
+    return 'web application'
   }
 }
 

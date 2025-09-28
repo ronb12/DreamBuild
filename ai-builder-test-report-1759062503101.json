@@ -1,0 +1,67 @@
+{
+  "timestamp": "2025-09-28T12:28:23.089Z",
+  "summary": {
+    "totalTests": 10,
+    "passedTests": 10,
+    "failedTests": 0,
+    "successRate": "100.00%"
+  },
+  "aiModels": {
+    "conversation": {
+      "success": true,
+      "responseLength": 47,
+      "containsRelevantContent": true
+    },
+    "errorHandling": {
+      "success": true,
+      "gracefulHandling": true
+    }
+  },
+  "codeGeneration": {
+    "javascript": {
+      "success": true,
+      "elementsFound": 5,
+      "containsJavaScript": true
+    },
+    "react": {
+      "success": true,
+      "containsReact": false
+    },
+    "python": {
+      "success": true,
+      "containsPython": true,
+      "containsClass": true,
+      "containsMethods": false
+    },
+    "html": {
+      "success": true,
+      "containsHTML": false
+    },
+    "editor": {
+      "success": true,
+      "functional": true
+    }
+  },
+  "performance": {
+    "AI Builder Access": 5680,
+    "AI Model Selection": 31,
+    "JavaScript Code Generation": 12961,
+    "React Code Generation": 13057,
+    "Python Code Generation": 10004,
+    "HTML Code Generation": 9956,
+    "AI Conversation": 9006,
+    "Code Editor Integration": 621,
+    "AI Error Handling": 6273,
+    "aiResponse": {
+      "success": true,
+      "responseTime": 5589,
+      "acceptable": true
+    },
+    "AI Performance Metrics": 5591
+  },
+  "errors": [],
+  "screenshots": [],
+  "recommendations": [
+    "Improve React code generation quality"
+  ]
+}

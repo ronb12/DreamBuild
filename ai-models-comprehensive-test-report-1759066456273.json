@@ -1,0 +1,159 @@
+{
+  "timestamp": "2025-09-28T13:33:21.274Z",
+  "tests": [
+    {
+      "name": "AI Model Visibility",
+      "status": "FAILED",
+      "error": "No AI model selector found",
+      "duration": 8073,
+      "timestamp": "2025-09-28T13:33:36.003Z"
+    },
+    {
+      "name": "Model Switching",
+      "status": "FAILED",
+      "error": "No model selector found for switching",
+      "duration": 4649,
+      "timestamp": "2025-09-28T13:33:40.653Z"
+    },
+    {
+      "name": "Complex JavaScript Generation",
+      "status": "FAILED",
+      "error": "No AI input found for code generation",
+      "duration": 4240,
+      "timestamp": "2025-09-28T13:33:44.895Z"
+    },
+    {
+      "name": "React Advanced Features",
+      "status": "FAILED",
+      "error": "No AI input found for React generation",
+      "duration": 3932,
+      "timestamp": "2025-09-28T13:33:48.828Z"
+    },
+    {
+      "name": "Python Complex Algorithms",
+      "status": "FAILED",
+      "error": "No AI input found for Python generation",
+      "duration": 3685,
+      "timestamp": "2025-09-28T13:33:52.514Z"
+    },
+    {
+      "name": "Error Handling and Debugging",
+      "status": "FAILED",
+      "error": "No AI input found for error handling test",
+      "duration": 3855,
+      "timestamp": "2025-09-28T13:33:56.369Z"
+    },
+    {
+      "name": "Performance Optimization",
+      "status": "FAILED",
+      "error": "No AI input found for performance test",
+      "duration": 3795,
+      "timestamp": "2025-09-28T13:34:00.165Z"
+    },
+    {
+      "name": "Code Quality and Best Practices",
+      "status": "FAILED",
+      "error": "No AI input found for code quality test",
+      "duration": 3783,
+      "timestamp": "2025-09-28T13:34:03.948Z"
+    },
+    {
+      "name": "Multi-Language Support",
+      "status": "FAILED",
+      "error": "No AI input found for multi-language test",
+      "duration": 3761,
+      "timestamp": "2025-09-28T13:34:07.710Z"
+    },
+    {
+      "name": "AI Response Quality",
+      "status": "FAILED",
+      "error": "No AI input found for response quality test",
+      "duration": 3786,
+      "timestamp": "2025-09-28T13:34:11.498Z"
+    },
+    {
+      "name": "Performance Metrics",
+      "status": "FAILED",
+      "error": "No AI input found for response quality test",
+      "duration": 4774,
+      "timestamp": "2025-09-28T13:34:16.273Z"
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "passed": 0,
+    "failed": 11,
+    "successRate": 0
+  },
+  "aiModels": [],
+  "complexCodingTests": [],
+  "performance": {},
+  "errors": [
+    {
+      "type": "test_failure",
+      "test": "AI Model Visibility",
+      "message": "No AI model selector found",
+      "timestamp": "2025-09-28T13:33:36.003Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "Model Switching",
+      "message": "No model selector found for switching",
+      "timestamp": "2025-09-28T13:33:40.653Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "Complex JavaScript Generation",
+      "message": "No AI input found for code generation",
+      "timestamp": "2025-09-28T13:33:44.895Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "React Advanced Features",
+      "message": "No AI input found for React generation",
+      "timestamp": "2025-09-28T13:33:48.828Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "Python Complex Algorithms",
+      "message": "No AI input found for Python generation",
+      "timestamp": "2025-09-28T13:33:52.514Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "Error Handling and Debugging",
+      "message": "No AI input found for error handling test",
+      "timestamp": "2025-09-28T13:33:56.369Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "Performance Optimization",
+      "message": "No AI input found for performance test",
+      "timestamp": "2025-09-28T13:34:00.165Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "Code Quality and Best Practices",
+      "message": "No AI input found for code quality test",
+      "timestamp": "2025-09-28T13:34:03.948Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "Multi-Language Support",
+      "message": "No AI input found for multi-language test",
+      "timestamp": "2025-09-28T13:34:07.711Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "AI Response Quality",
+      "message": "No AI input found for response quality test",
+      "timestamp": "2025-09-28T13:34:11.498Z"
+    },
+    {
+      "type": "test_failure",
+      "test": "Performance Metrics",
+      "message": "No AI input found for response quality test",
+      "timestamp": "2025-09-28T13:34:16.273Z"
+    }
+  ]
+}

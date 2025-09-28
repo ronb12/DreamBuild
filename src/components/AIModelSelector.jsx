@@ -51,7 +51,7 @@ const AIModelSelector = ({ selectedModel, onModelChange, availableModels = [] })
     ];
 
     setModels(availableModels.length > 0 ? availableModels : defaultModels);
-  }, [availableModels]);
+  }, []); // Remove availableModels from dependency array to prevent infinite re-renders
 
   const selectedModelData = models.find(model => model.id === selectedModel) || models[0];
 

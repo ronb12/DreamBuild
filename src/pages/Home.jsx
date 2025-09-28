@@ -48,12 +48,12 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative pt-24 pb-20">
+      <section className="relative pt-40 pb-20">
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary-light/5"></div>
         
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative flex justify-center">
-          <div className="text-center max-w-4xl w-full ml-8">
+          <div className="text-center max-w-4xl w-full">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

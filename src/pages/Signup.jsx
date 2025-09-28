@@ -66,7 +66,7 @@ const Signup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-24">
       {/* Header with Sign In/Sign Up buttons */}
       <div className="flex justify-between items-center p-4">
         <div className="flex items-center gap-2">

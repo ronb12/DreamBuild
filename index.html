@@ -114,105 +114,124 @@
       console.log('Firebase loaded globally with providers:', !!window.firebase);
     </script>
     
-    <!-- Polyfills for missing APIs -->
+    <!-- Polyfills for missing APIs - MUST load before any modules -->
     <script>
-      // Comprehensive polyfills for missing APIs - loaded before any other scripts
-      (function() {
-        // Polyfill for Request API
-        if (!window.Request) {
-          window.Request = class Request {
-            constructor(input, init = {}) {
-              this.url = input;
-              this.method = init.method || 'GET';
-              this.headers = new Headers(init.headers);
-              this.body = init.body;
+      // Immediate polyfill loading - no IIFE to ensure synchronous execution
+      console.log('🔧 Loading polyfills immediately...');
+      
+      // Ensure globalThis is available
+      if (typeof globalThis === 'undefined') {
+        window.globalThis = window;
+      }
+      
+      // Polyfill for Headers API (must be first to avoid circular dependency)
+      if (!window.Headers) {
+        window.Headers = class Headers {
+          constructor(init = {}) {
+            this._headers = {};
+            if (init) {
+              Object.entries(init).forEach(([key, value]) => {
+                this._headers[key.toLowerCase()] = value;
+              });
             }
-          };
-        }
-        
-        // Polyfill for Headers API
-        if (!window.Headers) {
-          window.Headers = class Headers {
-            constructor(init = {}) {
-              this._headers = {};
-              if (init) {
-                Object.entries(init).forEach(([key, value]) => {
-                  this._headers[key.toLowerCase()] = value;
-                });
-              }
+          }
+          
+          get(name) {
+            return this._headers[name.toLowerCase()];
+          }
+          
+          set(name, value) {
+            this._headers[name.toLowerCase()] = value;
+          }
+          
+          has(name) {
+            return name.toLowerCase() in this._headers;
+          }
+        };
+      }
+      
+      // Polyfill for Request API
+      if (!window.Request) {
+        window.Request = class Request {
+          constructor(input, init = {}) {
+            this.url = input;
+            this.method = init.method || 'GET';
+            this.headers = new window.Headers(init.headers || {});
+            this.body = init.body;
+          }
+        };
+      }
+      
+      // Polyfill for Response API
+      if (!window.Response) {
+        window.Response = class Response {
+          constructor(body, init = {}) {
+            this.body = body;
+            this.status = init.status || 200;
+            this.statusText = init.statusText || 'OK';
+            this.headers = new window.Headers(init.headers || {});
+          }
+          
+          async json() {
+            return JSON.parse(this.body);
+          }
+          
+          async text() {
+            return this.body;
+          }
+        };
+      }
+      
+      // Ensure fetch is available
+      if (!window.fetch) {
+        window.fetch = async function(url, options = {}) {
+          const xhr = new XMLHttpRequest();
+          return new Promise((resolve, reject) => {
+            xhr.open(options.method || 'GET', url);
+            
+            if (options.headers) {
+              Object.entries(options.headers).forEach(([key, value]) => {
+                xhr.setRequestHeader(key, value);
+              });
             }
             
-            get(name) {
-              return this._headers[name.toLowerCase()];
-            }
+            xhr.onload = function() {
+              resolve(new window.Response(xhr.responseText, {
+                status: xhr.status,
+                statusText: xhr.statusText,
+                headers: xhr.getAllResponseHeaders()
+              }));
+            };
             
-            set(name, value) {
-              this._headers[name.toLowerCase()] = value;
-            }
+            xhr.onerror = function() {
+              reject(new Error('Network error'));
+            };
             
-            has(name) {
-              return name.toLowerCase() in this._headers;
-            }
-          };
-        }
-        
-        // Polyfill for Response API
-        if (!window.Response) {
-          window.Response = class Response {
-            constructor(body, init = {}) {
-              this.body = body;
-              this.status = init.status || 200;
-              this.statusText = init.statusText || 'OK';
-              this.headers = new Headers(init.headers);
-            }
-            
-            async json() {
-              return JSON.parse(this.body);
-            }
-            
-            async text() {
-              return this.body;
-            }
-          };
-        }
-        
-        // Ensure fetch is available
-        if (!window.fetch) {
-          window.fetch = async function(url, options = {}) {
-            const xhr = new XMLHttpRequest();
-            return new Promise((resolve, reject) => {
-              xhr.open(options.method || 'GET', url);
-              
-              if (options.headers) {
-                Object.entries(options.headers).forEach(([key, value]) => {
-                  xhr.setRequestHeader(key, value);
-                });
-              }
-              
-              xhr.onload = function() {
-                resolve(new Response(xhr.responseText, {
-                  status: xhr.status,
-                  statusText: xhr.statusText,
-                  headers: xhr.getAllResponseHeaders()
-                }));
-              };
-              
-              xhr.onerror = function() {
-                reject(new Error('Network error'));
-              };
-              
-              xhr.send(options.body);
-            });
-          };
-        }
-        
-        console.log('Polyfills loaded:', {
-          Request: !!window.Request,
-          Headers: !!window.Headers,
-          Response: !!window.Response,
-          fetch: !!window.fetch
-        });
-      })();
+            xhr.send(options.body);
+          });
+        };
+      }
+      
+      // Ensure these are available on all global objects
+      globalThis.Request = window.Request;
+      globalThis.Headers = window.Headers;
+      globalThis.Response = window.Response;
+      globalThis.fetch = window.fetch;
+      
+      // Also ensure they're available on self for web workers
+      if (typeof self !== 'undefined') {
+        self.Request = window.Request;
+        self.Headers = window.Headers;
+        self.Response = window.Response;
+        self.fetch = window.fetch;
+      }
+      
+      console.log('✅ Polyfills loaded:', {
+        Request: !!window.Request,
+        Headers: !!window.Headers,
+        Response: !!window.Response,
+        fetch: !!window.fetch
+      });
     </script>
     
     <!-- Service Worker Registration -->

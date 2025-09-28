@@ -3,23 +3,17 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
+// Ensure polyfills are loaded before any other code
+console.log('🔧 Loading polyfills...')
+
 // Comprehensive polyfills for missing APIs
 if (typeof window !== 'undefined') {
-  // Polyfill for Request API
-  if (!window.Request) {
-    window.Request = class Request {
-      constructor(input, init = {}) {
-        this.url = input
-        this.method = init.method || 'GET'
-        this.headers = new Headers(init.headers)
-        this.body = init.body
-      }
-    }
-  }
+  // Ensure we have a safe reference to Headers
+  let HeadersClass = window.Headers
   
-  // Polyfill for Headers API
-  if (!window.Headers) {
-    window.Headers = class Headers {
+  // Polyfill for Headers API (must be first to avoid circular dependency)
+  if (!HeadersClass) {
+    HeadersClass = class Headers {
       constructor(init = {}) {
         this._headers = {}
         if (init) {
@@ -41,6 +35,19 @@ if (typeof window !== 'undefined') {
         return name.toLowerCase() in this._headers
       }
     }
+    window.Headers = HeadersClass
+  }
+  
+  // Polyfill for Request API
+  if (!window.Request) {
+    window.Request = class Request {
+      constructor(input, init = {}) {
+        this.url = input
+        this.method = init.method || 'GET'
+        this.headers = new HeadersClass(init.headers || {})
+        this.body = init.body
+      }
+    }
   }
   
   // Polyfill for Response API
@@ -50,7 +57,7 @@ if (typeof window !== 'undefined') {
         this.body = body
         this.status = init.status || 200
         this.statusText = init.statusText || 'OK'
-        this.headers = new Headers(init.headers)
+        this.headers = new HeadersClass(init.headers || {})
       }
       
       async json() {
@@ -77,7 +84,7 @@ if (typeof window !== 'undefined') {
         }
         
         xhr.onload = () => {
-          resolve(new Response(xhr.responseText, {
+          resolve(new window.Response(xhr.responseText, {
             status: xhr.status,
             statusText: xhr.statusText,
             headers: xhr.getAllResponseHeaders()
@@ -89,6 +96,28 @@ if (typeof window !== 'undefined') {
       })
     }
   }
+  
+  // Additional safety check for global APIs
+  if (!window.Request) {
+    console.warn('Request polyfill failed to load')
+  }
+  if (!window.Headers) {
+    console.warn('Headers polyfill failed to load')
+  }
+  if (!window.Response) {
+    console.warn('Response polyfill failed to load')
+  }
+  if (!window.fetch) {
+    console.warn('Fetch polyfill failed to load')
+  }
+  
+  // Success message
+  console.log('✅ Polyfills loaded:', {
+    Request: !!window.Request,
+    Headers: !!window.Headers,
+    Response: !!window.Response,
+    fetch: !!window.fetch
+  })
 }
 
 // Make React available globally

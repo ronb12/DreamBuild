@@ -4,10 +4,13 @@ import FileManager from '../components/FileManager'
 import SimpleAdvancedFileManager from '../components/SimpleAdvancedFileManager'
 import advancedFileManagementService from '../services/advancedFileManagementService'
 import IntegratedTerminal from '../components/IntegratedTerminal'
+import DesktopTerminal from '../components/DesktopTerminal'
+import DesktopFileManager from '../components/DesktopFileManager'
 import CodeIntelligence from '../components/CodeIntelligence'
 import GitIntegration from '../components/GitIntegration'
 import aiCodeIntelligenceService from '../services/aiCodeIntelligenceService'
 import gitIntegrationService from '../services/gitIntegrationService'
+import desktopIntegrationService from '../services/desktopIntegrationService'
 import CodeEditor from '../components/CodeEditor'
 import Preview from '../components/Preview'
 import PreviewSimple from '../components/PreviewSimple'
@@ -112,8 +115,11 @@ const AIBuilder = () => {
   const [showCodeIntelligence, setShowCodeIntelligence] = useState(false)
   const [showGitIntegration, setShowGitIntegration] = useState(false)
   const [showTerminal, setShowTerminal] = useState(false)
+  const [showDesktopTerminal, setShowDesktopTerminal] = useState(false)
+  const [showDesktopFileManager, setShowDesktopFileManager] = useState(false)
   const [currentFileContent, setCurrentFileContent] = useState('')
   const [currentFileLanguage, setCurrentFileLanguage] = useState('javascript')
+  const [desktopFeatures, setDesktopFeatures] = useState(null)
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },
@@ -128,9 +134,15 @@ const AIBuilder = () => {
       try {
         await aiCodeIntelligenceService.initialize();
         await gitIntegrationService.initialize();
-        console.log('✅ AI services initialized');
+        await desktopIntegrationService.initialize();
+        
+        // Get desktop features
+        const features = await desktopIntegrationService.getDesktopFeatures();
+        setDesktopFeatures(features);
+        
+        console.log('✅ AI services and desktop integration initialized');
       } catch (error) {
-        console.error('Error initializing AI services:', error);
+        console.error('Error initializing services:', error);
       }
     };
     
@@ -361,36 +373,58 @@ const AIBuilder = () => {
                    </button>
                  </div>
                  
-                 {/* AI Integration Controls */}
-                 <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg">
-                   <button
-                     onClick={() => setShowCodeIntelligence(!showCodeIntelligence)}
-                     className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                       showCodeIntelligence ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                     }`}
-                     title="Code Intelligence"
-                   >
-                     🧠 AI
-                   </button>
-                   <button
-                     onClick={() => setShowGitIntegration(!showGitIntegration)}
-                     className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                       showGitIntegration ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                     }`}
-                     title="Git Integration"
-                   >
-                     🔧 Git
-                   </button>
-                   <button
-                     onClick={() => setShowTerminal(!showTerminal)}
-                     className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                       showTerminal ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
-                     }`}
-                     title="Integrated Terminal"
-                   >
-                     💻 Terminal
-                   </button>
-                 </div>
+           {/* AI Integration Controls */}
+           <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg">
+             <button
+               onClick={() => setShowCodeIntelligence(!showCodeIntelligence)}
+               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                 showCodeIntelligence ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+               }`}
+               title="Code Intelligence"
+             >
+               🧠 AI
+             </button>
+             <button
+               onClick={() => setShowGitIntegration(!showGitIntegration)}
+               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                 showGitIntegration ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+               }`}
+               title="Git Integration"
+             >
+               🔧 Git
+             </button>
+             <button
+               onClick={() => setShowTerminal(!showTerminal)}
+               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                 showTerminal ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+               }`}
+               title="Integrated Terminal"
+             >
+               💻 Terminal
+             </button>
+           </div>
+           
+           {/* Desktop Integration Controls */}
+           <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-lg">
+             <button
+               onClick={() => setShowDesktopTerminal(!showDesktopTerminal)}
+               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                 showDesktopTerminal ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+               }`}
+               title="Desktop Terminal"
+             >
+               🖥️ Desktop
+             </button>
+             <button
+               onClick={() => setShowDesktopFileManager(!showDesktopFileManager)}
+               className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                 showDesktopFileManager ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+               }`}
+               title="Desktop File Manager"
+             >
+               📁 Files
+             </button>
+           </div>
                </div>
 
         {/* Right Side - Enhanced Tab Navigation */}
@@ -615,65 +649,85 @@ const AIBuilder = () => {
             <div className="w-1 h-8 bg-border/50 rounded-full mx-auto group-hover:bg-primary/70 transition-colors" />
           </ResizableHandle>
           
-          {/* Right Panel - AI Integration & Tools */}
-          <ResizablePanel defaultSize={30} minSize={15} maxSize={60}>
-            <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
-              {/* AI Integration Panel */}
-              <div className="flex-1 overflow-hidden">
-                {showCodeIntelligence && (
-                  <CodeIntelligence
-                    filePath={selectedFile?.path || ''}
-                    content={currentFileContent}
-                    language={currentFileLanguage}
-                    onNavigate={(file, line, column) => {
-                      console.log('Navigate to:', file, line, column);
-                    }}
-                    className="h-full"
-                  />
-                )}
-                
-                {showGitIntegration && !showCodeIntelligence && (
-                  <GitIntegration
-                    onFileSelect={(file) => {
-                      console.log('Git file selected:', file);
-                    }}
-                    className="h-full"
-                  />
-                )}
-                
-                {showTerminal && !showCodeIntelligence && !showGitIntegration && (
-                  <IntegratedTerminal
-                    onCommand={(command) => {
-                      console.log('Terminal command:', command);
-                    }}
-                    isVisible={true}
-                    className="h-full"
-                  />
-                )}
-                
-                {!showCodeIntelligence && !showGitIntegration && !showTerminal && (
-                  <div className="h-full flex flex-col">
-                    {/* Panel Header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
-                      <div className="flex items-center gap-2">
-                        <Brain className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium text-foreground">AI Assistant</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-xs text-muted-foreground">Online</span>
-                      </div>
-                    </div>
-                    
-                    {/* Panel Content */}
-                    <div className="flex-1 overflow-hidden">
-                      <AIPromptSimplified />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </ResizablePanel>
+         {/* Right Panel - AI Integration & Tools */}
+         <ResizablePanel defaultSize={30} minSize={15} maxSize={60}>
+           <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
+             {/* AI Integration Panel */}
+             <div className="flex-1 overflow-hidden">
+               {showCodeIntelligence && (
+                 <CodeIntelligence
+                   filePath={selectedFile?.path || ''}
+                   content={currentFileContent}
+                   language={currentFileLanguage}
+                   onNavigate={(file, line, column) => {
+                     console.log('Navigate to:', file, line, column);
+                   }}
+                   className="h-full"
+                 />
+               )}
+               
+               {showGitIntegration && !showCodeIntelligence && (
+                 <GitIntegration
+                   onFileSelect={(file) => {
+                     console.log('Git file selected:', file);
+                   }}
+                   className="h-full"
+                 />
+               )}
+               
+               {showTerminal && !showCodeIntelligence && !showGitIntegration && (
+                 <IntegratedTerminal
+                   onCommand={(command) => {
+                     console.log('Terminal command:', command);
+                   }}
+                   isVisible={true}
+                   className="h-full"
+                 />
+               )}
+               
+               {showDesktopTerminal && !showCodeIntelligence && !showGitIntegration && !showTerminal && (
+                 <DesktopTerminal
+                   onCommand={(command) => {
+                     console.log('Desktop terminal command:', command);
+                   }}
+                   isVisible={true}
+                   className="h-full"
+                 />
+               )}
+               
+               {showDesktopFileManager && !showCodeIntelligence && !showGitIntegration && !showTerminal && !showDesktopTerminal && (
+                 <DesktopFileManager
+                   onFileSelect={(file) => {
+                     console.log('Desktop file selected:', file);
+                     handleFileSelect(file);
+                   }}
+                   className="h-full"
+                 />
+               )}
+               
+               {!showCodeIntelligence && !showGitIntegration && !showTerminal && !showDesktopTerminal && !showDesktopFileManager && (
+                 <div className="h-full flex flex-col">
+                   {/* Panel Header */}
+                   <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
+                     <div className="flex items-center gap-2">
+                       <Brain className="h-4 w-4 text-primary" />
+                       <span className="text-sm font-medium text-foreground">AI Assistant</span>
+                     </div>
+                     <div className="flex items-center gap-1">
+                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                       <span className="text-xs text-muted-foreground">Online</span>
+                     </div>
+                   </div>
+                   
+                   {/* Panel Content */}
+                   <div className="flex-1 overflow-hidden">
+                     <AIPromptSimplified />
+                   </div>
+                 </div>
+               )}
+             </div>
+           </div>
+         </ResizablePanel>
           
         </ResizablePanelGroup>
       </div>

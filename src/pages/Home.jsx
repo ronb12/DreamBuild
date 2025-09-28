@@ -175,6 +175,84 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Download Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 via-transparent to-primary-light/5">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16 max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Download DreamBuild Desktop
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                Get the full desktop experience with complete system access, just like Cursor IDE
+              </p>
+            </motion.div>
+          </div>
+          
+          <div className="flex justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl p-8 max-w-2xl w-full shadow-xl hover:shadow-2xl transition-all duration-300"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Apple className="h-8 w-8 text-primary" />
+                </div>
+                
+                <h3 className="text-2xl font-bold mb-4">macOS Desktop App</h3>
+                <p className="text-muted-foreground mb-6">
+                  Full desktop application with complete system access, real terminal commands, 
+                  and native macOS performance. Works on both Intel and Apple Silicon Macs.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  <div className="flex items-center gap-3 text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Real Terminal Commands</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Full File System Access</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Native macOS Performance</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span>Universal Binary (Intel + Apple Silicon)</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <Link
+                    to="/download"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary-dark transition-all duration-300 text-lg font-semibold shadow-lg hover:shadow-xl w-full justify-center"
+                  >
+                    <Download className="h-5 w-5" />
+                    Download for macOS (327MB)
+                  </Link>
+                  
+                  <div className="text-xs text-muted-foreground">
+                    <p>• The desktop app provides full system access like Cursor IDE</p>
+                    <p>• Real terminal commands and file system operations</p>
+                    <p>• No App Store required - direct installation</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary-light/5"></div>

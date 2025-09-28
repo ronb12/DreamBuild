@@ -29,6 +29,7 @@ const Education = lazy(() => import('./pages/Education'))
 const AppHost = lazy(() => import('./pages/AppHost'))
 const AppGallery = lazy(() => import('./pages/AppGallery'))
 const DeleteApps = lazy(() => import('./pages/DeleteApps'))
+const Download = lazy(() => import('./pages/Download'))
 const MultiWindowManager = lazy(() => import('./components/MultiWindowManager'))
 
 // Loading component
@@ -106,6 +107,7 @@ function App() {
                         <Route path="/apps/:appId" element={<AppHost />} />
                         <Route path="/gallery" element={<AppGallery />} />
                         <Route path="/delete-apps" element={<DeleteApps />} />
+                        <Route path="/download" element={<Download />} />
                       </Routes>
                     </Suspense>
                   </ErrorBoundary>

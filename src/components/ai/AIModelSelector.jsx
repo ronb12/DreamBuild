@@ -51,7 +51,10 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
               icon: Server,
               color: 'text-green-500',
               bgColor: 'bg-green-50 dark:bg-green-900/20',
-              type: 'local'
+              type: model.type || 'Code Generation',
+              ram_required: model.ram_required,
+              languages: model.languages,
+              strengths: model.strengths
             });
           });
         }
@@ -64,7 +67,10 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
           icon: Sparkles,
           color: 'text-purple-500',
           bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-          type: 'auto'
+          type: 'Auto Selection',
+          ram_required: 'variable',
+          languages: ['all'],
+          strengths: ['smart-selection', 'availability']
         });
 
         console.log('🔧 Final models before deduplication:', models);
@@ -381,6 +387,30 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
                                     {isSelected && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
                                   </div>
                                   <p className="text-xs text-muted-foreground mt-0.5 truncate">{model.description}</p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+                                      {model.type}
+                                    </span>
+                                    {model.ram_required && (
+                                      <span className="text-xs px-2 py-0.5 bg-muted text-muted-foreground rounded-full">
+                                        {model.ram_required} RAM
+                                      </span>
+                                    )}
+                                  </div>
+                                  {model.languages && model.languages.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {model.languages.slice(0, 3).map((lang, idx) => (
+                                        <span key={idx} className="text-xs px-1.5 py-0.5 bg-secondary/20 text-secondary-foreground rounded">
+                                          {lang}
+                                        </span>
+                                      ))}
+                                      {model.languages.length > 3 && (
+                                        <span className="text-xs px-1.5 py-0.5 bg-muted text-muted-foreground rounded">
+                                          +{model.languages.length - 3} more
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </button>

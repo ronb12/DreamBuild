@@ -7,6 +7,16 @@ import appNamingService from './appNamingService.js'
 
 // Local AI Models Configuration
 const LOCAL_AI_MODELS = {
+  'auto': {
+    name: 'Auto Select',
+    type: 'Auto Selection',
+    baseURL: 'http://localhost:11434/api',
+    model: 'auto',
+    description: 'Automatically selects the best available model',
+    languages: ['all'],
+    strengths: ['smart-selection', 'availability'],
+    ram_required: 'variable'
+  },
   'codellama-7b': {
     name: 'CodeLlama 7B',
     type: 'Code Generation',
@@ -17,15 +27,85 @@ const LOCAL_AI_MODELS = {
     strengths: ['speed', 'efficiency', 'general-purpose'],
     ram_required: '8GB'
   },
-  'auto': {
-    name: 'Auto Select',
-    type: 'Auto Selection',
+  'codellama-13b': {
+    name: 'CodeLlama 13B',
+    type: 'Code Generation',
     baseURL: 'http://localhost:11434/api',
-    model: 'auto',
-    description: 'Automatically selects the best available model',
+    model: 'codellama:13b',
+    description: 'Advanced code generation with better understanding (13B parameters)',
+    languages: ['python', 'javascript', 'java', 'cpp', 'go', 'rust', 'php', 'ruby', 'typescript'],
+    strengths: ['accuracy', 'complex-code', 'debugging'],
+    ram_required: '16GB'
+  },
+  'codellama-34b': {
+    name: 'CodeLlama 34B',
+    type: 'Code Generation',
+    baseURL: 'http://localhost:11434/api',
+    model: 'codellama:34b',
+    description: 'Professional-grade code generation (34B parameters)',
+    languages: ['python', 'javascript', 'java', 'cpp', 'go', 'rust', 'php', 'ruby', 'typescript', 'swift', 'kotlin'],
+    strengths: ['professional', 'complex-architecture', 'enterprise'],
+    ram_required: '32GB'
+  },
+  'llama2-7b': {
+    name: 'Llama 2 7B',
+    type: 'General Purpose',
+    baseURL: 'http://localhost:11434/api',
+    model: 'llama2:7b',
+    description: 'General purpose language model for various tasks',
     languages: ['all'],
-    strengths: ['smart-selection', 'availability'],
-    ram_required: 'variable'
+    strengths: ['versatility', 'conversation', 'reasoning'],
+    ram_required: '8GB'
+  },
+  'llama2-13b': {
+    name: 'Llama 2 13B',
+    type: 'General Purpose',
+    baseURL: 'http://localhost:11434/api',
+    model: 'llama2:13b',
+    description: 'Advanced general purpose model with better reasoning',
+    languages: ['all'],
+    strengths: ['reasoning', 'complex-tasks', 'analysis'],
+    ram_required: '16GB'
+  },
+  'mistral-7b': {
+    name: 'Mistral 7B',
+    type: 'Code Generation',
+    baseURL: 'http://localhost:11434/api',
+    model: 'mistral:7b',
+    description: 'Efficient code generation with excellent performance',
+    languages: ['python', 'javascript', 'java', 'cpp', 'go', 'rust'],
+    strengths: ['efficiency', 'speed', 'code-quality'],
+    ram_required: '8GB'
+  },
+  'deepseek-coder-6.7b': {
+    name: 'DeepSeek Coder 6.7B',
+    type: 'Code Generation',
+    baseURL: 'http://localhost:11434/api',
+    model: 'deepseek-coder:6.7b',
+    description: 'Specialized code generation model with excellent Python support',
+    languages: ['python', 'javascript', 'java', 'cpp', 'go', 'rust', 'typescript'],
+    strengths: ['python-expert', 'code-completion', 'debugging'],
+    ram_required: '8GB'
+  },
+  'wizard-coder-15b': {
+    name: 'WizardCoder 15B',
+    type: 'Code Generation',
+    baseURL: 'http://localhost:11434/api',
+    model: 'wizard-coder:15b',
+    description: 'Advanced code generation with instruction following',
+    languages: ['python', 'javascript', 'java', 'cpp', 'go', 'rust', 'php', 'ruby'],
+    strengths: ['instruction-following', 'code-explanation', 'tutorials'],
+    ram_required: '16GB'
+  },
+  'starcoder-15b': {
+    name: 'StarCoder 15B',
+    type: 'Code Generation',
+    baseURL: 'http://localhost:11434/api',
+    model: 'starcoder:15b',
+    description: 'Large-scale code generation model trained on GitHub code',
+    languages: ['python', 'javascript', 'java', 'cpp', 'go', 'rust', 'php', 'ruby', 'typescript', 'swift'],
+    strengths: ['github-trained', 'large-context', 'multi-language'],
+    ram_required: '16GB'
   }
 }
 

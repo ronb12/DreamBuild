@@ -41,6 +41,10 @@ const SimpleAdvancedFileManager = ({
   const [newFileName, setNewFileName] = useState('');
   const [newFileType, setNewFileType] = useState('js');
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showContextMenu, setShowContextMenu] = useState(null);
+  const [contextMenuFile, setContextMenuFile] = useState(null);
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [fileSyncStatus, setFileSyncStatus] = useState('synced');
 
   // File type icons
   const getFileIcon = (fileName) => {
@@ -115,6 +119,75 @@ const SimpleAdvancedFileManager = ({
     setShowUploadModal(false);
   };
 
+  // Handle context menu
+  const handleContextMenu = (e, file) => {
+    e.preventDefault();
+    setContextMenuFile(file);
+    setShowContextMenu({
+      x: e.clientX,
+      y: e.clientY
+    });
+  };
+
+  // Close context menu
+  const closeContextMenu = () => {
+    setShowContextMenu(null);
+    setContextMenuFile(null);
+  };
+
+  // Handle context menu actions
+  const handleContextAction = (action) => {
+    if (contextMenuFile) {
+      switch (action) {
+        case 'rename':
+          const newName = prompt('Enter new name:', contextMenuFile.name);
+          if (newName && newName !== contextMenuFile.name) {
+            onFileRename?.(contextMenuFile, newName);
+          }
+          break;
+        case 'delete':
+          if (confirm(`Delete ${contextMenuFile.name}?`)) {
+            onFileDelete?.(contextMenuFile);
+          }
+          break;
+        case 'copy':
+          onFileCopy?.(contextMenuFile);
+          break;
+        case 'move':
+          const newPath = prompt('Enter new path:', contextMenuFile.path);
+          if (newPath && newPath !== contextMenuFile.path) {
+            onFileMove?.(contextMenuFile, newPath);
+          }
+          break;
+        case 'download':
+          onFileDownload?.(contextMenuFile);
+          break;
+        case 'share':
+          onFileShare?.(contextMenuFile);
+          break;
+        case 'history':
+          onFileHistory?.(contextMenuFile);
+          break;
+      }
+    }
+    closeContextMenu();
+  };
+
+  // Auto-save functionality
+  React.useEffect(() => {
+    if (autoSaveEnabled) {
+      const interval = setInterval(() => {
+        setFileSyncStatus('syncing');
+        // Simulate auto-save
+        setTimeout(() => {
+          setFileSyncStatus('synced');
+        }, 1000);
+      }, 30000); // Auto-save every 30 seconds
+      
+      return () => clearInterval(interval);
+    }
+  }, [autoSaveEnabled]);
+
   return (
     <div className={`flex flex-col h-full bg-background border-r border-border ${className}`}>
       {/* Header */}
@@ -122,6 +195,14 @@ const SimpleAdvancedFileManager = ({
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Advanced File Manager</h3>
           <div className="flex items-center gap-2">
+            {/* Sync Status */}
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <div className={`w-2 h-2 rounded-full ${
+                fileSyncStatus === 'synced' ? 'bg-green-500' : 
+                fileSyncStatus === 'syncing' ? 'bg-yellow-500' : 'bg-red-500'
+              }`}></div>
+              <span className="capitalize">{fileSyncStatus}</span>
+            </div>
             <button
               onClick={() => setShowCreateModal(true)}
               className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -176,6 +257,7 @@ const SimpleAdvancedFileManager = ({
                     isSelected ? 'bg-primary/10 border border-primary/20' : ''
                   }`}
                   onClick={() => onFileSelect?.(file)}
+                  onContextMenu={(e) => handleContextMenu(e, file)}
                 >
                   <Icon className="h-4 w-4 text-muted-foreground" />
                   <div className="flex-1 min-w-0">
@@ -344,6 +426,70 @@ const SimpleAdvancedFileManager = ({
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Context Menu */}
+      {showContextMenu && contextMenuFile && (
+        <div
+          className="fixed bg-card border border-border rounded-lg shadow-lg z-50 py-2 min-w-[200px]"
+          data-testid="file-context-menu"
+          style={{
+            left: showContextMenu.x,
+            top: showContextMenu.y
+          }}
+          onClick={closeContextMenu}
+        >
+          <button
+            onClick={() => handleContextAction('rename')}
+            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
+          >
+            <Edit className="h-4 w-4" />
+            Rename
+          </button>
+          <button
+            onClick={() => handleContextAction('copy')}
+            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
+          >
+            <Copy className="h-4 w-4" />
+            Copy
+          </button>
+          <button
+            onClick={() => handleContextAction('move')}
+            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
+          >
+            <Move className="h-4 w-4" />
+            Move
+          </button>
+          <button
+            onClick={() => handleContextAction('download')}
+            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Download
+          </button>
+          <button
+            onClick={() => handleContextAction('share')}
+            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
+          >
+            <Share className="h-4 w-4" />
+            Share
+          </button>
+          <button
+            onClick={() => handleContextAction('history')}
+            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2"
+          >
+            <History className="h-4 w-4" />
+            History
+          </button>
+          <hr className="my-2 border-border" />
+          <button
+            onClick={() => handleContextAction('delete')}
+            className="w-full px-4 py-2 text-left hover:bg-muted flex items-center gap-2 text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete
+          </button>
         </div>
       )}
     </div>

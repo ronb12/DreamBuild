@@ -23,12 +23,85 @@ const AIBuilder = () => {
   const [showDebugPanel, setShowDebugPanel] = useState(false)
   
   // Advanced File Management State
-  const [files, setFiles] = useState([])
+  const [files, setFiles] = useState([
+    {
+      id: '1',
+      name: 'App.jsx',
+      path: '/src/App.jsx',
+      type: 'file',
+      fileType: 'jsx',
+      content: 'import React from "react";\n\nexport default function App() {\n  return <div>Hello World</div>;\n}',
+      size: 89,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+      author: 'current-user@example.com'
+    },
+    {
+      id: '2',
+      name: 'index.css',
+      path: '/src/index.css',
+      type: 'file',
+      fileType: 'css',
+      content: 'body {\n  margin: 0;\n  font-family: Arial, sans-serif;\n}',
+      size: 65,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+      author: 'current-user@example.com'
+    },
+    {
+      id: '3',
+      name: 'package.json',
+      path: '/package.json',
+      type: 'file',
+      fileType: 'json',
+      content: '{\n  "name": "my-app",\n  "version": "1.0.0"\n}',
+      size: 45,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+      author: 'current-user@example.com'
+    },
+    {
+      id: '4',
+      name: 'README.md',
+      path: '/README.md',
+      type: 'file',
+      fileType: 'md',
+      content: '# My App\n\nThis is a sample application.',
+      size: 35,
+      created: new Date().toISOString(),
+      modified: new Date().toISOString(),
+      author: 'current-user@example.com'
+    }
+  ])
   const [selectedFile, setSelectedFile] = useState(null)
   const [showAdvancedFileManager, setShowAdvancedFileManager] = useState(false)
   const [fileManagerMode, setFileManagerMode] = useState('tree') // tree, search, collaboration, history
-  const [collaborators, setCollaborators] = useState([])
-  const [fileHistory, setFileHistory] = useState([])
+  const [collaborators, setCollaborators] = useState([
+    {
+      id: '1',
+      name: 'John Doe',
+      email: 'john@example.com',
+      role: 'editor'
+    },
+    {
+      id: '2',
+      name: 'Jane Smith',
+      email: 'jane@example.com',
+      role: 'viewer'
+    }
+  ])
+  const [fileHistory, setFileHistory] = useState([
+    {
+      id: '1',
+      fileId: '1',
+      filePath: '/src/App.jsx',
+      action: 'create',
+      message: 'Created file: App.jsx',
+      timestamp: new Date().toISOString(),
+      author: 'current-user@example.com',
+      version: 1
+    }
+  ])
 
   const tabs = [
     { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview' },

@@ -71,15 +71,7 @@ function ConditionalMain({ children }) {
 }
 
 function App() {
-  // Fix malformed URLs with double hashes
-  React.useEffect(() => {
-    const currentHash = window.location.hash
-    if (currentHash.includes('#') && currentHash.split('#').length > 2) {
-      // If there's a double hash, redirect to the correct URL
-      const correctHash = currentHash.split('#')[0] + '#' + currentHash.split('#')[1]
-      window.location.replace(correctHash)
-    }
-  }, [])
+  // No automatic redirects - let the routing system handle everything
 
   return (
     <ErrorBoundary>

@@ -87,14 +87,18 @@ export function Routes({ children }) {
     const hash = window.location.hash
     const pathname = window.location.pathname
     
-    // For the root path, always return '/'
-    if (pathname === '/' && (!hash || hash === '#' || hash === '#/')) {
+    console.log('🔍 Initial routing:', { pathname, hash, fullUrl: window.location.href })
+    
+    // For the root path, always return '/' regardless of hash
+    if (pathname === '/') {
+      console.log('✅ Root path detected, returning /')
       return '/'
     }
     
     // Only use pathname if it's a specific route like /ai-builder, /templates, etc.
     // and there's no meaningful hash
     if (pathname && pathname !== '/' && (!hash || hash === '#' || hash === '#/')) {
+      console.log('✅ Using pathname:', pathname)
       return pathname
     }
     
@@ -104,6 +108,7 @@ export function Routes({ children }) {
       // If there's a double hash, take the first part
       path = path.split('#')[0]
     }
+    console.log('✅ Using hash path:', path)
     return path
   })
 

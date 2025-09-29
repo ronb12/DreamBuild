@@ -202,7 +202,9 @@ export default App`)
   const tabs = [
     { id: 'editor', label: 'App.jsx', icon: Code, active: true },
     { id: 'preview', label: 'Preview', icon: Eye },
-    { id: 'terminal', label: 'Terminal', icon: Terminal }
+    { id: 'terminal', label: 'Terminal', icon: Terminal },
+    { id: 'problems', label: 'Problems', icon: Bug },
+    { id: 'output', label: 'Output', icon: FileText }
   ]
 
   return (
@@ -291,21 +293,33 @@ export default App`)
                 ))}
               </div>
               
-              {/* Quick Actions - Simplified */}
+              {/* Quick Actions */}
               <div className="mt-4 pt-3 border-t border-slate-600">
-                <button className="w-full flex items-center space-x-2 p-2 hover:bg-slate-600 rounded-lg transition-colors text-left">
-                  <Plus className="h-4 w-4 text-green-400" />
-                  <span className="text-sm text-slate-300">New File</span>
-                </button>
+                <div className="space-y-1">
+                  <button className="w-full flex items-center space-x-2 p-2 hover:bg-slate-600 rounded-lg transition-colors text-left">
+                    <Plus className="h-4 w-4 text-green-400" />
+                    <span className="text-sm text-slate-300">New File</span>
+                  </button>
+                  <button className="w-full flex items-center space-x-2 p-2 hover:bg-slate-600 rounded-lg transition-colors text-left">
+                    <FolderPlus className="h-4 w-4 text-blue-400" />
+                    <span className="text-sm text-slate-300">New Folder</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Collapsed Sidebar Icons - Simplified */}
+          {/* Collapsed Sidebar Icons */}
           {sidebarCollapsed && (
             <div className="p-2 space-y-2">
               <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
                 <Folder className="h-4 w-4 text-slate-300" />
+              </button>
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <Search className="h-4 w-4 text-slate-300" />
+              </button>
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <GitBranch className="h-4 w-4 text-slate-300" />
               </button>
             </div>
           )}
@@ -335,6 +349,14 @@ export default App`)
               })}
             </div>
             <div className="flex-1"></div>
+            <div className="flex items-center space-x-1 px-4">
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <Split className="h-4 w-4 text-slate-300" />
+              </button>
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <MoreHorizontal className="h-4 w-4 text-slate-300" />
+              </button>
+            </div>
           </div>
 
           {/* Editor Content */}
@@ -406,6 +428,28 @@ export default App`)
               </div>
             )}
 
+            {activeTab === 'problems' && (
+              <div className="flex-1 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+                <div className="h-full">
+                  <div className="text-center text-slate-400 mt-8">
+                    <Bug className="h-12 w-12 mx-auto mb-4 text-slate-500" />
+                    <p className="text-lg">No problems detected</p>
+                    <p className="text-sm text-slate-500 mt-2">Your code is clean and error-free!</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'output' && (
+              <div className="flex-1 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+                <div className="h-full bg-gradient-to-br from-slate-900 via-black to-slate-900 text-green-400 rounded-lg font-mono text-sm overflow-auto p-4 shadow-inner">
+                  <pre className="whitespace-pre-wrap">
+                    {output || 'No output yet. Run your code to see results here.'}
+                  </pre>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
 
@@ -423,6 +467,12 @@ export default App`)
                 </div>
               </div>
               <div className="flex-1"></div>
+              <button 
+                onClick={() => setShowChat(!showChat)}
+                className="p-2 hover:bg-slate-500 rounded-lg transition-colors"
+              >
+                <X className="h-4 w-4 text-slate-300" />
+              </button>
             </div>
             {showChat && (
               <>
@@ -468,6 +518,9 @@ export default App`)
               <Terminal className="h-4 w-4 mr-2 text-green-400" />
               <span className="text-sm font-bold text-slate-200">Terminal</span>
               <div className="flex-1"></div>
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <Minimize2 className="h-4 w-4 text-slate-300" />
+              </button>
             </div>
             <div className="flex-1 bg-gradient-to-br from-slate-900 via-black to-slate-900 text-green-400 font-mono text-sm overflow-auto p-4 min-h-0 shadow-inner">
               <div className="mb-2">$ npm start</div>
@@ -496,6 +549,13 @@ export default App`)
         <div className="flex items-center space-x-6">
           <span className="font-medium">JavaScript React</span>
           <span className="text-blue-100">UTF-8</span>
+          <button 
+            onClick={() => setShowChat(!showChat)}
+            className="flex items-center space-x-2 hover:bg-blue-700 px-3 py-1 rounded-lg transition-colors"
+          >
+            <Bot className="h-4 w-4" />
+            <span className="font-medium">AI Assistant</span>
+          </button>
         </div>
       </div>
     </div>

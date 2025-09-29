@@ -83,8 +83,17 @@ export function Route({ path, element, children }) {
 // Simple Routes component
 export function Routes({ children }) {
   const [currentPath, setCurrentPath] = useState(() => {
-    // Clean up malformed URLs with double hashes
-    let path = window.location.hash.slice(1) || '/'
+    // Get the current path from URL
+    const hash = window.location.hash
+    const pathname = window.location.pathname
+    
+    // If we have a pathname that's not just '/', use that
+    if (pathname && pathname !== '/') {
+      return pathname
+    }
+    
+    // Otherwise, use the hash
+    let path = hash.slice(1) || '/'
     if (path.includes('#')) {
       // If there's a double hash, take the first part
       path = path.split('#')[0]
@@ -94,7 +103,17 @@ export function Routes({ children }) {
 
   useEffect(() => {
     const handleHashChange = () => {
-      let path = window.location.hash.slice(1) || '/'
+      const hash = window.location.hash
+      const pathname = window.location.pathname
+      
+      // If we have a pathname that's not just '/', use that
+      if (pathname && pathname !== '/') {
+        setCurrentPath(pathname)
+        return
+      }
+      
+      // Otherwise, use the hash
+      let path = hash.slice(1) || '/'
       if (path.includes('#')) {
         // If there's a double hash, take the first part
         path = path.split('#')[0]
@@ -175,14 +194,25 @@ export function Navigate({ to, replace }) {
 // useLocation hook replacement
 export function useLocation() {
   const [location, setLocation] = useState(() => {
-    // Clean up malformed URLs with double hashes
-    let pathname = window.location.hash.slice(1) || '/'
-    if (pathname.includes('#')) {
-      // If there's a double hash, take the first part
-      pathname = pathname.split('#')[0]
+    // Get the current path from URL
+    const hash = window.location.hash
+    const pathname = window.location.pathname
+    
+    // If we have a pathname that's not just '/', use that
+    let currentPathname = '/'
+    if (pathname && pathname !== '/') {
+      currentPathname = pathname
+    } else {
+      // Otherwise, use the hash
+      currentPathname = hash.slice(1) || '/'
+      if (currentPathname.includes('#')) {
+        // If there's a double hash, take the first part
+        currentPathname = currentPathname.split('#')[0]
+      }
     }
+    
     return {
-      pathname,
+      pathname: currentPathname,
       search: '',
       hash: window.location.hash,
       state: null
@@ -191,13 +221,24 @@ export function useLocation() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      let pathname = window.location.hash.slice(1) || '/'
-      if (pathname.includes('#')) {
-        // If there's a double hash, take the first part
-        pathname = pathname.split('#')[0]
+      const hash = window.location.hash
+      const pathname = window.location.pathname
+      
+      // If we have a pathname that's not just '/', use that
+      let currentPathname = '/'
+      if (pathname && pathname !== '/') {
+        currentPathname = pathname
+      } else {
+        // Otherwise, use the hash
+        currentPathname = hash.slice(1) || '/'
+        if (currentPathname.includes('#')) {
+          // If there's a double hash, take the first part
+          currentPathname = currentPathname.split('#')[0]
+        }
       }
+      
       setLocation({
-        pathname,
+        pathname: currentPathname,
         search: '',
         hash: window.location.hash,
         state: null

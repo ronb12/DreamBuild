@@ -355,12 +355,17 @@ export function Routes({ children }) {
 
   const matchedRoute = findRoute(currentPath, routes)
   
+  console.log('🎯 Route matching result:', { currentPath, matchedRoute: matchedRoute?.path })
+  
   if (matchedRoute) {
+    console.log('✅ Rendering matched route:', matchedRoute.path)
     return matchedRoute.element
   }
 
   // Default to 404 or home
-  return routes.find(route => route.path === '/')?.element || <div>Page not found</div>
+  const defaultRoute = routes.find(route => route.path === '/')
+  console.log('⚠️ No route matched, using default:', defaultRoute?.path || 'none')
+  return defaultRoute?.element || <div>Page not found</div>
 }
 
 // Navigate component for redirects
@@ -437,6 +442,26 @@ export function useLocation() {
   }, [])
 
   return location
+}
+
+// Navigation function
+export const navigate = (path) => {
+  window.location.hash = path
+}
+
+// Simple Link component
+export const Link = ({ to, children, className, ...props }) => {
+  const handleClick = (e) => {
+    e.preventDefault()
+    navigate(to)
+  }
+
+  return React.createElement('a', {
+    href: `#${to}`,
+    onClick: handleClick,
+    className: className,
+    ...props
+  }, children)
 }
 
 // BrowserRouter replacement

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signOut, fetchSignInMethodsForEmail, linkWithCredential } from 'firebase/auth'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../config/firebase'
@@ -12,13 +12,17 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  
+  console.log('🔐 AuthProvider rendering, loading:', loading, 'user:', !!user)
 
   useEffect(() => {
     let unsubscribe
     let timeoutId
 
     try {
+      console.log('🔐 Setting up Firebase auth listener...')
       unsubscribe = onAuthStateChanged(auth, async (user) => {
+               console.log('🔐 Auth state changed:', user ? 'User logged in' : 'User logged out')
                try {
                  if (user) {
                    // Get user data from Firestore with error handling
@@ -50,15 +54,16 @@ export function AuthProvider({ children }) {
                  console.error('Error in auth state change:', error)
                  setUser(null)
                } finally {
+                 console.log('🔐 Setting loading to false')
                  setLoading(false)
                }
       })
 
       // Fallback timeout to ensure loading state resolves
       timeoutId = setTimeout(() => {
-        console.log('Firebase auth timeout - setting loading to false')
+        console.log('⏰ Firebase auth timeout - setting loading to false')
         setLoading(false)
-      }, 5000)
+      }, 2000) // Reduced from 5000ms to 2000ms
 
     } catch (error) {
       console.error('Error setting up auth listener:', error)
@@ -186,6 +191,18 @@ export function AuthProvider({ children }) {
     db
   }
 
+  console.log('🔐 AuthProvider render - loading:', loading, 'showing children:', !loading)
+  
+  // Emergency bypass for debugging - remove this after fixing
+  if (loading && window.location.search.includes('debug=1')) {
+    console.log('🚨 DEBUG MODE: Bypassing auth loading state')
+    return (
+      <AuthContext.Provider value={value}>
+        {children}
+      </AuthContext.Provider>
+    )
+  }
+  
   return (
     <AuthContext.Provider value={value}>
       {loading ? (
@@ -193,6 +210,7 @@ export function AuthProvider({ children }) {
           <div className="text-center">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-muted-foreground">Loading DreamBuild...</p>
+            <p className="text-xs text-muted-foreground mt-2">Add ?debug=1 to URL to bypass loading</p>
           </div>
         </div>
       ) : (

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useLocation, useNavigate } from '../utils/navigation';
+import { Link, useLocation } from '../components/SimpleRouter';
 import { motion } from 'framer-motion'
 import { 
   Sparkles, 

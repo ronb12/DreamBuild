@@ -207,7 +207,7 @@ export default App`)
   ]
 
   return (
-    <div className="min-h-screen bg-[#1e1e1e] text-[#d4d4d4] flex flex-col">
+    <div className="min-h-screen bg-[#1e1e1e] text-[#d4d4d4] flex flex-col pt-16">
       {/* Top Menu Bar */}
       <div className="h-8 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-4 text-xs">
         <div className="flex items-center space-x-4">
@@ -231,7 +231,7 @@ export default App`)
       </div>
 
       {/* 3-Panel Layout */}
-      <div className="flex-1 flex min-h-0">
+      <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Panel 1: File Explorer */}
         <div className={`${sidebarCollapsed ? 'w-12' : 'w-64'} bg-[#252526] border-r border-[#3e3e42] transition-all duration-200 flex-shrink-0`}>
           {/* Sidebar Header */}
@@ -466,8 +466,8 @@ export default App`)
           </div>
 
           {/* Terminal Section */}
-          <div className="h-48 flex flex-col">
-            <div className="h-8 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-4">
+          <div className="h-48 flex flex-col flex-shrink-0">
+            <div className="h-8 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-4 flex-shrink-0">
               <Terminal className="h-4 w-4 mr-2" />
               <span className="text-sm font-medium">Terminal</span>
               <div className="flex-1"></div>
@@ -475,7 +475,7 @@ export default App`)
                 <Minimize2 className="h-4 w-4" />
               </button>
             </div>
-            <div className="flex-1 bg-black text-green-400 font-mono text-sm overflow-auto p-4">
+            <div className="flex-1 bg-black text-green-400 font-mono text-sm overflow-auto p-4 min-h-0">
               <div className="mb-2">$ npm start</div>
               <div className="mb-2">Starting development server...</div>
               <div className="mb-2">Local: http://localhost:3000</div>
@@ -489,7 +489,7 @@ export default App`)
       </div>
 
       {/* Status Bar */}
-      <div className="h-6 bg-[#007acc] text-white text-xs flex items-center px-4">
+      <div className="h-6 bg-[#007acc] text-white text-xs flex items-center px-4 flex-shrink-0">
         <div className="flex items-center space-x-4">
           <span>Ready</span>
           <span>Ln 1, Col 1</span>

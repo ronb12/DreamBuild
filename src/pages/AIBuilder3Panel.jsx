@@ -202,40 +202,37 @@ export default App`)
   const tabs = [
     { id: 'editor', label: 'App.jsx', icon: Code, active: true },
     { id: 'preview', label: 'Preview', icon: Eye },
-    { id: 'terminal', label: 'Terminal', icon: Terminal },
-    { id: 'problems', label: 'Problems', icon: Bug },
-    { id: 'output', label: 'Output', icon: FileText }
+    { id: 'terminal', label: 'Terminal', icon: Terminal }
   ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 flex flex-col">
       {/* Top Menu Bar */}
-      <div className="h-10 bg-gradient-to-r from-slate-800 to-slate-700 border-b border-slate-600 flex items-center px-6 text-sm mt-16 shadow-lg">
+      <div className="h-12 bg-gradient-to-r from-slate-800 to-slate-700 border-b border-slate-600 flex items-center px-6 text-sm mt-16 shadow-lg">
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
             <span className="font-bold text-blue-300">DreamBuild AI Builder</span>
           </div>
-          <div className="flex items-center space-x-4 text-slate-300">
-            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">File</button>
-            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Edit</button>
-            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">View</button>
-            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Go</button>
-            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Run</button>
-            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Terminal</button>
-            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Help</button>
-          </div>
         </div>
         <div className="flex-1"></div>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
+          {/* AI Model Selection */}
+          <div className="flex items-center space-x-2">
+            <Brain className="h-4 w-4 text-blue-400" />
+            <select 
+              className="bg-slate-600 border border-slate-500 rounded-lg px-3 py-1 text-sm text-slate-200 focus:outline-none focus:border-blue-400"
+              defaultValue="gpt-4"
+            >
+              <option value="gpt-4" className="bg-slate-700">GPT-4</option>
+              <option value="gpt-3.5" className="bg-slate-700">GPT-3.5 Turbo</option>
+              <option value="claude-3" className="bg-slate-700">Claude 3</option>
+              <option value="gemini-pro" className="bg-slate-700">Gemini Pro</option>
+            </select>
+          </div>
           <div className="flex items-center space-x-2 bg-slate-700 px-3 py-1 rounded-full">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <span className="text-xs text-green-300">AI Ready</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Circle className="h-3 w-3 text-red-400 hover:text-red-300 cursor-pointer transition-colors" />
-            <Circle className="h-3 w-3 text-yellow-400 hover:text-yellow-300 cursor-pointer transition-colors" />
-            <Circle className="h-3 w-3 text-green-400 hover:text-green-300 cursor-pointer transition-colors" />
           </div>
         </div>
       </div>
@@ -294,36 +291,21 @@ export default App`)
                 ))}
               </div>
               
-              {/* Quick Actions */}
+              {/* Quick Actions - Simplified */}
               <div className="mt-4 pt-3 border-t border-slate-600">
-                <div className="space-y-1">
-                  <button className="w-full flex items-center space-x-2 p-2 hover:bg-slate-600 rounded-lg transition-colors text-left">
-                    <Plus className="h-4 w-4 text-green-400" />
-                    <span className="text-sm text-slate-300">New File</span>
-                  </button>
-                  <button className="w-full flex items-center space-x-2 p-2 hover:bg-slate-600 rounded-lg transition-colors text-left">
-                    <FolderPlus className="h-4 w-4 text-blue-400" />
-                    <span className="text-sm text-slate-300">New Folder</span>
-                  </button>
-                </div>
+                <button className="w-full flex items-center space-x-2 p-2 hover:bg-slate-600 rounded-lg transition-colors text-left">
+                  <Plus className="h-4 w-4 text-green-400" />
+                  <span className="text-sm text-slate-300">New File</span>
+                </button>
               </div>
             </div>
           )}
 
-          {/* Collapsed Sidebar Icons */}
+          {/* Collapsed Sidebar Icons - Simplified */}
           {sidebarCollapsed && (
             <div className="p-2 space-y-2">
-              <button className="p-2 hover:bg-[#2a2d2e] rounded">
-                <Folder className="h-4 w-4" />
-              </button>
-              <button className="p-2 hover:bg-[#2a2d2e] rounded">
-                <Search className="h-4 w-4" />
-              </button>
-              <button className="p-2 hover:bg-[#2a2d2e] rounded">
-                <GitBranch className="h-4 w-4" />
-              </button>
-              <button className="p-2 hover:bg-[#2a2d2e] rounded">
-                <Bug className="h-4 w-4" />
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <Folder className="h-4 w-4 text-slate-300" />
               </button>
             </div>
           )}
@@ -353,14 +335,6 @@ export default App`)
               })}
             </div>
             <div className="flex-1"></div>
-            <div className="flex items-center space-x-1 px-4">
-              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
-                <Split className="h-4 w-4 text-slate-300" />
-              </button>
-              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
-                <MoreHorizontal className="h-4 w-4 text-slate-300" />
-              </button>
-            </div>
           </div>
 
           {/* Editor Content */}
@@ -432,26 +406,6 @@ export default App`)
               </div>
             )}
 
-            {activeTab === 'problems' && (
-              <div className="flex-1 bg-[#1e1e1e] p-4">
-                <div className="h-full">
-                  <div className="text-center text-[#8c8c8c] mt-8">
-                    <Bug className="h-12 w-12 mx-auto mb-4" />
-                    <p>No problems detected</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'output' && (
-              <div className="flex-1 bg-[#1e1e1e] p-4">
-                <div className="h-full bg-black text-green-400 rounded font-mono text-sm overflow-auto p-4">
-                  <pre className="whitespace-pre-wrap">
-                    {output || 'No output yet. Run your code to see results here.'}
-                  </pre>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -469,12 +423,6 @@ export default App`)
                 </div>
               </div>
               <div className="flex-1"></div>
-              <button 
-                onClick={() => setShowChat(!showChat)}
-                className="p-2 hover:bg-slate-500 rounded-lg transition-colors"
-              >
-                <X className="h-4 w-4 text-slate-300" />
-              </button>
             </div>
             {showChat && (
               <>
@@ -520,9 +468,6 @@ export default App`)
               <Terminal className="h-4 w-4 mr-2 text-green-400" />
               <span className="text-sm font-bold text-slate-200">Terminal</span>
               <div className="flex-1"></div>
-              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
-                <Minimize2 className="h-4 w-4 text-slate-300" />
-              </button>
             </div>
             <div className="flex-1 bg-gradient-to-br from-slate-900 via-black to-slate-900 text-green-400 font-mono text-sm overflow-auto p-4 min-h-0 shadow-inner">
               <div className="mb-2">$ npm start</div>
@@ -551,13 +496,6 @@ export default App`)
         <div className="flex items-center space-x-6">
           <span className="font-medium">JavaScript React</span>
           <span className="text-blue-100">UTF-8</span>
-          <button 
-            onClick={() => setShowChat(!showChat)}
-            className="flex items-center space-x-2 hover:bg-blue-700 px-3 py-1 rounded-lg transition-colors"
-          >
-            <Bot className="h-4 w-4" />
-            <span className="font-medium">AI Assistant</span>
-          </button>
         </div>
       </div>
     </div>

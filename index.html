@@ -85,24 +85,19 @@
       </div>
     </div>
     
-    <!-- Firebase SDK - Temporarily Disabled -->
+    <!-- Firebase SDK -->
     <script type="module">
-      // Temporarily disable Firebase to test if it's causing the Request destructuring error
-      console.log('Firebase temporarily disabled for testing');
+      // Firebase is now enabled for proper functionality
+      console.log('Firebase SDK loading...');
       
-      // Create mock Firebase objects
-      window.firebase = { 
-        auth: () => null,
-        GoogleAuthProvider: null,
-        GithubAuthProvider: null,
-        signInWithPopup: null
-      };
+      // Firebase will be loaded by the main application
+      window.firebase = null;
       window.firebaseApp = null;
       
-      console.log('Mock Firebase loaded:', !!window.firebase);
+      console.log('Firebase SDK ready for loading');
     </script>
     
-    <!-- Polyfills removed - using modern React 18.3.1 with native browser support -->
+    <!-- Polyfills are loaded below for Request/Response APIs -->
     
     <!-- Service Worker Registration -->
     <script>

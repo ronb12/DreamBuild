@@ -89,8 +89,17 @@ export function Routes({ children }) {
     
     console.log('🔍 Initial routing:', { pathname, hash, fullUrl: window.location.href })
     
-    // For the root path, always return '/' regardless of hash
+    // For the root path, check if there's a meaningful hash first
     if (pathname === '/') {
+      // If there's a hash with content, use the hash path
+      if (hash && hash !== '#' && hash !== '#/') {
+        let path = hash.slice(1)
+        if (path.includes('#')) {
+          path = path.split('#')[0]
+        }
+        console.log('✅ Root path with hash, using hash path:', path)
+        return path
+      }
       console.log('✅ Root path detected, returning /')
       return '/'
     }
@@ -117,11 +126,20 @@ export function Routes({ children }) {
       const hash = window.location.hash
       const pathname = window.location.pathname
       
-      // For the root path, always return '/'
-      if (pathname === '/' && (!hash || hash === '#' || hash === '#/')) {
-        setCurrentPath('/')
+    // For the root path, check if there's a meaningful hash first
+    if (pathname === '/') {
+      // If there's a hash with content, use the hash path
+      if (hash && hash !== '#' && hash !== '#/') {
+        let path = hash.slice(1)
+        if (path.includes('#')) {
+          path = path.split('#')[0]
+        }
+        setCurrentPath(path)
         return
       }
+      setCurrentPath('/')
+      return
+    }
       
       // Only use pathname if it's a specific route like /ai-builder, /templates, etc.
       // and there's no meaningful hash

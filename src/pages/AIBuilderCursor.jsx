@@ -223,7 +223,7 @@ export default App`)
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex min-h-0">
         {/* Left Sidebar */}
         <div className={`${sidebarCollapsed ? 'w-12' : 'w-64'} bg-[#252526] border-r border-[#3e3e42] transition-all duration-200`}>
           {/* Sidebar Header */}
@@ -324,18 +324,22 @@ export default App`)
           </div>
 
           {/* Editor Content */}
-          <div className="flex-1 flex">
+          <div className="flex-1 flex min-h-0">
             {/* Main Editor */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-h-0">
               {activeTab === 'editor' && (
-                <div className="flex-1 flex flex-col">
-                  <div className="flex-1 bg-[#1e1e1e] p-4">
+                <div className="flex-1 flex flex-col min-h-0">
+                  <div className="flex-1 bg-[#1e1e1e] p-4 min-h-0">
                     <textarea
                       value={code}
                       onChange={(e) => setCode(e.target.value)}
                       className="w-full h-full bg-transparent text-[#d4d4d4] font-mono text-sm resize-none outline-none leading-relaxed"
                       placeholder="Enter your code here..."
-                      style={{ fontFamily: 'Consolas, Monaco, "Courier New", monospace' }}
+                      style={{ 
+                        fontFamily: 'Consolas, Monaco, "Courier New", monospace',
+                        minHeight: '400px',
+                        height: '100%'
+                      }}
                     />
                   </div>
                   <div className="h-8 bg-[#2d2d30] border-t border-[#3e3e42] flex items-center px-4 text-xs text-[#8c8c8c]">

@@ -23,14 +23,15 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Temporarily disable all chunks for testing
-          // 'monaco-editor': ['monaco-editor'],
-          // 'firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],
+          'monaco-editor': ['monaco-editor'],
+          'firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],
           'react-vendor': ['react', 'react-dom'],
-          // 'ui-vendor': ['framer-motion', 'lucide-react'],
-          // 'editor-vendor': ['@monaco-editor/react'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'editor-vendor': ['@monaco-editor/react'],
           'router-vendor': ['react-router-dom'],
-          'utils-vendor': ['axios', 'date-fns', 'clsx', 'tailwind-merge']
+          // Temporarily exclude axios to test
+          // 'axios-vendor': ['axios'],
+          'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge']
         }
       }
     },

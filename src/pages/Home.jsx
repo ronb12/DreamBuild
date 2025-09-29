@@ -75,20 +75,20 @@ const Home = () => {
   const stats = [
     { label: 'AI Models', value: '10+', icon: Brain, description: 'Advanced AI models' },
     { label: 'Languages', value: '50+', icon: Code, description: 'Programming languages' },
-    { label: 'Templates', value: '100+', icon: Layers, description: 'Ready-to-use templates' },
-    { label: 'Users', value: '10K+', icon: Users, description: 'Active developers' }
+    { label: 'Templates', value: '25+', icon: Layers, description: 'Ready-to-use templates' },
+    { label: 'Features', value: '20+', icon: Settings, description: 'Core features' }
   ]
 
   const benefits = [
     {
       icon: Clock,
-      title: '10x Faster Development',
-      description: 'Build applications 10x faster with AI-powered code generation and smart templates.'
+      title: 'Faster Development',
+      description: 'Build applications faster with AI-powered code generation and smart templates.'
     },
     {
       icon: Shield,
-      title: 'Enterprise Security',
-      description: 'Bank-level security with end-to-end encryption and secure cloud infrastructure.'
+      title: 'Secure & Private',
+      description: 'Your code stays private with secure cloud infrastructure and data protection.'
     },
     {
       icon: Globe,
@@ -97,29 +97,26 @@ const Home = () => {
     },
     {
       icon: Award,
-      title: 'Industry Leading',
-      description: 'Trusted by developers at top companies worldwide for mission-critical projects.'
+      title: 'Modern Technology',
+      description: 'Built with the latest web technologies and AI advancements for optimal performance.'
     }
   ]
 
-  const testimonials = [
+  const gettingStarted = [
     {
-      name: "Sarah Chen",
-      role: "Senior Developer at TechCorp",
-      content: "DreamBuild has revolutionized how we develop applications. The AI code generation is incredibly accurate and saves us hours every day.",
-      rating: 5
+      icon: Rocket,
+      title: "1. Start Building",
+      description: "Click 'Start Building' to access the AI Builder and begin creating your first project with AI assistance."
     },
     {
-      name: "Marcus Johnson",
-      role: "Full-Stack Developer",
-      content: "The templates are amazing! I can spin up a complete React app with authentication in minutes. This is the future of development.",
-      rating: 5
+      icon: Layers,
+      title: "2. Choose Template",
+      description: "Browse our collection of templates for React, Vue, Node.js, Python, and more to jumpstart your project."
     },
     {
-      name: "Elena Rodriguez",
-      role: "Startup Founder",
-      content: "As a non-technical founder, DreamBuild's AI assistance helped me build my MVP without hiring expensive developers.",
-      rating: 5
+      icon: Code,
+      title: "3. Code & Deploy",
+      description: "Use the integrated code editor with AI suggestions, then deploy your application with one click."
     }
   ]
 
@@ -177,9 +174,9 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl sm:text-2xl lg:text-3xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed"
             >
-              The world's most advanced AI-powered development platform. 
+              A powerful AI-powered development platform designed for modern developers. 
               <br className="hidden sm:block" />
-              Generate, build, and deploy applications with unprecedented speed and intelligence.
+              Generate, build, and deploy applications with intelligent assistance and smart templates.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -303,7 +300,7 @@ const Home = () => {
                 Why Choose DreamBuild?
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Join thousands of developers who are building the future with AI
+                Experience the future of AI-powered development
               </p>
             </motion.div>
           </div>
@@ -333,7 +330,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Getting Started Section */}
       <section className="py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20 max-w-4xl mx-auto">
@@ -344,36 +341,33 @@ const Home = () => {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                What Developers Are Saying
+                Get Started in Minutes
               </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Join thousands of satisfied developers who trust DreamBuild
+                Follow these simple steps to begin building with AI assistance
               </p>
             </motion.div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {gettingStarted.map((step, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:shadow-xl hover:bg-card/80 transition-all duration-300"
+                className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-2xl p-8 hover:shadow-xl hover:bg-card/80 transition-all duration-300 text-center"
               >
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-500 fill-current" />
-                  ))}
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <step.icon className="h-8 w-8 text-primary" />
                 </div>
-                <p className="text-muted-foreground leading-relaxed mb-6 text-lg">
-                  "{testimonial.content}"
+                <h3 className="text-xl font-bold mb-4 text-foreground">
+                  {step.title}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {step.description}
                 </p>
-                <div>
-                  <div className="font-semibold text-foreground">{testimonial.name}</div>
-                  <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                </div>
               </motion.div>
             ))}
           </div>
@@ -473,11 +467,11 @@ const Home = () => {
             className="max-w-5xl mx-auto"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Transform Your Development?
+              Ready to Start Building?
             </h2>
             <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
-              Join thousands of developers who are already building the future with AI. 
-              Start your journey today and experience the power of intelligent development.
+              Experience the power of AI-assisted development. 
+              Start building your next project today with intelligent code generation and smart templates.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <Link

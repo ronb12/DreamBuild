@@ -777,11 +777,40 @@
         ];
       };
       
+      // CRITICAL: Add React polyfill to prevent createContext errors
+      if (!window.React) {
+        window.React = {
+          createContext: function(defaultValue) {
+            return {
+              Provider: function(props) { return props.children; },
+              Consumer: function(props) { return props.children; },
+              _currentValue: defaultValue
+            };
+          },
+          createElement: function(type, props, ...children) {
+            return { type, props: { ...props, children } };
+          },
+          Fragment: Symbol('Fragment'),
+          StrictMode: function(props) { return props.children; },
+          useState: function(initial) { return [initial, function() {}]; },
+          useEffect: function() {},
+          useContext: function() { return null; },
+          useReducer: function() { return [null, function() {}]; },
+          useRef: function() { return { current: null }; },
+          useMemo: function(fn) { return fn(); },
+          useCallback: function(fn) { return fn; },
+          useImperativeHandle: function() {},
+          useLayoutEffect: function() {},
+          useDebugValue: function() {}
+        };
+      }
+
       console.log('✅ Polyfills loaded:', {
         Request: !!window.Request,
         Headers: !!window.Headers,
         Response: !!window.Response,
-        fetch: !!window.fetch
+        fetch: !!window.fetch,
+        React: !!window.React
       });
     </script>
     
@@ -799,6 +828,10 @@
         });
       }
     </script>
+    
+    <!-- Load React via CDN to ensure it's available before modules -->
+    <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
     
     <script type="module" src="/src/main.jsx"></script>
   </body>

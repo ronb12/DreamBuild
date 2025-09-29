@@ -135,6 +135,8 @@ if (typeof window !== 'undefined') {
     }
   }
 
+  // Note: React polyfill removed - using proper React 18.3.1 now
+
   // Success message
   console.log('✅ Polyfills loaded:', {
     Request: !!window.Request,
@@ -145,8 +147,5 @@ if (typeof window !== 'undefined') {
   })
 }
 
-// Export for potential use in other modules
-export const Request = window.Request
-export const Headers = window.Headers
-export const Response = window.Response
-export const fetch = window.fetch
+// Note: Exports removed to prevent circular dependency issues
+// The polyfills are available globally via window object

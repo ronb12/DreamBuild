@@ -14,7 +14,8 @@ export default defineConfig({
     global: 'globalThis'
   },
   esbuild: {
-    target: 'es2020'
+    target: 'es2020',
+    keepNames: true
   },
   build: {
     outDir: 'dist',
@@ -22,39 +23,26 @@ export default defineConfig({
     minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Ensure polyfills are in the main chunk and load first
-          if (id.includes('polyfills.js') || id.includes('main.jsx')) {
-            return 'index'
-          }
-          // Group other dependencies
-          if (id.includes('monaco-editor')) {
-            return 'monaco-editor'
-          }
-          if (id.includes('firebase')) {
-            return 'firebase'
-          }
-          if (id.includes('react') && !id.includes('react-router')) {
-            return 'react-vendor'
-          }
-          if (id.includes('framer-motion') || id.includes('lucide-react')) {
-            return 'ui-vendor'
-          }
-          if (id.includes('@monaco-editor/react')) {
-            return 'editor-vendor'
-          }
-          if (id.includes('react-router')) {
-            return 'router-vendor'
-          }
-          if (id.includes('axios') || id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
-            return 'utils-vendor'
-          }
-          if (id.includes('scheduler')) {
-            return 'scheduler'
-          }
-          // Default to index for everything else to ensure polyfills load first
-          return 'index'
+        manualChunks: {
+          // Keep polyfills and main app in index chunk
+          'index': ['src/polyfills.js', 'src/main.jsx'],
+          // Combine React and Router in the same chunk to ensure proper loading order
+          'react-router-vendor': ['react', 'react-dom', 'scheduler', 'react-router-dom'],
+          // Other dependencies
+          'monaco-editor': ['monaco-editor'],
+          'firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'editor-vendor': ['@monaco-editor/react'],
+          'utils-vendor': ['axios', 'date-fns', 'clsx', 'tailwind-merge']
         }
+      },
+      external: [],
+      onwarn(warning, warn) {
+        // Suppress circular dependency warnings for now
+        if (warning.code === 'CIRCULAR_DEPENDENCY') {
+          return
+        }
+        warn(warning)
       }
     },
     chunkSizeWarningLimit: 500,
@@ -66,7 +54,17 @@ export default defineConfig({
     host: true
   },
   optimizeDeps: {
-    include: ['monaco-editor', 'firebase/app', 'firebase/firestore', 'firebase/auth', 'scheduler']
+    include: [
+      'react', 
+      'react-dom', 
+      'scheduler',
+      'react-router-dom',
+      'monaco-editor', 
+      'firebase/app', 
+      'firebase/firestore', 
+      'firebase/auth'
+    ],
+    force: true
   },
   envPrefix: 'REACT_APP_',
   envDir: '.'

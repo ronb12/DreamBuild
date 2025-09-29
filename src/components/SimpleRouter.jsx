@@ -87,8 +87,9 @@ export function Routes({ children }) {
     const hash = window.location.hash
     const pathname = window.location.pathname
     
-    // If we have a pathname that's not just '/', use that
-    if (pathname && pathname !== '/') {
+    // Only use pathname if it's a specific route like /ai-builder, /templates, etc.
+    // and there's no meaningful hash
+    if (pathname && pathname !== '/' && (!hash || hash === '#' || hash === '#/')) {
       return pathname
     }
     
@@ -106,8 +107,9 @@ export function Routes({ children }) {
       const hash = window.location.hash
       const pathname = window.location.pathname
       
-      // If we have a pathname that's not just '/', use that
-      if (pathname && pathname !== '/') {
+      // Only use pathname if it's a specific route like /ai-builder, /templates, etc.
+      // and there's no meaningful hash
+      if (pathname && pathname !== '/' && (!hash || hash === '#' || hash === '#/')) {
         setCurrentPath(pathname)
         return
       }
@@ -198,9 +200,10 @@ export function useLocation() {
     const hash = window.location.hash
     const pathname = window.location.pathname
     
-    // If we have a pathname that's not just '/', use that
+    // Only use pathname if it's a specific route like /ai-builder, /templates, etc.
+    // and there's no meaningful hash
     let currentPathname = '/'
-    if (pathname && pathname !== '/') {
+    if (pathname && pathname !== '/' && (!hash || hash === '#' || hash === '#/')) {
       currentPathname = pathname
     } else {
       // Otherwise, use the hash
@@ -224,9 +227,10 @@ export function useLocation() {
       const hash = window.location.hash
       const pathname = window.location.pathname
       
-      // If we have a pathname that's not just '/', use that
+      // Only use pathname if it's a specific route like /ai-builder, /templates, etc.
+      // and there's no meaningful hash
       let currentPathname = '/'
-      if (pathname && pathname !== '/') {
+      if (pathname && pathname !== '/' && (!hash || hash === '#' || hash === '#/')) {
         currentPathname = pathname
       } else {
         // Otherwise, use the hash

@@ -10,7 +10,7 @@ import Footer from './components/Footer'
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'))
-import AIBuilder from './pages/AIBuilderSimple'
+import AIBuilder from './pages/AIBuilderCursor'
 const Templates = lazy(() => import('./pages/Templates'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Login = lazy(() => import('./pages/Login'))

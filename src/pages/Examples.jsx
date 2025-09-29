@@ -12,111 +12,14 @@ const Examples = () => {
   const [viewMode, setViewMode] = useState('grid')
 
   const categories = [
-    { id: 'all', name: 'All Examples', count: 24 },
-    { id: 'web', name: 'Web Apps', count: 8 },
-    { id: 'mobile', name: 'Mobile Apps', count: 6 },
-    { id: 'api', name: 'APIs', count: 5 },
-    { id: 'dashboard', name: 'Dashboards', count: 5 }
+    { id: 'all', name: 'All Examples', count: 0 },
+    { id: 'web', name: 'Web Apps', count: 0 },
+    { id: 'mobile', name: 'Mobile Apps', count: 0 },
+    { id: 'api', name: 'APIs', count: 0 },
+    { id: 'dashboard', name: 'Dashboards', count: 0 }
   ]
 
-  const examples = [
-    {
-      id: 1,
-      title: 'E-commerce Store',
-      description: 'Full-featured online store with React, Node.js, and Stripe integration',
-      category: 'web',
-      difficulty: 'Intermediate',
-      tags: ['React', 'Node.js', 'Stripe', 'MongoDB'],
-      stars: 156,
-      language: 'JavaScript',
-      preview: 'https://via.placeholder.com/400x250/2563eb/ffffff?text=E-commerce+Store',
-      github: 'https://github.com/example/ecommerce-store'
-    },
-    {
-      id: 2,
-      title: 'Task Management App',
-      description: 'Collaborative task management with real-time updates and team features',
-      category: 'web',
-      difficulty: 'Beginner',
-      tags: ['Vue.js', 'Firebase', 'Real-time'],
-      stars: 89,
-      language: 'JavaScript',
-      preview: 'https://via.placeholder.com/400x250/10b981/ffffff?text=Task+Manager',
-      github: 'https://github.com/example/task-manager'
-    },
-    {
-      id: 3,
-      title: 'Fitness Tracker',
-      description: 'Mobile app for tracking workouts, nutrition, and fitness goals',
-      category: 'mobile',
-      difficulty: 'Intermediate',
-      tags: ['React Native', 'GraphQL', 'Health API'],
-      stars: 234,
-      language: 'TypeScript',
-      preview: 'https://via.placeholder.com/400x250/f59e0b/ffffff?text=Fitness+Tracker',
-      github: 'https://github.com/example/fitness-tracker'
-    },
-    {
-      id: 4,
-      title: 'Analytics Dashboard',
-      description: 'Business intelligence dashboard with charts, metrics, and reporting',
-      category: 'dashboard',
-      difficulty: 'Advanced',
-      tags: ['D3.js', 'Python', 'PostgreSQL'],
-      stars: 312,
-      language: 'Python',
-      preview: 'https://via.placeholder.com/400x250/8b5cf6/ffffff?text=Analytics+Dashboard',
-      github: 'https://github.com/example/analytics-dashboard'
-    },
-    {
-      id: 5,
-      title: 'REST API Template',
-      description: 'Production-ready REST API with authentication, validation, and documentation',
-      category: 'api',
-      difficulty: 'Intermediate',
-      tags: ['Express.js', 'JWT', 'Swagger'],
-      stars: 178,
-      language: 'JavaScript',
-      preview: 'https://via.placeholder.com/400x250/ef4444/ffffff?text=REST+API',
-      github: 'https://github.com/example/rest-api-template'
-    },
-    {
-      id: 6,
-      title: 'Portfolio Website',
-      description: 'Modern portfolio website with animations, blog, and contact form',
-      category: 'web',
-      difficulty: 'Beginner',
-      tags: ['Next.js', 'Tailwind', 'Framer Motion'],
-      stars: 67,
-      language: 'TypeScript',
-      preview: 'https://via.placeholder.com/400x250/06b6d4/ffffff?text=Portfolio',
-      github: 'https://github.com/example/portfolio-website'
-    },
-    {
-      id: 7,
-      title: 'Social Media App',
-      description: 'Instagram-like social media app with posts, stories, and messaging',
-      category: 'mobile',
-      difficulty: 'Advanced',
-      tags: ['Flutter', 'Firebase', 'Real-time'],
-      stars: 445,
-      language: 'Dart',
-      preview: 'https://via.placeholder.com/400x250/ec4899/ffffff?text=Social+App',
-      github: 'https://github.com/example/social-media-app'
-    },
-    {
-      id: 8,
-      title: 'GraphQL API',
-      description: 'Modern GraphQL API with subscriptions, caching, and real-time updates',
-      category: 'api',
-      difficulty: 'Advanced',
-      tags: ['GraphQL', 'Apollo', 'Redis'],
-      stars: 298,
-      language: 'TypeScript',
-      preview: 'https://via.placeholder.com/400x250/84cc16/ffffff?text=GraphQL+API',
-      github: 'https://github.com/example/graphql-api'
-    }
-  ]
+  const examples = []
 
   const filteredExamples = examples.filter(example => {
     const matchesSearch = example.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

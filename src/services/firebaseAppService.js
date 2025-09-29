@@ -169,20 +169,8 @@ class FirebaseAppService {
       console.error('❌ Error getting public apps:', error)
       console.log('🔄 FirebaseAppService: Returning empty array as fallback')
       
-      // Return some mock data for testing if Firebase fails
-      return [
-        {
-          id: 'demo-app-1',
-          name: 'Demo Calculator',
-          description: 'A simple calculator app',
-          url: 'https://dreambuild-2024-app.web.app/apps/demo-calculator',
-          isPublic: true,
-          createdAt: new Date(),
-          views: 10,
-          likes: 2,
-          tags: ['demo', 'calculator']
-        }
-      ]
+      // Return empty array if Firebase fails
+      return []
     }
   }
 

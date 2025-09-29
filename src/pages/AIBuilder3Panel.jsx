@@ -207,9 +207,9 @@ export default App`)
   ]
 
   return (
-    <div className="min-h-screen bg-[#1e1e1e] text-[#d4d4d4] flex flex-col pt-16">
+    <div className="min-h-screen bg-[#1e1e1e] text-[#d4d4d4] flex flex-col">
       {/* Top Menu Bar */}
-      <div className="h-8 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-4 text-xs">
+      <div className="h-8 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-4 text-xs mt-16">
         <div className="flex items-center space-x-4">
           <span className="font-semibold">DreamBuild AI Builder</span>
           <div className="flex items-center space-x-2">

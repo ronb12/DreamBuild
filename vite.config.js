@@ -24,10 +24,11 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Keep polyfills and main app in index chunk
-          'index': ['src/polyfills.js', 'src/main.jsx'],
-          // Combine React and Router in the same chunk to ensure proper loading order
-          'react-router-vendor': ['react', 'react-dom', 'scheduler', 'react-router-dom'],
+          // Main app entry point
+          'index': ['src/main.jsx'],
+          // Separate React into its own chunk to ensure it loads first
+          'react-vendor': ['react', 'react-dom', 'scheduler'],
+          'router-vendor': ['react-router-dom'],
           // Other dependencies
           'monaco-editor': ['monaco-editor'],
           'firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],

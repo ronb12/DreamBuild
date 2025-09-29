@@ -10,7 +10,7 @@ import Footer from './components/Footer'
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'))
-import AIBuilder from './pages/AIBuilder3Panel'
+import AIBuilder from './pages/AIBuilder'
 const Templates = lazy(() => import('./pages/Templates'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Login = lazy(() => import('./pages/Login'))
@@ -71,6 +71,8 @@ function ConditionalMain({ children }) {
 }
 
 function App() {
+  console.log('🏠 App component rendering...')
+  
   // No automatic redirects - let the routing system handle everything
 
   return (

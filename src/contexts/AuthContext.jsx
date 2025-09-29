@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signOut, fetchSignInMethodsForEmail, linkWithCredential } from 'firebase/auth'
-import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../config/firebase'
 
 const AuthContext = createContext()
@@ -19,14 +17,17 @@ export function AuthProvider({ children }) {
     let unsubscribe
     let timeoutId
 
-    try {
-      console.log('🔐 Setting up Firebase auth listener...')
-      unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const setupAuth = async () => {
+      try {
+        console.log('🔐 Setting up Firebase auth listener...')
+        const { onAuthStateChanged } = await import('firebase/auth')
+        unsubscribe = onAuthStateChanged(auth, async (user) => {
                console.log('🔐 Auth state changed:', user ? 'User logged in' : 'User logged out')
                try {
                  if (user) {
                    // Get user data from Firestore with error handling
                    try {
+                     const { doc, getDoc } = await import('firebase/firestore')
                      const userDoc = await getDoc(doc(db, 'users', user.uid))
                      const userData = userDoc.exists() ? userDoc.data() : null
                      
@@ -65,10 +66,13 @@ export function AuthProvider({ children }) {
         setLoading(false)
       }, 2000) // Reduced from 5000ms to 2000ms
 
-    } catch (error) {
-      console.error('Error setting up auth listener:', error)
-      setLoading(false)
+      } catch (error) {
+        console.error('Error setting up auth listener:', error)
+        setLoading(false)
+      }
     }
+
+    setupAuth()
 
     return () => {
       if (unsubscribe) unsubscribe()
@@ -78,6 +82,9 @@ export function AuthProvider({ children }) {
 
   const signInWithGoogle = async () => {
     try {
+      const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth')
+      const { setDoc, doc } = await import('firebase/firestore')
+      
       const provider = new GoogleAuthProvider()
       // Add custom parameters to avoid CORS issues
       provider.addScope('email')
@@ -110,6 +117,9 @@ export function AuthProvider({ children }) {
   const signInWithGitHub = async () => {
     try {
       console.log('Using Firebase GitHub authentication')
+      
+      const { GithubAuthProvider, signInWithPopup, fetchSignInMethodsForEmail } = await import('firebase/auth')
+      const { setDoc, doc } = await import('firebase/firestore')
       
       // Use Firebase's built-in GitHub authentication
       const provider = new GithubAuthProvider()
@@ -174,6 +184,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
+      const { signOut } = await import('firebase/auth')
       await signOut(auth)
       console.log('Successfully signed out!')
     } catch (error) {

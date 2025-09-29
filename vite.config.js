@@ -14,8 +14,7 @@ export default defineConfig({
     global: 'globalThis'
   },
   esbuild: {
-    target: 'es2020',
-    keepNames: true
+    target: 'es2020'
   },
   build: {
     outDir: 'dist',
@@ -24,24 +23,15 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Separate React and core dependencies
-          'react-core': ['react', 'react-dom', 'scheduler'],
-          // Main app entry point
-          'index': ['src/main.jsx'],
-          // Other dependencies
-          'monaco-editor': ['monaco-editor'],
-          'editor-vendor': ['@monaco-editor/react'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
+          // Temporarily disable all chunks for testing
+          // 'monaco-editor': ['monaco-editor'],
+          // 'firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],
+          'react-vendor': ['react', 'react-dom'],
+          // 'ui-vendor': ['framer-motion', 'lucide-react'],
+          // 'editor-vendor': ['@monaco-editor/react'],
+          'router-vendor': ['react-router-dom'],
           'utils-vendor': ['axios', 'date-fns', 'clsx', 'tailwind-merge']
         }
-      },
-      external: [],
-      onwarn(warning, warn) {
-        // Suppress circular dependency warnings for now
-        if (warning.code === 'CIRCULAR_DEPENDENCY') {
-          return
-        }
-        warn(warning)
       }
     },
     chunkSizeWarningLimit: 500,
@@ -52,18 +42,9 @@ export default defineConfig({
     port: 3000,
     host: true
   },
-        optimizeDeps: {
-          include: [
-            'react',
-            'react-dom',
-            'scheduler',
-            'monaco-editor',
-            'firebase/app',
-            'firebase/firestore',
-            'firebase/auth'
-          ],
-          force: true
-        },
+  optimizeDeps: {
+    include: ['monaco-editor', 'firebase/app', 'firebase/firestore', 'firebase/auth']
+  },
   envPrefix: 'REACT_APP_',
   envDir: '.'
 })

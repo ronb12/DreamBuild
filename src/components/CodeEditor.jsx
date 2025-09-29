@@ -131,6 +131,7 @@ const CodeEditor = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden"
+      data-testid="code-editor"
     >
       {/* Editor Header */}
       <div className="flex items-center justify-between p-3 border-b border-border bg-muted/50">

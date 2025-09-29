@@ -11,8 +11,6 @@ class SystemIntegrationService {
   async initialize() {
     if (this.isInitialized) return;
     
-    console.log('🔧 Initializing System Integration Service...');
-    
     try {
       // Initialize system information
       this.systemInfo = await this.getSystemInfo();

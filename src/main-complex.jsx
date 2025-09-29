@@ -1,5 +1,7 @@
+// Import React and other dependencies
 import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import App from './App.jsx'
 import './index.css'
 
 // CRITICAL: Ensure polyfills are loaded before any modules
@@ -27,10 +29,7 @@ if (typeof window !== 'undefined') {
 
   // Wait for polyfills before proceeding
   waitForPolyfills().then(() => {
-    // Add a small delay to ensure all modules are ready
-    setTimeout(() => {
-      initializeReact()
-    }, 200)
+    initializeReact()
   })
 } else {
   // If not in browser, initialize immediately
@@ -85,71 +84,21 @@ function renderApp() {
   console.log('🎯 Root element:', rootElement)
 
   try {
-    // Try to load the full app first
-    loadFullApp(rootElement)
-  } catch (error) {
-    console.error('❌ Full app loading failed:', error)
-    // Fallback to simple app
-    loadSimpleApp(rootElement)
-  }
-}
-
-async function loadFullApp(rootElement) {
-  try {
-    // Dynamically import the full App component
-    const { default: App } = await import('./App.jsx')
-    
     createRoot(rootElement).render(
       <StrictMode>
         <App />
       </StrictMode>,
     )
-    console.log('✅ Full React app rendered successfully!')
+    console.log('✅ React app rendered successfully!')
   } catch (error) {
-    console.error('❌ Full app import failed:', error)
-    throw error // Re-throw to trigger fallback
+    console.error('❌ React app rendering failed:', error)
+    // Show error in the UI
+    rootElement.innerHTML = `
+      <div style="padding: 20px; color: red; font-family: monospace;">
+        <h2>React App Error</h2>
+        <p>Error: ${error.message}</p>
+        <pre>${error.stack}</pre>
+      </div>
+    `
   }
-}
-
-function loadSimpleApp(rootElement) {
-  console.log('🔄 Loading simple fallback app...')
-  
-  // Simple fallback app component
-  const SimpleApp = () => {
-    const [status, setStatus] = React.useState('Loading...')
-    
-    React.useEffect(() => {
-      // Check what's available
-      const checks = {
-        'React': !!window.React,
-        'ReactDOM': !!window.ReactDOM,
-        'Firebase': !!window.firebase,
-        'Request': !!window.Request,
-        'Headers': !!window.Headers,
-        'Response': !!window.Response,
-        'fetch': !!window.fetch
-      }
-      
-      setStatus(`DreamBuild - Full App Fallback\n\nStatus:\n${Object.entries(checks).map(([key, value]) => `${key}: ${value ? '✅' : '❌'}`).join('\n')}\n\nIf you can see this, the core app is working!\nThe full app had a loading issue, but this fallback is functional.`)
-    }, [])
-    
-    return React.createElement('div', {
-      style: {
-        padding: '20px',
-        fontFamily: 'monospace',
-        backgroundColor: '#0f172a',
-        color: '#e2e8f0',
-        minHeight: '100vh',
-        whiteSpace: 'pre-line',
-        lineHeight: '1.6'
-      }
-    }, status)
-  }
-
-  createRoot(rootElement).render(
-    <StrictMode>
-      <SimpleApp />
-    </StrictMode>,
-  )
-  console.log('✅ Simple fallback app rendered successfully!')
 }

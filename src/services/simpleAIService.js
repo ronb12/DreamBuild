@@ -14,7 +14,7 @@ class SimpleAIService {
       averageResponseTime: 0
     }
     
-    console.log('🤖 Simple AI Service initialized - Local AI with Open Source Models (No API Keys Required)!')
+    // Simple AI Service initialized - Local AI with Open Source Models
   }
 
   // Get available services (local AI only)

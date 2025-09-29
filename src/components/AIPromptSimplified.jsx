@@ -30,8 +30,6 @@ import AIChatInterface from './ai/AIChatInterface'
 import StreamingResponse from './StreamingResponse'
 
 export default function AIPromptSimplified() {
-  console.log('🔧 AIPromptSimplified component rendering...')
-  
   const { currentProject, updateFile, switchFile, updateConfig } = useProject()
   const [prompt, setPrompt] = useState('')
   const [projectName, setProjectName] = useState('')
@@ -348,9 +346,6 @@ export default function AIPromptSimplified() {
     }
   }, [currentProject.id])
 
-  console.log('🔧 AIPromptSimplified render - currentProject:', currentProject)
-  console.log('🔧 AIPromptSimplified render - prompt:', prompt)
-  console.log('🔧 AIPromptSimplified render - isGenerating:', isGenerating)
   
   return (
     <div className="h-full flex flex-col bg-card/50 backdrop-blur-sm relative">

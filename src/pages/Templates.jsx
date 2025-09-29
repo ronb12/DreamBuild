@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from '../utils/navigation';
 import { motion } from 'framer-motion'
 import { 
   FileText, 

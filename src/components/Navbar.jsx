@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Sparkles, Sun, Moon, Menu, X, Rocket, Code, Database, Users, LogOut, User, Home, BookOpen, Grid, Download } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useAuth } from '../contexts/AuthContext'
+import { Link, useLocation } from '../utils/navigation'
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme()

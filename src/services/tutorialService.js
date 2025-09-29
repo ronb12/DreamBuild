@@ -416,8 +416,7 @@ export default Timer;`,
             title: 'Routing and Navigation',
             instructions: 'Learn how to add routing to your React app',
             startingCode: `import React from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-
+import { Link, useLocation, useNavigate } from '../utils/navigation';
 function App() {
     return (
         <BrowserRouter>
@@ -439,8 +438,8 @@ export default App;`,
               'Use Link for navigation'
             ],
             examples: `<nav>
-    <Link to="/">Home</Link>
-    <Link to="/about">About</Link>
+    <Link href='#/'>Home</Link>
+    <Link href='#/about'>About</Link>
 </nav>
 <Routes>
     <Route path="/" element={<Home />} />

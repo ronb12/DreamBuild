@@ -17,16 +17,12 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
     const loadModels = async () => {
       try {
         setIsLoading(true);
-        console.log('🔧 Loading AI models...');
-
         const services = simpleAIService.getServices();
-        console.log('🔧 Services:', services);
 
         const models = [];
 
         // Add cloud AI models
         if (services['cloud-ai'] && services['cloud-ai'].models) {
-          console.log('🔧 Cloud AI models:', services['cloud-ai'].models);
           services['cloud-ai'].models.forEach(model => {
             models.push({
               id: `cloud-${model.model || model.name.toLowerCase().replace(/\s+/g, '-')}`,
@@ -42,7 +38,6 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
 
         // Add local AI models
         if (services['local-ai'] && services['local-ai'].models) {
-          console.log('🔧 Local AI models:', services['local-ai'].models);
           services['local-ai'].models.forEach(model => {
             models.push({
               id: `local-${model.model || model.name.toLowerCase().replace(/\s+/g, '-')}`,
@@ -73,17 +68,12 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
           strengths: ['smart-selection', 'availability']
         });
 
-        console.log('🔧 Final models before deduplication:', models);
-
         // Remove duplicates based on both id AND name
         const uniqueModels = models.filter((model, index, self) => {
           const isUniqueById = index === self.findIndex(m => m.id === model.id);
           const isUniqueByName = index === self.findIndex(m => m.name === model.name);
           return isUniqueById && isUniqueByName;
         });
-
-        console.log('🔧 Unique models after deduplication:', uniqueModels.length);
-        console.log('🔧 Final unique models:', uniqueModels.map(m => `${m.name} (${m.id})`));
         
         setAvailableModels(uniqueModels);
       } catch (error) {

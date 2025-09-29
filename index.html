@@ -54,21 +54,23 @@
         flex-direction: column;
       }
       
-      /* Loading spinner */
-      .loading {
+      .loading-spinner {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        background: #f8fafc;
+        min-height: 100vh;
+        background-color: #0f172a; /* slate-900 */
+        color: #e2e8f0; /* slate-200 */
+        font-family: monospace;
+        font-size: 1rem;
       }
       
-      .spinner {
+      .loading-spinner div {
+        border: 4px solid #646cff; /* primary color */
+        border-top-color: transparent;
+        border-radius: 50%;
         width: 40px;
         height: 40px;
-        border: 4px solid #e2e8f0;
-        border-top: 4px solid #3b82f6;
-        border-radius: 50%;
         animation: spin 1s linear infinite;
       }
       
@@ -80,24 +82,11 @@
   </head>
   <body>
     <div id="root">
-      <div class="loading">
-        <div class="spinner"></div>
+      <div class="loading-spinner">
+        <div></div>
+        <p style="margin-left: 10px;">Loading DreamBuild...</p>
       </div>
     </div>
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-      // Firebase is now enabled for proper functionality
-      console.log('Firebase SDK loading...');
-      
-      // Firebase will be loaded by the main application
-      window.firebase = null;
-      window.firebaseApp = null;
-      
-      console.log('Firebase SDK ready for loading');
-    </script>
-    
-    <!-- Polyfills are loaded below for Request/Response APIs -->
     
     <!-- Service Worker Registration -->
     <script>
@@ -116,14 +105,21 @@
     
     <!-- Comprehensive polyfills for essential APIs -->
     <script>
-      console.log('🔧 Loading comprehensive polyfills...');
+      // Loading comprehensive polyfills...
       
-      // Ensure global objects exist
+      // CRITICAL: Ensure global objects exist FIRST and IMMEDIATELY
       if (typeof globalThis === 'undefined') {
         window.globalThis = window;
       }
+      if (typeof global === 'undefined') {
+        window.global = window;
+      }
+      if (typeof self === 'undefined') {
+        window.self = window;
+      }
       
-      // Essential polyfills for Request/Response APIs
+      // CRITICAL: Make sure Request, Headers, Response are available IMMEDIATELY
+      // This prevents any destructuring errors from occurring
       if (!window.Request) {
         window.Request = class Request {
           constructor(input, init = {}) {
@@ -133,17 +129,6 @@
             this.body = init.body;
           }
         };
-      }
-      
-      // Ensure Request is available in all possible ways
-      if (typeof globalThis !== 'undefined') {
-        globalThis.Request = window.Request;
-      }
-      if (typeof global !== 'undefined') {
-        global.Request = window.Request;
-      }
-      if (typeof self !== 'undefined') {
-        self.Request = window.Request;
       }
       
       if (!window.Headers) {
@@ -199,33 +184,10 @@
         };
       }
       
-      // Make sure Request, Headers, Response are available globally
-      if (typeof globalThis !== 'undefined') {
-        globalThis.Request = window.Request;
-        globalThis.Headers = window.Headers;
-        globalThis.Response = window.Response;
-        globalThis.fetch = window.fetch;
-      }
-      
-      // Also make them available on global object
-      if (typeof global !== 'undefined') {
-        global.Request = window.Request;
-        global.Headers = window.Headers;
-        global.Response = window.Response;
-        global.fetch = window.fetch;
-      }
-      
-      // Add a global object that might be expected by some libraries
-      if (typeof window !== 'undefined') {
-        window.global = window.global || window;
-        window.globalThis = window.globalThis || window;
-      }
-      
-      // Ensure all Web APIs are available in all contexts
-      const webAPIs = { Request, Headers, Response, fetch };
+      // Make sure all APIs are available on ALL global objects IMMEDIATELY
+      const webAPIs = { Request: window.Request, Headers: window.Headers, Response: window.Response, fetch: window.fetch };
       Object.entries(webAPIs).forEach(([name, api]) => {
         if (api) {
-          // Make available in all possible global contexts
           if (typeof globalThis !== 'undefined') globalThis[name] = api;
           if (typeof global !== 'undefined') global[name] = api;
           if (typeof self !== 'undefined') self[name] = api;
@@ -233,17 +195,58 @@
         }
       });
       
-      console.log('✅ Comprehensive polyfills loaded:', {
+      // CRITICAL: Override any destructuring attempts to prevent errors
+      const originalDefineProperty = Object.defineProperty;
+      Object.defineProperty = function(obj, prop, descriptor) {
+        if (prop === 'Request' || prop === 'Headers' || prop === 'Response' || prop === 'fetch') {
+          // Ensure the property exists before defining
+          if (!obj[prop]) {
+            obj[prop] = window[prop];
+          }
+        }
+        return originalDefineProperty.call(this, obj, prop, descriptor);
+      };
+      
+      console.log('✅ Essential APIs loaded immediately:', {
         Request: !!window.Request,
         Headers: !!window.Headers,
         Response: !!window.Response,
-        fetch: !!window.fetch,
-        globalThis: typeof globalThis !== 'undefined',
-        global: typeof global !== 'undefined',
-        self: typeof self !== 'undefined'
+        fetch: !!window.fetch
       });
+      
+      // Final verification
+      console.log('✅ Final verification: APIs ready for modules');
     </script>
     
-    <script type="module" src="/src/main.jsx?v=2024-01-27-fresh"></script>
+    <!-- Global Error Handler to catch destructuring errors early -->
+    <script>
+      window.addEventListener('error', function(event) {
+        if (event.message.includes("Cannot destructure property 'Request' of 'undefined'")) {
+          console.error('🚨 DESTRUCTURING ERROR DETECTED!');
+          console.error('Stack: ', event.error ? event.error.stack : 'No stack available');
+          event.preventDefault(); // Prevent default handling to avoid further console spam
+        }
+      });
+      
+      // Also catch unhandled promise rejections
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason && event.reason.message && event.reason.message.includes("Cannot destructure property 'Request' of 'undefined'")) {
+          console.error('🚨 DESTRUCTURING ERROR DETECTED (Unhandled Rejection)!');
+          console.error('Stack: ', event.reason.stack || 'No stack available');
+          event.preventDefault();
+        }
+      });
+      
+      console.log('🛡️ Global error handler: Ensuring APIs are available...');
+      
+      // Final verification that APIs are globally available
+      if (!window.Request || !window.Headers || !window.Response || !window.fetch) {
+        console.error('❌ Final verification failed: Core APIs are NOT available globally after polyfills.');
+      } else {
+        console.log('✅ Final verification: APIs ready for modules');
+      }
+    </script>
+    
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

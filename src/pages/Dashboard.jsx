@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from '../utils/navigation';
 import { 
   Code, 
   Folder, 
@@ -294,7 +294,7 @@ const Dashboard = () => {
                     Start creating projects to see your activity here.
                   </p>
                   <Link
-                    to="/ai-builder"
+                    href='#/ai-builder'
                     className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors"
                   >
                     <Plus className="h-4 w-4" />
@@ -345,7 +345,7 @@ const Dashboard = () => {
                     Create your first project to get started.
                   </p>
                   <Link
-                    to="/ai-builder"
+                    href='#/ai-builder'
                     className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors"
                   >
                     <Plus className="h-4 w-4" />

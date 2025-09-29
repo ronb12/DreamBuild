@@ -10,7 +10,7 @@ class RealTimeWebBrowsingService {
     this.requestTimeout = 30000 // 30 seconds
     this.userAgent = 'DreamBuild-WebBrowser/1.0 (AI Development Platform)'
     
-    console.log('🌐 Real-Time Web Browsing Service initialized')
+    // Real-Time Web Browsing Service initialized
   }
 
   // Browse a URL and extract content (like ChatGPT)

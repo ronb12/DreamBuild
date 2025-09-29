@@ -9,7 +9,7 @@ class GitHubTemplateService {
     this.cacheExpiry = 30 * 60 * 1000 // 30 minutes
     this.isLoading = false
     
-    console.log('🔗 GitHub Template Service initialized')
+    // GitHub Template Service initialized
   }
 
   // Get trending repositories with templates

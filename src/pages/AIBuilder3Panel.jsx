@@ -273,294 +273,263 @@ This code implements the functionality you requested with proper error handling 
   
   // Render the advanced AI Builder
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
+    <div className="h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 text-white overflow-hidden">
       {/* Top Menu Bar */}
-      <div className="h-12 bg-slate-800/90 backdrop-blur-sm border-b border-slate-700 flex items-center justify-between px-4">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+      <div className="h-14 bg-gray-800/95 backdrop-blur-md border-b border-gray-700/50 flex items-center justify-between px-6 shadow-lg">
+        <div className="flex items-center space-x-6">
+          {/* Window Controls */}
+          <div className="flex items-center space-x-2 mr-4">
+            <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full shadow-sm"></div>
+            <div className="w-3 h-3 bg-green-500 rounded-full shadow-sm"></div>
           </div>
-          <div className="flex items-center space-x-6 text-sm">
-            <button className="hover:bg-slate-700 px-3 py-1 rounded">File</button>
-            <button className="hover:bg-slate-700 px-3 py-1 rounded">Edit</button>
-            <button className="hover:bg-slate-700 px-3 py-1 rounded">View</button>
-            <button className="hover:bg-slate-700 px-3 py-1 rounded">Go</button>
-            <button className="hover:bg-slate-700 px-3 py-1 rounded">Run</button>
-            <button className="hover:bg-slate-700 px-3 py-1 rounded">Terminal</button>
-            <button className="hover:bg-slate-700 px-3 py-1 rounded">Help</button>
+          
+          {/* Brand */}
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+              <Brain className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              DreamBuild
+            </span>
+          </div>
+          
+          {/* Menu Items */}
+          <div className="flex items-center space-x-1 ml-8">
+            {['File', 'Edit', 'View', 'Go', 'Run', 'Terminal', 'Help'].map((item) => (
+              <button 
+                key={item}
+                className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-md transition-all duration-200"
+              >
+                {item}
+              </button>
+            ))}
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
+        {/* Right Controls */}
+        <div className="flex items-center space-x-3">
           {/* AI Model Selector */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 bg-gray-700/50 rounded-lg px-3 py-2">
             <Brain className="w-4 h-4 text-purple-400" />
             <select 
               value={selectedAIModel} 
               onChange={(e) => setSelectedAIModel(e.target.value)}
-              className="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-sm"
+              className="bg-transparent text-sm text-gray-200 focus:outline-none cursor-pointer"
             >
               {aiModels.map(model => (
-                <option key={model.id} value={model.id}>{model.name}</option>
+                <option key={model.id} value={model.id} className="bg-gray-800">{model.name}</option>
               ))}
             </select>
           </div>
           
-          {/* Voice Control */}
-          <button
-            onClick={handleVoiceToggle}
-            className={`p-2 rounded-lg transition-colors ${
-              isVoiceEnabled ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-700 hover:bg-slate-600'
-            }`}
-          >
-            {isVoiceEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-          </button>
-          
-          {/* Collaboration */}
-          <button
-            onClick={handleCollaborationToggle}
-            className={`p-2 rounded-lg transition-colors ${
-              isCollaborating ? 'bg-blue-600 hover:bg-blue-700' : 'bg-slate-700 hover:bg-slate-600'
-            }`}
-          >
-            <Users className="w-4 h-4" />
-          </button>
-          
-          {/* Performance Monitor */}
-          <button
-            onClick={() => setShowPerformance(!showPerformance)}
-            className={`p-2 rounded-lg transition-colors ${
-              showPerformance ? 'bg-orange-600 hover:bg-orange-700' : 'bg-slate-700 hover:bg-slate-600'
-            }`}
-          >
-            <Activity className="w-4 h-4" />
-          </button>
+          {/* Control Buttons */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleVoiceToggle}
+              className={`p-2.5 rounded-lg transition-all duration-200 ${
+                isVoiceEnabled 
+                  ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30 shadow-lg shadow-green-500/20' 
+                  : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'
+              }`}
+              title="Voice Control"
+            >
+              {isVoiceEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+            </button>
+            
+            <button
+              onClick={handleCollaborationToggle}
+              className={`p-2.5 rounded-lg transition-all duration-200 ${
+                isCollaborating 
+                  ? 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 shadow-lg shadow-blue-500/20' 
+                  : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'
+              }`}
+              title="Collaboration"
+            >
+              <Users className="w-4 h-4" />
+            </button>
+            
+            <button
+              onClick={() => setShowPerformance(!showPerformance)}
+              className={`p-2.5 rounded-lg transition-all duration-200 ${
+                showPerformance 
+                  ? 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 shadow-lg shadow-orange-500/20' 
+                  : 'text-gray-400 hover:text-gray-300 hover:bg-gray-700/50'
+              }`}
+              title="Performance Monitor"
+            >
+              <Activity className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex h-[calc(100vh-3rem)]">
-        {/* Left Sidebar - File Explorer */}
-        {showFileExplorer && (
-          <motion.div 
-            initial={{ width: 0 }}
-            animate={{ width: 280 }}
-            className="bg-slate-800/50 border-r border-slate-700 flex flex-col"
-          >
-            <div className="p-4 border-b border-slate-700">
-              <h3 className="text-sm font-semibold text-slate-300 mb-3">Explorer</h3>
-              <div className="space-y-1">
-                <div className="flex items-center space-x-2 text-sm text-slate-400 hover:text-white cursor-pointer">
-                  <FolderOpen className="w-4 h-4" />
-                  <span>src</span>
+      {/* Main Content Area - 3 Panel Layout */}
+      <div className="flex h-[calc(100vh-3.5rem)]">
+        {/* Left Panel - File Manager */}
+        <div className="w-80 bg-gray-800/40 backdrop-blur-sm border-r border-gray-700/50 flex flex-col shadow-xl">
+          {/* File Manager Header */}
+          <div className="p-5 border-b border-gray-700/50 bg-gray-800/60">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-gray-200 flex items-center space-x-2">
+                <FolderOpen className="w-4 h-4 text-blue-400" />
+                <span>File Manager</span>
+              </h3>
+              <div className="flex items-center space-x-2">
+                <button className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded">
+                  <Plus className="w-4 h-4" />
+                </button>
+                <button className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded">
+                  <Folder className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Search files..." 
+                className="w-full pl-10 pr-4 py-2 bg-gray-700/50 border border-gray-600/50 rounded-lg text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50"
+              />
+            </div>
+          </div>
+          
+          {/* File Tree */}
+          <div className="flex-1 p-4 space-y-1 overflow-y-auto">
+            <div className="space-y-1">
+              <div className="flex items-center space-x-2 text-sm text-gray-300 hover:text-white hover:bg-gray-700/50 p-2 rounded-lg cursor-pointer transition-all duration-200">
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+                <FolderOpen className="w-4 h-4 text-blue-400" />
+                <span className="font-medium">src</span>
+              </div>
+              <div className="ml-6 space-y-1">
+                <div className="flex items-center space-x-2 text-sm text-white hover:bg-blue-500/20 p-2 rounded-lg cursor-pointer transition-all duration-200 bg-blue-500/10 border border-blue-500/20">
+                  <FileCode className="w-4 h-4 text-blue-400" />
+                  <span className="font-medium">App.jsx</span>
+                  <div className="ml-auto w-2 h-2 bg-blue-400 rounded-full"></div>
                 </div>
-                <div className="ml-4 space-y-1">
-                  <div className="flex items-center space-x-2 text-sm text-white hover:bg-slate-700 p-1 rounded cursor-pointer">
+                <div className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700/50 p-2 rounded-lg cursor-pointer transition-all duration-200">
+                  <ChevronRight className="w-4 h-4" />
+                  <Folder className="w-4 h-4 text-yellow-400" />
+                  <span>components</span>
+                </div>
+                <div className="ml-6 space-y-1">
+                  <div className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700/50 p-2 rounded-lg cursor-pointer transition-all duration-200">
                     <FileCode className="w-4 h-4 text-blue-400" />
-                    <span>App.jsx</span>
+                    <span>Header.jsx</span>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-slate-400 hover:bg-slate-700 p-1 rounded cursor-pointer">
-                    <Folder className="w-4 h-4" />
-                    <span>components</span>
+                  <div className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700/50 p-2 rounded-lg cursor-pointer transition-all duration-200">
+                    <FileCode className="w-4 h-4 text-blue-400" />
+                    <span>Footer.jsx</span>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 text-sm text-slate-400 hover:text-white cursor-pointer">
-                  <File className="w-4 h-4" />
-                  <span>package.json</span>
-                </div>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700/50 p-2 rounded-lg cursor-pointer transition-all duration-200">
+                <File className="w-4 h-4 text-green-400" />
+                <span>package.json</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700/50 p-2 rounded-lg cursor-pointer transition-all duration-200">
+                <FileText className="w-4 h-4 text-orange-400" />
+                <span>README.md</span>
               </div>
             </div>
-            
-            {/* Git Status */}
-            <div className="p-4 border-b border-slate-700">
-              <h3 className="text-sm font-semibold text-slate-300 mb-3">Source Control</h3>
-              <div className="flex items-center space-x-2 text-sm">
-                <div className={`w-2 h-2 rounded-full ${
-                  gitStatus === 'clean' ? 'bg-green-500' : 
-                  gitStatus === 'modified' ? 'bg-yellow-500' : 
-                  gitStatus === 'staged' ? 'bg-blue-500' : 'bg-red-500'
-                }`}></div>
-                <span className="text-slate-400">{gitStatus}</span>
-              </div>
+          </div>
+          
+          {/* Git Status */}
+          <div className="p-4 border-t border-gray-700/50 bg-gray-800/40">
+            <h3 className="text-sm font-bold text-gray-200 flex items-center space-x-2 mb-3">
+              <GitBranch className="w-4 h-4 text-green-400" />
+              <span>Source Control</span>
+            </h3>
+            <div className="flex items-center space-x-3 text-sm">
+              <div className={`w-3 h-3 rounded-full shadow-sm ${
+                gitStatus === 'clean' ? 'bg-green-500' : 
+                gitStatus === 'modified' ? 'bg-yellow-500' : 
+                gitStatus === 'staged' ? 'bg-blue-500' : 'bg-red-500'
+              }`}></div>
+              <span className="text-gray-300 capitalize font-medium">{gitStatus}</span>
+              <span className="text-gray-500 text-xs">• 2 changes</span>
             </div>
-            
-            {/* AI Models */}
-            <div className="p-4">
-              <h3 className="text-sm font-semibold text-slate-300 mb-3">AI Models</h3>
-              <div className="space-y-2">
-                {aiModels.map(model => {
-                  const Icon = model.icon
-                  return (
-                    <div key={model.id} className="flex items-center space-x-2 text-sm">
-                      <Icon className={`w-4 h-4 ${model.color}`} />
-                      <span className="text-slate-400">{model.name}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </motion.div>
-        )}
+          </div>
+        </div>
 
-        {/* Center Area - Editor */}
-        <div className="flex-1 flex flex-col">
-          {/* Tab Bar */}
-          <div className="h-10 bg-slate-800/70 border-b border-slate-700 flex items-center">
-            <div className="flex space-x-1 px-4">
-              <button
-                onClick={() => setActiveTab('editor')}
-                className={`px-4 py-2 text-sm rounded-t-lg transition-colors ${
-                  activeTab === 'editor' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Code className="w-4 h-4 inline mr-2" />
-                Editor
+        {/* Center Panel - Code Editor */}
+        <div className="flex-1 flex flex-col bg-gray-900/50">
+          {/* Editor Header */}
+          <div className="h-12 bg-gray-800/60 backdrop-blur-sm border-b border-gray-700/50 flex items-center px-4 shadow-sm">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <FileCode className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-bold text-gray-200">App.jsx</span>
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+              </div>
+              <div className="flex items-center space-x-2 text-xs text-gray-500">
+                <span>JavaScript</span>
+                <span>•</span>
+                <span>React</span>
+                <span>•</span>
+                <span>UTF-8</span>
+              </div>
+            </div>
+            
+            <div className="ml-auto flex items-center space-x-2">
+              <button className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded">
+                <Split className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => setActiveTab('preview')}
-                className={`px-4 py-2 text-sm rounded-t-lg transition-colors ${
-                  activeTab === 'preview' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Eye className="w-4 h-4 inline mr-2" />
-                Preview
-              </button>
-              <button
-                onClick={() => setActiveTab('terminal')}
-                className={`px-4 py-2 text-sm rounded-t-lg transition-colors ${
-                  activeTab === 'terminal' ? 'bg-slate-700 text-white' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Terminal className="w-4 h-4 inline mr-2" />
-                Terminal
+              <button className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded">
+                <MoreHorizontal className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Editor Area */}
-          <div className="flex-1 flex">
-            {/* Code Editor */}
-            <div className="flex-1 bg-slate-900">
-              <div className="h-full p-4">
-                <textarea
-                  ref={codeEditorRef}
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  className="w-full h-full bg-transparent text-white font-mono text-sm resize-none outline-none"
-                  placeholder="Start coding with AI assistance..."
-                  style={{ fontSize: `${fontSize}px` }}
-                />
-              </div>
+          {/* Code Editor */}
+          <div className="flex-1 bg-gray-900/80 backdrop-blur-sm p-6">
+            <div className="h-full bg-gray-800/50 rounded-xl border border-gray-700/50 shadow-xl overflow-hidden">
+              <textarea
+                ref={codeEditorRef}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className="w-full h-full bg-transparent text-gray-100 font-mono text-sm resize-none outline-none p-6 leading-relaxed"
+                placeholder="// Start coding with AI assistance...&#10;// Try voice commands like 'create component' or 'add state'&#10;// The AI assistant on the right can help generate code"
+                style={{ fontSize: `${fontSize}px` }}
+              />
             </div>
-
-            {/* AI Chat Panel */}
-            {showAIPanel && (
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: 350 }}
-                className="bg-slate-800/50 border-l border-slate-700 flex flex-col"
-              >
-                <div className="p-4 border-b border-slate-700">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-slate-300">AI Assistant</h3>
-                    <button
-                      onClick={() => setShowAIPanel(false)}
-                      className="text-slate-400 hover:text-white"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {aiChatHistory.map((message, index) => (
-                    <div key={index} className={`${message.type === 'user' ? 'text-right' : 'text-left'}`}>
-                      <div className={`inline-block p-3 rounded-lg max-w-xs ${
-                        message.type === 'user' 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-slate-700 text-slate-300'
-                      }`}>
-                        <div className="flex items-center space-x-2 mb-2">
-                          {message.type === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                          <span className="text-xs font-semibold">
-                            {message.type === 'user' ? 'You' : 'AI Assistant'}
-                          </span>
-                        </div>
-                        <p className="text-sm">{message.message}</p>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {isGenerating && (
-                    <div className="text-left">
-                      <div className="inline-block p-3 rounded-lg bg-slate-700 text-slate-300">
-                        <div className="flex items-center space-x-2">
-                          <Bot className="w-4 h-4" />
-                          <span className="text-xs font-semibold">AI Assistant</span>
-                        </div>
-                        <div className="flex items-center space-x-1 mt-2">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="p-4 border-t border-slate-700">
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      placeholder="Ask AI to generate code..."
-                      className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          handleAIGenerate(e.target.value)
-                          e.target.value = ''
-                        }
-                      }}
-                    />
-                    <button
-                      onClick={() => {
-                        const input = document.querySelector('input[placeholder="Ask AI to generate code..."]')
-                        if (input.value) {
-                          handleAIGenerate(input.value)
-                          input.value = ''
-                        }
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
-                    >
-                      <Send className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
           </div>
 
-          {/* Bottom Panel - Terminal */}
+          {/* Bottom Terminal */}
           {showTerminal && (
             <motion.div 
               initial={{ height: 0 }}
               animate={{ height: 200 }}
-              className="bg-slate-900 border-t border-slate-700 flex flex-col"
+              className="bg-gray-800/60 backdrop-blur-sm border-t border-gray-700/50 flex flex-col shadow-xl"
             >
-              <div className="h-8 bg-slate-800 border-b border-slate-700 flex items-center px-4">
-                <Terminal className="w-4 h-4 text-green-400 mr-2" />
-                <span className="text-sm text-slate-300">Terminal</span>
+              <div className="h-10 bg-gray-800/80 border-b border-gray-700/50 flex items-center px-4">
+                <div className="flex items-center space-x-3">
+                  <Terminal className="w-4 h-4 text-green-400" />
+                  <span className="text-sm font-bold text-gray-200">Terminal</span>
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                </div>
+                <div className="ml-auto flex items-center space-x-2">
+                  <button className="p-1 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded">
+                    <Minimize2 className="w-4 h-4" />
+                  </button>
+                  <button className="p-1 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-              <div className="flex-1 p-4 overflow-y-auto">
-                <div className="space-y-1">
+              <div className="flex-1 p-4 overflow-y-auto bg-gray-900/50">
+                <div className="space-y-2">
                   {terminalOutput.map((output, index) => (
-                    <div key={index} className={`text-sm font-mono ${
+                    <div key={index} className={`text-sm font-mono flex items-center space-x-2 ${
                       output.type === 'error' ? 'text-red-400' :
                       output.type === 'success' ? 'text-green-400' :
-                      output.type === 'warning' ? 'text-yellow-400' : 'text-slate-300'
+                      output.type === 'warning' ? 'text-yellow-400' : 'text-gray-300'
                     }`}>
-                      {output.message}
+                      <span className="text-gray-500 text-xs">$</span>
+                      <span>{output.message}</span>
                     </div>
                   ))}
                 </div>
@@ -568,19 +537,169 @@ This code implements the functionality you requested with proper error handling 
             </motion.div>
           )}
         </div>
+
+        {/* Right Panel - AI Response & Prompt */}
+        <div className="w-96 bg-gray-800/60 backdrop-blur-sm border-l border-gray-700/50 flex flex-col shadow-xl">
+          {/* AI Panel Header */}
+          <div className="p-5 border-b border-gray-700/50 bg-gray-800/80">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                  <Bot className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-200">AI Assistant</h3>
+                  <p className="text-xs text-gray-400">Powered by {aiModels.find(m => m.id === selectedAIModel)?.name}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded">
+                  <Settings className="w-4 h-4" />
+                </button>
+                <button className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-700/50 rounded">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* AI Model Selector */}
+          <div className="p-4 border-b border-gray-700/50 bg-gray-800/40">
+            <h4 className="text-xs font-bold text-gray-300 mb-2">AI Model</h4>
+            <select 
+              value={selectedAIModel} 
+              onChange={(e) => setSelectedAIModel(e.target.value)}
+              className="w-full bg-gray-700/50 border border-gray-600/50 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            >
+              {aiModels.map(model => (
+                <option key={model.id} value={model.id} className="bg-gray-800">{model.name}</option>
+              ))}
+            </select>
+          </div>
+          
+          {/* AI Response Area */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {aiChatHistory.length === 0 && (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-8 h-8 text-purple-400" />
+                </div>
+                <h4 className="text-sm font-medium text-gray-300 mb-2">AI Assistant Ready</h4>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Ask me to generate code, explain concepts, or help debug issues. 
+                  I can help you build amazing applications!
+                </p>
+              </div>
+            )}
+            
+            {aiChatHistory.map((message, index) => (
+              <div key={index} className={`${message.type === 'user' ? 'text-right' : 'text-left'}`}>
+                <div className={`inline-block max-w-[90%] ${
+                  message.type === 'user' 
+                    ? 'bg-blue-500 text-white' 
+                    : 'bg-gray-700/80 text-gray-200'
+                } rounded-2xl p-4 shadow-lg`}>
+                  <div className="flex items-center space-x-2 mb-2">
+                    {message.type === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                    <span className="text-xs font-semibold">
+                      {message.type === 'user' ? 'You' : 'AI Assistant'}
+                    </span>
+                  </div>
+                  <p className="text-sm leading-relaxed">{message.message}</p>
+                </div>
+              </div>
+            ))}
+            
+            {isGenerating && (
+              <div className="text-left">
+                <div className="inline-block bg-gray-700/80 text-gray-200 rounded-2xl p-4 shadow-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Bot className="w-4 h-4" />
+                    <span className="text-xs font-semibold">AI Assistant</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Prompt Input */}
+          <div className="p-4 border-t border-gray-700/50 bg-gray-800/40">
+            <div className="space-y-3">
+              <div className="relative">
+                <textarea
+                  placeholder="Ask AI to generate code, explain concepts, or help debug..."
+                  className="w-full bg-gray-700/50 border border-gray-600/50 rounded-xl px-4 py-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none"
+                  rows={3}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      handleAIGenerate(e.target.value)
+                      e.target.value = ''
+                    }
+                  }}
+                />
+                <button className="absolute right-3 bottom-3 p-1 text-gray-400 hover:text-gray-200">
+                  <Mic className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => {
+                    const input = document.querySelector('textarea[placeholder*="Ask AI to generate code"]')
+                    if (input.value) {
+                      handleAIGenerate(input.value)
+                      input.value = ''
+                    }
+                  }}
+                  className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-2.5 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+                >
+                  <Send className="w-4 h-4" />
+                  <span className="text-sm font-medium">Send</span>
+                </button>
+                <button className="px-4 py-2.5 bg-gray-700/50 hover:bg-gray-700 text-gray-300 rounded-xl transition-all duration-200">
+                  <RefreshCw className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Status Bar */}
-      <div className="h-8 bg-slate-800 border-t border-slate-700 flex items-center justify-between px-4 text-xs text-slate-400">
-        <div className="flex items-center space-x-4">
-          <span>Line 1, Column 1</span>
-          <span>JavaScript</span>
-          <span>UTF-8</span>
+      <div className="h-10 bg-gray-800/95 backdrop-blur-md border-t border-gray-700/50 flex items-center justify-between px-6 text-xs text-gray-400 shadow-lg">
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            <span className="text-gray-300 font-medium">Ready</span>
+          </div>
+          <div className="flex items-center space-x-4 text-gray-500">
+            <span>Line 1, Col 1</span>
+            <span>•</span>
+            <span>JavaScript</span>
+            <span>•</span>
+            <span>UTF-8</span>
+          </div>
         </div>
-        <div className="flex items-center space-x-4">
-          <span>AI: {selectedAIModel}</span>
-          <span>Voice: {isVoiceEnabled ? 'On' : 'Off'}</span>
-          <span>Collaboration: {isCollaborating ? 'On' : 'Off'}</span>
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
+            <Brain className="w-4 h-4 text-purple-400" />
+            <span className="text-gray-300">{aiModels.find(m => m.id === selectedAIModel)?.name}</span>
+          </div>
+          <div className="flex items-center space-x-4 text-gray-500">
+            <div className="flex items-center space-x-1">
+              <Mic className="w-3 h-3" />
+              <span>{isVoiceEnabled ? 'On' : 'Off'}</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Users className="w-3 h-3" />
+              <span>{isCollaborating ? 'On' : 'Off'}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

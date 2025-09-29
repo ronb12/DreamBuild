@@ -372,7 +372,6 @@ const SimpleAdvancedFileManager = ({
                   <Icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium truncate group-hover:text-foreground transition-colors">{file.name}</div>
-                    <div className="text-xs text-muted-foreground truncate">{file.path}</div>
                   </div>
                 </motion.div>
               );

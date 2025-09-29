@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from '../utils/navigation';
 import FileManager from './FileManager'
 import CodeEditor from './CodeEditor'
 import Preview from './Preview'
@@ -147,7 +147,7 @@ const WindowAwareAIBuilder = ({ windowId, project, activeTab, onProjectUpdate, o
             </div>
           </div>
           <Link
-            to="/templates"
+            href='#/templates'
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-primary-light text-primary-foreground rounded-xl hover:from-primary-dark hover:to-primary transition-all duration-300 text-sm font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
             title="Browse Templates"
           >

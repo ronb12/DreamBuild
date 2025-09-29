@@ -173,7 +173,7 @@ class LocalAIService {
     
     if (this.isProduction && !this.isLocalhost) {
       // In production, don't try to connect to local AI to avoid CORS errors
-      console.log('🌐 Production environment detected - skipping local AI detection')
+      // Production environment detected - skipping local AI detection
       this.isHealthy = false
       return
     }

@@ -16,8 +16,6 @@ class GitIntegrationService {
   async initialize() {
     if (this.isInitialized) return;
     
-    console.log('🔧 Initializing Git Integration Service...');
-    
     try {
       // Simulate Git repository initialization
       this.repository = {

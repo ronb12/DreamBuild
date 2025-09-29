@@ -13,7 +13,7 @@ class LanguageUnderstandingService {
     this.initializeGrammarRules()
     this.initializeIntentPatterns()
     
-    console.log('🧠 Language Understanding Service initialized')
+    // Language Understanding Service initialized
   }
 
   // Initialize comprehensive dictionary

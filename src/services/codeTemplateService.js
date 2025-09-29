@@ -549,7 +549,7 @@ export default AppProvider;`
   getReactPageTemplate() {
     return {
       'Page.jsx': `import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from '../utils/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Share, Heart, Bookmark } from 'lucide-react';
 import './Page.css';

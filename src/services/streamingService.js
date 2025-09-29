@@ -10,7 +10,7 @@ class StreamingService {
     this.paused = false
     this.aborted = false
     
-    console.log('🌊 Streaming Service initialized')
+    // Streaming Service initialized
   }
 
   // Start streaming a response

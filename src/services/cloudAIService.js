@@ -88,7 +88,7 @@ class CloudAIService {
       }
     }
     
-    console.log('☁️ Cloud AI Service initialized with open source models!')
+    // Cloud AI Service initialized with open source models
   }
 
   // Get available models

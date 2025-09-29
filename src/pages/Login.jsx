@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from '../utils/navigation';
 import { motion } from 'framer-motion'
 import { Github, ArrowRight, Loader2 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'

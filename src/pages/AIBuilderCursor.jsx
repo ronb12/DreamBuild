@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Code, 
@@ -138,6 +138,16 @@ export default App`)
   ])
   const [newMessage, setNewMessage] = useState('')
 
+  // Error handling
+  useEffect(() => {
+    const handleError = (error) => {
+      console.error('AI Builder Error:', error);
+    };
+    
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
   const runCode = async () => {
     setIsRunning(true)
     setOutput('Running code...\n')
@@ -240,6 +250,7 @@ export default App`)
             )}
             <button 
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              data-action="toggle-sidebar"
               className="p-1 hover:bg-[#3e3e42] rounded"
             >
               <Sidebar className="h-4 w-4" />
@@ -301,6 +312,7 @@ export default App`)
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
+                    data-tab={tab.id}
                     className={`flex items-center space-x-2 px-4 py-2 text-sm border-r border-[#3e3e42] hover:bg-[#2a2d2e] ${
                       tab.active ? 'bg-[#1e1e1e] text-white' : 'text-[#cccccc]'
                     }`}

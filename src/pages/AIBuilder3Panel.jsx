@@ -11,6 +11,7 @@ import {
   Terminal, 
   FileText, 
   Folder,
+  FolderPlus,
   Brain,
   Sparkles,
   Plus,
@@ -207,75 +208,104 @@ export default App`)
   ]
 
   return (
-    <div className="min-h-screen bg-[#1e1e1e] text-[#d4d4d4] flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-100 flex flex-col">
       {/* Top Menu Bar */}
-      <div className="h-8 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-4 text-xs mt-16">
-        <div className="flex items-center space-x-4">
-          <span className="font-semibold">DreamBuild AI Builder</span>
+      <div className="h-10 bg-gradient-to-r from-slate-800 to-slate-700 border-b border-slate-600 flex items-center px-6 text-sm mt-16 shadow-lg">
+        <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
-            <span>File</span>
-            <span>Edit</span>
-            <span>View</span>
-            <span>Go</span>
-            <span>Run</span>
-            <span>Terminal</span>
-            <span>Help</span>
+            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+            <span className="font-bold text-blue-300">DreamBuild AI Builder</span>
+          </div>
+          <div className="flex items-center space-x-4 text-slate-300">
+            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">File</button>
+            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Edit</button>
+            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">View</button>
+            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Go</button>
+            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Run</button>
+            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Terminal</button>
+            <button className="hover:text-white hover:bg-slate-600 px-2 py-1 rounded transition-colors">Help</button>
           </div>
         </div>
         <div className="flex-1"></div>
-        <div className="flex items-center space-x-2">
-          <Circle className="h-3 w-3 text-red-500" />
-          <Circle className="h-3 w-3 text-yellow-500" />
-          <Circle className="h-3 w-3 text-green-500" />
+        <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 bg-slate-700 px-3 py-1 rounded-full">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-xs text-green-300">AI Ready</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Circle className="h-3 w-3 text-red-400 hover:text-red-300 cursor-pointer transition-colors" />
+            <Circle className="h-3 w-3 text-yellow-400 hover:text-yellow-300 cursor-pointer transition-colors" />
+            <Circle className="h-3 w-3 text-green-400 hover:text-green-300 cursor-pointer transition-colors" />
+          </div>
         </div>
       </div>
 
       {/* 3-Panel Layout */}
       <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Panel 1: File Explorer */}
-        <div className={`${sidebarCollapsed ? 'w-12' : 'w-64'} bg-[#252526] border-r border-[#3e3e42] transition-all duration-200 flex-shrink-0`}>
+        <div className={`${sidebarCollapsed ? 'w-12' : 'w-64'} bg-gradient-to-b from-slate-800 to-slate-700 border-r border-slate-600 transition-all duration-300 flex-shrink-0 shadow-lg`}>
           {/* Sidebar Header */}
-          <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-3">
+          <div className="h-12 bg-gradient-to-r from-slate-700 to-slate-600 border-b border-slate-500 flex items-center px-4">
             {!sidebarCollapsed && (
               <div className="flex items-center space-x-2 flex-1">
-                <Search className="h-4 w-4 text-[#8c8c8c]" />
-                <input 
-                  type="text" 
-                  placeholder="Search files..." 
-                  className="bg-transparent text-sm flex-1 outline-none"
-                />
+                <div className="flex items-center space-x-2">
+                  <Folder className="h-4 w-4 text-blue-400" />
+                  <span className="text-sm font-bold text-slate-200">EXPLORER</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-slate-600 rounded-lg px-2 py-1 flex-1">
+                  <Search className="h-3 w-3 text-slate-400" />
+                  <input 
+                    type="text" 
+                    placeholder="Search files..." 
+                    className="bg-transparent text-xs flex-1 outline-none text-slate-300 placeholder-slate-400"
+                  />
+                </div>
               </div>
             )}
             <button 
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               data-action="toggle-sidebar"
-              className="p-1 hover:bg-[#3e3e42] rounded"
+              className="p-2 hover:bg-slate-500 rounded-lg transition-colors"
             >
-              <Sidebar className="h-4 w-4" />
+              <Sidebar className="h-4 w-4 text-slate-300" />
             </button>
           </div>
 
           {/* File Explorer */}
           {!sidebarCollapsed && (
-            <div className="p-2">
+            <div className="p-3">
               <div className="space-y-1">
                 {fileStructure.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-1 py-1 px-2 hover:bg-[#2a2d2e] rounded cursor-pointer">
+                  <div key={index} className="flex items-center space-x-2 py-2 px-3 hover:bg-slate-600 rounded-lg cursor-pointer transition-colors group">
                     {item.type === 'folder' ? (
-                      <ChevronRight className="h-4 w-4 text-[#8c8c8c]" />
+                      <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-300" />
                     ) : (
                       <div className="w-4 h-4"></div>
                     )}
                     {item.type === 'folder' ? (
-                      <Folder className="h-4 w-4 text-[#8c8c8c]" />
+                      <Folder className="h-4 w-4 text-blue-400 group-hover:text-blue-300" />
                     ) : (
-                      <FileText className="h-4 w-4 text-[#8c8c8c]" />
+                      <FileText className="h-4 w-4 text-slate-400 group-hover:text-slate-300" />
                     )}
-                    <span className={`text-sm ${item.active ? 'text-white' : 'text-[#cccccc]'}`}>
+                    <span className={`text-sm font-medium ${item.active ? 'text-white' : 'text-slate-300 group-hover:text-white'}`}>
                       {item.name}
                     </span>
                   </div>
                 ))}
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="mt-4 pt-3 border-t border-slate-600">
+                <div className="space-y-1">
+                  <button className="w-full flex items-center space-x-2 p-2 hover:bg-slate-600 rounded-lg transition-colors text-left">
+                    <Plus className="h-4 w-4 text-green-400" />
+                    <span className="text-sm text-slate-300">New File</span>
+                  </button>
+                  <button className="w-full flex items-center space-x-2 p-2 hover:bg-slate-600 rounded-lg transition-colors text-left">
+                    <FolderPlus className="h-4 w-4 text-blue-400" />
+                    <span className="text-sm text-slate-300">New Folder</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -300,9 +330,9 @@ export default App`)
         </div>
 
         {/* Panel 2: Code Editor */}
-        <div className="flex-1 flex flex-col min-h-0 border-r border-[#3e3e42]">
+        <div className="flex-1 flex flex-col min-h-0 border-r border-slate-600 bg-gradient-to-b from-slate-900 to-slate-800">
           {/* Tab Bar */}
-          <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center">
+          <div className="h-12 bg-gradient-to-r from-slate-700 to-slate-600 border-b border-slate-500 flex items-center shadow-lg">
             <div className="flex items-center">
               {tabs.map((tab) => {
                 const Icon = tab.icon
@@ -311,24 +341,24 @@ export default App`)
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     data-tab={tab.id}
-                    className={`flex items-center space-x-2 px-4 py-2 text-sm border-r border-[#3e3e42] hover:bg-[#2a2d2e] ${
-                      tab.active ? 'bg-[#1e1e1e] text-white' : 'text-[#cccccc]'
+                    className={`flex items-center space-x-2 px-4 py-3 text-sm border-r border-slate-500 hover:bg-slate-500 transition-colors ${
+                      tab.active ? 'bg-slate-800 text-white shadow-inner' : 'text-slate-300 hover:text-white'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
-                    <span>{tab.label}</span>
-                    <X className="h-3 w-3 hover:bg-[#3e3e42] rounded" />
+                    <span className="font-medium">{tab.label}</span>
+                    <X className="h-3 w-3 hover:bg-slate-400 rounded p-0.5" />
                   </button>
                 )
               })}
             </div>
             <div className="flex-1"></div>
-            <div className="flex items-center space-x-2 px-4">
-              <button className="p-1 hover:bg-[#3e3e42] rounded">
-                <Split className="h-4 w-4" />
+            <div className="flex items-center space-x-1 px-4">
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <Split className="h-4 w-4 text-slate-300" />
               </button>
-              <button className="p-1 hover:bg-[#3e3e42] rounded">
-                <MoreHorizontal className="h-4 w-4" />
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <MoreHorizontal className="h-4 w-4 text-slate-300" />
               </button>
             </div>
           </div>
@@ -337,24 +367,36 @@ export default App`)
           <div className="flex-1 flex flex-col min-h-0">
             {activeTab === 'editor' && (
               <div className="flex-1 flex flex-col min-h-0">
-                <div className="flex-1 bg-[#1e1e1e] p-4 min-h-0">
+                <div className="flex-1 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 min-h-0">
                   <textarea
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    className="w-full h-full bg-transparent text-[#d4d4d4] font-mono text-sm resize-none outline-none leading-relaxed"
-                    placeholder="Enter your code here..."
+                    className="w-full h-full bg-transparent text-slate-100 font-mono text-sm resize-none outline-none leading-relaxed"
+                    placeholder="// Start coding here..."
                     style={{ 
                       fontFamily: 'Consolas, Monaco, "Courier New", monospace',
                       minHeight: '400px',
-                      height: '100%'
+                      height: '100%',
+                      lineHeight: '1.6'
                     }}
                   />
                 </div>
-                <div className="h-8 bg-[#2d2d30] border-t border-[#3e3e42] flex items-center px-4 text-xs text-[#8c8c8c]">
-                  <span>Ln 1, Col 1</span>
+                <div className="h-10 bg-gradient-to-r from-slate-700 to-slate-600 border-t border-slate-500 flex items-center px-4 text-xs text-slate-300 shadow-lg">
+                  <div className="flex items-center space-x-4">
+                    <span className="font-medium">Ln 1, Col 1</span>
+                    <span className="text-slate-400">•</span>
+                    <span>Spaces: 2</span>
+                    <span className="text-slate-400">•</span>
+                    <span>UTF-8</span>
+                  </div>
                   <div className="flex-1"></div>
-                  <span>UTF-8</span>
-                  <span className="ml-4">JavaScript React</span>
+                  <div className="flex items-center space-x-4">
+                    <span className="text-green-400 font-medium">JavaScript React</span>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-xs">AI Ready</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -416,48 +458,55 @@ export default App`)
         {/* Panel 3: AI Chat & Terminal */}
         <div className="w-80 bg-[#252526] flex flex-col min-h-0">
           {/* AI Chat Section */}
-          <div className="flex-1 flex flex-col border-b border-[#3e3e42]">
-            <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-4">
-              <Bot className="h-4 w-4 mr-2" />
-              <span className="text-sm font-medium">AI Assistant</span>
+          <div className="flex-1 flex flex-col border-b border-slate-600">
+            <div className="h-12 bg-gradient-to-r from-slate-700 to-slate-600 border-b border-slate-500 flex items-center px-4 shadow-lg">
+              <div className="flex items-center space-x-2">
+                <Bot className="h-5 w-5 text-blue-400" />
+                <span className="text-sm font-bold text-slate-200">AI Assistant</span>
+                <div className="flex items-center space-x-1 ml-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-300">Online</span>
+                </div>
+              </div>
               <div className="flex-1"></div>
               <button 
                 onClick={() => setShowChat(!showChat)}
-                className="p-1 hover:bg-[#3e3e42] rounded"
+                className="p-2 hover:bg-slate-500 rounded-lg transition-colors"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 text-slate-300" />
               </button>
             </div>
             {showChat && (
               <>
-                <div className="flex-1 overflow-auto p-4 space-y-4">
+                <div className="flex-1 overflow-auto p-4 space-y-4 bg-gradient-to-b from-slate-800 to-slate-700">
                   {chatMessages.map((message) => (
                     <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs p-3 rounded-lg ${
+                      <div className={`max-w-xs p-4 rounded-xl shadow-lg ${
                         message.type === 'user' 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-[#2a2d2e] text-[#d4d4d4]'
+                          ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white' 
+                          : 'bg-gradient-to-r from-slate-600 to-slate-500 text-slate-100'
                       }`}>
-                        <p className="text-sm">{message.content}</p>
+                        <p className="text-sm leading-relaxed">{message.content}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="p-4 border-t border-[#3e3e42]">
-                  <div className="flex space-x-2">
+                <div className="p-4 border-t border-slate-500 bg-gradient-to-r from-slate-700 to-slate-600">
+                  <div className="flex space-x-3">
                     <input
                       type="text"
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                       placeholder="Ask AI anything..."
-                      className="flex-1 bg-[#1e1e1e] border border-[#3e3e42] rounded px-3 py-2 text-sm outline-none"
+                      className="flex-1 bg-slate-600 border border-slate-500 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20 transition-all"
                     />
                     <button
                       onClick={sendMessage}
-                      className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      className="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg hover:from-blue-700 hover:to-blue-600 text-sm font-medium shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2"
                     >
                       <Send className="h-4 w-4" />
+                      <span>Send</span>
                     </button>
                   </div>
                 </div>
@@ -467,15 +516,15 @@ export default App`)
 
           {/* Terminal Section */}
           <div className="h-48 flex flex-col flex-shrink-0">
-            <div className="h-8 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-4 flex-shrink-0">
-              <Terminal className="h-4 w-4 mr-2" />
-              <span className="text-sm font-medium">Terminal</span>
+            <div className="h-10 bg-gradient-to-r from-slate-700 to-slate-600 border-b border-slate-500 flex items-center px-4 flex-shrink-0 shadow-lg">
+              <Terminal className="h-4 w-4 mr-2 text-green-400" />
+              <span className="text-sm font-bold text-slate-200">Terminal</span>
               <div className="flex-1"></div>
-              <button className="p-1 hover:bg-[#3e3e42] rounded">
-                <Minimize2 className="h-4 w-4" />
+              <button className="p-2 hover:bg-slate-500 rounded-lg transition-colors">
+                <Minimize2 className="h-4 w-4 text-slate-300" />
               </button>
             </div>
-            <div className="flex-1 bg-black text-green-400 font-mono text-sm overflow-auto p-4 min-h-0">
+            <div className="flex-1 bg-gradient-to-br from-slate-900 via-black to-slate-900 text-green-400 font-mono text-sm overflow-auto p-4 min-h-0 shadow-inner">
               <div className="mb-2">$ npm start</div>
               <div className="mb-2">Starting development server...</div>
               <div className="mb-2">Local: http://localhost:3000</div>
@@ -489,22 +538,25 @@ export default App`)
       </div>
 
       {/* Status Bar */}
-      <div className="h-6 bg-[#007acc] text-white text-xs flex items-center px-4 flex-shrink-0">
-        <div className="flex items-center space-x-4">
-          <span>Ready</span>
-          <span>Ln 1, Col 1</span>
-          <span>Spaces: 2</span>
+      <div className="h-8 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-xs flex items-center px-6 flex-shrink-0 shadow-lg">
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="font-medium">Ready</span>
+          </div>
+          <span className="text-blue-100">Ln 1, Col 1</span>
+          <span className="text-blue-100">Spaces: 2</span>
         </div>
         <div className="flex-1"></div>
-        <div className="flex items-center space-x-4">
-          <span>JavaScript React</span>
-          <span>UTF-8</span>
+        <div className="flex items-center space-x-6">
+          <span className="font-medium">JavaScript React</span>
+          <span className="text-blue-100">UTF-8</span>
           <button 
             onClick={() => setShowChat(!showChat)}
-            className="flex items-center space-x-1 hover:bg-blue-700 px-2 py-1 rounded"
+            className="flex items-center space-x-2 hover:bg-blue-700 px-3 py-1 rounded-lg transition-colors"
           >
-            <Bot className="h-3 w-3" />
-            <span>AI</span>
+            <Bot className="h-4 w-4" />
+            <span className="font-medium">AI Assistant</span>
           </button>
         </div>
       </div>

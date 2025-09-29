@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from './components/SimpleRouter'
 import { Toaster } from 'react-hot-toast'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
@@ -10,7 +10,7 @@ import Footer from './components/Footer'
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'))
-const AIBuilder = lazy(() => import('./pages/AIBuilder'))
+import AIBuilder from './pages/AIBuilderIsolated'
 const Templates = lazy(() => import('./pages/Templates'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Login = lazy(() => import('./pages/Login'))
@@ -71,6 +71,16 @@ function ConditionalMain({ children }) {
 }
 
 function App() {
+  // Fix malformed URLs with double hashes
+  React.useEffect(() => {
+    const currentHash = window.location.hash
+    if (currentHash.includes('#') && currentHash.split('#').length > 2) {
+      // If there's a double hash, redirect to the correct URL
+      const correctHash = currentHash.split('#')[0] + '#' + currentHash.split('#')[1]
+      window.location.replace(correctHash)
+    }
+  }, [])
+
   return (
     <ErrorBoundary>
       <ThemeProvider>
@@ -88,6 +98,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/app" element={<Navigate to="/ai-builder" replace />} />
                         <Route path="/ai-builder" element={<AIBuilder />} />
+                        <Route path="/builder" element={<AIBuilder />} />
                         <Route path="/multi-window" element={<MultiWindowManager />} />
                         <Route path="/templates" element={<Templates />} />
                         <Route path="/dashboard" element={<Dashboard />} />

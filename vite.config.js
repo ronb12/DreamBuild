@@ -24,16 +24,14 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Separate React and core dependencies
+          'react-core': ['react', 'react-dom', 'scheduler'],
           // Main app entry point
           'index': ['src/main.jsx'],
-          // Separate React into its own chunk to ensure it loads first
-          'react-vendor': ['react', 'react-dom', 'scheduler'],
-          'router-vendor': ['react-router-dom'],
           // Other dependencies
           'monaco-editor': ['monaco-editor'],
-          'firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
           'editor-vendor': ['@monaco-editor/react'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
           'utils-vendor': ['axios', 'date-fns', 'clsx', 'tailwind-merge']
         }
       },
@@ -54,19 +52,18 @@ export default defineConfig({
     port: 3000,
     host: true
   },
-  optimizeDeps: {
-    include: [
-      'react', 
-      'react-dom', 
-      'scheduler',
-      'react-router-dom',
-      'monaco-editor', 
-      'firebase/app', 
-      'firebase/firestore', 
-      'firebase/auth'
-    ],
-    force: true
-  },
+        optimizeDeps: {
+          include: [
+            'react',
+            'react-dom',
+            'scheduler',
+            'monaco-editor',
+            'firebase/app',
+            'firebase/firestore',
+            'firebase/auth'
+          ],
+          force: true
+        },
   envPrefix: 'REACT_APP_',
   envDir: '.'
 })

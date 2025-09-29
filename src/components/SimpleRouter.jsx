@@ -87,6 +87,11 @@ export function Routes({ children }) {
     const hash = window.location.hash
     const pathname = window.location.pathname
     
+    // For the root path, always return '/'
+    if (pathname === '/' && (!hash || hash === '#' || hash === '#/')) {
+      return '/'
+    }
+    
     // Only use pathname if it's a specific route like /ai-builder, /templates, etc.
     // and there's no meaningful hash
     if (pathname && pathname !== '/' && (!hash || hash === '#' || hash === '#/')) {
@@ -106,6 +111,12 @@ export function Routes({ children }) {
     const handleHashChange = () => {
       const hash = window.location.hash
       const pathname = window.location.pathname
+      
+      // For the root path, always return '/'
+      if (pathname === '/' && (!hash || hash === '#' || hash === '#/')) {
+        setCurrentPath('/')
+        return
+      }
       
       // Only use pathname if it's a specific route like /ai-builder, /templates, etc.
       // and there's no meaningful hash
@@ -141,8 +152,12 @@ export function Routes({ children }) {
 
   // Find matching route
   const findRoute = (path, routes) => {
+    // Debug logging
+    console.log('🔍 Routing Debug:', { currentPath: path, availableRoutes: routes.map(r => r.path) })
+    
     for (const route of routes) {
       if (route.path === path) {
+        console.log('✅ Route matched:', route.path)
         return route
       }
       // Handle dynamic routes like /apps/:appId

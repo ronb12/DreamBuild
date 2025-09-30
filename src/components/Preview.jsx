@@ -18,24 +18,37 @@ const Preview = () => {
                     files['app.html'] || 
                     files['main.html']
     
+    // Debug: Log what files we're working with
+    console.log('🔍 Preview: Files available:', Object.keys(files))
+    
     // Collect all CSS files
     const cssFiles = Object.keys(files)
       .filter(key => key.endsWith('.css'))
-      .map(key => files[key])
+      .map(key => {
+        console.log(`  📄 Including CSS: ${key} (${files[key]?.length || 0} chars)`)
+        return files[key]
+      })
+      .filter(Boolean)
       .join('\n\n')
+    
+    console.log(`✅ Preview: Bundled ${Object.keys(files).filter(k => k.endsWith('.css')).length} CSS files`)
     
     // Collect all JavaScript files and bundle them
     const jsFiles = Object.keys(files)
       .filter(key => key.endsWith('.js'))
       .map(key => {
         const content = files[key]
+        console.log(`  📄 Including JS: ${key} (${content?.length || 0} chars)`)
         // Remove export statements for inline bundling
         return content
           .replace(/export\s+default\s+/g, '')
           .replace(/export\s+{[^}]+}/g, '')
           .replace(/import\s+.*from\s+['"].*['"]/g, '')
       })
+      .filter(Boolean)
       .join('\n\n')
+    
+    console.log(`✅ Preview: Bundled ${Object.keys(files).filter(k => k.endsWith('.js')).length} JavaScript files`)
     
     // Add initialization code at the end
     const initCode = jsFiles ? `\n\n// Auto-initialize when DOM is ready
@@ -83,23 +96,32 @@ if (document.readyState === 'loading') {
       }
     }
 
+    console.log('🔄 Preview content regenerated')
     return htmlContent
-  }, [currentProject?.files])
+  }, [currentProject?.files, JSON.stringify(Object.keys(currentProject?.files || {}))])
 
   // Update preview when content changes
   useEffect(() => {
+    console.log('🖼️ Preview useEffect triggered')
     if (generatePreviewContent) {
+      console.log('✅ Setting preview content')
       setPreviewContent(generatePreviewContent)
       setError(null)
     } else {
+      console.log('⚠️ No preview content available')
       setPreviewContent('')
     }
   }, [generatePreviewContent])
 
   const handleRefresh = () => {
+    console.log('🔄 Preview refresh clicked')
+    console.log('📁 Current files:', Object.keys(currentProject?.files || {}))
     setIsLoading(true)
     setTimeout(() => {
-      setPreviewContent(generatePreviewContent)
+      // Force regenerate by re-calling the generator
+      const freshContent = generatePreviewContent
+      console.log('✅ Fresh preview content generated')
+      setPreviewContent(freshContent)
       setIsLoading(false)
     }, 500)
   }

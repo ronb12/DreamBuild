@@ -36,6 +36,20 @@ const Preview = () => {
           .replace(/import\s+.*from\s+['"].*['"]/g, '')
       })
       .join('\n\n')
+    
+    // Add initialization code at the end
+    const initCode = jsFiles ? `\n\n// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof initializeApp === 'function') {
+      initializeApp();
+    }
+  });
+} else {
+  if (typeof initializeApp === 'function') {
+    initializeApp();
+  }
+}\n` : ''
 
     if (!htmlFile) return ''
 
@@ -53,7 +67,7 @@ const Preview = () => {
 </head>
 <body>
   ${htmlContent}
-  ${jsFiles ? '<script>' + jsFiles + '</script>' : ''}
+  ${jsFiles ? '<script>' + jsFiles + initCode + '</script>' : ''}
 </body>
 </html>`
     } else {
@@ -62,7 +76,10 @@ const Preview = () => {
         htmlContent = htmlContent.replace('</head>', `<style>${cssFiles}</style></head>`)
       }
       if (jsFiles && !htmlContent.match(/<script[^>]*>[\s\S]*<\/script>/)) {
-        htmlContent = htmlContent.replace('</body>', `<script>${jsFiles}</script></body>`)
+        htmlContent = htmlContent.replace('</body>', `<script>${jsFiles}${initCode}</script></body>`)
+      } else if (jsFiles && htmlContent.includes('<script src="script.js">')) {
+        // Replace external script references with inline bundled code
+        htmlContent = htmlContent.replace(/<script src="script\.js"><\/script>/g, `<script>${jsFiles}${initCode}</script>`)
       }
     }
 

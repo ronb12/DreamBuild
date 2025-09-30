@@ -859,10 +859,6 @@ export default {componentName}`
       <div class="container">
         <div id="content-area">
           <!-- Dynamic content will be rendered here -->
-          <div class="loading-state">
-            <div class="spinner"></div>
-            <p>Loading application...</p>
-          </div>
         </div>
       </div>
     </main>

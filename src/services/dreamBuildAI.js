@@ -3078,11 +3078,23 @@ class TodoUI {
   }
 
   bindEvents() {
-    // Form submission
+    // Form submission with retry logic
+    if (!this.form) {
+      console.warn('⚠️ Form not found, retrying in 100ms...')
+      setTimeout(() => {
+        this.form = document.getElementById('add-todo-form')
+        if (this.form) {
+          this.bindEvents()
+        }
+      }, 100)
+      return
+    }
+    
     this.form.addEventListener('submit', (e) => {
       e.preventDefault()
       this.handleAddTodo()
     })
+    console.log('✅ Form submit event bound')
 
     ${hasFeatures.search ? `
     // Search
@@ -3276,6 +3288,16 @@ let todoApp = null
 
 function initializeApp() {
   console.log('🚀 Starting Todo App with ${features.length} features...')
+  
+  // Ensure form exists before initializing
+  const form = document.getElementById('add-todo-form')
+  if (!form) {
+    console.warn('⚠️ Form not ready, retrying in 200ms...')
+    setTimeout(initializeApp, 200)
+    return
+  }
+  
+  console.log('✅ Form found, initializing managers...')
   const todoManager = new TodoManager()
   const todoUI = new TodoUI(todoManager)
   
@@ -3284,11 +3306,15 @@ function initializeApp() {
   
   console.log('✅ Todo App fully initialized!')
   console.log('📋 Features active:', ${JSON.stringify(features)})
+  todoUI.showNotification('Todo app ready! ✅')
 }
 
-// Auto-initialize
+// Auto-initialize with DOM check
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp)
+} else if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  // DOM already loaded, but wait a bit for iframe to be ready
+  setTimeout(initializeApp, 100)
 } else {
   initializeApp()
 }

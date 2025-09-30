@@ -2804,52 +2804,102 @@ window.StateManager = StateManager`
 
   // Helper methods
   // Generate a comprehensive list of features based on app type and requested count
+  // 🚀 NO LIMITS - User can request ANY number of features (10, 20, 50, 100+)!
   generateComprehensiveFeatures(appType, requestedCount) {
-    // Comprehensive feature sets for each app type
+    // Comprehensive feature sets for each app type (starting features)
     const featureSets = {
       todo: [
         'localStorage', 'darkMode', 'search', 'filter', 'sort',
         'categories', 'priorities', 'dueDates', 'notifications', 'export',
-        'import', 'tags', 'dragDrop', 'keyboard', 'themes'
+        'import', 'tags', 'dragDrop', 'keyboard', 'themes',
+        // Additional features if user requests more:
+        'subtasks', 'recurring', 'reminders', 'colorCoding', 'notes',
+        'attachments', 'collaboration', 'timeTracking', 'statistics', 'backup',
+        'sync', 'templates', 'bulk', 'archive', 'calendar',
+        'voice', 'offline', 'printing', 'sharing', 'customFields'
       ],
       calculator: [
         'scientific', 'history', 'memory', 'keyboard', 'themes',
         'copy', 'clear', 'percentage', 'square', 'squareRoot',
-        'trigonometry', 'logarithm', 'constants', 'unit', 'responsive'
+        'trigonometry', 'logarithm', 'constants', 'unit', 'responsive',
+        'graphing', 'matrices', 'statistics', 'programming', 'financial',
+        'currency', 'time', 'date', 'binary', 'hex',
+        'fractions', 'equations', 'derivatives', 'integrals', 'vectors'
       ],
       game: [
         'score', 'levels', 'sound', 'leaderboard', 'achievements',
         'powerups', 'multiplayer', 'save', 'pause', 'difficulty',
-        'animations', 'particles', 'controls', 'mobile', 'fullscreen'
+        'animations', 'particles', 'controls', 'mobile', 'fullscreen',
+        'inventory', 'quests', 'characters', 'upgrades', 'shop',
+        'replay', 'tutorial', 'hints', 'rewards', 'seasons',
+        'clans', 'chat', 'spectate', 'tournaments', 'rankings'
       ],
       ecommerce: [
         'cart', 'checkout', 'payment', 'search', 'filter',
         'wishlist', 'reviews', 'ratings', 'compare', 'recommendations',
-        'authentication', 'profile', 'orders', 'shipping', 'notifications'
+        'authentication', 'profile', 'orders', 'shipping', 'notifications',
+        'tracking', 'returns', 'coupons', 'loyalty', 'giftCards',
+        'stockAlerts', 'quickView', 'zoom', 'variants', 'bundles',
+        'subscriptions', 'preorder', 'backorder', 'liveChat', 'faq'
       ],
       blog: [
         'editor', 'preview', 'publish', 'categories', 'tags',
         'comments', 'likes', 'share', 'search', 'archive',
-        'authentication', 'profile', 'rss', 'seo', 'analytics'
+        'authentication', 'profile', 'rss', 'seo', 'analytics',
+        'draft', 'schedule', 'revisions', 'media', 'embedding',
+        'readingTime', 'relatedPosts', 'newsletter', 'subscription', 'bookmarks',
+        'mentions', 'reactions', 'polls', 'series', 'markdown'
       ],
       social: [
         'posts', 'comments', 'likes', 'share', 'follow',
         'notifications', 'messages', 'profile', 'feed', 'search',
-        'hashtags', 'mentions', 'media', 'stories', 'groups'
+        'hashtags', 'mentions', 'media', 'stories', 'groups',
+        'events', 'pages', 'polls', 'live', 'watch',
+        'marketplace', 'games', 'friends', 'blocking', 'reporting',
+        'privacy', 'verification', 'trending', 'discover', 'bookmarks'
       ]
     }
     
-    // Get features for this app type, or use generic features
-    const availableFeatures = featureSets[appType] || [
+    // Universal features that work for ANY app type
+    const universalFeatures = [
       'interactive', 'responsive', 'darkMode', 'localStorage', 'search',
       'filter', 'sort', 'export', 'import', 'notifications',
-      'themes', 'keyboard', 'mobile', 'animations', 'validation'
+      'themes', 'keyboard', 'mobile', 'animations', 'validation',
+      'offline', 'sync', 'backup', 'restore', 'settings',
+      'help', 'tutorial', 'shortcuts', 'accessibility', 'i18n',
+      'analytics', 'performance', 'security', 'optimization', 'caching',
+      'compression', 'lazy-loading', 'infinite-scroll', 'pagination', 'breadcrumbs',
+      'tooltips', 'modals', 'alerts', 'toast', 'snackbar',
+      'progress', 'loading', 'skeleton', 'placeholders', 'empty-states',
+      'error-handling', 'retry', 'fallback', 'recovery', 'debugging'
     ]
     
-    // Return up to the requested count, or all available features
-    const featuresToGenerate = availableFeatures.slice(0, Math.min(requestedCount, availableFeatures.length))
+    // Get app-specific features or use universal features
+    let availableFeatures = featureSets[appType] || universalFeatures.slice(0, 30)
     
-    console.log(`📋 Generating ${featuresToGenerate.length} features for ${appType} app`)
+    // 🚀 If user requests MORE features than available, generate additional ones!
+    if (requestedCount > availableFeatures.length) {
+      const additionalNeeded = requestedCount - availableFeatures.length
+      console.log(`🎯 User requested ${requestedCount} features, generating ${additionalNeeded} additional features...`)
+      
+      // Add more universal features
+      const extraFeatures = universalFeatures.filter(f => !availableFeatures.includes(f))
+      availableFeatures = [...availableFeatures, ...extraFeatures]
+      
+      // If STILL need more, generate numbered custom features
+      if (requestedCount > availableFeatures.length) {
+        const stillNeeded = requestedCount - availableFeatures.length
+        for (let i = 1; i <= stillNeeded; i++) {
+          availableFeatures.push(`customFeature${i}`)
+        }
+        console.log(`✨ Generated ${stillNeeded} custom features to reach ${requestedCount} total`)
+      }
+    }
+    
+    // Return exactly the number of features requested
+    const featuresToGenerate = availableFeatures.slice(0, requestedCount)
+    
+    console.log(`📋 Generating ${featuresToGenerate.length} features for ${appType} app (requested: ${requestedCount})`)
     return featuresToGenerate
   }
 

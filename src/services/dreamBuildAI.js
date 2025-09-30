@@ -71,7 +71,11 @@ class DreamBuildAI {
         hr: ['hr', 'human-resources', 'employee', 'payroll', 'benefits', 'recruitment'],
         
         // Entertainment & Gaming
-        game: ['game', 'play', 'fun', 'entertainment', 'puzzle', 'quiz', 'arcade'],
+        game: ['game', 'play', 'fun', 'entertainment', 'puzzle', 'quiz', 'arcade', 
+               'tetris', 'snake', 'pong', 'breakout', 'pacman', 'asteroids', 'galaga',
+               'mario', 'sonic', 'zelda', 'minecraft', 'fortnite', 'chess', 'checkers',
+               'sudoku', 'solitaire', 'mahjong', 'bingo', 'roulette', 'blackjack', 'poker',
+               'flappy', 'shooter', 'platformer', 'runner', 'racing', 'cards', 'dice'],
         casino: ['casino', 'gambling', 'slot', 'poker', 'blackjack', 'roulette'],
         music: ['music', 'player', 'streaming', 'playlist', 'audio', 'sound'],
         video: ['video', 'streaming', 'player', 'youtube', 'netflix', 'media'],
@@ -2063,6 +2067,10 @@ class Enemy {
       intentAnalyzer: (prompt) => {
         const lowerPrompt = prompt.toLowerCase()
         
+        console.log('🎯🎯🎯 INTENT ANALYZER DEBUG 🎯🎯🎯')
+        console.log('   Input prompt:', prompt)
+        console.log('   Lowercase:', lowerPrompt)
+        
         // Analyze app type with improved matching
         let appType = 'web-app'
         let confidence = 0
@@ -2088,17 +2096,25 @@ class Enemy {
           }
         }
         
+        console.log('   After pattern matching - appType:', appType, 'confidence:', confidence)
+        
         // Special handling for common app types
         if (lowerPrompt.includes('todo') || lowerPrompt.includes('task') || lowerPrompt.includes('list')) {
+          console.log('   ✅ SPECIAL DETECTION: TODO app')
           appType = 'todo'
           confidence = 3
         } else if (lowerPrompt.includes('calculator') || lowerPrompt.includes('math') || lowerPrompt.includes('compute')) {
+          console.log('   ✅ SPECIAL DETECTION: CALCULATOR app')
           appType = 'calculator'
           confidence = 3
         } else if (lowerPrompt.includes('game') || lowerPrompt.includes('player') || lowerPrompt.includes('enemy')) {
+          console.log('   ✅✅✅ SPECIAL DETECTION: GAME app ✅✅✅')
           appType = 'game'
           confidence = 3
         }
+        
+        console.log('   🎯 FINAL appType:', appType, 'confidence:', confidence)
+        console.log('🎯🎯🎯 END INTENT ANALYZER 🎯🎯🎯')
         
         // Analyze technology preferences
         let technology = 'vanilla'
@@ -4069,6 +4085,12 @@ if (document.readyState === 'loading') {
   }
 
   generatePageTemplate(appType, technology, features) {
+    console.log('🏗️🏗️🏗️ GENERATE PAGE TEMPLATE DEBUG 🏗️🏗️🏗️')
+    console.log('   appType:', appType)
+    console.log('   technology:', technology)
+    console.log('   features:', features)
+    console.log('🏗️🏗️🏗️ END DEBUG 🏗️🏗️🏗️')
+    
     // For todo apps, generate a comprehensive, feature-rich HTML structure
     if (appType === 'todo') {
       const hasSearch = features.includes('search')

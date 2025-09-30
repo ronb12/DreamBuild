@@ -2119,10 +2119,26 @@ class Enemy {
           }
         }
         
+        // 🆕 DETECT NUMERIC FEATURE REQUESTS (e.g., "with 10 features", "5 features")
+        const numericFeatureMatch = lowerPrompt.match(/(\d+)\s*(features?|capabilities|functionalities)/i)
+        let requestedFeatureCount = 0
+        
+        if (numericFeatureMatch) {
+          requestedFeatureCount = parseInt(numericFeatureMatch[1], 10)
+          console.log(`🔢 User requested ${requestedFeatureCount} features explicitly`)
+          
+          // Generate comprehensive feature list based on app type
+          const comprehensiveFeatures = this.generateComprehensiveFeatures(appType, requestedFeatureCount)
+          features.push(...comprehensiveFeatures)
+          
+          console.log(`✨ Generated ${comprehensiveFeatures.length} features:`, comprehensiveFeatures)
+        }
+        
         return {
           appType,
           technology,
           features,
+          requestedFeatureCount, // Track how many features user explicitly requested
           confidence: Math.min(confidence / 3, 1), // Normalize confidence
           complexity: this.calculateComplexity(features.length, appType),
           matches: bestMatches
@@ -2787,6 +2803,56 @@ window.StateManager = StateManager`
   }
 
   // Helper methods
+  // Generate a comprehensive list of features based on app type and requested count
+  generateComprehensiveFeatures(appType, requestedCount) {
+    // Comprehensive feature sets for each app type
+    const featureSets = {
+      todo: [
+        'localStorage', 'darkMode', 'search', 'filter', 'sort',
+        'categories', 'priorities', 'dueDates', 'notifications', 'export',
+        'import', 'tags', 'dragDrop', 'keyboard', 'themes'
+      ],
+      calculator: [
+        'scientific', 'history', 'memory', 'keyboard', 'themes',
+        'copy', 'clear', 'percentage', 'square', 'squareRoot',
+        'trigonometry', 'logarithm', 'constants', 'unit', 'responsive'
+      ],
+      game: [
+        'score', 'levels', 'sound', 'leaderboard', 'achievements',
+        'powerups', 'multiplayer', 'save', 'pause', 'difficulty',
+        'animations', 'particles', 'controls', 'mobile', 'fullscreen'
+      ],
+      ecommerce: [
+        'cart', 'checkout', 'payment', 'search', 'filter',
+        'wishlist', 'reviews', 'ratings', 'compare', 'recommendations',
+        'authentication', 'profile', 'orders', 'shipping', 'notifications'
+      ],
+      blog: [
+        'editor', 'preview', 'publish', 'categories', 'tags',
+        'comments', 'likes', 'share', 'search', 'archive',
+        'authentication', 'profile', 'rss', 'seo', 'analytics'
+      ],
+      social: [
+        'posts', 'comments', 'likes', 'share', 'follow',
+        'notifications', 'messages', 'profile', 'feed', 'search',
+        'hashtags', 'mentions', 'media', 'stories', 'groups'
+      ]
+    }
+    
+    // Get features for this app type, or use generic features
+    const availableFeatures = featureSets[appType] || [
+      'interactive', 'responsive', 'darkMode', 'localStorage', 'search',
+      'filter', 'sort', 'export', 'import', 'notifications',
+      'themes', 'keyboard', 'mobile', 'animations', 'validation'
+    ]
+    
+    // Return up to the requested count, or all available features
+    const featuresToGenerate = availableFeatures.slice(0, Math.min(requestedCount, availableFeatures.length))
+    
+    console.log(`📋 Generating ${featuresToGenerate.length} features for ${appType} app`)
+    return featuresToGenerate
+  }
+
   calculateComplexity(featureCount, appType) {
     const baseComplexity = {
       todo: 1,
@@ -2990,14 +3056,25 @@ window.StateManager = StateManager`
   }
 
   generatePageTemplate(appType, technology, features) {
-    // For todo apps, generate a simple, working HTML structure
+    // For todo apps, generate a comprehensive, feature-rich HTML structure
     if (appType === 'todo') {
+      const hasSearch = features.includes('search')
+      const hasFilter = features.includes('filter')
+      const hasSort = features.includes('sort')
+      const hasDarkMode = features.includes('darkMode')
+      const hasCategories = features.includes('categories')
+      const hasPriorities = features.includes('priorities')
+      const hasDueDates = features.includes('dueDates')
+      const hasExport = features.includes('export')
+      
+      console.log(`🎨 Generating todo app with ${features.length} features:`, features)
+      
       return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Todo App</title>
+  <title>Todo App with ${features.length} Features</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -3006,20 +3083,82 @@ window.StateManager = StateManager`
   <div id="app">
     <header class="app-header">
       <div class="container">
-        <h1 class="app-title">📝 Todo App</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <h1 class="app-title">📝 Todo App</h1>
+          <div class="header-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            ${hasDarkMode ? '<button id="theme-toggle" class="btn btn-secondary">🌙 Dark Mode</button>' : ''}
+            ${hasExport ? '<button id="export-btn" class="btn btn-secondary">📥 Export</button>' : ''}
+            <span class="feature-badge">✨ ${features.length} Features</span>
+          </div>
+        </div>
       </div>
     </header>
     
     <main class="app-main">
       <div class="container">
+        <!-- Feature Panel -->
+        ${features.length > 0 ? `
+        <div class="feature-panel" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: var(--shadow);">
+          <h3 style="margin-bottom: 1rem; color: var(--text-primary);">✨ Available Features</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            ${features.map(f => `<span class="feature-chip">${f}</span>`).join('')}
+          </div>
+        </div>
+        ` : ''}
+        
+        <!-- Search & Filter Controls -->
+        ${hasSearch || hasFilter || hasSort ? `
+        <div class="controls-panel" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: var(--shadow);">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            ${hasSearch ? '<div><input type="text" id="search-input" placeholder="🔍 Search todos..." class="form-input" /></div>' : ''}
+            ${hasFilter ? '<div><select id="filter-select" class="form-select"><option>All Tasks</option><option>Active</option><option>Completed</option></select></div>' : ''}
+            ${hasSort ? '<div><select id="sort-select" class="form-select"><option>Sort by Date</option><option>Sort by Priority</option><option>Sort by Name</option></select></div>' : ''}
+          </div>
+        </div>
+        ` : ''}
+        
+        <!-- Add Todo Section -->
         <div id="add-todo" class="add-todo-section"></div>
+        
+        <!-- Categories Section -->
+        ${hasCategories ? `
+        <div class="categories-section" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: var(--shadow);">
+          <h3>📁 Categories</h3>
+          <div id="categories-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;">
+            <span class="category-tag">Work</span>
+            <span class="category-tag">Personal</span>
+            <span class="category-tag">Shopping</span>
+          </div>
+        </div>
+        ` : ''}
+        
+        <!-- Todo List Section -->
         <div id="todo-list" class="todo-list-section"></div>
+        
+        <!-- Statistics Panel -->
+        <div class="stats-panel" style="background: white; padding: 1.5rem; border-radius: 8px; margin-top: 2rem; box-shadow: var(--shadow);">
+          <h3 style="margin-bottom: 1rem;">📊 Statistics</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+            <div class="stat-card">
+              <div class="stat-value" id="total-count">0</div>
+              <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="active-count">0</div>
+              <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="completed-count">0</div>
+              <div class="stat-label">Completed</div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
     
     <footer class="app-footer">
       <div class="container">
-        <p>&copy; 2024 Todo App. Built with DreamBuild AI.</p>
+        <p>&copy; 2024 Todo App. Built with DreamBuild AI - ${features.length} Features Included</p>
       </div>
     </footer>
   </div>
@@ -3070,18 +3209,23 @@ window.StateManager = StateManager`
     
     // UNIVERSAL "FROM SCRATCH" TEMPLATE - Works for ANY app type!
     // This creates a functional, interactive app regardless of what the user asks for
-    console.log('🎨 Generating universal "from scratch" template for:', appType)
+    console.log('🎨 Generating universal "from scratch" template for:', appType, 'with', features.length, 'features')
     
     const appTitle = appType.split('-').map(word => 
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ')
+    
+    const hasDarkMode = features.includes('darkMode')
+    const hasExport = features.includes('export')
+    const hasSearch = features.includes('search')
+    const hasFilter = features.includes('filter')
     
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${appTitle} App</title>
+  <title>${appTitle}${features.length > 0 ? ` with ${features.length} Features` : ' App'}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -3090,18 +3234,50 @@ window.StateManager = StateManager`
   <div id="app">
     <header class="app-header">
       <div class="container">
-        <h1 class="app-title">✨ ${appTitle}</h1>
-        <p class="app-subtitle">Built with DreamBuild AI - From Scratch</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="app-title">✨ ${appTitle}</h1>
+            <p class="app-subtitle">Built with DreamBuild AI${features.length > 0 ? ` - ${features.length} Features` : ' - From Scratch'}</p>
+          </div>
+          <div class="header-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            ${hasDarkMode ? '<button id="theme-toggle" class="btn btn-secondary">🌙 Dark Mode</button>' : ''}
+            ${hasExport ? '<button id="export-btn" class="btn btn-secondary">📥 Export</button>' : ''}
+            ${features.length > 0 ? `<span class="feature-badge">✨ ${features.length} Features</span>` : ''}
+          </div>
+        </div>
       </div>
     </header>
     
     <main class="app-main">
       <div class="container">
+        <!-- Feature Panel (if features were requested) -->
+        ${features.length > 0 ? `
+        <div class="feature-panel" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: var(--shadow);">
+          <h3 style="margin-bottom: 1rem; color: var(--text-primary);">🎯 Included Features</h3>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            ${features.map(f => `<span class="feature-chip">${f}</span>`).join('')}
+          </div>
+          <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.875rem;">
+            All features are built-in and ready to use! Explore the app to see them in action.
+          </p>
+        </div>
+        ` : ''}
+        
+        <!-- Search & Filter Controls (if applicable) -->
+        ${hasSearch || hasFilter ? `
+        <div class="controls-panel" style="background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: var(--shadow);">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            ${hasSearch ? '<div><input type="text" id="search-input" placeholder="🔍 Search..." class="form-input" /></div>' : ''}
+            ${hasFilter ? '<div><select id="filter-select" class="form-select"><option>All Items</option><option>Active</option><option>Archived</option></select></div>' : ''}
+          </div>
+        </div>
+        ` : ''}
+        
         <!-- Main interactive area -->
         <div id="main-content" class="main-content">
           <div class="content-card">
             <h2>Welcome to ${appTitle}!</h2>
-            <p>This app is ready for interaction. Try it out!</p>
+            <p>This app is ready for interaction. ${features.length > 0 ? `We've included ${features.length} features to enhance your experience.` : 'Try it out!'}</p>
             <button id="primary-action" class="btn btn-primary">Get Started</button>
           </div>
           
@@ -3120,7 +3296,7 @@ window.StateManager = StateManager`
     
     <footer class="app-footer">
       <div class="container">
-        <p>&copy; 2024 ${appTitle}. Built with DreamBuild AI - Product of Bradley Virtual Solutions, LLC</p>
+        <p>&copy; 2024 ${appTitle}. Built with DreamBuild AI${features.length > 0 ? ` - ${features.length} Features Built-In` : ''} - Product of Bradley Virtual Solutions, LLC</p>
       </div>
     </footer>
   </div>
@@ -3378,13 +3554,92 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Feature Elements */
+.feature-chip {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.feature-badge {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Form Elements */
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  transition: var(--transition);
+  outline: none;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Statistics Cards */
+.stat-card {
+  text-align: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: var(--border-radius);
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Category Tags */
+.category-tag {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.category-tag:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow);
+}
 `
       
       case 'js':
         // Generate comprehensive, production-ready JavaScript for ANY app type
+        const featureCount = intent.features ? intent.features.length : 0
+        const hasFeatures = featureCount > 0
+        
         return `// ${appTitle} App - Generated by DreamBuild AI (From Scratch)
 // Product of Bradley Virtual Solutions, LLC
-console.log('🚀 Initializing ${appTitle} App...')
+${hasFeatures ? `// 🎯 Features Included: ${intent.features.join(', ')}` : ''}
+console.log('🚀 Initializing ${appTitle} App...${hasFeatures ? ` with ${featureCount} features!` : ''}')
 
 // ============================================================================
 // APPLICATION STATE MANAGEMENT
@@ -3395,9 +3650,12 @@ class AppState {
       items: [],
       currentView: 'main',
       user: null,
-      settings: this.loadSettings()
+      settings: this.loadSettings(),
+      features: ${JSON.stringify(intent.features || [])} // Track included features
     }
     this.listeners = []
+    
+    console.log('📋 App initialized with features:', this.state.features)
   }
 
   get(key) {
@@ -3480,6 +3738,73 @@ class UIManager {
     this.appState.subscribe((state) => {
       this.render(state)
     })
+    
+    // 🎯 FEATURE-SPECIFIC EVENT BINDINGS
+    this.bindFeatureEvents()
+  }
+  
+  bindFeatureEvents() {
+    const features = this.appState.get('features') || []
+    console.log('🔧 Binding events for features:', features)
+    
+    // Dark Mode Feature
+    if (features.includes('darkMode')) {
+      const themeToggle = document.getElementById('theme-toggle')
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          document.body.classList.toggle('dark-mode')
+          themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode'
+          this.showNotification('Theme toggled!', 'success')
+        })
+        console.log('✅ Dark mode feature enabled')
+      }
+    }
+    
+    // Export Feature
+    if (features.includes('export')) {
+      const exportBtn = document.getElementById('export-btn')
+      if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+          const items = this.appState.get('items')
+          const dataStr = JSON.stringify(items, null, 2)
+          const dataBlob = new Blob([dataStr], { type: 'application/json' })
+          const url = URL.createObjectURL(dataBlob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = 'app-data-export.json'
+          link.click()
+          URL.revokeObjectURL(url)
+          this.showNotification('Data exported successfully!', 'success')
+        })
+        console.log('✅ Export feature enabled')
+      }
+    }
+    
+    // Search Feature
+    if (features.includes('search')) {
+      const searchInput = document.getElementById('search-input')
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase()
+          console.log('🔍 Searching for:', query)
+          this.appState.update({ searchQuery: query })
+        })
+        console.log('✅ Search feature enabled')
+      }
+    }
+    
+    // Filter Feature
+    if (features.includes('filter')) {
+      const filterSelect = document.getElementById('filter-select')
+      if (filterSelect) {
+        filterSelect.addEventListener('change', (e) => {
+          const filter = e.target.value
+          console.log('🔽 Filter changed to:', filter)
+          this.appState.update({ currentFilter: filter })
+        })
+        console.log('✅ Filter feature enabled')
+      }
+    }
   }
 
   handlePrimaryAction() {
@@ -3503,18 +3828,43 @@ class UIManager {
     
     // Render items in dynamic content area
     if (this.elements.dynamicContent) {
-      const items = state.items || []
+      let items = state.items || []
+      
+      // Apply search filter if search feature is enabled
+      if (state.searchQuery && state.features.includes('search')) {
+        items = items.filter(item => 
+          item.title.toLowerCase().includes(state.searchQuery.toLowerCase())
+        )
+        console.log(\`🔍 Search filtered to \${items.length} items\`)
+      }
+      
+      // Apply status filter if filter feature is enabled
+      if (state.currentFilter && state.features.includes('filter')) {
+        if (state.currentFilter === 'Active') {
+          items = items.filter(item => item.status === 'active')
+        } else if (state.currentFilter === 'Archived') {
+          items = items.filter(item => item.status !== 'active')
+        }
+        console.log(\`🔽 Filter applied: \${state.currentFilter} (\${items.length} items)\`)
+      }
       
       if (items.length === 0) {
+        const hasFilters = state.searchQuery || state.currentFilter
         this.elements.dynamicContent.innerHTML = \`
           <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-            <p style="font-size: 1.25rem; margin-bottom: 1rem;">No items yet</p>
-            <p>Click "Get Started" to add your first item!</p>
+            <p style="font-size: 1.25rem; margin-bottom: 1rem;">\${hasFilters ? 'No items match your filters' : 'No items yet'}</p>
+            <p>\${hasFilters ? 'Try adjusting your search or filter' : 'Click "Get Started" to add your first item!'}</p>
           </div>
         \`
       } else {
+        const totalItems = state.items.length
+        const showingAll = items.length === totalItems
+        
         this.elements.dynamicContent.innerHTML = \`
-          <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Your Items (\${items.length})</h3>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="color: var(--text-primary);">Your Items (\${items.length}\${!showingAll ? \` of \${totalItems}\` : ''})</h3>
+            \${!showingAll ? '<span style="color: var(--primary-color); font-weight: 500;">Filtered</span>' : ''}
+          </div>
           <ul class="item-list">
             \${items.map(item => \`
               <li class="item fade-in" data-id="\${item.id}">
@@ -3534,8 +3884,8 @@ class UIManager {
           </ul>
         \`
         
-        // Show summary in components area
-        this.renderSummary(items)
+        // Show summary in components area (use unfiltered items for stats)
+        this.renderSummary(state.items)
       }
     }
   }

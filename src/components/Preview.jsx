@@ -13,17 +13,29 @@ const Preview = () => {
   const generatePreviewContent = useMemo(() => {
     if (!currentProject?.files) return ''
 
-    const htmlFile = currentProject.files['index.html'] || 
-                    currentProject.files['app.html'] || 
-                    currentProject.files['main.html']
+    const files = currentProject.files
+    const htmlFile = files['index.html'] || 
+                    files['app.html'] || 
+                    files['main.html']
     
-    const cssFile = currentProject.files['styles.css'] || 
-                   currentProject.files['style.css'] || 
-                   currentProject.files['app.css']
+    // Collect all CSS files
+    const cssFiles = Object.keys(files)
+      .filter(key => key.endsWith('.css'))
+      .map(key => files[key])
+      .join('\n\n')
     
-    const jsFile = currentProject.files['script.js'] || 
-                  currentProject.files['app.js'] || 
-                  currentProject.files['main.js']
+    // Collect all JavaScript files and bundle them
+    const jsFiles = Object.keys(files)
+      .filter(key => key.endsWith('.js'))
+      .map(key => {
+        const content = files[key]
+        // Remove export statements for inline bundling
+        return content
+          .replace(/export\s+default\s+/g, '')
+          .replace(/export\s+{[^}]+}/g, '')
+          .replace(/import\s+.*from\s+['"].*['"]/g, '')
+      })
+      .join('\n\n')
 
     if (!htmlFile) return ''
 
@@ -37,20 +49,20 @@ const Preview = () => {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generated App</title>
-  ${cssFile ? '<style>' + cssFile + '</style>' : ''}
+  ${cssFiles ? '<style>' + cssFiles + '</style>' : ''}
 </head>
 <body>
   ${htmlContent}
-  ${jsFile ? '<script>' + jsFile + '</script>' : ''}
+  ${jsFiles ? '<script>' + jsFiles + '</script>' : ''}
 </body>
 </html>`
     } else {
       // Inject CSS and JS into existing HTML
-      if (cssFile && !htmlContent.includes('<style>') && !htmlContent.includes('styles.css')) {
-        htmlContent = htmlContent.replace('</head>', `<style>${cssFile}</style></head>`)
+      if (cssFiles && !htmlContent.includes('<style>')) {
+        htmlContent = htmlContent.replace('</head>', `<style>${cssFiles}</style></head>`)
       }
-      if (jsFile && !htmlContent.includes('<script>') && !htmlContent.includes('script.js')) {
-        htmlContent = htmlContent.replace('</body>', `<script>${jsFile}</script></body>`)
+      if (jsFiles && !htmlContent.match(/<script[^>]*>[\s\S]*<\/script>/)) {
+        htmlContent = htmlContent.replace('</body>', `<script>${jsFiles}</script></body>`)
       }
     }
 

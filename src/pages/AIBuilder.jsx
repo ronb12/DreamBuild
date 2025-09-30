@@ -758,7 +758,7 @@ const AIBuilder = () => {
         className="flex-1 p-8 bg-gradient-to-br from-background via-muted/20 to-background"
         onContextMenu={(e) => handleContextMenu(e, 'main')}
       >
-        <ResizablePanelGroup direction="horizontal" className="h-full gap-4">
+        <ResizablePanelGroup direction="horizontal" className="h-full w-full max-w-full gap-4">
           
           {/* Left Panel - File Manager & Tools */}
           <ResizablePanel defaultSize={25} minSize={15} maxSize={40}>
@@ -1303,7 +1303,7 @@ const AIBuilder = () => {
           
          {/* Right Panel - AI Tools & Advanced Features */}
          <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
-           <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
+           <div className="h-full w-full max-w-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
              {/* AI Integration Panel - Always Show All Features */}
              <div className="flex-1 overflow-hidden">
                <div className="h-full flex flex-col">
@@ -1320,7 +1320,7 @@ const AIBuilder = () => {
                  </div>
                  
                  {/* AI Assistant Content */}
-                 <div className="flex-1 overflow-hidden">
+                 <div className="flex-1 overflow-hidden min-h-0 max-w-full">
                    <AIPromptSimplified />
                  </div>
                  

@@ -226,7 +226,11 @@ export default function AIPromptSimplified() {
       } else if (response.type === 'incremental_update') {
         responseMessage = response.message || `Added ${response.newFeatures?.length || 0} new feature(s) to your existing app!`
         responseText = responseMessage
+        console.log('✅ INCREMENTAL UPDATE DETECTED!', response)
+        console.log('✅ New features:', response.newFeatures)
+        console.log('✅ Files to add:', response.files ? Object.keys(response.files) : 'none')
         toast.success(responseMessage)
+        toast.info(`New files: ${response.files ? Object.keys(response.files).join(', ') : 'none'}`, { duration: 5000 })
       } else if (response.type === 'no_changes') {
         responseMessage = response.message || 'No new features to add - these already exist in your app.'
         responseText = responseMessage
@@ -328,16 +332,31 @@ export default function AIPromptSimplified() {
           Object.keys(response.files).length > 0 && 
           response.type !== 'conversational_response') {
         console.log('📁 Updating project files:', Object.keys(response.files))
+        console.log('📊 Total files before update:', Object.keys(currentProject.files).length)
+        
+        let filesUpdated = 0
         Object.entries(response.files).forEach(([filename, content]) => {
           console.log(`📄 Updating file ${filename} with ${content.length} characters`)
           updateFile(filename, content)
+          filesUpdated++
         })
         
+        console.log(`✅ ${filesUpdated} files updated`)
+        console.log('📊 Total files after update should be:', Object.keys(currentProject.files).length + filesUpdated)
+        
         if (response.type === 'incremental_update') {
-          toast.success(`Added ${response.newFeatures?.length || 0} new feature(s): ${response.newFeatures?.join(', ')}`)
+          const featureNames = response.newFeatures?.join(', ') || 'features'
+          toast.success(`✅ Added ${response.newFeatures?.length || 0} new feature(s): ${featureNames}`, { duration: 6000 })
+          toast.info(`📁 Check File Manager for new files!`, { duration: 4000 })
         } else {
           toast.success(`Generated ${Object.keys(response.files).length} files!`)
         }
+      } else {
+        console.log('⚠️ No files to update:', {
+          hasFiles: !!response.files,
+          fileCount: response.files ? Object.keys(response.files).length : 0,
+          responseType: response.type
+        })
       }
 
       // Update project name if provided

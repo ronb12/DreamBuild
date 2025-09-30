@@ -1,9 +1,21 @@
 node_modules
 .firebase
 *.log
+
+# Environment variables - NEVER commit these
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.backup
+*.env.backup
+
+# System files
 .DS_Store
+
+# Sensitive data
+*secret*
+*private*
+*.pem
+*.key

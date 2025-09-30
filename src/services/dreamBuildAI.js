@@ -2107,7 +2107,11 @@ class Enemy {
           console.log('   ✅ SPECIAL DETECTION: CALCULATOR app')
           appType = 'calculator'
           confidence = 3
-        } else if (lowerPrompt.includes('game') || lowerPrompt.includes('player') || lowerPrompt.includes('enemy')) {
+        } else if (lowerPrompt.includes('game') || lowerPrompt.includes('player') || lowerPrompt.includes('enemy') ||
+                   lowerPrompt.includes('tetris') || lowerPrompt.includes('snake') || lowerPrompt.includes('pong') ||
+                   lowerPrompt.includes('pacman') || lowerPrompt.includes('chess') || lowerPrompt.includes('sudoku') ||
+                   lowerPrompt.includes('flappy') || lowerPrompt.includes('shooter') || lowerPrompt.includes('racing') ||
+                   lowerPrompt.includes('platformer') || lowerPrompt.includes('runner')) {
           console.log('   ✅✅✅ SPECIAL DETECTION: GAME app ✅✅✅')
           appType = 'game'
           confidence = 3

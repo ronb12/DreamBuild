@@ -54,6 +54,11 @@ const Preview = () => {
     console.log('🎮 Current project:', currentProject)
     console.log('🎮 Project files:', currentProject?.files)
     console.log('🎮 Files count:', Object.keys(currentProject?.files || {}).length)
+    console.log('🎮 Files content preview:', Object.keys(currentProject?.files || {}).map(key => ({
+      filename: key,
+      length: currentProject?.files[key]?.length || 0,
+      preview: currentProject?.files[key]?.substring(0, 100) || 'No content'
+    })))
     
     if (currentProject && Object.keys(currentProject.files).length > 0) {
       console.log('🎮 Deploying app...')
@@ -71,7 +76,10 @@ const Preview = () => {
           files: currentProject.files
         }
         const htmlContent = firebaseAppService.generateAppHTML(appData)
+        console.log('🎮 Generated HTML content length:', htmlContent.length)
+        console.log('🎮 Generated HTML content preview:', htmlContent.substring(0, 200))
         setAppContent(htmlContent)
+        console.log('🎮 appContent state set to:', htmlContent ? 'EXISTS' : 'NULL')
         
         // Extract CSS for separate injection
         const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
@@ -563,6 +571,12 @@ const Preview = () => {
             'bg-white'
           }`}>
             <div className={`${getDeviceStyling()} transition-all duration-300 ease-in-out`}>
+              {(() => {
+                console.log('🎮 Rendering app content - appContent exists:', !!appContent)
+                console.log('🎮 Rendering app content - appUrl exists:', !!appUrl)
+                console.log('🎮 Rendering app content - appContent length:', appContent?.length)
+                return null
+              })()}
               {appUrl ? (
                 // Use iframe for proper game rendering
                 <iframe
@@ -594,7 +608,13 @@ const Preview = () => {
                     ''
                   }`}
                   dangerouslySetInnerHTML={{ 
-                    __html: appCss ? `<style>${appCss}</style>${appContent}` : appContent 
+                    __html: (() => {
+                      const htmlToRender = appCss ? `<style>${appCss}</style>${appContent}` : appContent
+                      console.log('🎮 Direct rendering HTML length:', htmlToRender.length)
+                      console.log('🎮 Direct rendering HTML preview:', htmlToRender.substring(0, 200))
+                      console.log('🎮 Direct rendering - contains app content:', htmlToRender.includes('Hello') || htmlToRender.includes('app') || htmlToRender.includes('div'))
+                      return htmlToRender
+                    })()
                   }}
                   title="DreamBuild App Preview"
                   onLoad={() => {

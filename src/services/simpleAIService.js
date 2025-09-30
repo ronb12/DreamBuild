@@ -3,10 +3,11 @@
 
 import localAIService from './localAIService.js'
 import cloudAIService from './cloudAIService.js'
+import dreamBuildAI from './dreamBuildAI.js'
 
 class SimpleAIService {
   constructor() {
-    this.currentService = 'local-ai' // Default to local AI (no API keys required)
+    this.currentService = 'built-in-ai' // Default to DreamBuild Built-in AI
     this.usageStats = {
       totalRequests: 0,
       successfulRequests: 0,
@@ -59,7 +60,7 @@ class SimpleAIService {
     return await localAIService.getPopularTemplates()
   }
 
-  // Generate code using local AI (primary) or cloud AI (fallback)
+  // Generate code using DreamBuild Built-in AI (primary), local AI, or cloud AI (fallback)
   async generateCode(prompt, context = {}) {
     const startTime = Date.now()
     this.usageStats.totalRequests++
@@ -79,25 +80,25 @@ class SimpleAIService {
         return response
       }
       
-      console.log('🚀 Generating code with Local AI...')
+      console.log('🚀 Generating code with DreamBuild Built-in AI...')
       
-      // Use local AI only (no API keys required)
-      console.log('🚀 Using Local AI only (cloud AI disabled)...')
-      const response = await localAIService.generateCode(prompt, context)
+      // Use DreamBuild Built-in AI first (no external APIs required)
+      console.log('🧠 Using DreamBuild Built-in AI (intelligent code generation)...')
+      const response = await dreamBuildAI.generateCode(prompt, context)
       
       // Track successful generation
       const duration = Date.now() - startTime
       this.usageStats.successfulRequests++
       this.usageStats.averageResponseTime = (this.usageStats.averageResponseTime + duration) / 2
       
-      console.log('✅ Code generated successfully with Local AI!')
+      console.log('✅ Code generated successfully with DreamBuild Built-in AI!')
       return response
       
     } catch (error) {
-      console.error('❌ AI generation failed:', error)
+      console.error('❌ DreamBuild Built-in AI generation failed:', error)
       this.usageStats.failedRequests++
       
-      // Fallback to local AI template generation only
+      // Fallback to local AI template generation
       console.log('🔄 Falling back to local AI template generation...')
       try {
         return await localAIService.createFallbackResponse(prompt, context)

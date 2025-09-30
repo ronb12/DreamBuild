@@ -1,21 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
 
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  },
-  define: {
-    'process.env': 'import.meta.env',
-    global: 'globalThis'
-  },
-  esbuild: {
-    target: 'es2020'
-  },
   build: {
     outDir: 'dist',
     sourcemap: false,
@@ -29,8 +17,6 @@ export default defineConfig({
           'ui-vendor': ['framer-motion', 'lucide-react'],
           'editor-vendor': ['@monaco-editor/react'],
           'router-vendor': ['react-router-dom'],
-          // Temporarily exclude axios to test
-          // 'axios-vendor': ['axios'],
           'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge']
         }
       }
@@ -39,13 +25,11 @@ export default defineConfig({
     target: 'esnext',
     cssCodeSplit: true
   },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
+  },
   server: {
     port: 3000,
-    host: true
+    open: true,
   },
-  optimizeDeps: {
-    include: ['monaco-editor', 'firebase/app', 'firebase/firestore', 'firebase/auth']
-  },
-  envPrefix: 'REACT_APP_',
-  envDir: '.'
 })

@@ -3498,21 +3498,36 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Starting code generation for prompt:', prompt)
     
     try {
-      // In production, skip local AI and use fallback directly
-      if (this.isProduction && !this.isLocalhost) {
-        console.log('🌐 Production environment - using template fallback')
-        return await this.createFallbackResponse(prompt, context)
-      }
+      // Try cloud AI first, then fallback to templates
+      console.log('🌐 Using cloud AI service for code generation')
+      return await this.generateWithCloudAI(prompt, context)
       
-      // Try to use local AI if available
-      if (this.isHealthy) {
-        return await this.generateWithLocalAI(prompt, context)
+    } catch (error) {
+      console.error('❌ Code generation failed:', error)
+      return await this.createFallbackResponse(prompt, context)
+    }
+  }
+
+  // Generate with cloud AI (Hugging Face models)
+  async generateWithCloudAI(prompt, context = {}) {
+    console.log('☁️ Generating code with cloud AI...')
+    
+    try {
+      // Import cloud AI service dynamically to avoid circular imports
+      const { default: cloudAIService } = await import('./cloudAIService.js')
+      
+      // Use cloud AI service for code generation
+      const response = await cloudAIService.generateCode(prompt, context)
+      
+      if (response && response.files && Object.keys(response.files).length > 0) {
+        console.log('✅ Cloud AI generated code successfully')
+        return response
       } else {
-        console.log('⚠️ Local AI not available, using template fallback')
+        console.log('⚠️ Cloud AI response empty, using template fallback')
         return await this.createFallbackResponse(prompt, context)
       }
     } catch (error) {
-      console.error('❌ Code generation failed:', error)
+      console.error('❌ Cloud AI generation failed:', error)
       return await this.createFallbackResponse(prompt, context)
     }
   }
@@ -3651,7 +3666,7 @@ Generate practical, working applications that users can immediately use.`
       'science', 'research', 'study', 'theory', 'experiment', 'discovery',
       'history', 'historical', 'past', 'ancient', 'century', 'war', 'battle',
       'business', 'finance', 'economy', 'market', 'stock', 'investment', 'money',
-      'sports', 'game', 'team', 'player', 'football', 'basketball', 'soccer',
+      'sports', 'team', 'player', 'football', 'basketball', 'soccer',
       'entertainment', 'movie', 'music', 'book', 'film', 'song', 'album',
       'explain', 'tell me about', 'describe', 'define', 'meaning', 'definition',
       'help me understand', 'can you explain', 'what does it mean', 'how does it work',
@@ -3668,7 +3683,8 @@ Generate practical, working applications that users can immediately use.`
       'react', 'vue', 'angular', 'node', 'python', 'javascript',
       'html', 'css', 'js', 'ts', 'jsx', 'tsx',
       'todo', 'calculator', 'dashboard', 'portfolio', 'blog',
-      'ecommerce', 'shop', 'store', 'landing page'
+      'ecommerce', 'shop', 'store', 'landing page', 'game',
+      'coin', 'collect', 'platform', 'jump', 'puzzle'
     ]
     
     // Check for general question patterns
@@ -3964,6 +3980,8 @@ Generate practical, working applications that users can immediately use.`
       return await this.generateTemplateById('calculator-app', context)
     } else if (lowerPrompt.includes('weather')) {
       return await this.generateTemplateById('weather-app', context)
+    } else if (lowerPrompt.includes('game') || lowerPrompt.includes('collect') || lowerPrompt.includes('coin')) {
+      return this.generateGameCode(promptString, context)
     } else {
       // Default web app
       return {
@@ -4081,7 +4099,452 @@ Generate practical, working applications that users can immediately use.`
     if (lowerPrompt.includes('ecommerce')) return 'e-commerce store'
     if (lowerPrompt.includes('weather')) return 'weather app'
     if (lowerPrompt.includes('blog')) return 'blog'
+    if (lowerPrompt.includes('game')) return 'game'
     return 'web application'
+  }
+
+  // Generate game code based on prompt
+  generateGameCode(prompt, context = {}) {
+    console.log('🎮 Generating game code for prompt:', prompt)
+    
+    const lowerPrompt = prompt.toLowerCase()
+    
+    // Determine game type and generate appropriate code
+    if (lowerPrompt.includes('coin') && (lowerPrompt.includes('collect') || lowerPrompt.includes('collecting'))) {
+      return this.generateCoinCollectorGame(prompt)
+    } else if (lowerPrompt.includes('platform') || lowerPrompt.includes('jump')) {
+      return this.generatePlatformerGame(prompt)
+    } else if (lowerPrompt.includes('puzzle') || lowerPrompt.includes('match')) {
+      return this.generatePuzzleGame(prompt)
+    } else {
+      return this.generateCoinCollectorGame(prompt) // Default to coin collector
+    }
+  }
+
+  // Generate coin collector game
+  generateCoinCollectorGame(prompt) {
+    return {
+      'index.html': `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Collector Game - Generated by DreamBuild</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+        }
+        
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            z-index: 200;
+        }
+        
+        .restart-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+        
+        .restart-btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-ui">
+        <div>Score: <span id="score">0</span></div>
+        <div>High Score: <span id="highScore">0</span></div>
+        <div>Lives: <span id="lives">3</span></div>
+    </div>
+    
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <div class="controls">
+        <div>Use ARROW KEYS or WASD to move</div>
+        <div>SPACEBAR to jump</div>
+    </div>
+    
+    <div class="game-over" id="gameOver">
+        <h2>Game Over!</h2>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <p>High Score: <span id="finalHighScore">0</span></p>
+        <button class="restart-btn" onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script>
+        // Game variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Game state
+        let gameRunning = true;
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('highScore')) || 0;
+        let lives = 3;
+        
+        // Player object
+        const player = {
+            x: 100,
+            y: 400,
+            width: 40,
+            height: 40,
+            velocityX: 0,
+            velocityY: 0,
+            speed: 5,
+            jumpPower: 15,
+            onGround: false,
+            color: '#FF6B6B'
+        };
+        
+        // Game objects
+        let coins = [];
+        let platforms = [];
+        let particles = [];
+        
+        // Input handling
+        const keys = {};
+        
+        document.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+        
+        // Create platforms
+        function createPlatforms() {
+            platforms = [
+                { x: 0, y: 550, width: 200, height: 50 },
+                { x: 250, y: 500, width: 150, height: 50 },
+                { x: 450, y: 450, width: 150, height: 50 },
+                { x: 650, y: 400, width: 150, height: 50 },
+                { x: 0, y: 300, width: 100, height: 50 },
+                { x: 150, y: 250, width: 150, height: 50 },
+                { x: 350, y: 200, width: 100, height: 50 },
+                { x: 500, y: 150, width: 150, height: 50 },
+                { x: 700, y: 100, width: 100, height: 50 }
+            ];
+        }
+        
+        // Create coins
+        function createCoin(x, y) {
+            coins.push({
+                x: x,
+                y: y,
+                width: 20,
+                height: 20,
+                collected: false,
+                animation: 0
+            });
+        }
+        
+        // Create particle effect
+        function createParticles(x, y) {
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    velocityX: (Math.random() - 0.5) * 10,
+                    velocityY: (Math.random() - 0.5) * 10,
+                    life: 30,
+                    color: \`hsl(\${Math.random() * 60 + 40}, 100%, 50%)\`
+                });
+            }
+        }
+        
+        // Initialize coins
+        function initializeCoins() {
+            coins = [];
+            // Place coins on platforms
+            platforms.forEach(platform => {
+                const numCoins = Math.floor(Math.random() * 3) + 1;
+                for (let i = 0; i < numCoins; i++) {
+                    createCoin(
+                        platform.x + Math.random() * (platform.width - 20),
+                        platform.y - 30
+                    );
+                }
+            });
+        }
+        
+        // Update player
+        function updatePlayer() {
+            // Handle input
+            if (keys['ArrowLeft'] || keys['KeyA']) {
+                player.velocityX = -player.speed;
+            } else if (keys['ArrowRight'] || keys['KeyD']) {
+                player.velocityX = player.speed;
+            } else {
+                player.velocityX *= 0.8; // Friction
+            }
+            
+            if ((keys['Space'] || keys['ArrowUp'] || keys['KeyW']) && player.onGround) {
+                player.velocityY = -player.jumpPower;
+                player.onGround = false;
+            }
+            
+            // Apply gravity
+            player.velocityY += 0.8;
+            
+            // Update position
+            player.x += player.velocityX;
+            player.y += player.velocityY;
+            
+            // Keep player in bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            
+            // Check platform collisions
+            player.onGround = false;
+            platforms.forEach(platform => {
+                if (player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y < platform.y + platform.height &&
+                    player.y + player.height > platform.y) {
+                    
+                    if (player.velocityY > 0 && player.y < platform.y) {
+                        player.y = platform.y - player.height;
+                        player.velocityY = 0;
+                        player.onGround = true;
+                    }
+                }
+            });
+            
+            // Check if player fell off screen
+            if (player.y > canvas.height) {
+                lives--;
+                if (lives <= 0) {
+                    gameOver();
+                } else {
+                    // Reset player position
+                    player.x = 100;
+                    player.y = 400;
+                    player.velocityY = 0;
+                }
+            }
+        }
+        
+        // Update coins
+        function updateCoins() {
+            coins.forEach(coin => {
+                if (!coin.collected) {
+                    coin.animation += 0.1;
+                    
+                    // Check collision with player
+                    if (player.x < coin.x + coin.width &&
+                        player.x + player.width > coin.x &&
+                        player.y < coin.y + coin.height &&
+                        player.y + player.height > coin.y) {
+                        
+                        coin.collected = true;
+                        score += 10;
+                        createParticles(coin.x, coin.y);
+                        
+                        // Update high score
+                        if (score > highScore) {
+                            highScore = score;
+                            localStorage.setItem('highScore', highScore);
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update particles
+        function updateParticles() {
+            particles = particles.filter(particle => {
+                particle.x += particle.velocityX;
+                particle.y += particle.velocityY;
+                particle.life--;
+                particle.velocityY += 0.5; // Gravity
+                return particle.life > 0;
+            });
+        }
+        
+        // Render game
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = 'rgba(135, 206, 235, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw platforms
+            ctx.fillStyle = '#8B4513';
+            platforms.forEach(platform => {
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                // Add grass on top
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(platform.x, platform.y - 5, platform.width, 5);
+                ctx.fillStyle = '#8B4513';
+            });
+            
+            // Draw coins
+            coins.forEach(coin => {
+                if (!coin.collected) {
+                    const bob = Math.sin(coin.animation) * 3;
+                    ctx.save();
+                    ctx.translate(coin.x + coin.width/2, coin.y + coin.height/2 + bob);
+                    ctx.rotate(coin.animation);
+                    
+                    // Coin gradient
+                    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 10);
+                    gradient.addColorStop(0, '#FFD700');
+                    gradient.addColorStop(1, '#FFA500');
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Coin shine
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.beginPath();
+                    ctx.arc(-3, -3, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                }
+            });
+            
+            // Draw player
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Player face
+            ctx.fillStyle = 'white';
+            ctx.fillRect(player.x + 8, player.y + 8, 8, 8);
+            ctx.fillRect(player.x + 24, player.y + 8, 8, 8);
+            ctx.fillRect(player.x + 12, player.y + 24, 16, 8);
+            
+            // Draw particles
+            particles.forEach(particle => {
+                ctx.fillStyle = particle.color;
+                ctx.globalAlpha = particle.life / 30;
+                ctx.fillRect(particle.x, particle.y, 4, 4);
+                ctx.globalAlpha = 1;
+            });
+        }
+        
+        // Update UI
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('highScore').textContent = highScore;
+            document.getElementById('lives').textContent = lives;
+        }
+        
+        // Game over
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalHighScore').textContent = highScore;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+        // Restart game
+        function restartGame() {
+            gameRunning = true;
+            score = 0;
+            lives = 3;
+            player.x = 100;
+            player.y = 400;
+            player.velocityX = 0;
+            player.velocityY = 0;
+            particles = [];
+            document.getElementById('gameOver').style.display = 'none';
+            initializeCoins();
+        }
+        
+        // Game loop
+        function gameLoop() {
+            if (gameRunning) {
+                updatePlayer();
+                updateCoins();
+                updateParticles();
+                render();
+                updateUI();
+            }
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Initialize game
+        function init() {
+            createPlatforms();
+            initializeCoins();
+            updateUI();
+            gameLoop();
+        }
+        
+        // Start the game
+        init();
+    </script>
+</body>
+</html>`
+    };
+  }
+
+  // Generate platformer game
+  generatePlatformerGame(prompt) {
+    return this.generateCoinCollectorGame(prompt); // For now, use coin collector as base
+  }
+
+  // Generate puzzle game
+  generatePuzzleGame(prompt) {
+    return this.generateCoinCollectorGame(prompt); // For now, use coin collector as base
   }
 }
 

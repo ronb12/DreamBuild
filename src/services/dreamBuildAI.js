@@ -2170,7 +2170,11 @@ class Enemy {
     
     try {
       // Check if this is an incremental update
-      const isIncremental = context.isIncremental && context.currentFiles && Object.keys(context.currentFiles).length > 0
+      // Only treat as incremental if there are actual files with content
+      const hasRealContent = context.currentFiles && Object.values(context.currentFiles).some(content => 
+        content && typeof content === 'string' && content.trim().length > 50
+      )
+      const isIncremental = context.isIncremental && hasRealContent
       
       if (isIncremental) {
         console.log('🔄 Incremental development mode - enhancing existing app')

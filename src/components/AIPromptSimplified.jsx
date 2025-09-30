@@ -188,6 +188,9 @@ export default function AIPromptSimplified() {
     try {
       // Check if this is an incremental development request
       const isIncremental = isIncrementalRequest(userPrompt)
+      console.log('🔍 Incremental request check:', { isIncremental, userPrompt })
+      console.log('📁 Current project files:', Object.keys(currentProject.files))
+      console.log('📊 File content lengths:', Object.entries(currentProject.files).map(([k, v]) => `${k}: ${v?.length || 0} chars`))
       
       // Get conversation context for better AI responses
       const conversationContext = conversationService.getConversationContext()
@@ -204,6 +207,9 @@ export default function AIPromptSimplified() {
         conversationHistory: conversationService.getConversationHistory(),
         webContext: webContext // Include web search results
       })
+      
+      console.log('🎨 AI Response type:', response.type)
+      console.log('📦 AI Response files:', response.files ? Object.keys(response.files) : 'none')
 
       // Add AI response to conversation
       let responseMessage = 'Code generated successfully!'

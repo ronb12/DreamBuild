@@ -2164,23 +2164,32 @@ class Enemy {
       codeGenerator: (structure, intent) => {
         const files = {}
         
-        // Generate component files
+        console.log('📝 Code generator: Creating files for', intent.appType)
+        console.log('📝 Components to generate:', structure.components.map(c => c.name))
+        
+        // Generate component files with FULL implementations
         structure.components.forEach(component => {
           const filename = `${component.name}.${this.getFileExtension(component.technology)}`
+          console.log(`📄 Generating ${filename} (${component.template?.length || 0} chars)`)
           files[filename] = component.template
         })
         
         // Generate page files
         structure.pages.forEach(page => {
           const filename = `${page.name}.html`
+          console.log(`📄 Generating ${filename} (${page.template?.length || 0} chars)`)
           files[filename] = page.template
         })
         
         // Generate asset files
         structure.assets.forEach(asset => {
           const extension = asset.split('.').pop()
-          files[asset] = this.generateAssetTemplate(extension, intent)
+          const assetContent = this.generateAssetTemplate(extension, intent)
+          console.log(`📄 Generating ${asset} (${assetContent?.length || 0} chars)`)
+          files[asset] = assetContent
         })
+        
+        console.log(`✅ Code generator: Created ${Object.keys(files).length} files`)
         
         return files
       }

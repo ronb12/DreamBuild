@@ -10,6 +10,7 @@ class ConversationService {
     this.projectContext = {}
     this.featureRecommendations = []
     this.industryStandards = this.getIndustryStandards()
+    this.isSaving = false // Prevent infinite recursion
   }
 
   // Initialize conversation for a project
@@ -374,6 +375,12 @@ class ConversationService {
   async saveConversation() {
     if (!this.currentConversation) return
 
+    // Prevent infinite recursion
+    if (this.isSaving) {
+      console.log('⚠️ Already saving conversation, skipping duplicate save')
+      return
+    }
+
     try {
       // Skip saving if no valid conversation ID
       if (!this.currentConversation.id) {
@@ -381,10 +388,13 @@ class ConversationService {
         return
       }
       
+      this.isSaving = true
       await firebaseService.saveConversation(this.currentConversation)
       console.log('💾 Conversation saved to Firebase')
     } catch (error) {
       console.error('Failed to save conversation:', error)
+    } finally {
+      this.isSaving = false
     }
   }
 

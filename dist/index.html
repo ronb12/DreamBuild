@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DreamBuild - Universal AI Development Platform</title>
+    <meta name="description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json?v=2.0.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DreamBuild" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="DreamBuild - Universal AI Development Platform" />
+    <meta property="og:description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dreambuild-2024-app.web.app" />
+    <meta property="og:image" content="/icons/icon-512x512.png" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DreamBuild - Universal AI Development Platform" />
+    <meta name="twitter:description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    <meta name="twitter:image" content="/icons/icon-512x512.png" />
+    
+    <!-- Preload critical resources -->
+    <!-- <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin /> -->
+    
+    <!-- Critical CSS inline -->
+    <style>
+      /* Critical CSS for initial render */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #f8fafc;
+      }
+      
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #0f172a; /* slate-900 */
+        color: #e2e8f0; /* slate-200 */
+        font-family: monospace;
+        font-size: 1rem;
+      }
+      
+      .loading-spinner div {
+        border: 4px solid #646cff; /* primary color */
+        border-top-color: transparent;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-DGpXRqUg.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/monaco-editor-4pq07gti.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-D3F3s8fL.js">
+    <link rel="modulepreload" crossorigin href="/assets/ui-vendor-QtYWuEup.js">
+    <link rel="stylesheet" crossorigin href="/assets/monaco-editor-lhMD-J9y.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-DqzrUTHB.css">
+  </head>
+  <body>
+    <div id="root">
+      <div class="loading-spinner">
+        <div></div>
+        <p style="margin-left: 10px;">Loading DreamBuild...</p>
+      </div>
+    </div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('DreamBuild SW registered:', registration);
+            })
+            .catch(error => {
+              console.log('DreamBuild SW registration failed:', error);
+            });
+        });
+      }
+    </script>
+    
+    <!-- Comprehensive polyfills for essential APIs -->
+    <script>
+      // Loading comprehensive polyfills...
+      
+      // CRITICAL: Ensure global objects exist FIRST and IMMEDIATELY
+      if (typeof globalThis === 'undefined') {
+        window.globalThis = window;
+      }
+      if (typeof global === 'undefined') {
+        window.global = window;
+      }
+      if (typeof self === 'undefined') {
+        window.self = window;
+      }
+      
+      // CRITICAL: Make sure Request, Headers, Response are available IMMEDIATELY
+      // This prevents any destructuring errors from occurring
+      if (!window.Request) {
+        window.Request = class Request {
+          constructor(input, init = {}) {
+            this.url = input;
+            this.method = init.method || 'GET';
+            this.headers = new Headers(init.headers || {});
+            this.body = init.body;
+          }
+        };
+      }
+      
+      if (!window.Headers) {
+        window.Headers = class Headers {
+          constructor(init = {}) {
+            this._headers = {};
+            if (init) {
+              Object.entries(init).forEach(([key, value]) => {
+                this._headers[key.toLowerCase()] = value;
+              });
+            }
+          }
+          get(name) { return this._headers[name.toLowerCase()]; }
+          set(name, value) { this._headers[name.toLowerCase()] = value; }
+          has(name) { return name.toLowerCase() in this._headers; }
+        };
+      }
+      
+      if (!window.Response) {
+        window.Response = class Response {
+          constructor(body, init = {}) {
+            this.body = body;
+            this.status = init.status || 200;
+            this.statusText = init.statusText || 'OK';
+            this.headers = new Headers(init.headers || {});
+            this.ok = this.status >= 200 && this.status < 300;
+          }
+          async json() { return JSON.parse(this.body); }
+          async text() { return this.body; }
+        };
+      }
+      
+      if (!window.fetch) {
+        window.fetch = async function(url, options = {}) {
+          const xhr = new XMLHttpRequest();
+          return new Promise((resolve, reject) => {
+            xhr.open(options.method || 'GET', url);
+            if (options.headers) {
+              Object.entries(options.headers).forEach(([key, value]) => {
+                xhr.setRequestHeader(key, value);
+              });
+            }
+            xhr.onload = function() {
+              resolve(new window.Response(xhr.responseText, {
+                status: xhr.status,
+                statusText: xhr.statusText,
+                headers: xhr.getAllResponseHeaders()
+              }));
+            };
+            xhr.onerror = function() { reject(new Error('Network error')); };
+            xhr.send(options.body);
+          });
+        };
+      }
+      
+      // Make sure all APIs are available on ALL global objects IMMEDIATELY
+      const webAPIs = { Request: window.Request, Headers: window.Headers, Response: window.Response, fetch: window.fetch };
+      Object.entries(webAPIs).forEach(([name, api]) => {
+        if (api) {
+          if (typeof globalThis !== 'undefined') globalThis[name] = api;
+          if (typeof global !== 'undefined') global[name] = api;
+          if (typeof self !== 'undefined') self[name] = api;
+          if (typeof window !== 'undefined') window[name] = api;
+        }
+      });
+      
+      // CRITICAL: Override any destructuring attempts to prevent errors
+      const originalDefineProperty = Object.defineProperty;
+      Object.defineProperty = function(obj, prop, descriptor) {
+        if (prop === 'Request' || prop === 'Headers' || prop === 'Response' || prop === 'fetch') {
+          // Ensure the property exists before defining
+          if (!obj[prop]) {
+            obj[prop] = window[prop];
+          }
+        }
+        return originalDefineProperty.call(this, obj, prop, descriptor);
+      };
+      
+      console.log('✅ Essential APIs loaded immediately:', {
+        Request: !!window.Request,
+        Headers: !!window.Headers,
+        Response: !!window.Response,
+        fetch: !!window.fetch
+      });
+      
+      // Final verification
+      console.log('✅ Final verification: APIs ready for modules');
+    </script>
+    
+    <!-- Global Error Handler to catch destructuring errors early -->
+    <script>
+      window.addEventListener('error', function(event) {
+        if (event.message.includes("Cannot destructure property 'Request' of 'undefined'")) {
+          console.error('🚨 DESTRUCTURING ERROR DETECTED!');
+          console.error('Stack: ', event.error ? event.error.stack : 'No stack available');
+          event.preventDefault(); // Prevent default handling to avoid further console spam
+        }
+      });
+      
+      // Also catch unhandled promise rejections
+      window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason && event.reason.message && event.reason.message.includes("Cannot destructure property 'Request' of 'undefined'")) {
+          console.error('🚨 DESTRUCTURING ERROR DETECTED (Unhandled Rejection)!');
+          console.error('Stack: ', event.reason.stack || 'No stack available');
+          event.preventDefault();
+        }
+      });
+      
+      console.log('🛡️ Global error handler: Ensuring APIs are available...');
+      
+      // Final verification that APIs are globally available
+      if (!window.Request || !window.Headers || !window.Response || !window.fetch) {
+        console.error('❌ Final verification failed: Core APIs are NOT available globally after polyfills.');
+      } else {
+        console.log('✅ Final verification: APIs ready for modules');
+      }
+    </script>
+    
+  </body>
+</html>

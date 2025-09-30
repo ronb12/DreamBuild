@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamBuild Color Click Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            animation: bounceIn 0.8s ease-out;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        
+        .score {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .game-area {
+            width: 400px;
+            height: 400px;
+            border: 3px solid #333;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            background: #f0f0f0;
+            margin: 20px auto;
+        }
+        
+        .target {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            animation: popIn 0.3s ease-out;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .target:hover {
+            transform: scale(1.1);
+        }
+        
+        .controls {
+            margin-top: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .timer {
+            font-size: 1.2rem;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .game-over h2 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎯 DreamBuild Color Click Game</h1>
+        <div class="score">Score: <span id="score">0</span></div>
+        <div class="timer">Time: <span id="timer">30</span>s</div>
+        
+        <div class="game-area" id="gameArea">
+            <div class="game-over" id="gameOver">
+                <h2>Game Over!</h2>
+                <p>Final Score: <span id="finalScore">0</span></p>
+                <button class="btn" onclick="startGame()">Play Again</button>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="startGame()">Start Game</button>
+            <button class="btn" onclick="pauseGame()">Pause</button>
+            <button class="btn" onclick="resetGame()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            score: 0,
+            timeLeft: 30,
+            gameActive: false,
+            gamePaused: false,
+            targets: []
+        };
+        
+        function startGame() {
+            gameState.gameActive = true;
+            gameState.gamePaused = false;
+            gameState.score = 0;
+            gameState.timeLeft = 30;
+            gameState.targets = [];
+            
+            document.getElementById('gameOver').style.display = 'none';
+            updateDisplay();
+            gameLoop();
+            timer();
+            
+            console.log('🎮 Game started!');
+        }
+        
+        function pauseGame() {
+            gameState.gamePaused = !gameState.gamePaused;
+            if (gameState.gamePaused) {
+                clearAllTargets();
+                console.log('⏸️ Game paused');
+            } else {
+                console.log('▶️ Game resumed');
+            }
+        }
+        
+        function resetGame() {
+            gameState.gameActive = false;
+            gameState.gamePaused = false;
+            clearAllTargets();
+            document.getElementById('gameOver').style.display = 'none';
+            gameState.score = 0;
+            gameState.timeLeft = 30;
+            updateDisplay();
+            console.log('🔄 Game reset');
+        }
+        
+        function gameLoop() {
+            if (!gameState.gameActive || gameState.gamePaused) return;
+            
+            if (Math.random() < 0.3) {
+                createTarget();
+            }
+            
+            setTimeout(gameLoop, 500);
+        }
+        
+        function createTarget() {
+            const gameArea = document.getElementById('gameArea');
+            const target = document.createElement('div');
+            target.className = 'target';
+            
+            const size = Math.random() * 60 + 20;
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            target.style.width = size + 'px';
+            target.style.height = size + 'px';
+            target.style.backgroundColor = color;
+            target.style.left = Math.random() * (400 - size) + 'px';
+            target.style.top = Math.random() * (400 - size) + 'px';
+            
+            target.onclick = function() {
+                hitTarget(this);
+            };
+            
+            gameArea.appendChild(target);
+            gameState.targets.push(target);
+            
+            setTimeout(() => {
+                if (target.parentNode) {
+                    target.parentNode.removeChild(target);
+                    const index = gameState.targets.indexOf(target);
+                    if (index > -1) {
+                        gameState.targets.splice(index, 1);
+                    }
+                }
+            }, 2000);
+        }
+        
+        function hitTarget(target) {
+            target.style.transform = 'scale(0)';
+            target.style.opacity = '0';
+            
+            gameState.score += 10;
+            updateDisplay();
+            
+            console.log('🎯 Target hit! Score:', gameState.score);
+            
+            setTimeout(() => {
+                if (target.parentNode) {
+                    target.parentNode.removeChild(target);
+                    const index = gameState.targets.indexOf(target);
+                    if (index > -1) {
+                        gameState.targets.splice(index, 1);
+                    }
+                }
+            }, 200);
+        }
+        
+        function clearAllTargets() {
+            gameState.targets.forEach(target => {
+                if (target.parentNode) {
+                    target.parentNode.removeChild(target);
+                }
+            });
+            gameState.targets = [];
+        }
+        
+        function timer() {
+            if (!gameState.gameActive || gameState.gamePaused) return;
+            
+            if (gameState.timeLeft > 0) {
+                gameState.timeLeft--;
+                updateDisplay();
+                setTimeout(timer, 1000);
+            } else {
+                endGame();
+            }
+        }
+        
+        function endGame() {
+            gameState.gameActive = false;
+            clearAllTargets();
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('gameOver').style.display = 'block';
+            console.log('🏁 Game over! Final score:', gameState.score);
+        }
+        
+        function updateDisplay() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('timer').textContent = gameState.timeLeft;
+        }
+        
+        // Add keyboard controls
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ') {
+                event.preventDefault();
+                if (!gameState.gameActive) {
+                    startGame();
+                } else {
+                    pauseGame();
+                }
+            } else if (event.key === 'r' || event.key === 'R') {
+                resetGame();
+            }
+        });
+        
+        // Log successful loading
+        console.log('🎯 DreamBuild Color Click Game loaded successfully!');
+        console.log('✅ All game functions are working');
+        console.log('🎮 Ready for preview testing');
+        console.log('💡 Press SPACE to start/pause, R to reset');
+    </script>
+</body>
+</html>

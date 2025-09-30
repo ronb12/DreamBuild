@@ -16,7 +16,7 @@ import {
   Star,
   RefreshCw
 } from 'lucide-react'
-import firebaseAppService from '../services/firebaseAppService'
+import firebaseService from '../services/firebaseService'
 import toast from 'react-hot-toast'
 import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore'
 import { db } from '../config/firebase'
@@ -127,7 +127,7 @@ const AppGallery = () => {
         setIsLoading(true)
       }
       console.log('🔄 Loading apps from Firebase...')
-      const publicApps = await firebaseAppService.getPublicApps(50)
+      const publicApps = await firebaseService.getPublicApps(50)
       console.log('✅ Loaded apps:', publicApps.length)
       console.log('✅ Apps data:', publicApps)
       setApps(publicApps)
@@ -160,7 +160,7 @@ const AppGallery = () => {
   const loadStats = async () => {
     try {
       console.log('🔄 Loading app stats from Firebase...')
-      const appStats = await firebaseAppService.getAppStats()
+      const appStats = await firebaseService.getAppStats()
       console.log('✅ Loaded stats:', appStats)
       setStats(appStats)
     } catch (error) {
@@ -228,7 +228,7 @@ const AppGallery = () => {
 
   const handleLike = async (app) => {
     try {
-      await firebaseAppService.toggleLike(app.id, 'anonymous')
+      await firebaseService.toggleLike(app.id, 'anonymous')
       toast.success('Liked!')
       loadApps() // Refresh apps
     } catch (error) {

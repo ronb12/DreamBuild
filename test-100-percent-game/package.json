@@ -1,0 +1,22 @@
+{
+  "name": "rpg-game",
+  "version": "1.0.0",
+  "description": "Generated rpg-game by DreamBuild Advanced Game Developer",
+  "main": "game.js",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve .",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": [
+    "game",
+    "dreambuild",
+    "generated",
+    "advanced"
+  ],
+  "author": "DreamBuild AI",
+  "license": "MIT",
+  "dependencies": {
+    "phaser": "^3.70.0"
+  }
+}

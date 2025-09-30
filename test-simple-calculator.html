@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamBuild Test Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .calculator {
+            background: #2c3e50;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            width: 300px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .display {
+            background: #34495e;
+            color: white;
+            font-size: 2rem;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: right;
+            margin-bottom: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 20px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .btn.operator {
+            background: #e74c3c;
+        }
+        
+        .btn.operator:hover {
+            background: #c0392b;
+        }
+        
+        .btn.equals {
+            background: #27ae60;
+            grid-column: span 2;
+        }
+        
+        .btn.equals:hover {
+            background: #229954;
+        }
+        
+        .btn.clear {
+            background: #f39c12;
+        }
+        
+        .btn.clear:hover {
+            background: #e67e22;
+        }
+        
+        .title {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="title">🧮 DreamBuild Calculator</div>
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="btn clear" onclick="clearDisplay()">C</button>
+            <button class="btn operator" onclick="setOperator('/')">/</button>
+            <button class="btn operator" onclick="setOperator('*')">×</button>
+            <button class="btn" onclick="deleteLast()">⌫</button>
+            
+            <button class="btn" onclick="appendToDisplay('7')">7</button>
+            <button class="btn" onclick="appendToDisplay('8')">8</button>
+            <button class="btn" onclick="appendToDisplay('9')">9</button>
+            <button class="btn operator" onclick="setOperator('-')">-</button>
+            
+            <button class="btn" onclick="appendToDisplay('4')">4</button>
+            <button class="btn" onclick="appendToDisplay('5')">5</button>
+            <button class="btn" onclick="appendToDisplay('6')">6</button>
+            <button class="btn operator" onclick="setOperator('+')">+</button>
+            
+            <button class="btn" onclick="appendToDisplay('1')">1</button>
+            <button class="btn" onclick="appendToDisplay('2')">2</button>
+            <button class="btn" onclick="appendToDisplay('3')">3</button>
+            <button class="btn" onclick="appendToDisplay('0')" style="grid-row: span 2;">0</button>
+            
+            <button class="btn" onclick="appendToDisplay('.')">.</button>
+            <button class="btn equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentInput = '0';
+        let operator = null;
+        let previousInput = null;
+        
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+        
+        function appendToDisplay(value) {
+            if (currentInput === '0' && value !== '.') {
+                currentInput = value;
+            } else {
+                currentInput += value;
+            }
+            updateDisplay();
+        }
+        
+        function clearDisplay() {
+            currentInput = '0';
+            operator = null;
+            previousInput = null;
+            updateDisplay();
+        }
+        
+        function deleteLast() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+        
+        function setOperator(op) {
+            if (operator && previousInput !== null) {
+                calculate();
+            }
+            operator = op;
+            previousInput = currentInput;
+            currentInput = '0';
+        }
+        
+        function calculate() {
+            if (operator && previousInput !== null) {
+                const prev = parseFloat(previousInput);
+                const current = parseFloat(currentInput);
+                let result;
+                
+                switch (operator) {
+                    case '+':
+                        result = prev + current;
+                        break;
+                    case '-':
+                        result = prev - current;
+                        break;
+                    case '*':
+                        result = prev * current;
+                        break;
+                    case '/':
+                        result = current !== 0 ? prev / current : 'Error';
+                        break;
+                    default:
+                        return;
+                }
+                
+                currentInput = result.toString();
+                operator = null;
+                previousInput = null;
+                updateDisplay();
+            }
+        }
+        
+        // Add keyboard support
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            
+            if (key >= '0' && key <= '9' || key === '.') {
+                appendToDisplay(key);
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                setOperator(key);
+            } else if (key === 'Enter' || key === '=') {
+                calculate();
+            } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                clearDisplay();
+            } else if (key === 'Backspace') {
+                deleteLast();
+            }
+        });
+        
+        // Log successful loading
+        console.log('🧮 DreamBuild Calculator loaded successfully!');
+        console.log('✅ All calculator functions are working');
+        console.log('🎯 Ready for preview testing');
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient definitions -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#007acc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#005a9e;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4dabf7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#007acc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle with Gradient -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGradient)"/>
+  
+  <!-- Main Icon Container -->
+  <g transform="translate(256, 256)">
+    
+    <!-- Central Diamond (AI Core) -->
+    <polygon points="0,-60 60,0 0,60 -60,0" fill="#ffffff" opacity="0.95"/>
+    
+    <!-- Code Brackets -->
+    <g fill="#ffffff" opacity="0.9">
+      <!-- Left Bracket -->
+      <rect x="-100" y="-40" width="12" height="80" rx="6"/>
+      <rect x="-94" y="-32" width="4" height="8" rx="2"/>
+      <rect x="-94" y="-16" width="4" height="8" rx="2"/>
+      <rect x="-94" y="0" width="4" height="8" rx="2"/>
+      <rect x="-94" y="16" width="4" height="8" rx="2"/>
+      <rect x="-94" y="24" width="4" height="8" rx="2"/>
+      
+      <!-- Right Bracket -->
+      <rect x="88" y="-40" width="12" height="80" rx="6"/>
+      <rect x="90" y="-32" width="4" height="8" rx="2"/>
+      <rect x="90" y="-16" width="4" height="8" rx="2"/>
+      <rect x="90" y="0" width="4" height="8" rx="2"/>
+      <rect x="90" y="16" width="4" height="8" rx="2"/>
+      <rect x="90" y="24" width="4" height="8" rx="2"/>
+    </g>
+    
+    <!-- AI Circuit Pattern -->
+    <g stroke="#ffffff" stroke-width="3" fill="none" opacity="0.8">
+      <!-- Horizontal lines -->
+      <line x1="-80" y1="-30" x2="80" y2="-30"/>
+      <line x1="-80" y1="0" x2="80" y2="0"/>
+      <line x1="-80" y1="30" x2="80" y2="30"/>
+      
+      <!-- Vertical lines -->
+      <line x1="-30" y1="-80" x2="-30" y2="80"/>
+      <line x1="0" y1="-80" x2="0" y2="80"/>
+      <line x1="30" y1="-80" x2="30" y2="80"/>
+      
+      <!-- Diagonal lines -->
+      <line x1="-60" y1="-60" x2="60" y2="60"/>
+      <line x1="60" y1="-60" x2="-60" y2="60"/>
+    </g>
+    
+    <!-- Circuit Nodes -->
+    <g fill="#ffffff" opacity="0.9">
+      <circle cx="-80" cy="-30" r="6"/>
+      <circle cx="-80" cy="0" r="6"/>
+      <circle cx="-80" cy="30" r="6"/>
+      <circle cx="80" cy="-30" r="6"/>
+      <circle cx="80" cy="0" r="6"/>
+      <circle cx="80" cy="30" r="6"/>
+      <circle cx="-30" cy="-80" r="6"/>
+      <circle cx="0" cy="-80" r="6"/>
+      <circle cx="30" cy="-80" r="6"/>
+      <circle cx="-30" cy="80" r="6"/>
+      <circle cx="0" cy="80" r="6"/>
+      <circle cx="30" cy="80" r="6"/>
+      <circle cx="-60" cy="-60" r="6"/>
+      <circle cx="60" cy="-60" r="6"/>
+      <circle cx="-60" cy="60" r="6"/>
+      <circle cx="60" cy="60" r="6"/>
+    </g>
+    
+    <!-- Central AI Symbol -->
+    <g fill="#007acc">
+      <circle cx="0" cy="0" r="20"/>
+      <path d="M-12,-12 L12,12 M12,-12 L-12,12" stroke="#ffffff" stroke-width="3" fill="none"/>
+    </g>
+    
+    <!-- Sparkle Effects -->
+    <g fill="#ffffff" opacity="0.7">
+      <polygon points="-120,-120 -115,-110 -125,-110"/>
+      <polygon points="120,-120 115,-110 125,-110"/>
+      <polygon points="-120,120 -115,110 -125,110"/>
+      <polygon points="120,120 115,110 125,110"/>
+      <polygon points="-120,-120 -110,-115 -110,-125"/>
+      <polygon points="120,-120 110,-115 110,-125"/>
+      <polygon points="-120,120 -110,115 -110,125"/>
+      <polygon points="120,120 110,115 110,125"/>
+    </g>
+  </g>
+  
+  <!-- Outer ring with accent -->
+  <circle cx="256" cy="256" r="240" fill="none" stroke="url(#accentGradient)" stroke-width="4" opacity="0.3"/>
+</svg>

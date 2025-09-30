@@ -25,8 +25,19 @@ class DreamBuildAI {
   }
 
   async initializeBuiltInAI() {
-    // Load template generator
+    // Load template generator - Fallback if not available
     // this.templateGenerator = new TemplateBasedGenerator()
+    this.templateGenerator = {
+      generateFromPrompt: async (prompt, context) => {
+        console.log('📝 Using fallback template generator')
+        return {
+          files: {
+            'index.html': '<!DOCTYPE html><html><body><h1>Template Not Available</h1></body></html>'
+          },
+          type: 'fallback_template'
+        }
+      }
+    }
     
     // Initialize AI patterns database
     this.aiPatterns = await this.loadAIPatterns()
@@ -46,14 +57,14 @@ class DreamBuildAI {
       // App type recognition patterns - 100+ app types supported
       appTypes: {
         // Productivity & Organization
-        todo: ['todo', 'task', 'checklist', 'reminder', 'organizer', 'planner', 'productivity'],
+        todo: ['todo', 'todos', 'task', 'tasks', 'checklist', 'checklists', 'reminder', 'reminders', 'organizer', 'organize', 'planner', 'productivity', 'list', 'lists'],
         calendar: ['calendar', 'schedule', 'event', 'appointment', 'booking', 'agenda'],
         note: ['note', 'notes', 'notepad', 'memo', 'journal', 'diary', 'scratchpad'],
         project: ['project', 'project-management', 'kanban', 'scrum', 'agile', 'trello'],
         time: ['time', 'timer', 'stopwatch', 'tracker', 'timesheet', 'attendance'],
         
         // Business & Finance
-        calculator: ['calculator', 'math', 'compute', 'calculate', 'arithmetic', 'scientific'],
+        calculator: ['calculator', 'calc', 'math', 'compute', 'calculate', 'arithmetic', 'scientific', 'maths', 'mathematical', 'calculation', 'calculations'],
         accounting: ['accounting', 'bookkeeping', 'finance', 'budget', 'expense', 'invoice'],
         crm: ['crm', 'customer', 'relationship', 'management', 'lead', 'sales'],
         inventory: ['inventory', 'stock', 'warehouse', 'product', 'supply', 'chain'],
@@ -144,6 +155,7 @@ class DreamBuildAI {
         chatbot: ['chatbot', 'bot', 'assistant', 'ai', 'conversation'],
         
         // Gaming Specific
+        game: ['game', 'games', 'gaming', 'play', 'player', 'enemy', 'enemies', 'score', 'level', 'canvas', 'arcade', 'action', 'adventure'],
         mmorpg: ['mmorpg', 'massively-multiplayer', 'online', 'role-playing', 'game'],
         fps: ['fps', 'first-person', 'shooter', 'action', 'game'],
         puzzle: ['puzzle', 'brain', 'logic', 'sudoku', 'crossword', 'riddle'],
@@ -623,12 +635,40 @@ class DreamBuildAI {
       structures: {
         component: {
           react: {
-            functional: `import React from 'react'
+            functional: `import React, { useState, useEffect } from 'react'
 
-const {componentName} = () => {
+const {componentName} = ({ onUpdate }) => {
+  const [state, setState] = useState({
+    // Component state
+  })
+
+  useEffect(() => {
+    // Component initialization
+    initializeComponent()
+  }, [])
+
+  const initializeComponent = () => {
+    // Initialize component logic
+    console.log('{componentName} initialized')
+  }
+
+  const handleAction = (data) => {
+    // Handle component actions
+    setState(prevState => ({ ...prevState, ...data }))
+    if (onUpdate) onUpdate(data)
+  }
+
   return (
-    <div className="{componentName.toLowerCase()}">
-      {/* Component content */}
+    <div className="{componentName.toLowerCase()}-container">
+      <div className="{componentName.toLowerCase()}-header">
+        <h2>{componentName}</h2>
+      </div>
+      <div className="{componentName.toLowerCase()}-content">
+        {/* Dynamic content based on state */}
+        <div className="status">
+          Status: {state.status || 'Ready'}
+        </div>
+      </div>
     </div>
   )
 }
@@ -639,13 +679,41 @@ export default {componentName}`,
 class {componentName} extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      // Component state
+      status: 'initialized'
+    }
+  }
+
+  componentDidMount() {
+    this.initializeComponent()
+  }
+
+  initializeComponent = () => {
+    // Initialize component logic
+    console.log('{componentName} mounted and initialized')
+  }
+
+  handleAction = (data) => {
+    // Handle component actions
+    this.setState(prevState => ({ ...prevState, ...data }))
+    if (this.props.onUpdate) {
+      this.props.onUpdate(data)
+    }
   }
 
   render() {
     return (
-      <div className="{componentName.toLowerCase()}">
-        {/* Component content */}
+      <div className="{componentName.toLowerCase()}-container">
+        <div className="{componentName.toLowerCase()}-header">
+          <h2>{componentName}</h2>
+        </div>
+        <div className="{componentName.toLowerCase()}-content">
+          {/* Dynamic content based on state */}
+          <div className="status">
+            Status: {this.state.status}
+          </div>
+        </div>
       </div>
     )
   }
@@ -655,35 +723,109 @@ export default {componentName}`
           },
           vue: `export default {
   name: '{componentName}',
+  props: {
+    initialData: {
+      type: Object,
+      default: () => ({})
+    }
+  },
   data() {
     return {
       // Component data
+      status: 'ready',
+      data: this.initialData
     }
   },
+  mounted() {
+    this.initializeComponent()
+  },
   methods: {
-    // Component methods
+    initializeComponent() {
+      // Initialize component logic
+      console.log('{componentName} initialized')
+      this.status = 'initialized'
+    },
+    
+    handleAction(data) {
+      // Handle component actions
+      this.data = { ...this.data, ...data }
+      this.$emit('update', data)
+    }
   },
   template: \`
-    <div class="{componentName.toLowerCase()}">
-      <!-- Component content -->
+    <div class="{componentName.toLowerCase()}-container">
+      <div class="{componentName.toLowerCase()}-header">
+        <h2>{componentName}</h2>
+      </div>
+      <div class="{componentName.toLowerCase()}-content">
+        <!-- Dynamic content based on data -->
+        <div class="status">
+          Status: {{ status }}
+        </div>
+      </div>
     </div>
   \`
 }`,
           vanilla: `class {componentName} {
-  constructor() {
+  constructor(options = {}) {
+    this.options = options
+    this.state = {
+      status: 'initialized',
+      data: {}
+    }
     this.init()
   }
 
   init() {
     // Initialize component
+    this.render()
+    this.bindEvents()
+    console.log('{componentName} initialized')
+  }
+
+  bindEvents() {
+    // Bind event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      this.attachToDOM()
+    })
+  }
+
+  attachToDOM() {
+    // Attach component to DOM
+    const container = document.getElementById('{componentName.toLowerCase()}-container')
+    if (container) {
+      container.innerHTML = this.render()
+    }
+  }
+
+  handleAction(data) {
+    // Handle component actions
+    this.state = { ...this.state, ...data }
+    this.render()
+    if (this.options.onUpdate) {
+      this.options.onUpdate(data)
+    }
   }
 
   render() {
     return \`
-      <div class="{componentName.toLowerCase()}">
-        <!-- Component content -->
+      <div class="{componentName.toLowerCase()}-container">
+        <div class="{componentName.toLowerCase()}-header">
+          <h2>{componentName}</h2>
+        </div>
+        <div class="{componentName.toLowerCase()}-content">
+          <!-- Dynamic content based on state -->
+          <div class="status">
+            Status: \${this.state.status}
+          </div>
+        </div>
       </div>
     \`
+  }
+
+  destroy() {
+    // Cleanup component
+    console.log('{componentName} destroyed')
   }
 }
 
@@ -698,15 +840,69 @@ export default {componentName}`
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{pageTitle}</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
-    <!-- Page content -->
+    <header class="app-header">
+      <div class="container">
+        <h1 class="app-title">{pageTitle}</h1>
+        <nav class="app-nav">
+          <!-- Navigation items -->
+        </nav>
+      </div>
+    </header>
+    
+    <main class="app-main">
+      <div class="container">
+        <div id="content-area">
+          <!-- Dynamic content will be rendered here -->
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading application...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="app-footer">
+      <div class="container">
+        <p>&copy; 2024 {pageTitle}. Built with DreamBuild AI.</p>
+      </div>
+    </footer>
   </div>
+  
   <script src="script.js"></script>
+  <script>
+    // Initialize app when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof initializeApp === 'function') {
+        initializeApp()
+      }
+    })
+  </script>
 </body>
 </html>`,
-          css: `/* {pageTitle} Styles */
+          css: `/* {pageTitle} Styles - Generated by DreamBuild AI */
+
+:root {
+  --primary-color: #3b82f6;
+  --secondary-color: #64748b;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --background-color: #f8fafc;
+  --surface-color: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --border-radius: 8px;
+  --transition: all 0.2s ease-in-out;
+}
 
 * {
   margin: 0;
@@ -715,56 +911,1124 @@ export default {componentName}`
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
-  color: #333;
-  background-color: #f4f4f4;
+  color: var(--text-primary);
+  background-color: var(--background-color);
+  font-size: 16px;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 20px;
 }
 
-/* Component styles */
-.component {
-  /* Component styling */
-}`,
-          js: `// {pageTitle} JavaScript
+/* Header Styles */
+.app-header {
+  background-color: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize app
-  initializeApp()
-})
+.app-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
 
+.app-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Main Content */
+.app-main {
+  min-height: calc(100vh - 120px);
+  padding: 2rem 0;
+}
+
+#content-area {
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  min-height: 400px;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Component Base Styles */
+.component-container {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.component-container:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.component-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.component-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.component-content {
+  /* Component content styling */
+}
+
+.status {
+  padding: 0.5rem 1rem;
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  min-height: 40px;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+.btn-secondary {
+  background-color: var(--surface-color);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--background-color);
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Footer */
+.app-footer {
+  background-color: var(--surface-color);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .app-main {
+    padding: 1rem 0;
+  }
+  
+  #content-area {
+    padding: 1rem;
+  }
+  
+  .component-container {
+    padding: 1rem;
+  }
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }`,
+          js: `// {pageTitle} JavaScript - Generated by DreamBuild AI
+
+class AppManager {
+  constructor() {
+    this.state = {
+      initialized: false,
+      currentView: 'main',
+      data: {},
+      user: null
+    }
+    this.components = new Map()
+    this.eventListeners = new Map()
+  }
+
+  async initialize() {
+    console.log('🚀 Initializing {pageTitle}...')
+    
+    try {
+      // Initialize app state
+      await this.loadInitialData()
+      
+      // Setup event listeners
+      this.setupEventListeners()
+      
+      // Initialize components
+      await this.initializeComponents()
+      
+      // Render initial view
+      this.render()
+      
+      this.state.initialized = true
+      console.log('✅ {pageTitle} initialized successfully')
+      
+    } catch (error) {
+      console.error('❌ Failed to initialize {pageTitle}:', error)
+      this.showError('Failed to initialize application')
+    }
+  }
+
+  async loadInitialData() {
+    // Load initial application data
+    console.log('📊 Loading initial data...')
+    
+    // Simulate data loading
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    this.state.data = {
+      timestamp: new Date().toISOString(),
+      version: '1.0.0'
+    }
+  }
+
+  setupEventListeners() {
+    // Setup global event listeners
+    console.log('🎧 Setting up event listeners...')
+    
+    // Window events
+    window.addEventListener('resize', this.handleResize.bind(this))
+    window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this))
+    
+    // Custom events
+    document.addEventListener('app:update', this.handleAppUpdate.bind(this))
+  }
+
+  async initializeComponents() {
+    console.log('🧩 Initializing components...')
+    
+    // Initialize core components
+    const componentNames = this.getComponentNames()
+    
+    for (const componentName of componentNames) {
+      try {
+        const component = await this.createComponent(componentName)
+        this.components.set(componentName, component)
+      } catch (error) {
+        console.error(\`Failed to initialize component \${componentName}:\`, error)
+      }
+    }
+  }
+
+  getComponentNames() {
+    // Return list of components to initialize
+    return ['MainComponent', 'NavigationComponent', 'ContentComponent']
+  }
+
+  async createComponent(componentName) {
+    // Create component instance
+    const ComponentClass = this.getComponentClass(componentName)
+    return new ComponentClass({
+      appManager: this,
+      onUpdate: (data) => this.handleComponentUpdate(componentName, data)
+    })
+  }
+
+  getComponentClass(componentName) {
+    // Return component class based on name
+    const components = {
+      MainComponent: class {
+        constructor(options) {
+          this.appManager = options.appManager
+          this.onUpdate = options.onUpdate
+          this.state = { status: 'ready' }
+        }
+        
+        render() {
+          return \`
+            <div class="component-container">
+              <div class="component-header">
+                <h2>Main Component</h2>
+              </div>
+              <div class="component-content">
+                <div class="status">Status: \${this.state.status}</div>
+                <button class="btn btn-primary" onclick="this.handleAction()">
+                  Update Status
+                </button>
+              </div>
+            </div>
+          \`
+        }
+        
+        handleAction() {
+          this.state.status = 'updated'
+          this.onUpdate({ status: this.state.status })
+        }
+      }
+    }
+    
+    return components[componentName] || class {
+      constructor(options) {
+        this.appManager = options.appManager
+        this.onUpdate = options.onUpdate
+        this.state = { status: 'ready' }
+      }
+      
+      render() {
+        return \`
+          <div class="component-container">
+            <div class="component-header">
+              <h2>\${componentName}</h2>
+            </div>
+            <div class="component-content">
+              <div class="status">Status: \${this.state.status}</div>
+            </div>
+          </div>
+        \`
+      }
+    }
+  }
+
+  render() {
+    const contentArea = document.getElementById('content-area')
+    if (!contentArea) return
+
+    // Hide loading state
+    const loadingState = contentArea.querySelector('.loading-state')
+    if (loadingState) {
+      loadingState.style.display = 'none'
+    }
+
+    // Render components
+    let html = ''
+    for (const [name, component] of this.components) {
+      if (component.render) {
+        html += component.render()
+      }
+    }
+
+    contentArea.innerHTML = html
+  }
+
+  handleComponentUpdate(componentName, data) {
+    console.log(\`Component \${componentName} updated:\`, data)
+    
+    // Update global state
+    this.state.data = { ...this.state.data, ...data }
+    
+    // Re-render if needed
+    this.render()
+  }
+
+  handleAppUpdate(event) {
+    console.log('App update event:', event.detail)
+    // Handle global app updates
+  }
+
+  handleResize() {
+    // Handle window resize
+    console.log('Window resized')
+  }
+
+  handleBeforeUnload(event) {
+    // Handle before unload
+    console.log('App is about to unload')
+  }
+
+  showError(message) {
+    const contentArea = document.getElementById('content-area')
+    if (contentArea) {
+      contentArea.innerHTML = \`
+        <div class="error-state">
+          <h2>Error</h2>
+          <p>\${message}</p>
+          <button class="btn btn-primary" onclick="location.reload()">
+            Retry
+          </button>
+        </div>
+      \`
+    }
+  }
+}
+
+// Global app instance
+let appManager
+
+// Initialize app when DOM is ready
 function initializeApp() {
-  // App initialization logic
+  if (!appManager) {
+    appManager = new AppManager()
+    appManager.initialize()
+  }
 }
 
 // Utility functions
 function utilityFunction() {
-  // Utility logic
+  console.log('Utility function called')
+}
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { AppManager, initializeApp }
 }`
         }
       },
       
-      // Common patterns for different app types
+      // Common patterns for different app types with detailed implementations
       appPatterns: {
         todo: {
           structure: ['TodoList', 'TodoItem', 'AddTodo', 'FilterTodos'],
-          features: ['add', 'delete', 'edit', 'complete', 'filter'],
-          state: ['todos', 'filter', 'input']
+          features: ['add', 'delete', 'edit', 'complete', 'filter', 'localStorage'],
+          state: ['todos', 'filter', 'input'],
+          implementations: {
+            TodoList: `class TodoList {
+  constructor() {
+    this.todos = this.loadFromStorage()
+    this.filter = 'all'
+    this.init()
+  }
+
+  init() {
+    this.render()
+    this.bindEvents()
+  }
+
+  bindEvents() {
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('todo-toggle')) {
+        this.toggleTodo(e.target.dataset.id)
+      } else if (e.target.classList.contains('todo-delete')) {
+        this.deleteTodo(e.target.dataset.id)
+      }
+    })
+
+    document.addEventListener('change', (e) => {
+      if (e.target.classList.contains('filter-select')) {
+        this.setFilter(e.target.value)
+      }
+    })
+  }
+
+  addTodo(text) {
+    const todo = {
+      id: Date.now().toString(),
+      text: text.trim(),
+      completed: false,
+      createdAt: new Date().toISOString()
+    }
+    
+    this.todos.push(todo)
+    this.saveToStorage()
+    this.render()
+  }
+
+  toggleTodo(id) {
+    const todo = this.todos.find(t => t.id === id)
+    if (todo) {
+      todo.completed = !todo.completed
+      this.saveToStorage()
+      this.render()
+    }
+  }
+
+  deleteTodo(id) {
+    this.todos = this.todos.filter(t => t.id !== id)
+    this.saveToStorage()
+    this.render()
+  }
+
+  setFilter(filter) {
+    this.filter = filter
+    this.render()
+  }
+
+  getFilteredTodos() {
+    switch (this.filter) {
+      case 'active': return this.todos.filter(t => !t.completed)
+      case 'completed': return this.todos.filter(t => t.completed)
+      default: return this.todos
+    }
+  }
+
+  saveToStorage() {
+    localStorage.setItem('todos', JSON.stringify(this.todos))
+  }
+
+  loadFromStorage() {
+    const stored = localStorage.getItem('todos')
+    return stored ? JSON.parse(stored) : []
+  }
+
+  render() {
+    const container = document.getElementById('todo-list')
+    if (!container) return
+
+    const filteredTodos = this.getFilteredTodos()
+    
+    container.innerHTML = \`
+      <div class="todo-header">
+        <h2>Todo List (\${filteredTodos.length} items)</h2>
+        <select class="filter-select">
+          <option value="all" \${this.filter === 'all' ? 'selected' : ''}>All</option>
+          <option value="active" \${this.filter === 'active' ? 'selected' : ''}>Active</option>
+          <option value="completed" \${this.filter === 'completed' ? 'selected' : ''}>Completed</option>
+        </select>
+      </div>
+      <div class="todo-items">
+        \${filteredTodos.map(todo => \`
+          <div class="todo-item \${todo.completed ? 'completed' : ''}">
+            <input type="checkbox" class="todo-toggle" data-id="\${todo.id}" \${todo.completed ? 'checked' : ''}>
+            <span class="todo-text">\${todo.text}</span>
+            <button class="todo-delete" data-id="\${todo.id}">Delete</button>
+          </div>
+        \`).join('')}
+      </div>
+    \`
+  }
+}`,
+            AddTodo: `class AddTodo {
+  constructor(todoList) {
+    this.todoList = todoList
+    this.init()
+  }
+
+  init() {
+    this.render()
+    this.bindEvents()
+  }
+
+  bindEvents() {
+    const form = document.getElementById('add-todo-form')
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault()
+        this.handleSubmit(e)
+      })
+    }
+  }
+
+  handleSubmit(e) {
+    const input = e.target.querySelector('.todo-input')
+    const text = input.value.trim()
+    
+    if (text) {
+      this.todoList.addTodo(text)
+      input.value = ''
+    }
+  }
+
+  render() {
+    const container = document.getElementById('add-todo')
+    if (!container) return
+
+    container.innerHTML = \`
+      <form id="add-todo-form" class="add-todo-form">
+        <div class="form-group">
+          <input type="text" class="todo-input form-input" placeholder="Add a new todo..." required>
+          <button type="submit" class="btn btn-primary">Add Todo</button>
+        </div>
+      </form>
+    \`
+  }
+}`
+          }
         },
         calculator: {
           structure: ['Calculator', 'Display', 'Button', 'History'],
-          features: ['calculate', 'clear', 'history', 'memory'],
-          state: ['display', 'operation', 'history']
+          features: ['calculate', 'clear', 'history', 'memory', 'keyboard'],
+          state: ['display', 'operation', 'history', 'memory'],
+          implementations: {
+            Calculator: `class Calculator {
+  constructor() {
+    this.display = '0'
+    this.previousValue = null
+    this.operation = null
+    this.waitingForNewValue = false
+    this.history = this.loadHistory()
+    this.init()
+  }
+
+  init() {
+    this.render()
+    this.bindEvents()
+  }
+
+  bindEvents() {
+    // Button clicks
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('calc-btn')) {
+        this.handleButtonClick(e.target.dataset.value)
+      }
+    })
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      this.handleKeyboard(e)
+    })
+  }
+
+  handleButtonClick(value) {
+    if (/\d/.test(value)) {
+      this.inputNumber(value)
+    } else if (value === '.') {
+      this.inputDecimal()
+    } else if (['+', '-', '*', '/'].includes(value)) {
+      this.inputOperator(value)
+    } else if (value === '=') {
+      this.calculate()
+    } else if (value === 'clear') {
+      this.clear()
+    } else if (value === 'delete') {
+      this.delete()
+    }
+  }
+
+  handleKeyboard(e) {
+    e.preventDefault()
+    
+    if (/\d/.test(e.key)) {
+      this.inputNumber(e.key)
+    } else if (e.key === '.') {
+      this.inputDecimal()
+    } else if (['+', '-', '*', '/'].includes(e.key)) {
+      this.inputOperator(e.key)
+    } else if (e.key === 'Enter' || e.key === '=') {
+      this.calculate()
+    } else if (e.key === 'Escape' || e.key === 'c') {
+      this.clear()
+    } else if (e.key === 'Backspace') {
+      this.delete()
+    }
+  }
+
+  inputNumber(num) {
+    if (this.waitingForNewValue) {
+      this.display = num
+      this.waitingForNewValue = false
+    } else {
+      this.display = this.display === '0' ? num : this.display + num
+    }
+    this.updateDisplay()
+  }
+
+  inputDecimal() {
+    if (this.waitingForNewValue) {
+      this.display = '0.'
+      this.waitingForNewValue = false
+    } else if (!this.display.includes('.')) {
+      this.display += '.'
+    }
+    this.updateDisplay()
+  }
+
+  inputOperator(nextOperator) {
+    const inputValue = parseFloat(this.display)
+
+    if (this.previousValue === null) {
+      this.previousValue = inputValue
+    } else if (this.operation) {
+      const currentValue = this.previousValue || 0
+      const newValue = this.performCalculation(currentValue, inputValue, this.operation)
+
+      this.display = String(newValue)
+      this.previousValue = newValue
+    }
+
+    this.waitingForNewValue = true
+    this.operation = nextOperator
+    this.updateDisplay()
+  }
+
+  calculate() {
+    const inputValue = parseFloat(this.display)
+
+    if (this.previousValue !== null && this.operation) {
+      const newValue = this.performCalculation(this.previousValue, inputValue, this.operation)
+      
+      // Add to history
+      this.addToHistory(\`\${this.previousValue} \${this.operation} \${inputValue} = \${newValue}\`)
+      
+      this.display = String(newValue)
+      this.previousValue = null
+      this.operation = null
+      this.waitingForNewValue = true
+    }
+    
+    this.updateDisplay()
+  }
+
+  performCalculation(firstValue, secondValue, operation) {
+    switch (operation) {
+      case '+': return firstValue + secondValue
+      case '-': return firstValue - secondValue
+      case '*': return firstValue * secondValue
+      case '/': return secondValue !== 0 ? firstValue / secondValue : 0
+      default: return secondValue
+    }
+  }
+
+  clear() {
+    this.display = '0'
+    this.previousValue = null
+    this.operation = null
+    this.waitingForNewValue = false
+    this.updateDisplay()
+  }
+
+  delete() {
+    if (this.display.length > 1) {
+      this.display = this.display.slice(0, -1)
+    } else {
+      this.display = '0'
+    }
+    this.updateDisplay()
+  }
+
+  addToHistory(calculation) {
+    this.history.unshift({
+      calculation,
+      timestamp: new Date().toISOString()
+    })
+    
+    // Keep only last 10 calculations
+    this.history = this.history.slice(0, 10)
+    this.saveHistory()
+    this.updateHistory()
+  }
+
+  updateDisplay() {
+    const display = document.getElementById('calculator-display')
+    if (display) {
+      display.textContent = this.display
+    }
+  }
+
+  updateHistory() {
+    const historyContainer = document.getElementById('calculator-history')
+    if (!historyContainer) return
+
+    historyContainer.innerHTML = \`
+      <h3>History</h3>
+      <div class="history-items">
+        \${this.history.map(item => \`
+          <div class="history-item">
+            <span class="calculation">\${item.calculation}</span>
+            <small class="timestamp">\${new Date(item.timestamp).toLocaleTimeString()}</small>
+          </div>
+        \`).join('')}
+      </div>
+    \`
+  }
+
+  saveHistory() {
+    localStorage.setItem('calculator-history', JSON.stringify(this.history))
+  }
+
+  loadHistory() {
+    const stored = localStorage.getItem('calculator-history')
+    return stored ? JSON.parse(stored) : []
+  }
+
+  render() {
+    const container = document.getElementById('calculator')
+    if (!container) return
+
+    container.innerHTML = \`
+      <div class="calculator-container">
+        <div class="calculator-display" id="calculator-display">\${this.display}</div>
+        <div class="calculator-buttons">
+          <button class="calc-btn" data-value="clear">C</button>
+          <button class="calc-btn" data-value="delete">⌫</button>
+          <button class="calc-btn" data-value="/">/</button>
+          <button class="calc-btn" data-value="*">×</button>
+          
+          <button class="calc-btn" data-value="7">7</button>
+          <button class="calc-btn" data-value="8">8</button>
+          <button class="calc-btn" data-value="9">9</button>
+          <button class="calc-btn" data-value="-">-</button>
+          
+          <button class="calc-btn" data-value="4">4</button>
+          <button class="calc-btn" data-value="5">5</button>
+          <button class="calc-btn" data-value="6">6</button>
+          <button class="calc-btn" data-value="+">+</button>
+          
+          <button class="calc-btn" data-value="1">1</button>
+          <button class="calc-btn" data-value="2">2</button>
+          <button class="calc-btn" data-value="3">3</button>
+          <button class="calc-btn" data-value="=" rowspan="2">=</button>
+          
+          <button class="calc-btn" data-value="0" colspan="2">0</button>
+          <button class="calc-btn" data-value=".">.</button>
+        </div>
+        <div class="calculator-history" id="calculator-history"></div>
+      </div>
+    \`
+  }
+}`
+          }
         },
         game: {
           structure: ['Game', 'Player', 'Score', 'Level', 'Enemy'],
-          features: ['start', 'pause', 'reset', 'score', 'levels'],
-          state: ['score', 'level', 'gameState', 'player']
+          features: ['start', 'pause', 'reset', 'score', 'levels', 'canvas'],
+          state: ['score', 'level', 'gameState', 'player'],
+          implementations: {
+            Game: `class Game {
+  constructor() {
+    this.canvas = null
+    this.ctx = null
+    this.gameState = 'menu' // menu, playing, paused, gameOver
+    this.score = 0
+    this.level = 1
+    this.player = null
+    this.enemies = []
+    this.gameLoop = null
+    this.lastTime = 0
+    this.init()
+  }
+
+  init() {
+    this.createCanvas()
+    this.setupEventListeners()
+    this.showMenu()
+  }
+
+  createCanvas() {
+    const container = document.getElementById('game-container')
+    if (!container) return
+
+    this.canvas = document.createElement('canvas')
+    this.canvas.width = 800
+    this.canvas.height = 600
+    this.canvas.style.border = '2px solid #333'
+    this.canvas.style.backgroundColor = '#000'
+    
+    this.ctx = this.canvas.getContext('2d')
+    container.appendChild(this.canvas)
+  }
+
+  setupEventListeners() {
+    document.addEventListener('keydown', (e) => {
+      if (this.gameState === 'playing' && this.player) {
+        this.player.handleInput(e.key)
+      } else if (e.key === 'Enter' && this.gameState === 'menu') {
+        this.startGame()
+      } else if (e.key === 'Enter' && this.gameState === 'gameOver') {
+        this.resetGame()
+      }
+    })
+
+    // Touch controls for mobile
+    this.canvas.addEventListener('touchstart', (e) => {
+      if (this.gameState === 'playing' && this.player) {
+        const touch = e.touches[0]
+        const rect = this.canvas.getBoundingClientRect()
+        const x = touch.clientX - rect.left
+        
+        if (x < this.canvas.width / 2) {
+          this.player.moveLeft()
+        } else {
+          this.player.moveRight()
+        }
+      }
+    })
+  }
+
+  showMenu() {
+    this.gameState = 'menu'
+    this.ctx.fillStyle = '#000'
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    
+    this.ctx.fillStyle = '#fff'
+    this.ctx.font = '48px Arial'
+    this.ctx.textAlign = 'center'
+    this.ctx.fillText('Space Game', this.canvas.width / 2, this.canvas.height / 2 - 50)
+    
+    this.ctx.font = '24px Arial'
+    this.ctx.fillText('Press ENTER to Start', this.canvas.width / 2, this.canvas.height / 2 + 50)
+    
+    this.ctx.fillText('High Score: ' + this.getHighScore(), this.canvas.width / 2, this.canvas.height / 2 + 100)
+  }
+
+  startGame() {
+    this.gameState = 'playing'
+    this.score = 0
+    this.level = 1
+    this.enemies = []
+    
+    // Create player
+    this.player = new Player(this.canvas.width / 2, this.canvas.height - 50)
+    
+    // Create initial enemies
+    this.createEnemies()
+    
+    // Start game loop
+    this.gameLoop = requestAnimationFrame((time) => this.update(time))
+  }
+
+  createEnemies() {
+    for (let i = 0; i < 5 + this.level; i++) {
+      const x = Math.random() * (this.canvas.width - 40)
+      const y = Math.random() * 200
+      this.enemies.push(new Enemy(x, y))
+    }
+  }
+
+  update(currentTime) {
+    if (this.gameState !== 'playing') return
+
+    const deltaTime = currentTime - this.lastTime
+    this.lastTime = currentTime
+
+    // Clear canvas
+    this.ctx.fillStyle = '#000'
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+
+    // Update player
+    if (this.player) {
+      this.player.update(deltaTime)
+      this.player.draw(this.ctx)
+    }
+
+    // Update enemies
+    this.enemies.forEach((enemy, index) => {
+      enemy.update(deltaTime)
+      enemy.draw(this.ctx)
+
+      // Check collision with player
+      if (this.player && this.checkCollision(this.player, enemy)) {
+        this.gameOver()
+      }
+
+      // Remove enemies that are off screen
+      if (enemy.y > this.canvas.height) {
+        this.enemies.splice(index, 1)
+        this.score += 10
+      }
+    })
+
+    // Add new enemies if needed
+    if (this.enemies.length === 0) {
+      this.level++
+      this.createEnemies()
+    }
+
+    // Draw UI
+    this.drawUI()
+
+    // Continue game loop
+    this.gameLoop = requestAnimationFrame((time) => this.update(time))
+  }
+
+  checkCollision(player, enemy) {
+    return player.x < enemy.x + enemy.width &&
+           player.x + player.width > enemy.x &&
+           player.y < enemy.y + enemy.height &&
+           player.y + player.height > enemy.y
+  }
+
+  drawUI() {
+    this.ctx.fillStyle = '#fff'
+    this.ctx.font = '20px Arial'
+    this.ctx.textAlign = 'left'
+    this.ctx.fillText(\`Score: \${this.score}\`, 20, 30)
+    this.ctx.fillText(\`Level: \${this.level}\`, 20, 60)
+  }
+
+  gameOver() {
+    this.gameState = 'gameOver'
+    cancelAnimationFrame(this.gameLoop)
+    
+    // Save high score
+    if (this.score > this.getHighScore()) {
+      localStorage.setItem('game-high-score', this.score.toString())
+    }
+    
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    
+    this.ctx.fillStyle = '#fff'
+    this.ctx.font = '48px Arial'
+    this.ctx.textAlign = 'center'
+    this.ctx.fillText('Game Over!', this.canvas.width / 2, this.canvas.height / 2 - 50)
+    
+    this.ctx.font = '24px Arial'
+    this.ctx.fillText(\`Final Score: \${this.score}\`, this.canvas.width / 2, this.canvas.height / 2)
+    this.ctx.fillText('Press ENTER to Restart', this.canvas.width / 2, this.canvas.height / 2 + 50)
+  }
+
+  resetGame() {
+    this.showMenu()
+  }
+
+  getHighScore() {
+    return parseInt(localStorage.getItem('game-high-score') || '0')
+  }
+
+  render() {
+    const container = document.getElementById('game')
+    if (!container) return
+
+    container.innerHTML = \`
+      <div class="game-container" id="game-container">
+        <!-- Canvas will be created here -->
+      </div>
+      <div class="game-controls">
+        <p>Use arrow keys or WASD to move. Avoid the enemies!</p>
+      </div>
+    \`
+  }
+}
+
+class Player {
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+    this.width = 40
+    this.height = 40
+    this.speed = 200
+    this.keys = {}
+  }
+
+  handleInput(key) {
+    this.keys[key] = true
+  }
+
+  update(deltaTime) {
+    if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) {
+      this.x -= this.speed * deltaTime / 1000
+    }
+    if (this.keys['ArrowRight'] || this.keys['d'] || this.keys['D']) {
+      this.x += this.speed * deltaTime / 1000
+    }
+
+    // Keep player on screen
+    this.x = Math.max(0, Math.min(760, this.x))
+  }
+
+  draw(ctx) {
+    ctx.fillStyle = '#00f'
+    ctx.fillRect(this.x, this.y, this.width, this.height)
+  }
+
+  moveLeft() {
+    this.x -= 20
+    this.x = Math.max(0, this.x)
+  }
+
+  moveRight() {
+    this.x += 20
+    this.x = Math.min(760, this.x)
+  }
+}
+
+class Enemy {
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+    this.width = 30
+    this.height = 30
+    this.speed = 50 + Math.random() * 100
+  }
+
+  update(deltaTime) {
+    this.y += this.speed * deltaTime / 1000
+  }
+
+  draw(ctx) {
+    ctx.fillStyle = '#f00'
+    ctx.fillRect(this.x, this.y, this.width, this.height)
+  }
+}`
+          }
         }
       }
     }
@@ -776,24 +2040,51 @@ function utilityFunction() {
       intentAnalyzer: (prompt) => {
         const lowerPrompt = prompt.toLowerCase()
         
-        // Analyze app type
+        // Analyze app type with improved matching
         let appType = 'web-app'
         let confidence = 0
+        let bestMatches = []
         
+        // Check for exact matches first (higher priority)
         for (const [type, keywords] of Object.entries(this.aiPatterns.appTypes)) {
-          const matches = keywords.filter(keyword => lowerPrompt.includes(keyword))
-          if (matches.length > confidence) {
+          const exactMatches = keywords.filter(keyword => {
+            // Check for exact word matches
+            const regex = new RegExp(`\\b${keyword}\\b`, 'i')
+            return regex.test(lowerPrompt)
+          })
+          
+          const partialMatches = keywords.filter(keyword => lowerPrompt.includes(keyword))
+          
+          // Weight exact matches higher than partial matches
+          const matchScore = exactMatches.length * 2 + partialMatches.length
+          
+          if (matchScore > confidence) {
             appType = type
-            confidence = matches.length
+            confidence = matchScore
+            bestMatches = [...exactMatches, ...partialMatches]
           }
+        }
+        
+        // Special handling for common app types
+        if (lowerPrompt.includes('todo') || lowerPrompt.includes('task') || lowerPrompt.includes('list')) {
+          appType = 'todo'
+          confidence = 3
+        } else if (lowerPrompt.includes('calculator') || lowerPrompt.includes('math') || lowerPrompt.includes('compute')) {
+          appType = 'calculator'
+          confidence = 3
+        } else if (lowerPrompt.includes('game') || lowerPrompt.includes('player') || lowerPrompt.includes('enemy')) {
+          appType = 'game'
+          confidence = 3
         }
         
         // Analyze technology preferences
         let technology = 'vanilla'
+        let techConfidence = 0
         for (const [tech, keywords] of Object.entries(this.aiPatterns.technologies)) {
-          if (keywords.some(keyword => lowerPrompt.includes(keyword))) {
+          const techMatches = keywords.filter(keyword => lowerPrompt.includes(keyword))
+          if (techMatches.length > techConfidence) {
             technology = tech
-            break
+            techConfidence = techMatches.length
           }
         }
         
@@ -809,8 +2100,9 @@ function utilityFunction() {
           appType,
           technology,
           features,
-          confidence: confidence / Math.max(...Object.values(this.aiPatterns.appTypes).map(arr => arr.length)),
-          complexity: this.calculateComplexity(features.length, appType)
+          confidence: Math.min(confidence / 3, 1), // Normalize confidence
+          complexity: this.calculateComplexity(features.length, appType),
+          matches: bestMatches
         }
       },
       
@@ -822,12 +2114,12 @@ function utilityFunction() {
         const baseStructure = this.codePatterns.appPatterns[appType] || 
                              this.codePatterns.appPatterns.todo
         
-        // Generate component structure
+        // Generate component structure with detailed implementations
         const components = baseStructure.structure.map(comp => ({
           name: comp,
           type: 'component',
           technology,
-          template: this.generateComponentTemplate(comp, technology, features)
+          template: this.generateDetailedComponentTemplate(comp, appType, technology, features)
         }))
         
         // Generate page structure
@@ -857,7 +2149,7 @@ function utilityFunction() {
         
         // Generate page files
         structure.pages.forEach(page => {
-          const filename = `${page.name}.${this.getFileExtension(page.type)}`
+          const filename = `${page.name}.html`
           files[filename] = page.template
         })
         
@@ -936,20 +2228,228 @@ function utilityFunction() {
   }
 
   generateComponentTemplate(componentName, technology, features) {
-    const baseTemplate = this.codePatterns.structures.component[technology] || 
-                        this.codePatterns.structures.component.vanilla
+    // Get the correct template based on technology
+    let baseTemplate = ''
     
-    return baseTemplate
-      .replace(/{componentName}/g, componentName)
-      .replace(/{features}/g, features.map(f => `// ${f} feature`).join('\n'))
+    try {
+      if (technology === 'react') {
+        // React has nested structure with functional and class
+        const reactComponent = this.codePatterns.structures.component.react
+        baseTemplate = (typeof reactComponent === 'object' && reactComponent.functional) 
+                      ? reactComponent.functional 
+                      : (typeof reactComponent === 'string' ? reactComponent : this.codePatterns.structures.component.vanilla)
+      } else if (technology === 'vue') {
+        // Vue can be either a string or an object
+        const vueComponent = this.codePatterns.structures.component.vue
+        baseTemplate = (typeof vueComponent === 'object' && vueComponent.component)
+                      ? vueComponent.component
+                      : (typeof vueComponent === 'string' ? vueComponent : this.codePatterns.structures.component.vanilla)
+      } else {
+        // Vanilla or fallback
+        baseTemplate = this.codePatterns.structures.component.vanilla || 
+                      this.codePatterns.structures.component.react?.functional || 
+                      '// Component template'
+      }
+      
+      // Final safety check - ensure we have a string
+      if (typeof baseTemplate !== 'string') {
+        console.warn('⚠️ Template is not a string, using fallback')
+        baseTemplate = this.codePatterns.structures.component.vanilla || '// Component template not found'
+      }
+      
+      // Only call replace if we have a valid string
+      if (typeof baseTemplate === 'string') {
+        return baseTemplate
+          .replace(/{componentName}/g, componentName)
+          .replace(/{features}/g, features && Array.isArray(features) ? features.map(f => `// ${f} feature`).join('\n') : '')
+      }
+      
+      return `// Component: ${componentName}\n// Generated by DreamBuild AI`
+      
+    } catch (error) {
+      console.error('❌ Error in generateComponentTemplate:', error)
+      return `// Component: ${componentName}\n// Error generating template: ${error.message}`
+    }
+  }
+
+  generateDetailedComponentTemplate(componentName, appType, technology, features) {
+    // Check if we have a detailed implementation for this component
+    const appPattern = this.codePatterns.appPatterns[appType]
+    if (appPattern && appPattern.implementations && appPattern.implementations[componentName]) {
+      return appPattern.implementations[componentName]
+    }
+    
+    // Fall back to enhanced template generation
+    let baseTemplate = ''
+    
+    try {
+      if (technology === 'react') {
+        // React has nested structure with functional and class
+        const reactComponent = this.codePatterns.structures.component.react
+        baseTemplate = (typeof reactComponent === 'object' && reactComponent.functional) 
+                      ? reactComponent.functional 
+                      : (typeof reactComponent === 'string' ? reactComponent : this.codePatterns.structures.component.vanilla)
+      } else if (technology === 'vue') {
+        // Vue can be either a string or an object
+        const vueComponent = this.codePatterns.structures.component.vue
+        baseTemplate = (typeof vueComponent === 'object' && vueComponent.component)
+                      ? vueComponent.component
+                      : (typeof vueComponent === 'string' ? vueComponent : this.codePatterns.structures.component.vanilla)
+      } else {
+        // Vanilla or fallback
+        baseTemplate = this.codePatterns.structures.component.vanilla || 
+                      this.codePatterns.structures.component.react?.functional || 
+                      '// Component template'
+      }
+      
+      // Final safety check - ensure we have a string template
+      if (typeof baseTemplate !== 'string') {
+        console.warn('⚠️ Detailed template is not a string, using fallback')
+        baseTemplate = this.codePatterns.structures.component.vanilla || '// Component template not found'
+      }
+    } catch (error) {
+      console.error('❌ Error getting base template:', error)
+      baseTemplate = '// Component template error'
+    }
+    
+    // Enhance template with app-specific features
+    let enhancedTemplate = ''
+    try {
+      if (typeof baseTemplate === 'string') {
+        enhancedTemplate = baseTemplate
+          .replace(/{componentName}/g, componentName)
+          .replace(/{features}/g, features && Array.isArray(features) ? features.map(f => `// ${f} feature`).join('\n') : '')
+      } else {
+        enhancedTemplate = `// Component: ${componentName}\n// Features: ${features && Array.isArray(features) ? features.join(', ') : 'none'}`
+      }
+    } catch (error) {
+      console.error('❌ Error enhancing template:', error)
+      enhancedTemplate = `// Component: ${componentName}\n// Error: ${error.message}`
+    }
+    
+    // Add specific feature implementations
+    if (features.includes('localStorage')) {
+      enhancedTemplate += `
+
+  // Local Storage functionality
+  saveToStorage(key, data) {
+    try {
+      localStorage.setItem(key, JSON.stringify(data))
+      return true
+    } catch (error) {
+      console.error('Failed to save to localStorage:', error)
+      return false
+    }
+  }
+
+  loadFromStorage(key) {
+    try {
+      const stored = localStorage.getItem(key)
+      return stored ? JSON.parse(stored) : null
+    } catch (error) {
+      console.error('Failed to load from localStorage:', error)
+      return null
+    }
+  }`
+    }
+    
+    if (features.includes('api')) {
+      enhancedTemplate += `
+
+  // API functionality
+  async fetchData(url, options = {}) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        },
+        ...options
+      })
+      
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('API request failed:', error)
+      throw error
+    }
+  }`
+    }
+    
+    if (features.includes('validation')) {
+      enhancedTemplate += `
+
+  // Validation functionality
+  validateInput(input, rules = {}) {
+    const errors = []
+    
+    if (rules.required && !input.trim()) {
+      errors.push('This field is required')
+    }
+    
+    if (rules.minLength && input.length < rules.minLength) {
+      errors.push(\`Minimum length is \${rules.minLength}\`)
+    }
+    
+    if (rules.maxLength && input.length > rules.maxLength) {
+      errors.push(\`Maximum length is \${rules.maxLength}\`)
+    }
+    
+    if (rules.email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(input)) {
+      errors.push('Please enter a valid email address')
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    }
+  }`
+    }
+    
+    return enhancedTemplate
   }
 
   generatePageTemplate(appType, technology, features) {
     const baseTemplate = this.codePatterns.structures.page.html
     
+    // Add app-specific containers
+    let appSpecificContent = ''
+    switch (appType) {
+      case 'todo':
+        appSpecificContent = `
+        <div id="add-todo" class="app-section">
+          <!-- Add Todo component will be rendered here -->
+        </div>
+        <div id="todo-list" class="app-section">
+          <!-- Todo List component will be rendered here -->
+        </div>`
+        break
+      case 'calculator':
+        appSpecificContent = `
+        <div id="calculator" class="app-section">
+          <!-- Calculator component will be rendered here -->
+        </div>`
+        break
+      case 'game':
+        appSpecificContent = `
+        <div id="game" class="app-section">
+          <!-- Game component will be rendered here -->
+        </div>`
+        break
+      default:
+        appSpecificContent = `
+        <div id="main-content" class="app-section">
+          <!-- Main content will be rendered here -->
+        </div>`
+    }
+    
     return baseTemplate
       .replace(/{pageTitle}/g, appType.charAt(0).toUpperCase() + appType.slice(1) + ' App')
       .replace(/{features}/g, features.map(f => `<!-- ${f} feature -->`).join('\n'))
+      .replace('<!-- Dynamic content will be rendered here -->', appSpecificContent)
   }
 
   generateAssetTemplate(type, intent) {
@@ -990,6 +2490,9 @@ function utilityFunction() {
       })
     }
     
+    // Add main app initialization with detailed implementations
+    enhancedFiles['app.js'] = this.generateMainAppFile(intent)
+    
     // Add configuration based on intent
     if (intent.features.includes('authentication')) {
       enhancedFiles['auth.js'] = this.generateAuthModule()
@@ -999,7 +2502,184 @@ function utilityFunction() {
       enhancedFiles['database.js'] = this.generateDatabaseModule()
     }
     
+    // Add specific app type initialization
+    if (intent.appType === 'todo') {
+      enhancedFiles['todo-app.js'] = this.generateTodoAppInitializer()
+    } else if (intent.appType === 'calculator') {
+      enhancedFiles['calculator-app.js'] = this.generateCalculatorAppInitializer()
+    } else if (intent.appType === 'game') {
+      enhancedFiles['game-app.js'] = this.generateGameAppInitializer()
+    }
+    
     return enhancedFiles
+  }
+
+  generateMainAppFile(intent) {
+    return `// Main App Initialization - Generated by DreamBuild Built-in AI
+
+class ${intent.appType.charAt(0).toUpperCase() + intent.appType.slice(1)}App {
+  constructor() {
+    this.appType = '${intent.appType}'
+    this.technology = '${intent.technology}'
+    this.features = ${JSON.stringify(intent.features)}
+    this.components = new Map()
+    this.initialized = false
+  }
+
+  async initialize() {
+    console.log('🚀 Initializing ${intent.appType} app...')
+    
+    try {
+      // Initialize based on app type
+      await this.initializeAppType()
+      
+      // Setup feature-specific functionality
+      await this.setupFeatures()
+      
+      // Initialize components
+      await this.initializeComponents()
+      
+      this.initialized = true
+      console.log('✅ ${intent.appType} app initialized successfully')
+      
+    } catch (error) {
+      console.error('❌ Failed to initialize ${intent.appType} app:', error)
+    }
+  }
+
+  async initializeAppType() {
+    switch (this.appType) {
+      case 'todo':
+        await this.initializeTodoApp()
+        break
+      case 'calculator':
+        await this.initializeCalculatorApp()
+        break
+      case 'game':
+        await this.initializeGameApp()
+        break
+      default:
+        await this.initializeGenericApp()
+    }
+  }
+
+  async initializeTodoApp() {
+    const todoList = new TodoList()
+    const addTodo = new AddTodo(todoList)
+    
+    this.components.set('todoList', todoList)
+    this.components.set('addTodo', addTodo)
+  }
+
+  async initializeCalculatorApp() {
+    const calculator = new Calculator()
+    this.components.set('calculator', calculator)
+  }
+
+  async initializeGameApp() {
+    const game = new Game()
+    this.components.set('game', game)
+  }
+
+  async initializeGenericApp() {
+    // Generic app initialization
+    console.log('Initializing generic app...')
+  }
+
+  async setupFeatures() {
+    for (const feature of this.features) {
+      switch (feature) {
+        case 'localStorage':
+          this.setupLocalStorage()
+          break
+        case 'api':
+          this.setupAPI()
+          break
+        case 'authentication':
+          this.setupAuthentication()
+          break
+      }
+    }
+  }
+
+  setupLocalStorage() {
+    console.log('📦 Setting up localStorage support')
+    // localStorage is available by default
+  }
+
+  setupAPI() {
+    console.log('🌐 Setting up API support')
+    // API functionality is included in components
+  }
+
+  setupAuthentication() {
+    console.log('🔐 Setting up authentication')
+    // Authentication module will be loaded separately
+  }
+
+  async initializeComponents() {
+    console.log('🧩 Initializing components...')
+    
+    for (const [name, component] of this.components) {
+      if (component.init) {
+        await component.init()
+      }
+    }
+  }
+}
+
+// Initialize app when DOM is ready
+document.addEventListener('DOMContentLoaded', async () => {
+  const app = new ${intent.appType.charAt(0).toUpperCase() + intent.appType.slice(1)}App()
+  await app.initialize()
+})
+`
+  }
+
+  generateTodoAppInitializer() {
+    return `// Todo App Initializer - Generated by DreamBuild Built-in AI
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Todo App
+  const todoList = new TodoList()
+  const addTodo = new AddTodo(todoList)
+  
+  // Render components
+  document.getElementById('todo-list').innerHTML = ''
+  document.getElementById('add-todo').innerHTML = ''
+  
+  todoList.render()
+  addTodo.render()
+})
+`
+  }
+
+  generateCalculatorAppInitializer() {
+    return `// Calculator App Initializer - Generated by DreamBuild Built-in AI
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Calculator App
+  const calculator = new Calculator()
+  
+  // Render calculator
+  document.getElementById('calculator').innerHTML = ''
+  calculator.render()
+})
+`
+  }
+
+  generateGameAppInitializer() {
+    return `// Game App Initializer - Generated by DreamBuild Built-in AI
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Game App
+  const game = new Game()
+  
+  // Render game
+  document.getElementById('game').innerHTML = ''
+  game.render()
+})
+`
   }
 
   generateAuthModule() {

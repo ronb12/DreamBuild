@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from '../utils/navigation';
 import FileManager from './FileManager'
 import CodeEditor from './CodeEditor'
 import Preview from './Preview'
-import PreviewSimple from './PreviewSimple'
+// import PreviewSimple from './PreviewSimple' // Component not found, using Preview instead
 import AIPromptSimplified from './AIPromptSimplified'
 import ConversationalAI from './ai/ConversationalAI'
 import IntegratedWorkspace from './IntegratedWorkspace'

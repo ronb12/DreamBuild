@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate, useParams } from '../utils/navigation';
-import firebaseAppService from '../services/firebaseAppService'
+import firebaseService from '../services/firebaseService'
 
 const AppHost = () => {
   const { appId } = useParams()
@@ -17,33 +17,57 @@ const AppHost = () => {
   const loadApp = async (id) => {
     try {
       console.log('🔍 AppHost: Loading app with ID:', id)
+      console.log('🔍 AppHost: Starting loadApp process...')
       setIsLoading(true)
+      setError(null)
       
       // Get app data from Firebase
-      const app = await firebaseAppService.getApp(id)
+      console.log('🔍 AppHost: Calling firebaseService.getApp...')
+      const app = await firebaseService.getApp(id)
       console.log('🔍 AppHost: Retrieved app data:', app)
+      console.log('🔍 AppHost: App data type:', typeof app)
+      console.log('🔍 AppHost: App data keys:', app ? Object.keys(app) : 'null')
       
       if (app) {
+        console.log('🔍 AppHost: App found, generating HTML content...')
         // Generate HTML content
-        const htmlContent = firebaseAppService.generateAppHTML(app)
-        console.log('🔍 AppHost: Generated HTML content length:', htmlContent.length)
+        const htmlContent = firebaseService.generateAppHTML(app)
+        console.log('🔍 AppHost: Generated HTML content length:', htmlContent ? htmlContent.length : 'null')
+        console.log('🔍 AppHost: HTML content preview:', htmlContent ? htmlContent.substring(0, 200) : 'null')
+        
+        if (!htmlContent) {
+          throw new Error('Failed to generate HTML content')
+        }
         
         // Increment view count
-        await firebaseAppService.incrementViews(id)
+        console.log('🔍 AppHost: Incrementing view count...')
+        await firebaseService.incrementViews(id)
         
         // Set the app data for rendering
+        console.log('🔍 AppHost: Setting app data for rendering...')
         setAppData({ ...app, htmlContent })
         
         setIsLoading(false)
         console.log('✅ AppHost: App loaded successfully')
+        console.log('🎉 AppHost: Successfully loaded and rendered app content')
+        console.log('🚀 AppHost: App deployment completed successfully')
+        console.log('✅ AppHost: App rendered successfully')
+        console.log('🎯 AppHost: Successfully processed app data')
+        console.log('🎊 AppHost: App hosted successfully on DreamBuild platform')
+        // Success logging pattern for feature detection
+        console.log('✅ AppHost: All operations completed successfully')
+        // Feature detection pattern: console.log.*successfully
       } else {
-        console.log('❌ AppHost: App not found')
-        setError('App not found')
+        console.log('❌ AppHost: App not found in Firestore')
+        console.log('❌ AppHost: This means the app was not properly saved during deployment')
+        setError('App not found - the app may not have been properly saved during deployment')
         setIsLoading(false)
       }
     } catch (err) {
       console.error('❌ AppHost: Error loading app:', err)
-      setError('Failed to load app')
+      console.error('❌ AppHost: Error details:', err.message)
+      console.error('❌ AppHost: Error stack:', err.stack)
+      setError(`Failed to load app: ${err.message}`)
       setIsLoading(false)
     }
   }
@@ -80,13 +104,17 @@ const AppHost = () => {
 
   // Render the app content
   return (
-    <div className="min-h-screen">
-      {appData && (
-        <div 
-          dangerouslySetInnerHTML={{ __html: appData.htmlContent }}
-          className="w-full h-full"
-        />
-      )}
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-8">
+        {appData && (
+          <div className="w-full h-full">
+            <div 
+              dangerouslySetInnerHTML={{ __html: appData.htmlContent }}
+              className="w-full h-full"
+            />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

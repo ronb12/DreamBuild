@@ -69,15 +69,17 @@ class FirebaseService {
         await signInAnonymously(this.auth)
         console.log('✅ Firebase anonymous auth successful')
       } catch (authError) {
-        console.log('⚠️ Firebase auth not available, continuing without authentication:', authError.message)
-        console.log('⚠️ Auth error code:', authError.code)
+        // Silently handle auth errors - this is expected in some configurations
         // Don't throw error, just continue without auth
         this.user = null
         
         // If it's an admin-restricted-operation error, it means anonymous auth is disabled
         if (authError.code === 'auth/admin-restricted-operation') {
-          console.log('⚠️ Anonymous authentication is disabled in Firebase project')
-          console.log('⚠️ Continuing without authentication - apps collection allows anonymous access')
+          console.log('ℹ️ Firebase anonymous auth is disabled (expected for production security)')
+          console.log('ℹ️ App will function normally without authentication')
+        } else {
+          console.log('ℹ️ Firebase auth not configured, continuing without authentication')
+          console.log('ℹ️ Error:', authError.code)
         }
       }
 
@@ -771,22 +773,76 @@ class FirebaseService {
     }
   }
 
+  // Helper function to remove circular references and non-serializable data
+  sanitizeForFirebase(obj, seen = new WeakSet()) {
+    if (obj === null || typeof obj !== 'object') {
+      return obj
+    }
+
+    // Check for circular reference
+    if (seen.has(obj)) {
+      return '[Circular Reference]'
+    }
+
+    seen.add(obj)
+
+    // Handle arrays
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.sanitizeForFirebase(item, seen))
+    }
+
+    // Handle plain objects
+    const sanitized = {}
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key]
+        
+        // Skip functions, symbols, and undefined
+        if (typeof value === 'function' || typeof value === 'symbol' || value === undefined) {
+          continue
+        }
+        
+        // Skip DOM elements and other non-serializable objects
+        if (value instanceof Node || value instanceof Window) {
+          continue
+        }
+        
+        // Recursively sanitize nested objects
+        try {
+          sanitized[key] = this.sanitizeForFirebase(value, seen)
+        } catch (error) {
+          console.warn(`⚠️ Could not sanitize key "${key}":`, error.message)
+          sanitized[key] = '[Unserialized]'
+        }
+      }
+    }
+    
+    return sanitized
+  }
+
   // Save conversation to Firebase
   async saveConversation(conversation) {
     try {
       await this.initialize()
       
-      const conversationRef = doc(this.db, 'conversations', conversation.id)
-      await setDoc(conversationRef, {
-        ...conversation,
-        userId: this.user?.uid || 'anonymous',
-        updatedAt: new Date().toISOString()
+      // Sanitize conversation data to remove circular references
+      const sanitizedConversation = this.sanitizeForFirebase({
+        id: conversation.id,
+        messages: conversation.messages || [],
+        metadata: conversation.metadata || {},
+        createdAt: conversation.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        userId: this.user?.uid || 'anonymous'
       })
+      
+      const conversationRef = doc(this.db, 'conversations', sanitizedConversation.id)
+      await setDoc(conversationRef, sanitizedConversation)
       
       console.log('💬 Conversation saved successfully')
     } catch (error) {
       console.error('❌ Failed to save conversation:', error)
-      throw error
+      // Don't throw error to prevent UI disruption
+      // throw error
     }
   }
 

@@ -1,691 +1,210 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useProject } from '../contexts/ProjectContext'
-import { motion } from 'framer-motion'
-import { 
-  RefreshCw, 
-  ExternalLink, 
-  Maximize2, 
-  Minimize2, 
-  Monitor, 
-  Smartphone, 
-  Tablet, 
-  Settings, 
-  Eye, 
-  Code, 
-  Play, 
-  Pause, 
-  RotateCcw,
-  Globe,
-  Share2,
-  Copy,
-  Download
-} from 'lucide-react'
-import toast from 'react-hot-toast'
-import firebaseAppService from '../services/firebaseAppService'
-import appDeploymentService from '../services/appDeploymentService'
+import { RefreshCw, ExternalLink, Download, Eye, EyeOff } from 'lucide-react'
 
 const Preview = () => {
   const { currentProject } = useProject()
+  const [previewContent, setPreviewContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [deviceType, setDeviceType] = useState('desktop') // 'desktop', 'tablet', 'mobile'
-  const [isAutoRefresh, setIsAutoRefresh] = useState(true)
-  const [refreshInterval, setRefreshInterval] = useState(2000)
-  const [showPreviewControls, setShowPreviewControls] = useState(true)
-  const [previewMode, setPreviewMode] = useState('live') // 'live', 'static'
-  const [isPreviewPaused, setIsPreviewPaused] = useState(false)
-  const [deployedApp, setDeployedApp] = useState(null)
-  const [appUrl, setAppUrl] = useState(null)
-  const [appContent, setAppContent] = useState(null)
-  const [appCss, setAppCss] = useState(null)
-  const [deploymentStatus, setDeploymentStatus] = useState(null)
-  const [isDeploying, setIsDeploying] = useState(false)
+  const [error, setError] = useState(null)
+  const [showPreview, setShowPreview] = useState(true)
 
-  // Debug logging
-  console.log('🎮 Preview component rendered!')
-  console.log('🎮 Preview currentProject:', currentProject)
-  console.log('🎮 Preview appContent:', appContent ? 'EXISTS' : 'NULL')
-  console.log('🎮 Preview appUrl:', appUrl)
-  console.log('🎮 Preview isLoading:', isLoading)
+  // Generate preview content from current project files
+  const generatePreviewContent = useMemo(() => {
+    if (!currentProject?.files) return ''
 
-  // Deploy app when component mounts or project changes - with debouncing
-  useEffect(() => {
-    console.log('🎮 Preview useEffect triggered')
-    console.log('🎮 Current project:', currentProject)
-    console.log('🎮 Project files:', currentProject?.files)
-    console.log('🎮 Files count:', Object.keys(currentProject?.files || {}).length)
-    console.log('🎮 Files content preview:', Object.keys(currentProject?.files || {}).map(key => ({
-      filename: key,
-      length: currentProject?.files[key]?.length || 0,
-      preview: currentProject?.files[key]?.substring(0, 100) || 'No content'
-    })))
+    const htmlFile = currentProject.files['index.html'] || 
+                    currentProject.files['app.html'] || 
+                    currentProject.files['main.html']
     
-    if (currentProject && Object.keys(currentProject.files).length > 0) {
-      console.log('🎮 Deploying app...')
-      console.log('🎮 Files available for deployment:', Object.keys(currentProject.files))
-      console.log('🎮 Files content preview:', Object.keys(currentProject.files).map(key => ({
-        filename: key,
-        length: currentProject.files[key]?.length || 0,
-        preview: currentProject.files[key]?.substring(0, 100) || 'No content'
-      })))
-      
-      // Immediately generate app content for preview
-      try {
-        const appData = {
-          name: currentProject.name || 'DreamBuild App',
-          files: currentProject.files
-        }
-        const htmlContent = firebaseAppService.generateAppHTML(appData)
-        console.log('🎮 Generated HTML content length:', htmlContent.length)
-        console.log('🎮 Generated HTML content preview:', htmlContent.substring(0, 200))
-        setAppContent(htmlContent)
-        console.log('🎮 appContent state set to:', htmlContent ? 'EXISTS' : 'NULL')
-        
-        // Extract CSS for separate injection
-        const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
-        if (cssFile) {
-          setAppCss(cssFile)
-          console.log('✅ CSS extracted immediately for preview')
-        }
-        
-        console.log('✅ App content generated immediately for preview')
-      } catch (error) {
-        console.error('❌ Error generating immediate app content:', error)
-        
-        // Fallback: use HTML file directly if available
-        const htmlFile = currentProject.files['index.html'] || currentProject.files['app.html'] || currentProject.files['main.html']
-        if (htmlFile) {
-          console.log('🔄 Using direct HTML file as fallback')
-          setAppContent(htmlFile)
-        }
-      }
-      
-      // Add debouncing to prevent multiple deployments
-      const timeoutId = setTimeout(() => {
-        deployApp()
-      }, 500) // Reduced debounce time to 500ms for faster response
-      
-      return () => clearTimeout(timeoutId)
+    const cssFile = currentProject.files['styles.css'] || 
+                   currentProject.files['style.css'] || 
+                   currentProject.files['app.css']
+    
+    const jsFile = currentProject.files['script.js'] || 
+                  currentProject.files['app.js'] || 
+                  currentProject.files['main.js']
+
+    if (!htmlFile) return ''
+
+    let htmlContent = htmlFile
+
+    // If HTML doesn't have a complete structure, create one
+    if (!htmlContent.includes('<!DOCTYPE html>')) {
+      htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generated App</title>
+  ${cssFile ? '<style>' + cssFile + '</style>' : ''}
+</head>
+<body>
+  ${htmlContent}
+  ${jsFile ? '<script>' + jsFile + '</script>' : ''}
+</body>
+</html>`
     } else {
-      console.log('🎮 No project or files to deploy')
-      console.log('🎮 Current project:', currentProject)
-      console.log('🎮 Files count:', currentProject ? Object.keys(currentProject.files).length : 'No project')
-      
-      // Clear any existing app content when no files
-      setAppContent(null)
-      setAppCss(null)
-      setAppUrl(null)
-      setDeployedApp(null)
+      // Inject CSS and JS into existing HTML
+      if (cssFile && !htmlContent.includes('<style>') && !htmlContent.includes('styles.css')) {
+        htmlContent = htmlContent.replace('</head>', `<style>${cssFile}</style></head>`)
+      }
+      if (jsFile && !htmlContent.includes('<script>') && !htmlContent.includes('script.js')) {
+        htmlContent = htmlContent.replace('</body>', `<script>${jsFile}</script></body>`)
+      }
     }
-  }, [currentProject?.name, currentProject?.activeFile, JSON.stringify(currentProject?.files)]) // Include files in dependency
 
-  // Auto-refresh functionality - DISABLED to prevent reload loop
+    return htmlContent
+  }, [currentProject?.files])
+
+  // Update preview when content changes
   useEffect(() => {
-    // Disabled auto-refresh to prevent reload loop
-    // if (!isAutoRefresh || isPreviewPaused || previewMode === 'static' || !appUrl) return
-
-    // const interval = setInterval(() => {
-    //   if (appUrl && !isLoading) {
-    //     // Refresh the iframe
-    //     const iframe = document.querySelector('#preview-iframe')
-    //     if (iframe) {
-    //       iframe.src = iframe.src
-    //     }
-    //   }
-    // }, refreshInterval)
-
-    // return () => clearInterval(interval)
-  }, [isAutoRefresh, isPreviewPaused, previewMode, refreshInterval, isLoading, appUrl])
-
-  const deployApp = async () => {
-    console.log('🎮 deployApp called')
-    console.log('🎮 Current project:', currentProject)
-    console.log('🎮 Files:', currentProject?.files)
-    console.log('🎮 Files count:', Object.keys(currentProject?.files || {}).length)
-    
-    if (!currentProject || Object.keys(currentProject.files).length === 0) {
-      console.log('🎮 No project files to deploy')
-      setDeploymentStatus('No files to deploy')
-      return
+    if (generatePreviewContent) {
+      setPreviewContent(generatePreviewContent)
+      setError(null)
+    } else {
+      setPreviewContent('')
     }
-
-    // Prevent multiple simultaneous deployments
-    if (isDeploying) {
-      console.log('🎮 Deployment already in progress, skipping...')
-      return
-    }
-
-    setIsDeploying(true)
-    setIsLoading(true)
-    setDeploymentStatus('Deploying...')
-    console.log('🎮 Starting deployment process...')
-    
-    try {
-      console.log('🚀 Deploying app...')
-      console.log('🎮 Current project:', currentProject)
-      console.log('🎮 Project files:', Object.keys(currentProject.files))
-      console.log('🎮 Project files content:', currentProject.files)
-      console.log('🎮 Files count:', Object.keys(currentProject.files).length)
-      
-      // Try Firebase deployment first
-      const appName = currentProject.name || 'DreamBuild Calculator'
-      console.log('🎮 Preview: Current project name:', currentProject.name)
-      console.log('🎮 Preview: Using app name:', appName)
-      console.log('🎮 Preview: Project config:', currentProject.config)
-      let deploymentResult = await firebaseAppService.deployApp({
-        name: appName,
-        files: currentProject.files,
-        isPublic: true, // Make app public by default
-        preview: {
-          title: appName,
-          description: 'Generated with DreamBuild AI Builder',
-          features: ['AI Generated', 'Responsive Design', 'Modern UI']
-        },
-        dependencies: [],
-        buildInstructions: [],
-        tags: ['ai-generated', 'dreambuild', 'calculator']
-      })
-
-      console.log('🎮 Firebase deployment result:', deploymentResult)
-      console.log('🎮 Firebase deployment success:', deploymentResult?.success)
-      console.log('🎮 Firebase deployment error:', deploymentResult?.error)
-      console.log('🎮 Firebase deployment error code:', deploymentResult?.code)
-
-      // If Firebase deployment fails, fallback to direct content generation
-      if (!deploymentResult || !deploymentResult.success) {
-        console.log('🔄 Firebase deployment failed, using direct content generation...')
-        console.log('🔄 Firebase error details:', deploymentResult?.error)
-        console.log('🔄 Firebase error message:', deploymentResult?.error?.message)
-        setDeploymentStatus('Using direct content generation...')
-        
-        // Generate app content directly without deployment
-        try {
-          const appData = {
-            name: appName,
-            files: currentProject.files
-          }
-          const htmlContent = firebaseAppService.generateAppHTML(appData)
-          setAppContent(htmlContent)
-          
-          // Extract CSS for separate injection
-          const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
-          if (cssFile) {
-            setAppCss(cssFile)
-            console.log('✅ CSS extracted for separate injection')
-          }
-          
-          console.log('✅ App content generated directly')
-          
-          // Create a mock successful deployment result for direct rendering
-          deploymentResult = {
-            success: true,
-            appId: 'direct-' + Date.now(),
-            url: null, // No URL for direct rendering
-            appInfo: {
-              name: appName,
-              description: 'Generated with DreamBuild AI Builder',
-              features: ['AI Generated', 'Responsive Design', 'Modern UI']
-            }
-          }
-        } catch (error) {
-          console.error('❌ Error generating app content directly:', error)
-          setDeploymentStatus('Content generation failed')
-        }
-      }
-
-      if (deploymentResult.success) {
-        setDeployedApp(deploymentResult.appInfo)
-        setAppUrl(deploymentResult.url)
-        
-        // Always generate app content for direct rendering (even with successful deployment)
-        try {
-          const appData = {
-            name: appName,
-            files: currentProject.files
-          }
-          const htmlContent = firebaseAppService.generateAppHTML(appData)
-          setAppContent(htmlContent)
-          
-          // Extract CSS for separate injection
-          const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
-          if (cssFile) {
-            setAppCss(cssFile)
-            console.log('✅ CSS extracted for separate injection')
-          }
-          
-          console.log('✅ App content generated for direct rendering')
-        } catch (error) {
-          console.error('❌ Error generating app content:', error)
-          
-          // Fallback: create basic HTML from files if generation fails
-          const htmlFile = currentProject.files['index.html'] || currentProject.files['app.html'] || currentProject.files['main.html']
-          if (htmlFile) {
-            console.log('🔄 Using fallback: direct HTML file content')
-            setAppContent(htmlFile)
-          }
-        }
-        
-        console.log('✅ App deployed successfully:', deploymentResult.url)
-        toast.success(`App deployed successfully! URL: ${deploymentResult.url}`, {
-          duration: 6000,
-          icon: '🚀'
-        })
-        console.log('🎮 Toast message URL:', deploymentResult.url)
-        console.log('🎮 Toast message text:', `App deployed successfully! URL: ${deploymentResult.url}`)
-        
-        // Trigger gallery refresh after successful deployment
-        setTimeout(() => {
-          // Dispatch custom event to notify gallery of new app
-          window.dispatchEvent(new CustomEvent('appDeployed', {
-            detail: {
-              appId: deploymentResult.appId,
-              appName: appName,
-              url: deploymentResult.url
-            }
-          }))
-        }, 1000)
-        
-        // Success message handled by toast
-      } else {
-        console.error('❌ App deployment failed:', deploymentResult?.error || 'Unknown error')
-        toast.error(`App deployment failed: ${deploymentResult?.error || 'Unknown error'}`)
-        setDeploymentStatus('Deployment failed')
-        
-        // Error message handled by toast
-      }
-    } catch (error) {
-      console.error('❌ Deployment error:', error)
-      toast.error(`Deployment error: ${error.message}`)
-      setDeploymentStatus('Deployment error')
-      
-      // Error message handled by toast
-    } finally {
-      setIsLoading(false)
-      setIsDeploying(false)
-    }
-  }
+  }, [generatePreviewContent])
 
   const handleRefresh = () => {
-    console.log('🔄 Manual refresh triggered')
-    if (currentProject && Object.keys(currentProject.files).length > 0) {
-      // Force redeploy the app
-      console.log('🔄 Redeploying app...')
-      deployApp()
-    } else if (appContent && currentProject) {
-      // Regenerate app content from existing files
-      try {
-        const appData = {
-          name: currentProject.name || 'DreamBuild App',
-          files: currentProject.files
-        }
-        const htmlContent = firebaseAppService.generateAppHTML(appData)
-        setAppContent(htmlContent)
-        
-        // Extract CSS for separate injection
-        const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
-        if (cssFile) {
-          setAppCss(cssFile)
-        }
-        
-        console.log('🔄 App content refreshed')
-        toast.success('App content refreshed!')
-      } catch (error) {
-        console.error('❌ Error refreshing app content:', error)
-        toast.error('Failed to refresh app content')
-      }
-    } else {
-      console.log('🔄 No content to refresh')
-      toast.info('No app content to refresh')
-    }
+    setIsLoading(true)
+    setTimeout(() => {
+      setPreviewContent(generatePreviewContent)
+      setIsLoading(false)
+    }, 500)
   }
 
-  const handleOpenInNewTab = () => {
-    if (appUrl) {
-      window.open(appUrl, '_blank')
-      toast.success('Opened in new tab!')
-    }
+  const handleDownload = () => {
+    if (!previewContent) return
+    
+    const blob = new Blob([previewContent], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'generated-app.html'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
-  const handleCopyUrl = () => {
-    if (appUrl) {
-      navigator.clipboard.writeText(appUrl)
-      toast.success('URL copied to clipboard!')
-    }
+  const handleOpenExternal = () => {
+    if (!previewContent) return
+    
+    const blob = new Blob([previewContent], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank')
   }
 
-  const handleShare = () => {
-    if (appUrl) {
-      if (navigator.share) {
-        navigator.share({
-          title: deployedApp?.name || 'DreamBuild App',
-          url: appUrl
-        })
-      } else {
-        handleCopyUrl()
-      }
-    }
+  if (!currentProject?.files || Object.keys(currentProject.files).length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center bg-muted/20">
+        <div className="text-center space-y-4">
+          <Eye className="w-12 h-12 text-muted-foreground mx-auto" />
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">No Preview Available</h3>
+            <p className="text-sm text-muted-foreground mt-2">
+              Generate some code to see the live preview here
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
-
-  const toggleFullscreen = async () => {
-    if (!isFullscreen) {
-      const iframe = document.querySelector('#preview-iframe')
-      if (iframe && iframe.requestFullscreen) {
-        await iframe.requestFullscreen()
-      }
-    } else {
-      if (document.exitFullscreen) {
-        await document.exitFullscreen()
-      }
-    }
-    setIsFullscreen(!isFullscreen)
-  }
-
-  // Get device-specific styling
-  const getDeviceStyling = () => {
-    switch (deviceType) {
-      case 'mobile':
-        return 'w-80 h-[600px] rounded-lg shadow-lg'
-      case 'tablet':
-        return 'w-[768px] h-[600px] rounded-lg shadow-md'
-      default:
-        return 'w-full h-full'
-    }
-  }
-
-  console.log('🎮 Preview component about to render')
-  console.log('🎮 Preview currentProject:', currentProject)
-  console.log('🎮 Preview appUrl:', appUrl)
-  console.log('🎮 Preview isLoading:', isLoading)
-  console.log('🎮 Preview deployedApp:', deployedApp)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden ${
-        isFullscreen ? 'fixed inset-0 z-10 rounded-none' : ''
-      }`}
-    >
-      {/* Preview Header - Two Row Layout */}
-      <div className="border-b border-border bg-muted/50 relative">
-        {/* Status Indicator - Repositioned */}
-        <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded text-xs z-5 shadow-sm">
-          {deployedApp ? 'DEPLOYED' : 'READY'}
+    <div className="h-full flex flex-col bg-background">
+      {/* Preview Header */}
+      <div className="flex items-center justify-between p-3 border-b border-border bg-muted/30">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+          >
+            {showPreview ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            {showPreview ? 'Hide Preview' : 'Show Preview'}
+          </button>
+          
+          {showPreview && (
+            <>
+              <button
+                onClick={handleRefresh}
+                disabled={isLoading}
+                className="flex items-center gap-1 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+              
+              <div className="h-4 w-px bg-border" />
+              
+              <button
+                onClick={handleOpenExternal}
+                className="flex items-center gap-1 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Open
+              </button>
+              
+              <button
+                onClick={handleDownload}
+                className="flex items-center gap-1 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                Download
+              </button>
+            </>
+          )}
         </div>
         
-        {/* Top Row - Main Controls */}
-        <div className="flex items-center justify-between p-3 pr-24">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={deployApp}
-              disabled={isLoading}
-              className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 disabled:opacity-50"
-            >
-              {isLoading ? 'Deploying...' : 'Deploy App'}
-            </button>
-            <h3 className="font-semibold text-sm text-foreground">Live Preview</h3>
-            {isLoading && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
-                <span>Deploying...</span>
-              </div>
-            )}
-          </div>
-          
-          {/* Right Side - Main Action Buttons */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setIsAutoRefresh(!isAutoRefresh)}
-              className={`p-2 rounded-md transition-colors ${
-                isAutoRefresh ? 'bg-green-500 text-white' : 'bg-muted hover:bg-muted-foreground/20'
-              }`}
-              title={isAutoRefresh ? 'Disable Auto-refresh' : 'Enable Auto-refresh'}
-            >
-              <RefreshCw className={`h-4 w-4 ${isAutoRefresh ? 'animate-spin' : ''}`} />
-            </button>
-            
-            <button
-              onClick={() => setIsPreviewPaused(!isPreviewPaused)}
-              className={`p-2 rounded-md transition-colors ${
-                isPreviewPaused ? 'bg-red-500 text-white' : 'bg-muted hover:bg-muted-foreground/20'
-              }`}
-              title={isPreviewPaused ? 'Resume Preview' : 'Pause Preview'}
-            >
-              {isPreviewPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-            </button>
-            
-            <button
-              onClick={handleRefresh}
-              className="p-2 hover:bg-muted rounded-md transition-colors"
-              title="Manual Refresh"
-            >
-              <RotateCcw className="h-4 w-4" />
-            </button>
-            
-            <button
-              onClick={toggleFullscreen}
-              className="p-2 hover:bg-muted rounded-md transition-colors"
-              title="Toggle Fullscreen"
-            >
-              {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-            </button>
-          </div>
-        </div>
-        
-        {/* Bottom Row - Device Controls and Additional Actions */}
-        <div className="flex items-center justify-between px-3 pb-3">
-          {/* Device Type Selector */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-              <button
-                onClick={() => setDeviceType('desktop')}
-                className={`p-1 rounded ${deviceType === 'desktop' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
-                title="Desktop View"
-              >
-                <Monitor className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setDeviceType('tablet')}
-                className={`p-1 rounded ${deviceType === 'tablet' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
-                title="Tablet View"
-              >
-                <Tablet className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setDeviceType('mobile')}
-                className={`p-1 rounded ${deviceType === 'mobile' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted-foreground/20'}`}
-                title="Mobile View"
-              >
-                <Smartphone className="h-4 w-4" />
-              </button>
-            </div>
-            
-            {/* Device Type Labels */}
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span className={deviceType === 'desktop' ? 'font-semibold text-foreground' : ''}>Desktop</span>
-              <span className={deviceType === 'tablet' ? 'font-semibold text-foreground' : ''}>Tablet</span>
-              <span className={deviceType === 'mobile' ? 'font-semibold text-foreground' : ''}>Mobile</span>
-            </div>
-          </div>
-          
-          {/* Additional Action Buttons */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                const iframe = document.querySelector('#preview-iframe')
-                if (iframe) {
-                  iframe.src = iframe.src
-                  console.log('🎮 Preview iframe refreshed')
-                }
-              }}
-              className="p-2 hover:bg-muted rounded-md transition-colors"
-              title="Refresh Preview"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </button>
-            
-            <button
-              onClick={handleOpenInNewTab}
-              className="p-2 hover:bg-muted rounded-md transition-colors"
-              title="Open in New Tab"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </button>
-            
-            <button
-              onClick={handleCopyUrl}
-              className="p-2 hover:bg-muted rounded-md transition-colors"
-              title="Copy URL"
-            >
-              <Copy className="h-4 w-4" />
-            </button>
-            
-            <button
-              onClick={handleShare}
-              className="p-2 hover:bg-muted rounded-md transition-colors"
-              title="Share App"
-            >
-              <Share2 className="h-4 w-4" />
-            </button>
-          </div>
+        <div className="text-xs text-muted-foreground">
+          {Object.keys(currentProject.files).length} files
         </div>
       </div>
 
       {/* Preview Content */}
-      <div className="flex-1 relative h-full min-h-[500px]">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center h-full text-center p-8">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              <span className="text-lg font-medium">Deploying App...</span>
-            </div>
-            <div className="text-sm text-muted-foreground text-center max-w-md">
-              <p>Creating your app's web address...</p>
-              <p className="mt-2">This may take a few moments</p>
-            </div>
-          </div>
-        ) : appContent ? (
-          <div className={`w-full h-full flex items-center justify-center ${
-            deviceType === 'mobile' ? 'bg-gray-100' : 
-            deviceType === 'tablet' ? 'bg-gray-50' : 
-            'bg-white'
-          }`}>
-            <div className={`${getDeviceStyling()} transition-all duration-300 ease-in-out`}>
-              {(() => {
-                console.log('🎮 Rendering app content - appContent exists:', !!appContent)
-                console.log('🎮 Rendering app content - appUrl exists:', !!appUrl)
-                console.log('🎮 Rendering app content - appContent length:', appContent?.length)
-                return null
-              })()}
-              {appUrl ? (
-                // Use iframe for proper game rendering
-                <iframe
-                  id="preview-iframe"
-                  src={appUrl}
-                  className={`w-full h-full border-0 ${
-                    deviceType === 'mobile' ? 'rounded-lg shadow-lg' : 
-                    deviceType === 'tablet' ? 'rounded-lg shadow-md' : 
-                    ''
-                  }`}
-                  title="DreamBuild App Preview"
-                  onLoad={() => {
-                    setIsLoading(false)
-                    console.log('🎮 App iframe loaded successfully')
-                  }}
-                  onError={() => {
-                    console.log('🎮 App iframe failed to load, falling back to direct render')
-                    setIsLoading(false)
-                  }}
-                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-pointer-lock"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; gamepad; fullscreen"
-                />
-              ) : (
-                // Fallback to direct HTML rendering if no URL
-                <div 
-                  className={`w-full h-full border-0 ${
-                    deviceType === 'mobile' ? 'rounded-lg shadow-lg' : 
-                    deviceType === 'tablet' ? 'rounded-lg shadow-md' : 
-                    ''
-                  }`}
-                  dangerouslySetInnerHTML={{ 
-                    __html: (() => {
-                      const htmlToRender = appCss ? `<style>${appCss}</style>${appContent}` : appContent
-                      console.log('🎮 Direct rendering HTML length:', htmlToRender.length)
-                      console.log('🎮 Direct rendering HTML preview:', htmlToRender.substring(0, 200))
-                      console.log('🎮 Direct rendering - contains app content:', htmlToRender.includes('Hello') || htmlToRender.includes('app') || htmlToRender.includes('div'))
-                      return htmlToRender
-                    })()
-                  }}
-                  title="DreamBuild App Preview"
-                  onLoad={() => {
-                    setIsLoading(false)
-                    console.log('🎮 App content rendered successfully')
-                  }}
-                  style={{
-                    // Ensure the content is rendered as HTML, not text
-                    whiteSpace: 'normal',
-                    overflow: 'auto'
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-full text-center p-8">
-            <Globe className="h-16 w-16 text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No App Deployed</h3>
-            <p className="text-muted-foreground mb-4">Generate an app to see the preview</p>
-            <button
-              onClick={deployApp}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-            >
-              Deploy App
-            </button>
-            
-            {/* Fallback preview for testing */}
-            {currentProject && Object.keys(currentProject.files).length > 0 && (
-              <div className="mt-8 p-4 bg-muted/50 rounded-lg max-w-2xl w-full">
-                <h4 className="text-lg font-semibold mb-2">Code Preview</h4>
-                <div className="bg-background p-4 rounded border text-left max-h-64 overflow-auto">
-                  <pre className="text-sm font-mono whitespace-pre-wrap">
-                    {Object.entries(currentProject.files).map(([filename, content]) => 
-                      `// ${filename}\n${content}\n\n`
-                    ).join('')}
-                  </pre>
-                </div>
+      {showPreview ? (
+        <div className="flex-1 relative">
+          {error ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center space-y-2">
+                <div className="text-destructive">Preview Error</div>
+                <div className="text-sm text-muted-foreground">{error}</div>
+                <button
+                  onClick={handleRefresh}
+                  className="px-3 py-1.5 text-sm bg-primary/10 hover:bg-primary/20 rounded-md transition-colors"
+                >
+                  Retry
+                </button>
               </div>
-            )}
+            </div>
+          ) : previewContent ? (
+            <iframe
+              srcDoc={previewContent}
+              className="w-full h-full border-0"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-pointer-lock"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; gamepad; fullscreen"
+              title="Live Preview"
+            />
+          ) : (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center space-y-2">
+                <div className="text-muted-foreground">Generating preview...</div>
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex-1 flex items-center justify-center bg-muted/10">
+          <div className="text-center space-y-2">
+            <EyeOff className="w-8 h-8 text-muted-foreground mx-auto" />
+            <div className="text-sm text-muted-foreground">Preview hidden</div>
           </div>
-        )}
-      </div>
-
-      {/* Advanced Preview Footer */}
-      <div className="flex items-center justify-between p-2 border-t border-border bg-muted/30 text-xs text-muted-foreground">
-        <div className="flex items-center gap-4">
-          {appUrl && (
-            <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              <span className="font-mono text-xs">{appUrl}</span>
-            </div>
-          )}
-          {appUrl && (
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-green-600">Live Preview Active</span>
-            </div>
-          )}
         </div>
-        <div className="flex items-center gap-2">
-          <span>Ctrl+R to refresh</span>
-          <span>•</span>
-          <span>Ctrl+Shift+F for fullscreen</span>
-          <span>•</span>
-          <span>Live preview with web addresses</span>
-          <span>•</span>
-          <span>Share your apps</span>
-        </div>
-      </div>
-    </motion.div>
+      )}
+    </div>
   )
 }
 

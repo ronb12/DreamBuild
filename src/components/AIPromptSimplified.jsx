@@ -222,19 +222,19 @@ export default function AIPromptSimplified() {
         console.log('💬 Conversational response detected:', response.message)
         responseMessage = response.message
         responseText = response.message
-        toast.info('Question answered!')
+        toast('Question answered!', { icon: '💬', duration: 3000 })
       } else if (response.type === 'incremental_update') {
         responseMessage = response.message || `Added ${response.newFeatures?.length || 0} new feature(s) to your existing app!`
         responseText = responseMessage
         console.log('✅ INCREMENTAL UPDATE DETECTED!', response)
         console.log('✅ New features:', response.newFeatures)
         console.log('✅ Files to add:', response.files ? Object.keys(response.files) : 'none')
-        toast.success(responseMessage)
-        toast.info(`New files: ${response.files ? Object.keys(response.files).join(', ') : 'none'}`, { duration: 5000 })
+        toast.success(responseMessage, { duration: 6000 })
+        toast(`📁 Check File Manager for new files!`, { duration: 4000, icon: '📂' })
       } else if (response.type === 'no_changes') {
         responseMessage = response.message || 'No new features to add - these already exist in your app.'
         responseText = responseMessage
-        toast.info(responseMessage)
+        toast(responseMessage, { icon: 'ℹ️', duration: 4000 })
       } else {
         // Enhanced response message with explanation summary
         if (response.explanation && response.explanation.summary) {
@@ -272,7 +272,7 @@ export default function AIPromptSimplified() {
             toast.success('Code generated and injected into editor!')
           } else {
             console.log('⚠️ Code injection failed, but files are available')
-            toast.info('Code generated! Check the files panel.')
+            toast('Code generated! Check the files panel.', { icon: '📁', duration: 4000 })
           }
         } catch (error) {
           console.error('❌ Code injection error:', error)

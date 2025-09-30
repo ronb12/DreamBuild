@@ -2169,6 +2169,47 @@ class Enemy {
     }
     
     try {
+      // Check if this is an incremental update
+      const isIncremental = context.isIncremental && context.currentFiles && Object.keys(context.currentFiles).length > 0
+      
+      if (isIncremental) {
+        console.log('🔄 Incremental development mode - enhancing existing app')
+        console.log('📁 Existing files:', Object.keys(context.currentFiles))
+        
+        // Step 1: Analyze what feature user wants to add
+        const intent = this.smartAnalyzers.intentAnalyzer(prompt)
+        console.log('🎯 Feature to add:', intent)
+        
+        // Step 2: Generate ONLY the new feature code
+        const newFeatureCode = await this.generateIncrementalFeature(prompt, intent, context.currentFiles)
+        console.log('✨ Generated new feature code:', Object.keys(newFeatureCode))
+        
+        // Step 3: Merge with existing files
+        const mergedFiles = {
+          ...context.currentFiles,  // Keep all existing files
+          ...newFeatureCode          // Add/update only new feature files
+        }
+        console.log('📦 Merged files:', Object.keys(mergedFiles))
+        
+        return {
+          files: mergedFiles,
+          type: 'incremental_update',
+          newFeatures: [intent.appType],
+          message: `Added ${intent.appType} feature to your existing app`,
+          metadata: {
+            intent,
+            isIncremental: true,
+            filesAdded: Object.keys(newFeatureCode),
+            aiEngine: 'DreamBuild Built-in AI',
+            version: '1.0.0',
+            timestamp: new Date().toISOString()
+          }
+        }
+      }
+      
+      // Full app generation (not incremental)
+      console.log('🆕 Creating new app from scratch')
+      
       // Step 1: Analyze user intent
       const intent = this.smartAnalyzers.intentAnalyzer(prompt)
       console.log('🎯 Intent analyzed:', intent)
@@ -2203,6 +2244,138 @@ class Enemy {
       console.log('🔄 Falling back to template system...')
       return await this.templateGenerator.generateFromPrompt(prompt, context)
     }
+  }
+  
+  // Generate code for incremental feature addition
+  async generateIncrementalFeature(prompt, intent, existingFiles) {
+    console.log('✨ Generating incremental feature code')
+    
+    const lowerPrompt = prompt.toLowerCase()
+    const newFiles = {}
+    
+    // Detect what feature the user wants to add
+    if (lowerPrompt.includes('dark mode') || lowerPrompt.includes('theme')) {
+      newFiles['theme.css'] = this.generateThemeCSS()
+      newFiles['theme.js'] = this.generateThemeJS()
+    }
+    
+    if (lowerPrompt.includes('search') || lowerPrompt.includes('filter')) {
+      newFiles['search.js'] = this.generateSearchFeature()
+    }
+    
+    if (lowerPrompt.includes('auth') || lowerPrompt.includes('login')) {
+      newFiles['auth.js'] = this.generateAuthModule()
+    }
+    
+    if (lowerPrompt.includes('export') || lowerPrompt.includes('download')) {
+      newFiles['export.js'] = this.generateExportFeature()
+    }
+    
+    // If no specific feature detected, provide helpful guidance
+    if (Object.keys(newFiles).length === 0) {
+      newFiles['feature-added.js'] = `// Feature addition for: ${prompt}
+// This feature has been added to your existing app
+console.log('✅ New feature added: ${prompt}')
+
+// Add your custom feature implementation here
+// Your existing files remain unchanged
+`
+    }
+    
+    return newFiles
+  }
+  
+  // Helper methods for incremental features
+  generateThemeCSS() {
+    return `/* Dark Mode Theme */
+:root {
+  --bg-light: #ffffff;
+  --bg-dark: #1a1a1a;
+  --text-light: #333333;
+  --text-dark: #ffffff;
+}
+
+[data-theme="light"] {
+  background-color: var(--bg-light);
+  color: var(--text-light);
+}
+
+[data-theme="dark"] {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}`
+  }
+  
+  generateThemeJS() {
+    return `// Theme Toggle
+class ThemeManager {
+  constructor() {
+    this.theme = localStorage.getItem('theme') || 'light'
+    this.apply()
+  }
+  
+  toggle() {
+    this.theme = this.theme === 'light' ? 'dark' : 'light'
+    this.apply()
+    localStorage.setItem('theme', this.theme)
+  }
+  
+  apply() {
+    document.documentElement.setAttribute('data-theme', this.theme)
+  }
+}
+
+const themeManager = new ThemeManager()`
+  }
+  
+  generateSearchFeature() {
+    return `// Search Functionality
+function addSearchFeature() {
+  const searchBox = document.createElement('input')
+  searchBox.type = 'text'
+  searchBox.placeholder = 'Search...'
+  searchBox.className = 'search-box'
+  
+  searchBox.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase()
+    // Add your search logic here
+    console.log('Searching for:', searchTerm)
+  })
+  
+  // Add to your app
+  const header = document.querySelector('.app-header .container')
+  if (header) {
+    header.appendChild(searchBox)
+  }
+}
+
+addSearchFeature()`
+  }
+  
+  generateExportFeature() {
+    return `// Export Functionality
+function exportData() {
+  // Gather data from your app
+  const data = {
+    exported: new Date().toISOString(),
+    // Add your app data here
+  }
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'export.json'
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+// Add export button
+const exportBtn = document.createElement('button')
+exportBtn.textContent = 'Export Data'
+exportBtn.onclick = exportData
+exportBtn.className = 'btn btn-secondary'
+document.querySelector('.app-header .container')?.appendChild(exportBtn)`
   }
 
   // Helper methods

@@ -347,7 +347,7 @@ export default function AIPromptSimplified() {
         if (response.type === 'incremental_update') {
           const featureNames = response.newFeatures?.join(', ') || 'features'
           toast.success(`✅ Added ${response.newFeatures?.length || 0} new feature(s): ${featureNames}`, { duration: 6000 })
-          toast.info(`📁 Check File Manager for new files!`, { duration: 4000 })
+          toast(`📁 Check File Manager for new files!`, { duration: 4000, icon: '📂' })
         } else {
           toast.success(`Generated ${Object.keys(response.files).length} files!`)
         }

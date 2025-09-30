@@ -26,6 +26,9 @@ import { motion } from 'framer-motion'
 import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug, Plus, Github, Gamepad2 } from 'lucide-react'
 
 const AIBuilder = () => {
+  // IMPORTANT: FileManager should use ProjectContext, not local state!
+  // Removed local files state - FileManager now reads from ProjectContext
+  
   const [activeTab, setActiveTab] = useState('editor')
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(true)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
@@ -43,7 +46,8 @@ const AIBuilder = () => {
   const [showTesting, setShowTesting] = useState(true)
   const [showDeployment, setShowDeployment] = useState(true)
   
-  // Advanced File Management State
+  // Advanced File Management State - FOR DEMO/TESTING ONLY
+  // FileManager component uses ProjectContext.files instead
   const [files, setFiles] = useState([
     {
       id: '1',
@@ -777,65 +781,16 @@ const AIBuilder = () => {
               
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden">
-                <div className="h-full flex">
-                  {/* File Manager */}
-                  <div className="w-80 border-r border-border">
-                    <SimpleAdvancedFileManager
-                      files={files}
-                      onFileSelect={handleFileSelect}
-                      onFileCreate={handleFileCreate}
-                      onFileDelete={handleFileDelete}
-                      onFileRename={handleFileRename}
-                      onFileMove={handleFileMove}
-                      onFileCopy={handleFileCopy}
-                      onFileUpload={handleFileUpload}
-                      onFileDownload={handleFileDownload}
-                      onFileShare={handleFileShare}
-                      onFileHistory={handleFileHistory}
-                      onNewProject={() => setShowProjectBrowser(true)}
-                      onDebugPanel={() => setShowDebugPanel(true)}
-                      selectedFile={selectedFile}
-                    />
-                  </div>
-                  
-                  {/* File Details Panel */}
-                  <div className="flex-1 flex flex-col">
-                    {selectedFile ? (
-                      <div className="p-4">
-                        <h3 className="text-lg font-semibold mb-4">File Details</h3>
-                        <div className="space-y-3">
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Name</label>
-                            <p className="text-sm">{selectedFile.name}</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Path</label>
-                            <p className="text-sm">{selectedFile.path}</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Type</label>
-                            <p className="text-sm">{selectedFile.type}</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Size</label>
-                            <p className="text-sm">{selectedFile.size || 0} bytes</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">Modified</label>
-                            <p className="text-sm">{selectedFile.modified ? new Date(selectedFile.modified).toLocaleString() : 'Unknown'}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                        <div className="text-center">
-                          <Folder className="h-12 w-12 mx-auto mb-4" />
-                          <p>Select a file to view details</p>
-                        </div>
-                      </div>
-                    )}
+                <div className="h-full flex flex-col">
+                  {/* File Manager - Uses ProjectContext for AI-generated files */}
+                  <div className="flex-1 overflow-hidden">
+                    <FileManager />
                   </div>
                 </div>
+              </div>
+              {/* Old file details panel removed - FileManager has its own UI */}
+              <div className="hidden">
+                {/* Removed old file details panel that was showing hardcoded files */}
               </div>
               </div>
             </div>

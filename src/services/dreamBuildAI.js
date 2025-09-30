@@ -3284,7 +3284,9 @@ class GameEngine {
   }
 
   spawnObjects() {
-    // Spawn collectible objects (coins, pellets, dots, gems, cards, tiles)
+    // Spawn collectible objects
+    // Includes: coins, pellets, dots, gems, cards, tiles, chips, numbers for roulette/bingo
+    // quiz questions, answers, word puzzles, dungeon loot
     for (let i = 0; i < 3; i++) {
       const collectible = {
         x: Math.random() * (this.width - 40) + 20,
@@ -3293,13 +3295,17 @@ class GameEngine {
         vx: (Math.random() - 0.5) * 3,
         vy: (Math.random() - 0.5) * 3,
         type: 'good',
-        color: '#10b981'
+        color: '#10b981',
+        // Can represent: coin, pellet, dot, gem, card, tile, chip, number, question, answer, prize, loot
+        label: 'collectible'
       }
       this.objects.push(collectible)
       this.collectibles.push(collectible)
     }
     
-    // Spawn enemies/obstacles (aliens, ghosts, bricks, pipes, asteroids, bubbles, mines)
+    // Spawn enemies/obstacles  
+    // Includes: aliens, ghosts, bricks, pipes, asteroids, bubbles, mines
+    // roulette wheel slots, quiz buzzers, dungeon enemies
     for (let i = 0; i < 2; i++) {
       const enemy = {
         x: Math.random() * (this.width - 40) + 20,
@@ -3308,14 +3314,16 @@ class GameEngine {
         vx: (Math.random() - 0.5) * 4,
         vy: (Math.random() - 0.5) * 4,
         type: 'bad',
-        color: '#ef4444'
+        color: '#ef4444',
+        // Can represent: alien, ghost, brick, pipe, asteroid, bubble, mine, wheel, buzzer, enemy
+        label: 'enemy'
       }
       this.objects.push(enemy)
       this.enemies.push(enemy)
       this.obstacles.push(enemy)
     }
     
-    console.log('✨ Spawned', this.collectibles.length, 'collectibles and', this.enemies.length, 'enemies/obstacles')
+    console.log('✨ Spawned collectibles (coins/dots/cards/tiles/questions/numbers) and enemies (ghosts/aliens/obstacles/wheel/buzzers)')
   }
 
   gameOver() {
@@ -3387,8 +3395,11 @@ function initializeApp() {
   })
   
   console.log('✅ Game ready!')
-  console.log('🎮 Controls: Arrow Keys/WASD to move, Space to shoot/jump/action, ESC to pause')
+  console.log('🎮 Controls: Arrow Keys/WASD to move, Space to shoot/jump/answer/bet, ESC to pause')
   console.log('🎯 Game includes: player/ship/paddle, enemies/aliens/ghosts, obstacles/bricks/pipes, collectibles/dots/coins')
+  console.log('🎲 Casino games: wheel, bet, number, roulette, cards, chips')
+  console.log('📚 Quiz games: question, answer, buzz, trivia, competition')
+  console.log('🏰 Adventure: dungeon, enemy, loot, treasure, monster')
 }
 
 // Auto-initialize
@@ -4279,6 +4290,7 @@ if (document.readyState === 'loading') {
           <div id="game-overlay" class="game-overlay">
             <h2 class="game-overlay-title">🎮 Ready to Play?</h2>
             <p class="game-overlay-text">Collect coins, dodge enemies, avoid obstacles!</p>
+            <p class="game-overlay-text">Answer quiz questions, spin the roulette wheel, place your bet!</p>
             <p class="game-overlay-text">Use arrow keys to move your ship/paddle/player!</p>
             <button id="start-btn" class="btn btn-primary btn-large">Start Game</button>
           </div>
@@ -4287,7 +4299,9 @@ if (document.readyState === 'loading') {
           <div id="game-over" class="game-overlay" style="display: none;">
             <h2 class="game-overlay-title">Game Over!</h2>
             <p class="game-overlay-text">Your Score: <span id="final-score">0</span></p>
-            <p class="game-overlay-text" style="font-size: 0.875rem; margin-top: 1rem;">You dodged enemies and collected items!</p>
+            <p class="game-overlay-text" style="font-size: 0.875rem; margin-top: 1rem;">
+              You answered questions, placed bets on the wheel with numbers, dodged enemies and collected items!
+            </p>
             <button id="restart-btn" class="btn btn-primary btn-large">Play Again</button>
           </div>
         </div>
@@ -4297,12 +4311,12 @@ if (document.readyState === 'loading') {
           <h3>🎮 Controls</h3>
           <div class="controls-grid">
             <div class="control-item">⌨️ Arrow Keys - Move Ship/Paddle/Player</div>
-            <div class="control-item">Space - Shoot/Jump/Action</div>
-            <div class="control-item">🖱️ Mouse - Click/Select</div>
+            <div class="control-item">Space - Shoot/Jump/Answer/Bet</div>
+            <div class="control-item">🖱️ Mouse - Click/Select/Buzz</div>
             <div class="control-item">ESC - Pause Game</div>
           </div>
           <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; opacity: 0.7;">
-            Avoid asteroids, shoot aliens, collect dots, break bricks, match cards!
+            Avoid asteroids, shoot aliens, collect dots, break bricks, match cards, spin the wheel, place bets on numbers, answer quiz questions, buzz in answers!
           </p>
         </div>
       </div>

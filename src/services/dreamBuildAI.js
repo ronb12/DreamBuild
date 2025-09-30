@@ -2947,11 +2947,11 @@ class TodoManager {
     }
     
     // Add optional feature properties
-    ${hasFeatures.priorities ? "todo.priority = todoData.priority || 'medium'" : ''}
-    ${hasFeatures.categories ? "todo.category = todoData.category || 'personal'" : ''}
-    ${hasFeatures.dueDates ? "todo.dueDate = todoData.dueDate || null" : ''}
-    ${hasFeatures.tags ? "todo.tags = todoData.tags || []" : ''}
-    ${hasFeatures.notes ? "todo.notes = todoData.notes || ''" : ''}
+    ${hasFeatures.priorities ? "todo.priority = todoData.priority || 'medium';" : ''}
+    ${hasFeatures.categories ? "todo.category = todoData.category || 'personal';" : ''}
+    ${hasFeatures.dueDates ? "todo.dueDate = todoData.dueDate || null;" : ''}
+    ${hasFeatures.tags ? "todo.tags = todoData.tags || [];" : ''}
+    ${hasFeatures.notes ? "todo.notes = todoData.notes || '';" : ''}
     
     this.todos.push(todo)
     this.saveTodos()
@@ -3063,18 +3063,24 @@ class TodoUI {
     this.form = document.getElementById('add-todo-form')
     this.todoInput = document.getElementById('todo-input')
     this.todosContainer = document.getElementById('todos-container')
-    ${hasFeatures.priorities ? "this.prioritySelect = document.getElementById('priority-select')" : ''}
-    ${hasFeatures.categories ? "this.categorySelect = document.getElementById('category-select')" : ''}
-    ${hasFeatures.dueDates ? "this.dueDateInput = document.getElementById('due-date-input')" : ''}
-    ${hasFeatures.tags ? "this.tagsInput = document.getElementById('tags-input')" : ''}
-    ${hasFeatures.notes ? "this.notesInput = document.getElementById('notes-input')" : ''}
-    ${hasFeatures.search ? "this.searchInput = document.getElementById('search-input')" : ''}
-    ${hasFeatures.filter ? "this.filterSelect = document.getElementById('filter-select')" : ''}
-    ${hasFeatures.sort ? "this.sortSelect = document.getElementById('sort-select')" : ''}
-    ${hasFeatures.darkMode ? "this.themeToggle = document.getElementById('theme-toggle')" : ''}
-    ${hasFeatures.export ? "this.exportBtn = document.getElementById('export-btn')" : ''}
     
-    console.log('✅ UI elements initialized')
+    // Feature-specific elements (only if features exist)
+    ${hasFeatures.priorities ? "this.prioritySelect = document.getElementById('priority-select');" : ''}
+    ${hasFeatures.categories ? "this.categorySelect = document.getElementById('category-select');" : ''}
+    ${hasFeatures.dueDates ? "this.dueDateInput = document.getElementById('due-date-input');" : ''}
+    ${hasFeatures.tags ? "this.tagsInput = document.getElementById('tags-input');" : ''}
+    ${hasFeatures.notes ? "this.notesInput = document.getElementById('notes-input');" : ''}
+    ${hasFeatures.search ? "this.searchInput = document.getElementById('search-input');" : ''}
+    ${hasFeatures.filter ? "this.filterSelect = document.getElementById('filter-select');" : ''}
+    ${hasFeatures.sort ? "this.sortSelect = document.getElementById('sort-select');" : ''}
+    ${hasFeatures.darkMode ? "this.themeToggle = document.getElementById('theme-toggle');" : ''}
+    ${hasFeatures.export ? "this.exportBtn = document.getElementById('export-btn');" : ''}
+    
+    console.log('✅ UI elements initialized:', {
+      form: !!this.form,
+      todoInput: !!this.todoInput,
+      todosContainer: !!this.todosContainer
+    })
   }
 
   bindEvents() {
@@ -3155,11 +3161,11 @@ class TodoUI {
     const todoData = { text }
     
     // Add optional feature data
-    ${hasFeatures.priorities ? "todoData.priority = this.prioritySelect?.value || 'medium'" : ''}
-    ${hasFeatures.categories ? "todoData.category = this.categorySelect?.value || 'personal'" : ''}
-    ${hasFeatures.dueDates ? "todoData.dueDate = this.dueDateInput?.value || null" : ''}
-    ${hasFeatures.tags ? "todoData.tags = this.tagsInput?.value ? this.tagsInput.value.split(',').map(t => t.trim()) : []" : ''}
-    ${hasFeatures.notes ? "todoData.notes = this.notesInput?.value || ''" : ''}
+    ${hasFeatures.priorities ? "todoData.priority = this.prioritySelect?.value || 'medium';" : ''}
+    ${hasFeatures.categories ? "todoData.category = this.categorySelect?.value || 'personal';" : ''}
+    ${hasFeatures.dueDates ? "todoData.dueDate = this.dueDateInput?.value || null;" : ''}
+    ${hasFeatures.tags ? "todoData.tags = this.tagsInput?.value ? this.tagsInput.value.split(',').map(t => t.trim()) : [];" : ''}
+    ${hasFeatures.notes ? "todoData.notes = this.notesInput?.value || '';" : ''}
 
     this.todoManager.addTodo(todoData)
     this.form.reset()

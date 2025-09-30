@@ -1,409 +1,409 @@
 {
-  "testDate": "2025-09-30T21:50:45.959Z",
-  "duration": "19.99 minutes",
+  "testDate": "2025-09-30T22:16:41.433Z",
+  "duration": "20.09 minutes",
   "totalGames": 50,
-  "passed": 31,
-  "failed": 19,
-  "passRate": "62.0%",
+  "passed": 33,
+  "failed": 17,
+  "passRate": "66.0%",
   "results": [
     {
       "game": "Snake Game",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 2
     },
     {
       "game": "Tic Tac Toe",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 3
     },
     {
       "game": "Memory Card Game",
-      "passed": true,
-      "htmlLength": 18931,
-      "bodyLength": 12560,
-      "hasInteractive": false,
-      "matchedTerms": 2
+      "passed": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 0
     },
     {
       "game": "Pong",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Breakout",
-      "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "passed": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 0
     },
     {
       "game": "Tetris",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 3
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 2
     },
     {
       "game": "Space Invaders",
-      "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Flappy Bird",
       "passed": false,
-      "htmlLength": 18943,
-      "bodyLength": 12572,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "Connect Four",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 2
     },
     {
       "game": "Minesweeper",
       "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "2048",
-      "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Sudoku",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Chess",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 2
     },
     {
       "game": "Checkers",
-      "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Whack-a-Mole",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 2
     },
     {
       "game": "Simon Says",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Hangman",
-      "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Trivia Quiz",
       "passed": true,
-      "htmlLength": 18953,
-      "bodyLength": 12582,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Crossword",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Word Search",
       "passed": true,
-      "htmlLength": 18948,
-      "bodyLength": 12577,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Solitaire",
-      "passed": true,
-      "htmlLength": 18940,
-      "bodyLength": 12569,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "passed": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 0
     },
     {
       "game": "Blackjack",
       "passed": true,
-      "htmlLength": 18931,
-      "bodyLength": 12560,
-      "hasInteractive": false,
-      "matchedTerms": 2
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Poker",
-      "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 3
+      "passed": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 0
     },
     {
       "game": "Bingo",
-      "passed": true,
-      "htmlLength": 18943,
-      "bodyLength": 12572,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "passed": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 0
     },
     {
       "game": "Mahjong",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Dice Game",
-      "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Slot Machine",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 2
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Roulette",
-      "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "passed": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 0
     },
     {
       "game": "Puzzle Slider",
       "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "Jigsaw Puzzle",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Match-3",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Bubble Shooter",
       "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "Tower Defense",
-      "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Platformer",
-      "passed": false,
-      "htmlLength": 21685,
-      "bodyLength": 15314,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 16294,
+      "bodyLength": 11883,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Endless Runner",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 3
     },
     {
       "game": "Maze Game",
-      "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Pacman",
       "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "Asteroids",
       "passed": false,
-      "htmlLength": 18943,
-      "bodyLength": 12572,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "Galaga",
       "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "Racing Game",
       "passed": true,
-      "htmlLength": 18940,
-      "bodyLength": 12569,
-      "hasInteractive": false,
-      "matchedTerms": 2
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 1
     },
     {
       "game": "Typing Game",
       "passed": true,
-      "htmlLength": 18949,
-      "bodyLength": 12578,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 2
     },
     {
       "game": "Reaction Time",
       "passed": true,
-      "htmlLength": 18935,
-      "bodyLength": 12564,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 2
     },
     {
       "game": "Color Matcher",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 2
     },
     {
       "game": "Number Guesser",
       "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "Rock Paper Scissors",
       "passed": false,
-      "htmlLength": 18931,
-      "bodyLength": 12560,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     },
     {
       "game": "Ping Pong",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 1
     },
     {
       "game": "Dodge Game",
-      "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 0
+      "passed": true,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 2
     },
     {
       "game": "Clicker Game",
       "passed": true,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 2
     },
     {
       "game": "Quiz Bee",
-      "passed": true,
-      "htmlLength": 18953,
-      "bodyLength": 12582,
-      "hasInteractive": false,
-      "matchedTerms": 1
+      "passed": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
+      "matchedTerms": 0
     },
     {
       "game": "Dungeon Crawler",
       "passed": false,
-      "htmlLength": 18922,
-      "bodyLength": 12551,
-      "hasInteractive": false,
+      "htmlLength": 13565,
+      "bodyLength": 9154,
+      "hasInteractive": true,
       "matchedTerms": 0
     }
   ]

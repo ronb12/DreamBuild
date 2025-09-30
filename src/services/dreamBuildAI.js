@@ -2149,17 +2149,26 @@ class Enemy {
       structureAnalyzer: (intent) => {
         const { appType, technology, features } = intent
         
-        // Get base structure for app type
-        // If no specific pattern exists, create a functional default structure
-        const baseStructure = this.codePatterns.appPatterns[appType] || {
-          structure: ['App', 'Component'],
-          features: ['interactive', 'responsive'],
-          state: ['data', 'ui'],
-          implementations: {
-            App: this.codePatterns.appPatterns.todo.implementations.TodoList, // Use TodoList as base template
-            Component: this.codePatterns.appPatterns.todo.implementations.AddTodo // Use AddTodo as base template
+        // 🎯 For modern app types with comprehensive generators, skip old component system
+        // This prevents duplicate class declarations (Player, TodoManager, etc.)
+        const modernAppTypes = ['todo', 'calculator', 'game', 'web-app', 'custom']
+        
+        if (modernAppTypes.includes(appType) || !this.codePatterns.appPatterns[appType]) {
+          console.log(`🎯 Using modern generator for ${appType} - skipping old component generation`)
+          return {
+            components: [], // No old components - script.js has everything
+            pages: [{
+              name: 'index',
+              type: 'page',
+              template: this.generatePageTemplate(appType, technology, features)
+            }],
+            assets: ['styles.css', 'script.js'],
+            structure: 'modern'
           }
         }
+        
+        // Get base structure for legacy app types (if any)
+        const baseStructure = this.codePatterns.appPatterns[appType]
         
         // Generate component structure with detailed implementations
         const components = baseStructure.structure.map(comp => ({
@@ -3189,56 +3198,53 @@ class TodoUI {
     const priorityColors = { high: '#ef4444', medium: '#f59e0b', low: '#10b981' }
     const priorityIcons = { high: '🔴', medium: '🟡', low: '🟢' }
     
-    return \\\`
-      <div class="todo-item" style="border-left: 4px solid \\\${priorityColors[todo.priority] || '#64748b'}; padding: 1rem; margin-bottom: 1rem; background: #f8fafc; border-radius: 8px;">
-        <div style="display: flex; align-items: start; gap: 1rem;">
-          <input 
-            type="checkbox" 
-            \\\${todo.completed ? 'checked' : ''} 
-            onchange="todoApp.ui.handleToggle(\\\${todo.id})"
-            style="margin-top: 0.25rem; width: 20px; height: 20px; cursor: pointer;"
-          />
-          <div style="flex: 1;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-              <h4 style="margin: 0; \\\${todo.completed ? 'text-decoration: line-through; color: #94a3b8;' : 'color: #1e293b;'}">\\\${todo.text}</h4>
-              <button onclick="todoApp.ui.handleDelete(\\\${todo.id})" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">🗑️</button>
-            </div>
-            
-            ${hasFeatures.priorities ? `
-            <div style="margin-top: 0.5rem;">
-              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: \\\${priorityColors[todo.priority]}; color: white; border-radius: 12px; font-size: 0.75rem;">
-                \\\${priorityIcons[todo.priority]} \\\${todo.priority.toUpperCase()}
-              </span>
-            </div>
-            ` : ''}
-            
-            ${hasFeatures.categories ? `
-            <div style="margin-top: 0.5rem;">
-              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #6366f1; color: white; border-radius: 12px; font-size: 0.75rem;">
-                📁 \\\${todo.category}
-              </span>
-            </div>
-            ` : ''}
-            
-            ${hasFeatures.dueDates ? `
-            \\\${todo.dueDate ? \\\`<div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">📅 Due: \\\${new Date(todo.dueDate).toLocaleDateString()}</div>\\\` : ''}
-            ` : ''}
-            
-            ${hasFeatures.tags ? `
-            \\\${todo.tags && todo.tags.length > 0 ? \\\`
-              <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem; flex-wrap: wrap;">
-                \\\${todo.tags.map(tag => \\\`<span style="padding: 0.125rem 0.5rem; background: #e0e7ff; color: #4338ca; border-radius: 8px; font-size: 0.75rem;">#\\\${tag}</span>\\\`).join('')}
-              </div>
-            \\\` : ''}
-            ` : ''}
-            
-            ${hasFeatures.notes ? `
-            \\\${todo.notes ? \\\`<div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem; font-style: italic;">💭 \\\${todo.notes}</div>\\\` : ''}
-            ` : ''}
-          </div>
-        </div>
-      </div>
-    \\\`
+    let html = '<div class="todo-item" style="border-left: 4px solid ' + (priorityColors[todo.priority] || '#64748b') + '; padding: 1rem; margin-bottom: 1rem; background: #f8fafc; border-radius: 8px;">'
+    html += '<div style="display: flex; align-items: start; gap: 1rem;">'
+    html += '<input type="checkbox" ' + (todo.completed ? 'checked' : '') + ' onchange="todoApp.ui.handleToggle(' + todo.id + ')" style="margin-top: 0.25rem; width: 20px; height: 20px; cursor: pointer;" />'
+    html += '<div style="flex: 1;">'
+    html += '<div style="display: flex; justify-content: space-between; align-items: start;">'
+    html += '<h4 style="margin: 0; ' + (todo.completed ? 'text-decoration: line-through; color: #94a3b8;' : 'color: #1e293b;') + '">' + todo.text + '</h4>'
+    html += '<button onclick="todoApp.ui.handleDelete(' + todo.id + ')" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">🗑️</button>'
+    html += '</div>'
+    
+    ${hasFeatures.priorities ? `
+    html += '<div style="margin-top: 0.5rem;">'
+    html += '<span style="display: inline-block; padding: 0.25rem 0.75rem; background: ' + priorityColors[todo.priority] + '; color: white; border-radius: 12px; font-size: 0.75rem;">'
+    html += priorityIcons[todo.priority] + ' ' + todo.priority.toUpperCase()
+    html += '</span></div>'
+    ` : ''}
+    
+    ${hasFeatures.categories ? `
+    html += '<div style="margin-top: 0.5rem;">'
+    html += '<span style="display: inline-block; padding: 0.25rem 0.75rem; background: #6366f1; color: white; border-radius: 12px; font-size: 0.75rem;">'
+    html += '📁 ' + todo.category
+    html += '</span></div>'
+    ` : ''}
+    
+    ${hasFeatures.dueDates ? `
+    if (todo.dueDate) {
+      html += '<div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">📅 Due: ' + new Date(todo.dueDate).toLocaleDateString() + '</div>'
+    }
+    ` : ''}
+    
+    ${hasFeatures.tags ? `
+    if (todo.tags && todo.tags.length > 0) {
+      html += '<div style="margin-top: 0.5rem; display: flex; gap: 0.25rem; flex-wrap: wrap;">'
+      todo.tags.forEach(tag => {
+        html += '<span style="padding: 0.125rem 0.5rem; background: #e0e7ff; color: #4338ca; border-radius: 8px; font-size: 0.75rem;">#' + tag + '</span>'
+      })
+      html += '</div>'
+    }
+    ` : ''}
+    
+    ${hasFeatures.notes ? `
+    if (todo.notes) {
+      html += '<div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem; font-style: italic;">💭 ' + todo.notes + '</div>'
+    }
+    ` : ''}
+    
+    html += '</div></div></div>'
+    return html
   }
 
   handleToggle(id) {
@@ -4587,7 +4593,27 @@ console.log('✅ ${appTitle} script loaded successfully!')
       })
     }
     
-    // Add main app initialization with detailed implementations
+    // 🎯 For modern app types, script.js has everything - DON'T add duplicate files!
+    // This prevents "Identifier already declared" errors
+    const modernAppTypes = ['todo', 'calculator', 'game', 'web-app', 'custom']
+    
+    if (modernAppTypes.includes(intent.appType) || !this.codePatterns.appPatterns[intent.appType]) {
+      console.log(`🎯 Modern ${intent.appType} app - script.js is self-contained, skipping duplicate files`)
+      // script.js already has all classes and initializeApp - don't add duplicates!
+      
+      // Only add feature modules if explicitly requested
+      if (intent.features.includes('authentication')) {
+        enhancedFiles['auth.js'] = this.generateAuthModule()
+      }
+      
+      if (intent.features.includes('database')) {
+        enhancedFiles['database.js'] = this.generateDatabaseModule()
+      }
+      
+      return enhancedFiles
+    }
+    
+    // For legacy/template app types, add initialization files
     enhancedFiles['app.js'] = this.generateMainAppFile(intent)
     
     // Add configuration based on intent
@@ -4597,15 +4623,6 @@ console.log('✅ ${appTitle} script loaded successfully!')
     
     if (intent.features.includes('database')) {
       enhancedFiles['database.js'] = this.generateDatabaseModule()
-    }
-    
-    // Add specific app type initialization
-    if (intent.appType === 'todo') {
-      enhancedFiles['todo-app.js'] = this.generateTodoAppInitializer()
-    } else if (intent.appType === 'calculator') {
-      enhancedFiles['calculator-app.js'] = this.generateCalculatorAppInitializer()
-    } else if (intent.appType === 'game') {
-      enhancedFiles['game-app.js'] = this.generateGameAppInitializer()
     }
     
     return enhancedFiles

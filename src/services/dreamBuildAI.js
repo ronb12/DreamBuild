@@ -4,7 +4,7 @@
  * No external APIs required - everything runs locally in DreamBuild
  */
 
-import { TemplateBasedGenerator } from './templateBasedGenerator.js'
+// import { TemplateBasedGenerator } from './templateBasedGenerator.js'
 
 class DreamBuildAI {
   constructor() {
@@ -26,7 +26,7 @@ class DreamBuildAI {
 
   async initializeBuiltInAI() {
     // Load template generator
-    this.templateGenerator = new TemplateBasedGenerator()
+    // this.templateGenerator = new TemplateBasedGenerator()
     
     // Initialize AI patterns database
     this.aiPatterns = await this.loadAIPatterns()

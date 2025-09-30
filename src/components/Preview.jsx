@@ -67,15 +67,21 @@ const Preview = () => {
       // Add debouncing to prevent multiple deployments
       const timeoutId = setTimeout(() => {
         deployApp()
-      }, 1000) // Wait 1 second before deploying
+      }, 500) // Reduced debounce time to 500ms for faster response
       
       return () => clearTimeout(timeoutId)
     } else {
       console.log('🎮 No project or files to deploy')
       console.log('🎮 Current project:', currentProject)
       console.log('🎮 Files count:', currentProject ? Object.keys(currentProject.files).length : 'No project')
+      
+      // Clear any existing app content when no files
+      setAppContent(null)
+      setAppCss(null)
+      setAppUrl(null)
+      setDeployedApp(null)
     }
-  }, [currentProject?.name, currentProject?.activeFile]) // Only depend on specific properties
+  }, [currentProject?.name, currentProject?.activeFile, JSON.stringify(currentProject?.files)]) // Include files in dependency
 
   // Auto-refresh functionality - DISABLED to prevent reload loop
   useEffect(() => {
@@ -235,8 +241,13 @@ const Preview = () => {
   }
 
   const handleRefresh = () => {
-    if (appContent && currentProject) {
-      // Regenerate app content
+    console.log('🔄 Manual refresh triggered')
+    if (currentProject && Object.keys(currentProject.files).length > 0) {
+      // Force redeploy the app
+      console.log('🔄 Redeploying app...')
+      deployApp()
+    } else if (appContent && currentProject) {
+      // Regenerate app content from existing files
       try {
         const appData = {
           name: currentProject.name || 'DreamBuild App',
@@ -252,9 +263,14 @@ const Preview = () => {
         }
         
         console.log('🔄 App content refreshed')
+        toast.success('App content refreshed!')
       } catch (error) {
         console.error('❌ Error refreshing app content:', error)
+        toast.error('Failed to refresh app content')
       }
+    } else {
+      console.log('🔄 No content to refresh')
+      toast.info('No app content to refresh')
     }
   }
 

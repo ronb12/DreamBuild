@@ -17,7 +17,8 @@ import {
   AlertTriangle,
   AlertCircle,
   Zap,
-  ZapOff
+  ZapOff,
+  Minimize2
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import simpleAIService from '../services/simpleAIService'
@@ -426,6 +427,19 @@ export default function AIPromptSimplified() {
             title="Clear chat"
           >
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          </button>
+          <button
+            onClick={() => {
+              // Toggle AI panel visibility
+              const aiPanel = document.querySelector('[data-panel="ai"]');
+              if (aiPanel) {
+                aiPanel.style.display = aiPanel.style.display === 'none' ? 'flex' : 'none';
+              }
+            }}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            title="Minimize AI Assistant"
+          >
+            <Minimize2 className="h-4 w-4 text-muted-foreground" />
           </button>
         </div>
       </div>

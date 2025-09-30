@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Send, 
@@ -8,6 +8,10 @@ import {
   ThumbsUp,
   ThumbsDown,
   Loader2,
+  ChevronDown,
+  ChevronUp,
+  Minimize2,
+  Maximize2,
   Info
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -17,12 +21,14 @@ const AIChatInterface = ({
   prompt, 
   setPrompt, 
   isGenerating, 
-  handleGenerate,
-  textareaRef,
+  handleGenerate, 
+  textareaRef, 
   messagesEndRef,
   appExplanation,
   setShowExplanation
 }) => {
+  const [expandedMessages, setExpandedMessages] = useState(new Set())
+  const [isMinimized, setIsMinimized] = useState(false)
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -30,18 +36,35 @@ const AIChatInterface = ({
     }
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard!');
-  };
-
   const handleFeedback = (messageId, type) => {
     // Implement feedback logic here
     toast.success(`Feedback ${type === 'up' ? 'sent' : 'sent'}`);
   };
 
+  const toggleMessageExpansion = (messageId) => {
+    const newExpanded = new Set(expandedMessages);
+    if (newExpanded.has(messageId)) {
+      newExpanded.delete(messageId);
+    } else {
+      newExpanded.add(messageId);
+    }
+    setExpandedMessages(newExpanded);
+  };
+
+  const summarizeResponse = (content) => {
+    if (content.length <= 200) return content;
+    const sentences = content.split('. ');
+    if (sentences.length <= 3) return content;
+    return sentences.slice(0, 2).join('. ') + '...';
+  };
+
+  const copyToClipboard = (content) => {
+    navigator.clipboard.writeText(content);
+    toast.success('Copied to clipboard!');
+  };
+
   return (
-    <div className="flex flex-col h-full w-full max-w-full">
+    <div className="flex flex-col h-full w-full max-w-full overflow-hidden">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         <AnimatePresence>
@@ -74,11 +97,35 @@ const AIChatInterface = ({
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-foreground'
                 }`}>
-                  <div className="whitespace-pre-wrap text-sm break-words overflow-hidden">{message.content}</div>
+                  <div className="whitespace-pre-wrap text-sm break-words overflow-hidden">
+                    {message.type === 'assistant' && message.content.length > 200 && !expandedMessages.has(message.id) 
+                      ? summarizeResponse(message.content)
+                      : message.content
+                    }
+                  </div>
                   
                   {/* Message Actions */}
                   {message.type === 'assistant' && (
                     <div className="flex items-center gap-2 mt-2">
+                      {message.content.length > 200 && (
+                        <button
+                          onClick={() => toggleMessageExpansion(message.id)}
+                          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                          title={expandedMessages.has(message.id) ? "Show less" : "Show more"}
+                        >
+                          {expandedMessages.has(message.id) ? (
+                            <>
+                              <ChevronUp className="h-3 w-3" />
+                              Show Less
+                            </>
+                          ) : (
+                            <>
+                              <ChevronDown className="h-3 w-3" />
+                              Show More
+                            </>
+                          )}
+                        </button>
+                      )}
                       {appExplanation && (
                         <button
                           onClick={() => setShowExplanation(true)}

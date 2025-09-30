@@ -50,19 +50,8 @@ const Preview = () => {
     
     console.log(`✅ Preview: Bundled ${Object.keys(files).filter(k => k.endsWith('.js')).length} JavaScript files`)
     
-    // Add initialization code at the end
-    const initCode = jsFiles ? `\n\n// Auto-initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function() {
-    if (typeof initializeApp === 'function') {
-      initializeApp();
-    }
-  });
-} else {
-  if (typeof initializeApp === 'function') {
-    initializeApp();
-  }
-}\n` : ''
+    // DON'T add duplicate initialization - generated scripts handle their own init
+    const initCode = ''
 
     if (!htmlFile) return ''
 

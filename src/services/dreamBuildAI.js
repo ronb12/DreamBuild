@@ -3189,25 +3189,25 @@ class TodoUI {
     const priorityColors = { high: '#ef4444', medium: '#f59e0b', low: '#10b981' }
     const priorityIcons = { high: '🔴', medium: '🟡', low: '🟢' }
     
-    return \`
-      <div class="todo-item" style="border-left: 4px solid \${priorityColors[todo.priority] || '#64748b'}; padding: 1rem; margin-bottom: 1rem; background: #f8fafc; border-radius: 8px;">
+    return \\\`
+      <div class="todo-item" style="border-left: 4px solid \\\${priorityColors[todo.priority] || '#64748b'}; padding: 1rem; margin-bottom: 1rem; background: #f8fafc; border-radius: 8px;">
         <div style="display: flex; align-items: start; gap: 1rem;">
           <input 
             type="checkbox" 
-            \${todo.completed ? 'checked' : ''} 
-            onchange="todoApp.ui.handleToggle(\${todo.id})"
+            \\\${todo.completed ? 'checked' : ''} 
+            onchange="todoApp.ui.handleToggle(\\\${todo.id})"
             style="margin-top: 0.25rem; width: 20px; height: 20px; cursor: pointer;"
           />
           <div style="flex: 1;">
             <div style="display: flex; justify-content: space-between; align-items: start;">
-              <h4 style="margin: 0; \${todo.completed ? 'text-decoration: line-through; color: #94a3b8;' : 'color: #1e293b;'}">\${todo.text}</h4>
-              <button onclick="todoApp.ui.handleDelete(\${todo.id})" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">🗑️</button>
+              <h4 style="margin: 0; \\\${todo.completed ? 'text-decoration: line-through; color: #94a3b8;' : 'color: #1e293b;'}">\\\${todo.text}</h4>
+              <button onclick="todoApp.ui.handleDelete(\\\${todo.id})" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;">🗑️</button>
             </div>
             
             ${hasFeatures.priorities ? `
             <div style="margin-top: 0.5rem;">
-              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: \${priorityColors[todo.priority]}; color: white; border-radius: 12px; font-size: 0.75rem;">
-                \${priorityIcons[todo.priority]} \${todo.priority.toUpperCase()}
+              <span style="display: inline-block; padding: 0.25rem 0.75rem; background: \\\${priorityColors[todo.priority]}; color: white; border-radius: 12px; font-size: 0.75rem;">
+                \\\${priorityIcons[todo.priority]} \\\${todo.priority.toUpperCase()}
               </span>
             </div>
             ` : ''}
@@ -3215,30 +3215,30 @@ class TodoUI {
             ${hasFeatures.categories ? `
             <div style="margin-top: 0.5rem;">
               <span style="display: inline-block; padding: 0.25rem 0.75rem; background: #6366f1; color: white; border-radius: 12px; font-size: 0.75rem;">
-                📁 \${todo.category}
+                📁 \\\${todo.category}
               </span>
             </div>
             ` : ''}
             
             ${hasFeatures.dueDates ? `
-            \${todo.dueDate ? \`<div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">📅 Due: \${new Date(todo.dueDate).toLocaleDateString()}</div>\` : ''}
+            \\\${todo.dueDate ? \\\`<div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">📅 Due: \\\${new Date(todo.dueDate).toLocaleDateString()}</div>\\\` : ''}
             ` : ''}
             
             ${hasFeatures.tags ? `
-            \${todo.tags && todo.tags.length > 0 ? \`
+            \\\${todo.tags && todo.tags.length > 0 ? \\\`
               <div style="margin-top: 0.5rem; display: flex; gap: 0.25rem; flex-wrap: wrap;">
-                \${todo.tags.map(tag => \`<span style="padding: 0.125rem 0.5rem; background: #e0e7ff; color: #4338ca; border-radius: 8px; font-size: 0.75rem;">#\${tag}</span>\`).join('')}
+                \\\${todo.tags.map(tag => \\\`<span style="padding: 0.125rem 0.5rem; background: #e0e7ff; color: #4338ca; border-radius: 8px; font-size: 0.75rem;">#\\\${tag}</span>\\\`).join('')}
               </div>
-            \` : ''}
+            \\\` : ''}
             ` : ''}
             
             ${hasFeatures.notes ? `
-            \${todo.notes ? \`<div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem; font-style: italic;">💭 \${todo.notes}</div>\` : ''}
+            \\\${todo.notes ? \\\`<div style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem; font-style: italic;">💭 \\\${todo.notes}</div>\\\` : ''}
             ` : ''}
           </div>
         </div>
       </div>
-    \`
+    \\\`
   }
 
   handleToggle(id) {
@@ -3291,37 +3291,69 @@ class TodoUI {
 // INITIALIZE TODO APP
 // ============================================================================
 let todoApp = null
+let initAttempts = 0
 
 function initializeApp() {
-  console.log('🚀 Starting Todo App with ${features.length} features...')
+  initAttempts++
+  console.log(\`🚀 [Attempt \${initAttempts}] Starting Todo App with ${features.length} features...\`)
+  console.log('📊 Document state:', document.readyState)
   
   // Ensure form exists before initializing
   const form = document.getElementById('add-todo-form')
-  if (!form) {
-    console.warn('⚠️ Form not ready, retrying in 200ms...')
-    setTimeout(initializeApp, 200)
-    return
+  const input = document.getElementById('todo-input')
+  const container = document.getElementById('todos-container')
+  
+  console.log('🔍 Elements check:', {
+    form: !!form,
+    input: !!input,
+    container: !!container
+  })
+  
+  if (!form || !input || !container) {
+    if (initAttempts < 20) {
+      console.warn(\`⚠️  Elements not ready (attempt \${initAttempts}/20), retrying in 200ms...\`)
+      setTimeout(initializeApp, 200)
+      return
+    } else {
+      console.error('❌ Failed to initialize after 20 attempts - elements not found!')
+      return
+    }
   }
   
-  console.log('✅ Form found, initializing managers...')
-  const todoManager = new TodoManager()
-  const todoUI = new TodoUI(todoManager)
+  console.log('✅ All elements found, initializing managers...')
   
-  todoApp = { manager: todoManager, ui: todoUI }
-  window.todoApp = todoApp
-  
-  console.log('✅ Todo App fully initialized!')
-  console.log('📋 Features active:', ${JSON.stringify(features)})
-  todoUI.showNotification('Todo app ready! ✅')
+  try {
+    const todoManager = new TodoManager()
+    const todoUI = new TodoUI(todoManager)
+    
+    todoApp = { manager: todoManager, ui: todoUI }
+    window.todoApp = todoApp
+    
+    console.log('✅ Todo App fully initialized!')
+    console.log('📋 Features active:', ${JSON.stringify(features)})
+    console.log('🎯 TodoApp available globally as window.todoApp')
+    
+    todoUI.showNotification('Todo app ready! ✅')
+  } catch (error) {
+    console.error('❌ Error during initialization:', error)
+    console.error('Stack:', error.stack)
+  }
 }
 
 // Auto-initialize with DOM check
+console.log('📜 Todo app script loaded! Current state:', document.readyState)
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeApp)
+  console.log('⏳ DOM still loading, waiting for DOMContentLoaded...')
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('✅ DOMContentLoaded fired!')
+    initializeApp()
+  })
 } else if (document.readyState === 'interactive' || document.readyState === 'complete') {
-  // DOM already loaded, but wait a bit for iframe to be ready
+  console.log('✅ DOM already loaded, initializing with delay...')
   setTimeout(initializeApp, 100)
 } else {
+  console.log('🚀 Initializing immediately...')
   initializeApp()
 }
 `

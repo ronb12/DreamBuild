@@ -2943,13 +2943,15 @@ class TodoManager {
       id: Date.now(),
       text: todoData.text,
       completed: false,
-      createdAt: new Date().toISOString(),
-      ${hasFeatures.priorities ? 'priority: todoData.priority || "medium",' : ''}
-      ${hasFeatures.categories ? 'category: todoData.category || "personal",' : ''}
-      ${hasFeatures.dueDates ? 'dueDate: todoData.dueDate || null,' : ''}
-      ${hasFeatures.tags ? 'tags: todoData.tags || [],' : ''}
-      ${hasFeatures.notes ? 'notes: todoData.notes || "",' : ''}
+      createdAt: new Date().toISOString()
     }
+    
+    // Add optional feature properties
+    ${hasFeatures.priorities ? "todo.priority = todoData.priority || 'medium'" : ''}
+    ${hasFeatures.categories ? "todo.category = todoData.category || 'personal'" : ''}
+    ${hasFeatures.dueDates ? "todo.dueDate = todoData.dueDate || null" : ''}
+    ${hasFeatures.tags ? "todo.tags = todoData.tags || []" : ''}
+    ${hasFeatures.notes ? "todo.notes = todoData.notes || ''" : ''}
     
     this.todos.push(todo)
     this.saveTodos()
@@ -3138,14 +3140,14 @@ class TodoUI {
     const text = this.todoInput.value.trim()
     if (!text) return
 
-    const todoData = {
-      text,
-      ${hasFeatures.priorities ? 'priority: this.prioritySelect?.value || "medium",' : ''}
-      ${hasFeatures.categories ? 'category: this.categorySelect?.value || "personal",' : ''}
-      ${hasFeatures.dueDates ? 'dueDate: this.dueDateInput?.value || null,' : ''}
-      ${hasFeatures.tags ? 'tags: this.tagsInput?.value ? this.tagsInput.value.split(",").map(t => t.trim()) : [],' : ''}
-      ${hasFeatures.notes ? 'notes: this.notesInput?.value || "",' : ''}
-    }
+    const todoData = { text }
+    
+    // Add optional feature data
+    ${hasFeatures.priorities ? "todoData.priority = this.prioritySelect?.value || 'medium'" : ''}
+    ${hasFeatures.categories ? "todoData.category = this.categorySelect?.value || 'personal'" : ''}
+    ${hasFeatures.dueDates ? "todoData.dueDate = this.dueDateInput?.value || null" : ''}
+    ${hasFeatures.tags ? "todoData.tags = this.tagsInput?.value ? this.tagsInput.value.split(',').map(t => t.trim()) : []" : ''}
+    ${hasFeatures.notes ? "todoData.notes = this.notesInput?.value || ''" : ''}
 
     this.todoManager.addTodo(todoData)
     this.form.reset()

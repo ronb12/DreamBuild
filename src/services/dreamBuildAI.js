@@ -2254,6 +2254,35 @@ class Enemy {
   async generateIncrementalFeature(prompt, intent, existingFiles) {
     console.log('✨ Generating incremental feature code')
     
+    // Import the comprehensive incrementalDevelopmentService for full feature implementations
+    try {
+      const { default: incrementalDevService } = await import('./incrementalDevelopmentService.js')
+      
+      // Initialize with existing project
+      await incrementalDevService.initializeProject({ files: existingFiles })
+      
+      // Get the actual feature code (fully functional)
+      const requestedFeatures = incrementalDevService.analyzeRequestedFeatures(prompt)
+      console.log('🎯 Requested features:', requestedFeatures)
+      
+      let newFiles = {}
+      
+      // Generate code for each requested feature using the full implementation
+      for (const feature of requestedFeatures) {
+        const featureCode = await incrementalDevService.generateFeatureCode(feature, prompt, {})
+        newFiles = { ...newFiles, ...featureCode }
+      }
+      
+      // If comprehensive service generated code, use it
+      if (Object.keys(newFiles).length > 0) {
+        console.log('✅ Generated functional feature code:', Object.keys(newFiles))
+        return newFiles
+      }
+    } catch (error) {
+      console.warn('⚠️ Incremental dev service not available, using basic implementation:', error)
+    }
+    
+    // Fallback to basic implementations
     const lowerPrompt = prompt.toLowerCase()
     const newFiles = {}
     
@@ -2267,12 +2296,36 @@ class Enemy {
       newFiles['search.js'] = this.generateSearchFeature()
     }
     
-    if (lowerPrompt.includes('auth') || lowerPrompt.includes('login')) {
+    if (lowerPrompt.includes('auth') || lowerPrompt.includes('login') || lowerPrompt.includes('authentication')) {
       newFiles['auth.js'] = this.generateAuthModule()
     }
     
     if (lowerPrompt.includes('export') || lowerPrompt.includes('download')) {
       newFiles['export.js'] = this.generateExportFeature()
+    }
+    
+    if (lowerPrompt.includes('responsive') || lowerPrompt.includes('mobile')) {
+      newFiles['responsive.css'] = this.generateResponsiveCSS()
+    }
+    
+    if (lowerPrompt.includes('api') || lowerPrompt.includes('fetch')) {
+      newFiles['api.js'] = this.generateAPICode()
+    }
+    
+    if (lowerPrompt.includes('database') || lowerPrompt.includes('storage')) {
+      newFiles['database.js'] = this.generateDatabaseCode()
+    }
+    
+    if (lowerPrompt.includes('form') || lowerPrompt.includes('validation')) {
+      newFiles['forms.js'] = this.generateFormCode()
+    }
+    
+    if (lowerPrompt.includes('router') || lowerPrompt.includes('navigation')) {
+      newFiles['router.js'] = this.generateRouterCode()
+    }
+    
+    if (lowerPrompt.includes('state management') || lowerPrompt.includes('global state')) {
+      newFiles['state.js'] = this.generateStateCode()
     }
     
     // If no specific feature detected, provide helpful guidance
@@ -2380,6 +2433,313 @@ exportBtn.textContent = 'Export Data'
 exportBtn.onclick = exportData
 exportBtn.className = 'btn btn-secondary'
 document.querySelector('.app-header .container')?.appendChild(exportBtn)`
+  }
+  
+  generateResponsiveCSS() {
+    return `/* Responsive Design Utilities */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-mobile {
+    flex-direction: column;
+  }
+  
+  .button-mobile {
+    width: 100%;
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+  }
+  
+  .text-small {
+    font-size: 0.75rem;
+  }
+}`
+  }
+  
+  generateAPICode() {
+    return `// API Service
+class APIService {
+  constructor(baseURL = 'https://api.example.com') {
+    this.baseURL = baseURL
+    this.headers = {
+      'Content-Type': 'application/json'
+    }
+  }
+
+  setAuthToken(token) {
+    this.headers['Authorization'] = \`Bearer \${token}\`
+  }
+
+  async get(endpoint) {
+    try {
+      const response = await fetch(\`\${this.baseURL}\${endpoint}\`, {
+        method: 'GET',
+        headers: this.headers
+      })
+      
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('GET request failed:', error)
+      throw error
+    }
+  }
+
+  async post(endpoint, data) {
+    try {
+      const response = await fetch(\`\${this.baseURL}\${endpoint}\`, {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify(data)
+      })
+      
+      if (!response.ok) {
+        throw new Error(\`HTTP error! status: \${response.status}\`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.error('POST request failed:', error)
+      throw error
+    }
+  }
+}
+
+window.APIService = APIService`
+  }
+  
+  generateDatabaseCode() {
+    return `// Database Service
+class DatabaseService {
+  constructor() {
+    this.data = new Map()
+  }
+
+  async create(collection, data) {
+    const id = Date.now().toString()
+    const item = { id, ...data, createdAt: new Date() }
+    
+    if (!this.data.has(collection)) {
+      this.data.set(collection, new Map())
+    }
+    
+    this.data.get(collection).set(id, item)
+    return item
+  }
+
+  async read(collection, id = null) {
+    if (!this.data.has(collection)) {
+      return id ? null : []
+    }
+    
+    const collectionData = this.data.get(collection)
+    
+    if (id) {
+      return collectionData.get(id) || null
+    }
+    
+    return Array.from(collectionData.values())
+  }
+
+  async update(collection, id, updates) {
+    if (!this.data.has(collection)) {
+      return null
+    }
+    
+    const item = this.data.get(collection).get(id)
+    if (!item) {
+      return null
+    }
+    
+    const updatedItem = { ...item, ...updates, updatedAt: new Date() }
+    this.data.get(collection).set(id, updatedItem)
+    return updatedItem
+  }
+
+  async delete(collection, id) {
+    if (!this.data.has(collection)) {
+      return false
+    }
+    
+    return this.data.get(collection).delete(id)
+  }
+}
+
+window.DatabaseService = DatabaseService`
+  }
+  
+  generateFormCode() {
+    return `// Form Handling Utilities
+class FormHandler {
+  constructor(formId) {
+    this.form = document.getElementById(formId)
+    this.validators = {}
+    this.init()
+  }
+
+  init() {
+    if (this.form) {
+      this.form.addEventListener('submit', this.handleSubmit.bind(this))
+      this.setupValidation()
+    }
+  }
+
+  setupValidation() {
+    const inputs = this.form.querySelectorAll('input, textarea, select')
+    inputs.forEach(input => {
+      input.addEventListener('blur', () => this.validateField(input))
+      input.addEventListener('input', () => this.clearFieldError(input))
+    })
+  }
+
+  addValidator(fieldName, validator) {
+    this.validators[fieldName] = validator
+  }
+
+  validateField(field) {
+    const fieldName = field.name
+    const value = field.value
+    const validator = this.validators[fieldName]
+
+    if (validator) {
+      const result = validator(value)
+      if (!result.valid) {
+        this.showFieldError(field, result.message)
+        return false
+      }
+    }
+
+    this.clearFieldError(field)
+    return true
+  }
+
+  showFieldError(field, message) {
+    this.clearFieldError(field)
+    field.classList.add('error')
+    
+    const errorDiv = document.createElement('div')
+    errorDiv.className = 'field-error'
+    errorDiv.textContent = message
+    field.parentNode.appendChild(errorDiv)
+  }
+
+  clearFieldError(field) {
+    field.classList.remove('error')
+    const errorDiv = field.parentNode.querySelector('.field-error')
+    if (errorDiv) {
+      errorDiv.remove()
+    }
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()
+    
+    const formData = new FormData(this.form)
+    const data = Object.fromEntries(formData.entries())
+    
+    // Validate all fields
+    let isValid = true
+    const inputs = this.form.querySelectorAll('input, textarea, select')
+    inputs.forEach(input => {
+      if (!this.validateField(input)) {
+        isValid = false
+      }
+    })
+
+    if (isValid) {
+      this.onSubmit(data)
+    }
+  }
+
+  onSubmit(data) {
+    console.log('Form submitted:', data)
+  }
+}
+
+window.FormHandler = FormHandler`
+  }
+  
+  generateRouterCode() {
+    return `// Simple Router
+class Router {
+  constructor() {
+    this.routes = {}
+    this.currentRoute = null
+    this.init()
+  }
+
+  init() {
+    window.addEventListener('popstate', () => this.handleRoute())
+    this.handleRoute()
+  }
+
+  addRoute(path, handler) {
+    this.routes[path] = handler
+  }
+
+  navigate(path) {
+    window.history.pushState({}, '', path)
+    this.handleRoute()
+  }
+
+  handleRoute() {
+    const path = window.location.pathname
+    const handler = this.routes[path] || this.routes['*']
+    
+    if (handler) {
+      this.currentRoute = path
+      handler()
+    }
+  }
+}
+
+window.Router = Router`
+  }
+  
+  generateStateCode() {
+    return `// Simple State Management
+class StateManager {
+  constructor(initialState = {}) {
+    this.state = initialState
+    this.listeners = []
+  }
+
+  getState() {
+    return { ...this.state }
+  }
+
+  setState(newState) {
+    this.state = { ...this.state, ...newState }
+    this.notifyListeners()
+  }
+
+  subscribe(listener) {
+    this.listeners.push(listener)
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener)
+    }
+  }
+
+  notifyListeners() {
+    this.listeners.forEach(listener => listener(this.state))
+  }
+}
+
+window.StateManager = StateManager`
   }
 
   // Helper methods

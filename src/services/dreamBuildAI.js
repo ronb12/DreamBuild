@@ -2134,8 +2134,16 @@ class Enemy {
         const { appType, technology, features } = intent
         
         // Get base structure for app type
-        const baseStructure = this.codePatterns.appPatterns[appType] || 
-                             this.codePatterns.appPatterns.todo
+        // If no specific pattern exists, create a functional default structure
+        const baseStructure = this.codePatterns.appPatterns[appType] || {
+          structure: ['App', 'Component'],
+          features: ['interactive', 'responsive'],
+          state: ['data', 'ui'],
+          implementations: {
+            App: this.codePatterns.appPatterns.todo.implementations.TodoList, // Use TodoList as base template
+            Component: this.codePatterns.appPatterns.todo.implementations.AddTodo // Use AddTodo as base template
+          }
+        }
         
         // Generate component structure with detailed implementations
         const components = baseStructure.structure.map(comp => ({

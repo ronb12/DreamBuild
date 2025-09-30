@@ -1,0 +1,169 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===== PROJECTS =====
+    // Users can read/write their own projects
+    match /projects/{projectId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // ===== PROJECT CONTEXTS =====
+    // Allow anonymous access for demo purposes
+    match /projectContexts/{projectId} {
+      allow read, write: if true;
+      allow create: if true;
+    }
+    
+    // ===== PROJECT FILES =====
+    // Allow anonymous access for demo purposes
+    match /projectFiles/{projectId} {
+      allow read, write: if true;
+      allow create: if true;
+    }
+    
+    // ===== CONVERSATION MEMORY =====
+    // Allow anonymous access for demo purposes
+    match /conversationMemory/{projectId} {
+      allow read, write: if true;
+      allow create: if true;
+    }
+    
+    // ===== CONVERSATIONS =====
+    // Allow anonymous access for demo purposes
+    match /conversations/{conversationId} {
+      allow read, write: if true;
+      allow create: if true;
+    }
+    
+    // ===== COLLABORATION FEATURES =====
+    
+    // Project Presence - Users can read/write their own presence
+    match /projectPresence/{presenceId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Cursors - Users can read all cursors, write their own
+    match /cursors/{cursorId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Comments - Users can read all comments, write their own
+    match /comments/{commentId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Versions - Users can read all versions, write their own
+    match /versions/{versionId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // File Changes - Users can read all changes, write their own
+    match /fileChanges/{changeId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // ===== TEMPLATES =====
+    // Templates are public read/write for demo purposes
+    match /templates/{templateId} {
+      allow read, write: if true;
+      allow create: if true;
+    }
+    
+    // ===== AI LEARNING PATTERNS =====
+    // Users can read/write their own learning patterns
+    match /aiLearningPatterns/{patternId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // ===== USERS =====
+    // Allow anonymous access for demo purposes
+    match /users/{userId} {
+      allow read, write: if true;
+      allow create: if true;
+    }
+    
+    // ===== USER PREFERENCES =====
+    // Users can read/write their own preferences
+    match /userPreferences/{userId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == userId;
+    }
+    
+    // ===== DEPLOYMENT RECORDS =====
+    // Users can read/write their own deployment records
+    match /deployments/{deploymentId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // ===== PROJECT SHARING =====
+    // Users can share projects with specific users
+    match /projectShares/{shareId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == resource.data.ownerId ||
+        request.auth.uid in resource.data.sharedWith
+      );
+      allow write: if request.auth != null && 
+        request.auth.uid == resource.data.ownerId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.ownerId;
+    }
+    
+    // ===== NOTIFICATIONS =====
+    // Users can read/write their own notifications
+    match /notifications/{notificationId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // ===== ANALYTICS =====
+    // Users can read their own analytics
+    match /analytics/{analyticsId} {
+      allow read, write: if request.auth != null && 
+        request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // ===== APPS =====
+    // Allow anonymous access for demo purposes
+    match /apps/{appId} {
+      // Allow public read access for public apps
+      allow read: if resource.data.isPublic == true;
+      // Allow anonymous write and delete for demo purposes
+      allow write: if true;
+      allow delete: if true;
+      allow create: if true;
+    }
+  }
+}

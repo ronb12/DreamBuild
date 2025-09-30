@@ -79,7 +79,7 @@ const MessageBubble = ({ message, onCopy, onFeedback }) => {
     if (message.metadata?.files && message.metadata.files.length > 0) {
       return (
         <div className="space-y-2">
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          <div className="whitespace-pre-wrap break-words">{message.content}</div>
           <div className="flex flex-wrap gap-1 mt-2">
             {message.metadata.files.map((file, index) => (
               <span
@@ -98,7 +98,7 @@ const MessageBubble = ({ message, onCopy, onFeedback }) => {
     if (message.metadata?.codeBlocks) {
       return (
         <div className="space-y-2">
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          <div className="whitespace-pre-wrap break-words">{message.content}</div>
           {message.metadata.codeBlocks.map((block, index) => (
             <div key={index} className="bg-muted rounded p-2 text-xs font-mono">
               <div className="flex items-center justify-between mb-1">
@@ -117,7 +117,7 @@ const MessageBubble = ({ message, onCopy, onFeedback }) => {
       )
     }
 
-    return <div className="whitespace-pre-wrap">{message.content}</div>
+    return <div className="whitespace-pre-wrap break-words">{message.content}</div>
   }
 
   return (

@@ -430,6 +430,20 @@ const Preview = () => {
           {/* Additional Action Buttons */}
           <div className="flex items-center gap-2">
             <button
+              onClick={() => {
+                const iframe = document.querySelector('#preview-iframe')
+                if (iframe) {
+                  iframe.src = iframe.src
+                  console.log('🎮 Preview iframe refreshed')
+                }
+              }}
+              className="p-2 hover:bg-muted rounded-md transition-colors"
+              title="Refresh Preview"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </button>
+            
+            <button
               onClick={handleOpenInNewTab}
               className="p-2 hover:bg-muted rounded-md transition-colors"
               title="Open in New Tab"
@@ -476,26 +490,51 @@ const Preview = () => {
             'bg-white'
           }`}>
             <div className={`${getDeviceStyling()} transition-all duration-300 ease-in-out`}>
-              <div 
-                className={`w-full h-full border-0 ${
-                  deviceType === 'mobile' ? 'rounded-lg shadow-lg' : 
-                  deviceType === 'tablet' ? 'rounded-lg shadow-md' : 
-                  ''
-                }`}
-                dangerouslySetInnerHTML={{ 
-                  __html: appCss ? `<style>${appCss}</style>${appContent}` : appContent 
-                }}
-                title="DreamBuild App Preview"
-                onLoad={() => {
-                  setIsLoading(false)
-                  console.log('🎮 App content rendered successfully')
-                }}
-                style={{
-                  // Ensure the content is rendered as HTML, not text
-                  whiteSpace: 'normal',
-                  overflow: 'auto'
-                }}
-              />
+              {appUrl ? (
+                // Use iframe for proper game rendering
+                <iframe
+                  id="preview-iframe"
+                  src={appUrl}
+                  className={`w-full h-full border-0 ${
+                    deviceType === 'mobile' ? 'rounded-lg shadow-lg' : 
+                    deviceType === 'tablet' ? 'rounded-lg shadow-md' : 
+                    ''
+                  }`}
+                  title="DreamBuild App Preview"
+                  onLoad={() => {
+                    setIsLoading(false)
+                    console.log('🎮 App iframe loaded successfully')
+                  }}
+                  onError={() => {
+                    console.log('🎮 App iframe failed to load, falling back to direct render')
+                    setIsLoading(false)
+                  }}
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-pointer-lock"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; gamepad; fullscreen"
+                />
+              ) : (
+                // Fallback to direct HTML rendering if no URL
+                <div 
+                  className={`w-full h-full border-0 ${
+                    deviceType === 'mobile' ? 'rounded-lg shadow-lg' : 
+                    deviceType === 'tablet' ? 'rounded-lg shadow-md' : 
+                    ''
+                  }`}
+                  dangerouslySetInnerHTML={{ 
+                    __html: appCss ? `<style>${appCss}</style>${appContent}` : appContent 
+                  }}
+                  title="DreamBuild App Preview"
+                  onLoad={() => {
+                    setIsLoading(false)
+                    console.log('🎮 App content rendered successfully')
+                  }}
+                  style={{
+                    // Ensure the content is rendered as HTML, not text
+                    whiteSpace: 'normal',
+                    overflow: 'auto'
+                  }}
+                />
+              )}
             </div>
           </div>
         ) : (

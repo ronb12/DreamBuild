@@ -43,7 +43,7 @@ const AIChatInterface = ({
   return (
     <div className="flex flex-col h-full">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         <AnimatePresence>
           {messages.map((message) => (
             <motion.div
@@ -54,7 +54,7 @@ const AIChatInterface = ({
               transition={{ duration: 0.3 }}
               className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div className={`flex gap-3 max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              <div className={`flex gap-3 max-w-[80%] min-w-0 ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                 {/* Avatar */}
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                   message.type === 'user' 
@@ -69,12 +69,12 @@ const AIChatInterface = ({
                 </div>
 
                 {/* Message Content */}
-                <div className={`rounded-2xl px-4 py-3 ${
+                <div className={`rounded-2xl px-4 py-3 min-w-0 max-w-full ${
                   message.type === 'user'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-foreground'
                 }`}>
-                  <div className="whitespace-pre-wrap text-sm">{message.content}</div>
+                  <div className="whitespace-pre-wrap text-sm break-words overflow-hidden">{message.content}</div>
                   
                   {/* Message Actions */}
                   {message.type === 'assistant' && (
@@ -142,13 +142,13 @@ const AIChatInterface = ({
       {/* Input Area */}
       <div className="p-4 border-t border-border">
         <div className="flex gap-2">
-          <textarea
+            <textarea
             ref={textareaRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Describe what you want to build..."
-            className="flex-1 min-h-[44px] max-h-32 px-4 py-3 bg-background border border-border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="flex-1 min-h-[44px] max-h-32 px-4 py-3 bg-background border border-border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
             disabled={isGenerating}
           />
           <button

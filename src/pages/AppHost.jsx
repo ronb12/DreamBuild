@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from '../utils/navigation';
+import { Link, useLocation, useNavigate, useParams } from '../utils/navigation';
 import firebaseAppService from '../services/firebaseAppService'
 
 const AppHost = () => {

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { 
   Code2, FileText, Globe, Smartphone, Database, Zap,
   Copy, Download, ExternalLink, Play, Star, Github,
-  Search, Filter, Grid, List, Tag, Calendar
+  Search, Filter, Grid, List, Tag, Calendar, Gamepad2
 } from 'lucide-react'
 
 const Examples = () => {
@@ -12,14 +12,38 @@ const Examples = () => {
   const [viewMode, setViewMode] = useState('grid')
 
   const categories = [
-    { id: 'all', name: 'All Examples', count: 0 },
-    { id: 'web', name: 'Web Apps', count: 0 },
+    { id: 'all', name: 'All Examples', count: 1 },
+    { id: 'web', name: 'Web Apps', count: 1 },
     { id: 'mobile', name: 'Mobile Apps', count: 0 },
     { id: 'api', name: 'APIs', count: 0 },
-    { id: 'dashboard', name: 'Dashboards', count: 0 }
+    { id: 'dashboard', name: 'Dashboards', count: 0 },
+    { id: 'games', name: 'Games', count: 1 }
   ]
 
-  const examples = []
+  const examples = [
+    {
+      id: 'coin-collector-game',
+      title: 'Coin Collector Game',
+      description: 'A side-scrolling platformer game where a character runs, jumps, and collects falling coins. Features smooth animations, physics, scoring system, and power-ups.',
+      category: 'games',
+      language: 'HTML5 Canvas',
+      difficulty: 'Intermediate',
+      stars: 42,
+      tags: ['HTML5', 'Canvas', 'JavaScript', 'Game Development', 'Physics', 'Animation'],
+      preview: '/coin-collector-game.html',
+      github: '#',
+      features: [
+        'Character movement with arrow keys/WASD',
+        'Jumping mechanics with gravity',
+        'Coin spawning from sky',
+        'Collision detection',
+        'Scoring system with high scores',
+        'Particle effects',
+        'Power-up system',
+        'Responsive design'
+      ]
+    }
+  ]
 
   const filteredExamples = examples.filter(example => {
     const matchesSearch = example.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,6 +68,7 @@ const Examples = () => {
       case 'mobile': return Smartphone
       case 'api': return Database
       case 'dashboard': return FileText
+      case 'games': return Gamepad2
       default: return Code2
     }
   }
@@ -145,21 +170,29 @@ const Examples = () => {
                   </div>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <div className="flex gap-2">
-                      <motion.button
+                      <motion.a
+                        href={example.preview}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         className="p-2 bg-primary text-primary-foreground rounded-lg shadow-lg"
-                        title="Run Example"
+                        title="Play Game"
                       >
                         <Play className="h-4 w-4" />
-                      </motion.button>
+                      </motion.a>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
+                        onClick={() => {
+                          if (example.features) {
+                            alert(`Game Features:\n\n${example.features.map(f => `• ${f}`).join('\n')}`);
+                          }
+                        }}
                         className="p-2 bg-white text-gray-900 rounded-lg shadow-lg"
-                        title="Copy Code"
+                        title="View Features"
                       >
-                        <Copy className="h-4 w-4" />
+                        <ExternalLink className="h-4 w-4" />
                       </motion.button>
                     </div>
                   </div>
@@ -203,22 +236,36 @@ const Examples = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <button className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors text-sm">
-                      <Play className="h-4 w-4" />
-                      Run
-                    </button>
                     <a
-                      href={example.github}
+                      href={example.preview}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-dark transition-colors text-sm"
+                    >
+                      <Play className="h-4 w-4" />
+                      Play Game
+                    </a>
+                    {example.github !== '#' && (
+                      <a
+                        href={example.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm"
+                      >
+                        <Github className="h-4 w-4" />
+                        Code
+                      </a>
+                    )}
+                    <button 
+                      onClick={() => {
+                        if (example.features) {
+                          alert(`Game Features:\n\n${example.features.map(f => `• ${f}`).join('\n')}`);
+                        }
+                      }}
                       className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm"
                     >
-                      <Github className="h-4 w-4" />
-                      Code
-                    </a>
-                    <button className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-muted transition-colors text-sm">
-                      <Download className="h-4 w-4" />
-                      Download
+                      <ExternalLink className="h-4 w-4" />
+                      Features
                     </button>
                   </div>
                 </div>

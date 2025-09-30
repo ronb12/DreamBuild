@@ -25,6 +25,7 @@ import aiAgentService from '../services/aiAgentService'
 import conversationService from '../services/conversationService'
 import streamingService from '../services/streamingService'
 import realTimeWebBrowsingService from '../services/realTimeWebBrowsingService'
+import codeInjectionService from '../services/codeInjectionService'
 import AIModelSelector from './ai/AIModelSelector'
 import AIChatInterface from './ai/AIChatInterface'
 import StreamingResponse from './StreamingResponse'
@@ -38,7 +39,14 @@ export default function AIPromptSimplified() {
   const messagesEndRef = useRef(null)
   
   // Chat conversation state
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([
+    {
+      id: 'welcome',
+      type: 'assistant',
+      content: 'Hello! I\'m your AI coding assistant. I can help you build applications, write code, debug issues, and answer questions. What would you like to create today?',
+      timestamp: new Date()
+    }
+  ])
   const [aiRecommendations, setAiRecommendations] = useState([])
   const [showChatHistory, setShowChatHistory] = useState(false)
   const [showAIAgent, setShowAIAgent] = useState(false)
@@ -184,19 +192,16 @@ export default function AIPromptSimplified() {
       const conversationContext = conversationService.getConversationContext()
       
       // Generate AI response with conversation context and web search results
-      const response = await simpleAIService.generateCode({
-        prompt: userPrompt,
+      const response = await simpleAIService.generateCode(userPrompt, {
         projectName: projectName || currentProject.name,
-        context: {
-          currentFiles: currentProject.files,
-          activeFile: currentProject.activeFile,
-          config: currentProject.config,
-          isIncremental: isIncremental,
-          existingProject: isIncremental ? currentProject : null,
-          conversationContext: conversationContext,
-          conversationHistory: conversationService.getConversationHistory(),
-          webContext: webContext // Include web search results
-        }
+        currentFiles: currentProject.files,
+        activeFile: currentProject.activeFile,
+        config: currentProject.config,
+        isIncremental: isIncremental,
+        existingProject: isIncremental ? currentProject : null,
+        conversationContext: conversationContext,
+        conversationHistory: conversationService.getConversationHistory(),
+        webContext: webContext // Include web search results
       })
 
       // Add AI response to conversation
@@ -232,12 +237,38 @@ export default function AIPromptSimplified() {
       }
 
       // Prepare streaming response for code (only for code generation, not general questions)
+      console.log('🔍 AI Response Analysis:', {
+        hasFiles: !!(response.files && Object.keys(response.files).length > 0),
+        filesCount: response.files ? Object.keys(response.files).length : 0,
+        responseType: response.type,
+        files: response.files ? Object.keys(response.files) : []
+      })
+      
       if (response.files && Object.keys(response.files).length > 0) {
         responseText = Object.entries(response.files)
           .map(([filename, content]) => `// ${filename}\n${content}`)
           .join('\n\n')
         responseType = 'code'
         responseLanguage = 'javascript'
+        
+        // NEW: Inject code into the editor
+        console.log('💉 Injecting AI-generated code into editor...')
+        console.log('📁 Files to inject:', Object.keys(response.files))
+        try {
+          const injectionSuccess = await codeInjectionService.injectCodeIntoEditor(response.files)
+          if (injectionSuccess) {
+            console.log('✅ Code successfully injected into editor')
+            toast.success('Code generated and injected into editor!')
+          } else {
+            console.log('⚠️ Code injection failed, but files are available')
+            toast.info('Code generated! Check the files panel.')
+          }
+        } catch (error) {
+          console.error('❌ Code injection error:', error)
+          toast.error('Code generated but injection failed')
+        }
+      } else {
+        console.log('⚠️ No files found in AI response for code injection')
       }
 
       // Simple success message for code generation
@@ -326,7 +357,14 @@ export default function AIPromptSimplified() {
   }
 
   const clearChat = () => {
-    setMessages([])
+    setMessages([
+      {
+        id: 'welcome',
+        type: 'assistant',
+        content: 'Hello! I\'m your AI coding assistant. I can help you build applications, write code, debug issues, and answer questions. What would you like to create today?',
+        timestamp: new Date()
+      }
+    ])
     conversationService.clearConversation()
     toast.success('Chat cleared!')
   }
@@ -346,9 +384,25 @@ export default function AIPromptSimplified() {
     }
   }, [currentProject.id])
 
+  // Initialize code injection service when component mounts
+  useEffect(() => {
+    codeInjectionService.initialize({
+      codeEditor: document.querySelector('[data-testid="code-editor"]'),
+      fileManager: document.querySelector('.file-manager'),
+      preview: document.querySelector('.preview')
+    })
+    
+    // Expose services globally for debugging
+    window.codeInjectionService = codeInjectionService
+    window.simpleAIService = simpleAIService
+    
+    console.log('🔧 Code injection service initialized')
+    console.log('🔧 Services exposed globally for debugging')
+  }, [])
+
   
   return (
-    <div className="h-full flex flex-col bg-card/50 backdrop-blur-sm relative">
+    <div className="h-full flex flex-col bg-card/50 backdrop-blur-sm relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border/50">
         <div className="flex items-center gap-3">
@@ -387,7 +441,7 @@ export default function AIPromptSimplified() {
       </div>
 
       {/* Chat Interface */}
-      <div className="flex-1 overflow-hidden relative">
+      <div className="flex-1 overflow-hidden relative min-h-0">
         <AIChatInterface
           messages={messages}
           prompt={prompt}
@@ -399,6 +453,35 @@ export default function AIPromptSimplified() {
           appExplanation={appExplanation}
           setShowExplanation={setShowExplanation}
         />
+        
+        {/* Example Prompts - Show when only welcome message */}
+        {messages.length === 1 && (
+          <div className="absolute bottom-4 left-4 right-4 z-10">
+            <div className="bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg">
+              <div className="text-xs text-muted-foreground mb-2">Try these examples:</div>
+              <div className="grid grid-cols-1 gap-2">
+                <button
+                  onClick={() => setPrompt('Create a React todo app with TypeScript')}
+                  className="text-left p-2 text-xs bg-muted/50 hover:bg-muted rounded-lg transition-colors"
+                >
+                  Create a React todo app with TypeScript
+                </button>
+                <button
+                  onClick={() => setPrompt('Build a REST API with Express and MongoDB')}
+                  className="text-left p-2 text-xs bg-muted/50 hover:bg-muted rounded-lg transition-colors"
+                >
+                  Build a REST API with Express and MongoDB
+                </button>
+                <button
+                  onClick={() => setPrompt('Create a landing page with Tailwind CSS')}
+                  className="text-left p-2 text-xs bg-muted/50 hover:bg-muted rounded-lg transition-colors"
+                >
+                  Create a landing page with Tailwind CSS
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Feature Recommendations - Overlay */}
         {aiRecommendations.length > 0 && (
@@ -563,7 +646,7 @@ export default function AIPromptSimplified() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="absolute top-4 right-4 bg-card border border-border rounded-xl shadow-2xl max-w-md w-full max-h-[60vh] overflow-hidden z-50"
+            className="absolute top-4 right-4 bg-card border border-border rounded-xl shadow-2xl max-w-md w-auto max-h-[60vh] overflow-hidden z-50"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-border">

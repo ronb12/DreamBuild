@@ -219,7 +219,7 @@ const EnhancedAIChatInterface = ({
       </AnimatePresence>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
         <AnimatePresence>
           {messages.map((message) => (
             <motion.div
@@ -243,7 +243,7 @@ const EnhancedAIChatInterface = ({
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted text-foreground'
                 }`}>
-                  <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                  <div className="text-sm whitespace-pre-wrap break-words">{message.content}</div>
                   
                   {/* Enhanced AI Response Features */}
                   {message.type === 'assistant' && message.analysis && (

@@ -18,17 +18,19 @@ import AIPromptSimplified from '../components/AIPromptSimplified'
 import ConversationalAI from '../components/ai/ConversationalAI'
 import IntegratedWorkspace from '../components/IntegratedWorkspace'
 import TemplateSelector from '../components/TemplateSelector'
+import AdvancedGameDeveloper from '../components/AdvancedGameDeveloper'
 import Terminal from '../components/Terminal'
 import DebugPanel from '../components/DebugPanel'
 import ProjectFileBrowser from '../components/ProjectFileBrowser'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug, Plus, Github } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug, Plus, Github, Gamepad2 } from 'lucide-react'
 
 const AIBuilder = () => {
   const [activeTab, setActiveTab] = useState('editor')
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(true)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  const [showAdvancedGameDeveloper, setShowAdvancedGameDeveloper] = useState(false)
   const [showDebugPanel, setShowDebugPanel] = useState(false)
   const [showFileManager, setShowFileManager] = useState(true)
   const [showPreview, setShowPreview] = useState(true)
@@ -216,6 +218,10 @@ const AIBuilder = () => {
           case 'n':
             e.preventDefault()
             handleContextAction('new-project')
+            break
+          case 'w':
+            e.preventDefault()
+            handleTabClick('workspace')
             break
         }
       }
@@ -635,6 +641,48 @@ const AIBuilder = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
+                      handleContextAction('git-integration')
+                      closePlusDropdown()
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Github className="h-4 w-4" />
+                      GitHub Integration
+                    </div>
+                    <span className="text-xs text-muted-foreground">⌘G</span>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleTabClick('workspace')
+                      closePlusDropdown()
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Sparkles className="h-4 w-4" />
+                      Advanced Workspace
+                    </div>
+                    <span className="text-xs text-muted-foreground">⌘W</span>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setShowAdvancedGameDeveloper(true)
+                      closePlusDropdown()
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-muted rounded flex items-center justify-between text-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Gamepad2 className="h-4 w-4" />
+                      Advanced Game Developer
+                    </div>
+                    <span className="text-xs text-muted-foreground">🎮</span>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
                       handleContextAction('debug-panel')
                       closePlusDropdown()
                     }}
@@ -665,7 +713,7 @@ const AIBuilder = () => {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>Plus button for actions</span>
+              <span>Advanced Game Developer Ready</span>
             </div>
           </div>
         </div>
@@ -1321,6 +1369,12 @@ const AIBuilder = () => {
         onTemplateSelect={(template, files) => {
           setShowTemplateSelector(false)
         }}
+      />
+
+      {/* Advanced Game Developer Modal */}
+      <AdvancedGameDeveloper
+        isVisible={showAdvancedGameDeveloper}
+        onClose={() => setShowAdvancedGameDeveloper(false)}
       />
 
 

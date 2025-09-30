@@ -103,7 +103,17 @@ class CloudAIService {
 
   // Check if the prompt is a general question (not a code generation request)
   isGeneralQuestion(prompt) {
-    const lowerPrompt = prompt.toLowerCase()
+    // Ensure prompt is a string - handle objects properly
+    let promptStr
+    if (typeof prompt === 'string') {
+      promptStr = prompt
+    } else if (typeof prompt === 'object' && prompt !== null) {
+      // Try to extract prompt from object
+      promptStr = prompt.prompt || prompt.text || prompt.message || prompt.content || JSON.stringify(prompt)
+    } else {
+      promptStr = String(prompt)
+    }
+    const lowerPrompt = promptStr.toLowerCase()
     
     // General question indicators
     const generalQuestionKeywords = [
@@ -295,10 +305,21 @@ class CloudAIService {
   async generateCode(prompt, context = {}) {
     console.log('🚀 Generating code with Cloud AI...')
     
+    // Ensure prompt is a string - handle objects properly
+    let promptStr
+    if (typeof prompt === 'string') {
+      promptStr = prompt
+    } else if (typeof prompt === 'object' && prompt !== null) {
+      // Try to extract prompt from object
+      promptStr = prompt.prompt || prompt.text || prompt.message || prompt.content || JSON.stringify(prompt)
+    } else {
+      promptStr = String(prompt)
+    }
+    
     // Check if this is a general question (not a code generation request)
-    if (this.isGeneralQuestion(prompt)) {
+    if (this.isGeneralQuestion(promptStr)) {
       console.log('❓ General question detected, providing direct answer...')
-      return await this.answerGeneralQuestion(prompt, context)
+      return await this.answerGeneralQuestion(promptStr, context)
     }
     
     // Check if web context is available
@@ -312,7 +333,7 @@ class CloudAIService {
     try {
       // Check if this is an incremental development request
       if (context.isIncremental && context.existingProject) {
-        return await this.generateIncrementalCode(prompt, context)
+        return await this.generateIncrementalCode(promptStr, context)
       }
       
       // Enhanced context analysis with conversation history

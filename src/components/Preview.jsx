@@ -64,6 +64,34 @@ const Preview = () => {
         preview: currentProject.files[key]?.substring(0, 100) || 'No content'
       })))
       
+      // Immediately generate app content for preview
+      try {
+        const appData = {
+          name: currentProject.name || 'DreamBuild App',
+          files: currentProject.files
+        }
+        const htmlContent = firebaseAppService.generateAppHTML(appData)
+        setAppContent(htmlContent)
+        
+        // Extract CSS for separate injection
+        const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
+        if (cssFile) {
+          setAppCss(cssFile)
+          console.log('✅ CSS extracted immediately for preview')
+        }
+        
+        console.log('✅ App content generated immediately for preview')
+      } catch (error) {
+        console.error('❌ Error generating immediate app content:', error)
+        
+        // Fallback: use HTML file directly if available
+        const htmlFile = currentProject.files['index.html'] || currentProject.files['app.html'] || currentProject.files['main.html']
+        if (htmlFile) {
+          console.log('🔄 Using direct HTML file as fallback')
+          setAppContent(htmlFile)
+        }
+      }
+      
       // Add debouncing to prevent multiple deployments
       const timeoutId = setTimeout(() => {
         deployApp()
@@ -155,31 +183,53 @@ const Preview = () => {
       console.log('🎮 Firebase deployment error:', deploymentResult?.error)
       console.log('🎮 Firebase deployment error code:', deploymentResult?.code)
 
-      // If Firebase deployment fails, fallback to in-memory service
+      // If Firebase deployment fails, fallback to direct content generation
       if (!deploymentResult || !deploymentResult.success) {
-        console.log('🔄 Firebase deployment failed, trying fallback...')
+        console.log('🔄 Firebase deployment failed, using direct content generation...')
         console.log('🔄 Firebase error details:', deploymentResult?.error)
         console.log('🔄 Firebase error message:', deploymentResult?.error?.message)
-        setDeploymentStatus('Firebase failed, trying fallback...')
-        deploymentResult = await appDeploymentService.deployApp({
-          name: appName,
-          files: currentProject.files,
-          preview: {
-            title: appName,
-            description: 'Generated with DreamBuild AI Builder',
-            features: ['AI Generated', 'Responsive Design', 'Modern UI']
-          },
-          dependencies: [],
-          buildInstructions: []
-        })
-        console.log('🎮 Fallback deployment result:', deploymentResult)
+        setDeploymentStatus('Using direct content generation...')
+        
+        // Generate app content directly without deployment
+        try {
+          const appData = {
+            name: appName,
+            files: currentProject.files
+          }
+          const htmlContent = firebaseAppService.generateAppHTML(appData)
+          setAppContent(htmlContent)
+          
+          // Extract CSS for separate injection
+          const cssFile = currentProject.files['styles.css'] || currentProject.files['style.css'] || currentProject.files['app.css']
+          if (cssFile) {
+            setAppCss(cssFile)
+            console.log('✅ CSS extracted for separate injection')
+          }
+          
+          console.log('✅ App content generated directly')
+          
+          // Create a mock successful deployment result for direct rendering
+          deploymentResult = {
+            success: true,
+            appId: 'direct-' + Date.now(),
+            url: null, // No URL for direct rendering
+            appInfo: {
+              name: appName,
+              description: 'Generated with DreamBuild AI Builder',
+              features: ['AI Generated', 'Responsive Design', 'Modern UI']
+            }
+          }
+        } catch (error) {
+          console.error('❌ Error generating app content directly:', error)
+          setDeploymentStatus('Content generation failed')
+        }
       }
 
       if (deploymentResult.success) {
         setDeployedApp(deploymentResult.appInfo)
         setAppUrl(deploymentResult.url)
         
-        // Generate app content for direct rendering
+        // Always generate app content for direct rendering (even with successful deployment)
         try {
           const appData = {
             name: appName,
@@ -198,6 +248,13 @@ const Preview = () => {
           console.log('✅ App content generated for direct rendering')
         } catch (error) {
           console.error('❌ Error generating app content:', error)
+          
+          // Fallback: create basic HTML from files if generation fails
+          const htmlFile = currentProject.files['index.html'] || currentProject.files['app.html'] || currentProject.files['main.html']
+          if (htmlFile) {
+            console.log('🔄 Using fallback: direct HTML file content')
+            setAppContent(htmlFile)
+          }
         }
         
         console.log('✅ App deployed successfully:', deploymentResult.url)

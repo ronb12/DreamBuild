@@ -1,0 +1,20 @@
+{
+  "totalExamples": 10000,
+  "distribution": {
+    "todo": 3674,
+    "calculator": 1345,
+    "game": 699,
+    "chat": 981,
+    "weather": 704,
+    "timer": 730,
+    "note": 756,
+    "calendar": 517,
+    "fitness": 236,
+    "ecommerce": 358
+  },
+  "avgPromptLength": "22.7",
+  "uniquePrompts": 1488,
+  "appTypes": 10,
+  "readyForTraining": true,
+  "generatedAt": "2025-10-01T14:47:25.605Z"
+}

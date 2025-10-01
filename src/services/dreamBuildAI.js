@@ -52,30 +52,69 @@ class DreamBuildAI {
     console.log('✅ DreamBuild Built-in AI fully initialized')
   }
 
-  // Generate a catchy, creative name for the app
+  // Generate a catchy, creative name for the app - UNLIMITED combinations!
   generateCatchyAppName(appType, prompt) {
     const lowerPrompt = prompt.toLowerCase()
     
-    // Name prefixes by category
+    // MASSIVE name prefix library - mix and match for unlimited names!
     const prefixes = {
-      game: ['Super', 'Mega', 'Epic', 'Ninja', 'Turbo', 'Pixel', 'Retro', 'Ultra', 'Cosmic', 'Neon'],
-      todo: ['Quick', 'Smart', 'Daily', 'Power', 'Swift', 'Zen', 'Focus', 'Flow', 'Pro', 'Task'],
-      calculator: ['Quick', 'Smart', 'Pro', 'Math', 'Calc', 'Genius', 'Brain', 'Speed', 'Easy', 'Super'],
-      fitness: ['Fit', 'Active', 'Power', 'Strong', 'Peak', 'Vital', 'Energy', 'Elite', 'Prime', 'Iron'],
-      social: ['Social', 'Connect', 'Link', 'Buzz', 'Chat', 'Pulse', 'Vibe', 'Wave', 'Echo', 'Hub'],
-      music: ['Sound', 'Beat', 'Rhythm', 'Tune', 'Music', 'Audio', 'Sonic', 'Wave', 'Echo', 'Melody'],
-      default: ['My', 'Your', 'The', 'Quick', 'Easy', 'Simple', 'Pro', 'Smart', 'Cool', 'New']
+      game: ['Super', 'Mega', 'Epic', 'Ninja', 'Turbo', 'Pixel', 'Retro', 'Ultra', 'Cosmic', 'Neon',
+             'Hyper', 'Flash', 'Thunder', 'Lightning', 'Phoenix', 'Dragon', 'Shadow', 'Ghost', 'Cyber',
+             'Digital', 'Virtual', 'Matrix', 'Quantum', 'Atomic', 'Nuclear', 'Solar', 'Lunar', 'Star',
+             'Galaxy', 'Nebula', 'Rocket', 'Blast', 'Boom', 'Power', 'Force', 'Speed', 'Velocity', 'Rapid'],
+      todo: ['Quick', 'Smart', 'Daily', 'Power', 'Swift', 'Zen', 'Focus', 'Flow', 'Pro', 'Task',
+             'Easy', 'Simple', 'Clear', 'Bright', 'Pure', 'Prime', 'Peak', 'Top', 'Best', 'Elite',
+             'Ultra', 'Super', 'Master', 'Expert', 'Wise', 'Mind', 'Brain', 'Think', 'Plan', 'Sync'],
+      calculator: ['Quick', 'Smart', 'Pro', 'Math', 'Calc', 'Genius', 'Brain', 'Speed', 'Easy', 'Super',
+                   'Fast', 'Instant', 'Rapid', 'Swift', 'Lightning', 'Flash', 'Power', 'Ultra', 'Mega',
+                   'Expert', 'Master', 'Wizard', 'Scholar', 'Sage', 'Prime', 'Elite', 'Top', 'Peak'],
+      fitness: ['Fit', 'Active', 'Power', 'Strong', 'Peak', 'Vital', 'Energy', 'Elite', 'Prime', 'Iron',
+                'Steel', 'Titanium', 'Rock', 'Solid', 'Beast', 'Lion', 'Tiger', 'Eagle', 'Hawk', 'Falcon',
+                'Warrior', 'Champion', 'Victor', 'Hero', 'Legend', 'Alpha', 'Omega', 'Ultimate', 'Supreme'],
+      social: ['Social', 'Connect', 'Link', 'Buzz', 'Chat', 'Pulse', 'Vibe', 'Wave', 'Echo', 'Hub',
+               'Circle', 'Ring', 'Loop', 'Net', 'Web', 'Bridge', 'Portal', 'Gateway', 'Meet', 'Gather',
+               'Unite', 'Together', 'Friend', 'Buddy', 'Pal', 'Tribe', 'Crew', 'Squad', 'Team', 'Group'],
+      music: ['Sound', 'Beat', 'Rhythm', 'Tune', 'Music', 'Audio', 'Sonic', 'Wave', 'Echo', 'Melody',
+              'Harmony', 'Symphony', 'Chorus', 'Song', 'Voice', 'Note', 'Pitch', 'Tone', 'Vibe', 'Groove',
+              'Jam', 'Flow', 'Pulse', 'Bass', 'Treble', 'Amp', 'Rock', 'Jazz', 'Blues', 'Soul'],
+      ecommerce: ['Shop', 'Store', 'Market', 'Buy', 'Deal', 'Sale', 'Trade', 'Cart', 'Basket', 'Checkout',
+                  'Quick', 'Easy', 'Fast', 'Smart', 'Best', 'Top', 'Prime', 'Elite', 'Super', 'Mega'],
+      finance: ['Money', 'Cash', 'Coin', 'Dollar', 'Wealth', 'Rich', 'Bank', 'Gold', 'Silver', 'Diamond',
+                'Finance', 'Fund', 'Asset', 'Capital', 'Profit', 'Value', 'Worth', 'Smart', 'Wise', 'Prime'],
+      default: ['My', 'Your', 'The', 'Quick', 'Easy', 'Simple', 'Pro', 'Smart', 'Cool', 'New',
+                'Modern', 'Fresh', 'Pure', 'Clear', 'Bright', 'Swift', 'Fast', 'Prime', 'Top', 'Best']
     }
     
-    // Name suffixes by category
+    // MASSIVE name suffix library - unlimited combinations!
     const suffixes = {
-      game: ['Zone', 'Quest', 'World', 'Arena', 'Saga', 'Mania', 'Blitz', 'Rush', 'Master', 'Hero'],
-      todo: ['Flow', 'List', 'Hub', 'Dash', 'Track', 'Planner', 'Keeper', 'Manager', 'Organizer', 'Pro'],
-      calculator: ['Calc', 'Math', 'Calculator', 'Solver', 'Brain', 'Plus', 'Pro', 'Genius', 'Wizard', 'Master'],
-      fitness: ['Fit', 'Trainer', 'Coach', 'Tracker', 'Guru', 'Pro', 'Champion', 'Master', 'Hero', 'Builder'],
-      social: ['Connect', 'Network', 'Hub', 'Circle', 'Community', 'Space', 'Lounge', 'Zone', 'Spot', 'Place'],
-      music: ['Player', 'Beats', 'Studio', 'Stream', 'Mix', 'Box', 'Radio', 'Tunes', 'Groove', 'Jam'],
-      default: ['App', 'Hub', 'Pro', 'Zone', 'Studio', 'Center', 'Space', 'Place', 'Box', 'Spot']
+      game: ['Zone', 'Quest', 'World', 'Arena', 'Saga', 'Mania', 'Blitz', 'Rush', 'Master', 'Hero',
+             'Legend', 'Champion', 'Warrior', 'Fighter', 'Battle', 'War', 'Combat', 'Strike', 'Attack', 'Force',
+             'Storm', 'Fury', 'Rage', 'Chaos', 'Mayhem', 'Frenzy', 'Rampage', 'Havoc', 'Conquest', 'Victory',
+             'Triumph', 'Glory', 'Honor', 'Legacy', 'Dynasty', 'Empire', 'Kingdom', 'Realm', 'Universe', 'Dimension'],
+      todo: ['Flow', 'List', 'Hub', 'Dash', 'Track', 'Planner', 'Keeper', 'Manager', 'Organizer', 'Pro',
+             'Master', 'Expert', 'Guru', 'Wizard', 'Genius', 'Brain', 'Mind', 'Logic', 'System', 'Engine',
+             'Box', 'Space', 'Zone', 'Center', 'Studio', 'Lab', 'Workshop', 'Suite', 'Office', 'Desk'],
+      calculator: ['Calc', 'Math', 'Calculator', 'Solver', 'Brain', 'Plus', 'Pro', 'Genius', 'Wizard', 'Master',
+                   'Expert', 'Scholar', 'Teacher', 'Professor', 'Mentor', 'Guide', 'Helper', 'Assistant', 'Tool',
+                   'Engine', 'Machine', 'Computer', 'Processor', 'System', 'Lab', 'Studio', 'Workshop'],
+      fitness: ['Fit', 'Trainer', 'Coach', 'Tracker', 'Guru', 'Pro', 'Champion', 'Master', 'Hero', 'Builder',
+                'Maker', 'Creator', 'Sculptor', 'Forge', 'Factory', 'Lab', 'Studio', 'Gym', 'Arena', 'Zone',
+                'Center', 'Hub', 'Space', 'Club', 'Academy', 'Institute', 'School', 'Camp', 'Boot', 'Quest'],
+      social: ['Connect', 'Network', 'Hub', 'Circle', 'Community', 'Space', 'Lounge', 'Zone', 'Spot', 'Place',
+               'Room', 'Cafe', 'House', 'Home', 'Nest', 'Haven', 'Portal', 'Gateway', 'Bridge', 'Link',
+               'Meet', 'Gather', 'Rally', 'Forum', 'Board', 'Feed', 'Stream', 'Flow', 'Wave', 'Pulse'],
+      music: ['Player', 'Beats', 'Studio', 'Stream', 'Mix', 'Box', 'Radio', 'Tunes', 'Groove', 'Jam',
+              'Lab', 'Factory', 'Forge', 'Station', 'Channel', 'Wave', 'Pulse', 'Flow', 'Vibe', 'Zone',
+              'Arena', 'Stage', 'Hall', 'Theater', 'Club', 'Lounge', 'Cafe', 'Bar', 'Spot', 'Place'],
+      ecommerce: ['Shop', 'Store', 'Market', 'Mart', 'Plaza', 'Mall', 'Center', 'Hub', 'Zone', 'Spot',
+                  'Place', 'House', 'Warehouse', 'Depot', 'Outlet', 'Bazaar', 'Emporium', 'Exchange', 'Trade',
+                  'Cart', 'Basket', 'Bag', 'Box', 'Bay', 'Corner', 'Avenue', 'Street', 'Square', 'District'],
+      finance: ['Bank', 'Wallet', 'Vault', 'Safe', 'Fund', 'Capital', 'Asset', 'Wealth', 'Fortune', 'Treasury',
+                'Reserve', 'Invest', 'Trade', 'Exchange', 'Market', 'Hub', 'Center', 'Pro', 'Plus', 'Prime',
+                'Elite', 'Master', 'Expert', 'Advisor', 'Consultant', 'Manager', 'Tracker', 'Monitor'],
+      default: ['App', 'Hub', 'Pro', 'Zone', 'Studio', 'Center', 'Space', 'Place', 'Box', 'Spot',
+                'Lab', 'Workshop', 'Factory', 'Forge', 'Maker', 'Builder', 'Creator', 'Tool', 'Kit', 'Suite',
+                'System', 'Engine', 'Platform', 'Portal', 'Gateway', 'Bridge', 'Link', 'Connect', 'Network']
     }
     
     // Specific game names

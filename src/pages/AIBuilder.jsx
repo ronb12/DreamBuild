@@ -8,6 +8,7 @@ import DesktopTerminal from '../components/DesktopTerminal'
 import DesktopFileManager from '../components/DesktopFileManager'
 import CodeIntelligence from '../components/CodeIntelligence'
 import GitIntegration from '../components/GitIntegration'
+import GitHubIntegration from '../components/GitHubIntegration'
 import aiCodeIntelligenceService from '../services/aiCodeIntelligenceService'
 import gitIntegrationService from '../services/gitIntegrationService'
 import desktopIntegrationService from '../services/desktopIntegrationService'
@@ -1064,129 +1065,9 @@ const AIBuilder = () => {
                   </div>
                 )}
                 {activeTab === 'github' && (
-                  <div className="h-full flex flex-col" data-testid="github-integration">
+                  <div className="h-full flex flex-col overflow-auto" data-testid="github-integration">
                     <div className="flex-1 p-4">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold">GitHub Integration</h3>
-                          <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                            Connect GitHub
-                          </button>
-                        </div>
-                        
-                        {/* GitHub Status */}
-                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                          <h4 className="font-medium mb-2 text-blue-800">GitHub Integration Status</h4>
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm text-blue-700">GitHub Template Service initialized</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm text-blue-700">Git Integration Service initialized</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm text-blue-700">Version Control - Ready</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm text-blue-700">Repository Management - Active</span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="p-4 border border-border rounded-lg">
-                            <h4 className="font-medium mb-2">Repository</h4>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span className="text-sm">DreamBuild Repository - Active</span>
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                https://github.com/bradley-virtual-solutions/dreambuild
-                              </div>
-                              <div className="text-xs text-green-600">
-                                ✓ Git CLI Available
-                              </div>
-                            </div>
-                          </div>
-                          <div className="p-4 border border-border rounded-lg">
-                            <h4 className="font-medium mb-2">Templates</h4>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span className="text-sm">GitHub Templates - Ready</span>
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                Web Apps, Mobile Apps, APIs
-                              </div>
-                              <div className="text-xs text-blue-600">
-                                ✓ Template Service Active
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="p-4 bg-muted/50 rounded-lg">
-                          <h4 className="font-medium mb-2">Git Operations</h4>
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">Git Status: Clean</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">Last Commit: 2 minutes ago</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">Branch: main</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">GitHub Integration: 100%</span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg">
-                          <h4 className="font-medium mb-2 text-blue-800">Available Git Commands</h4>
-                          <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div className="flex items-center gap-2">
-                              <code className="bg-gray-100 px-2 py-1 rounded text-xs">git status</code>
-                              <span className="text-gray-600">Check status</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <code className="bg-gray-100 px-2 py-1 rounded text-xs">git add .</code>
-                              <span className="text-gray-600">Stage changes</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <code className="bg-gray-100 px-2 py-1 rounded text-xs">git commit</code>
-                              <span className="text-gray-600">Commit changes</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <code className="bg-gray-100 px-2 py-1 rounded text-xs">git push</code>
-                              <span className="text-gray-600">Push to remote</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="h-8 bg-muted/20 border-t border-border/30 flex items-center justify-between px-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-4">
-                        <span>GitHub Integration</span>
-                        <span>•</span>
-                        <span>Git CLI</span>
-                        <span>•</span>
-                        <span>Version Control</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>Ready</span>
-                      </div>
+                      <GitHubIntegration />
                     </div>
                   </div>
                 )}

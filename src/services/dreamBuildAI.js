@@ -2635,13 +2635,13 @@ function exportData() {
     // Add your app data here
   }
   
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
+  // Use data URL instead of blob URL for better iframe compatibility
+  const dataStr = JSON.stringify(data, null, 2)
+  const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
   const a = document.createElement('a')
-  a.href = url
+  a.href = dataUrl
   a.download = 'export.json'
   a.click()
-  URL.revokeObjectURL(url)
 }
 
 // Add export button
@@ -5681,13 +5681,14 @@ class TodoUI {
   ${hasFeatures.export ? `
   handleExport() {
     const dataStr = JSON.stringify(this.todoManager.todos, null, 2)
-    const dataBlob = new Blob([dataStr], { type: 'application/json' })
-    const url = URL.createObjectURL(dataBlob)
+    // Use data URL instead of blob URL for better iframe compatibility
+    const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
     const link = document.createElement('a')
-    link.href = url
+    link.href = dataUrl
     link.download = 'todos-export.json'
+    document.body.appendChild(link)
     link.click()
-    URL.revokeObjectURL(url)
+    document.body.removeChild(link)
     this.showNotification('Todos exported! 📥')
   }
   ` : ''}
@@ -7150,13 +7151,14 @@ class UIManager {
         exportBtn.addEventListener('click', () => {
           const items = this.appState.get('items')
           const dataStr = JSON.stringify(items, null, 2)
-          const dataBlob = new Blob([dataStr], { type: 'application/json' })
-          const url = URL.createObjectURL(dataBlob)
+          // Use data URL instead of blob URL for better iframe compatibility
+          const dataUrl = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
           const link = document.createElement('a')
-          link.href = url
+          link.href = dataUrl
           link.download = 'app-data-export.json'
+          document.body.appendChild(link)
           link.click()
-          URL.revokeObjectURL(url)
+          document.body.removeChild(link)
           this.showNotification('Data exported successfully!', 'success')
         })
         console.log('✅ Export feature enabled')

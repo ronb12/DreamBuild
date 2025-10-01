@@ -327,8 +327,8 @@ class DreamBuildAI {
         recreation: ['recreation', 'leisure', 'activity', 'fun', 'entertainment'],
         
         // Art & Design
-        art: ['art', 'creative', 'design', 'artist', 'gallery', 'exhibition'],
-        design: ['design', 'graphic', 'ui', 'ux', 'visual', 'creative'],
+        art: ['art', 'artistic', 'artist', 'gallery', 'exhibition', 'painting', 'drawing'],
+        design: ['designer', 'graphic-design', 'ui-design', 'ux-design', 'visual-design', 'design-tool', 'design-app'],
         
         // Science & Research
         science: ['science', 'research', 'experiment', 'laboratory', 'discovery'],
@@ -2188,37 +2188,18 @@ class Enemy {
         let confidence = 0
         let bestMatches = []
         
-        // Check for exact matches first (higher priority)
-        for (const [type, keywords] of Object.entries(this.aiPatterns.appTypes)) {
-          const exactMatches = keywords.filter(keyword => {
-            // Check for exact word matches
-            const regex = new RegExp(`\\b${keyword}\\b`, 'i')
-            return regex.test(lowerPrompt)
-          })
-          
-          const partialMatches = keywords.filter(keyword => lowerPrompt.includes(keyword))
-          
-          // Weight exact matches higher than partial matches
-          const matchScore = exactMatches.length * 2 + partialMatches.length
-          
-          if (matchScore > confidence) {
-            appType = type
-            confidence = matchScore
-            bestMatches = [...exactMatches, ...partialMatches]
-          }
-        }
-        
-        console.log('   After pattern matching - appType:', appType, 'confidence:', confidence)
-        
-        // Special handling for common app types
-        if (lowerPrompt.includes('todo') || lowerPrompt.includes('task') || lowerPrompt.includes('list')) {
+        // 🎯 SPECIAL DETECTION FIRST (Highest Priority) - Prevents false matches
+        if (lowerPrompt.includes('todo') || lowerPrompt.includes('task') || lowerPrompt.match(/\b(list|lists)\b/)) {
           console.log('   ✅ SPECIAL DETECTION: TODO app')
           appType = 'todo'
-          confidence = 3
-        } else if (lowerPrompt.includes('calculator') || lowerPrompt.includes('math') || lowerPrompt.includes('compute')) {
+          confidence = 10
+          bestMatches = ['todo', 'task', 'list']
+        } else if (lowerPrompt.includes('calculator') || lowerPrompt.includes('calc') || 
+                   lowerPrompt.match(/\b(math|compute|arithmetic)\b/)) {
           console.log('   ✅ SPECIAL DETECTION: CALCULATOR app')
           appType = 'calculator'
-          confidence = 3
+          confidence = 10
+          bestMatches = ['calculator']
         } else if (lowerPrompt.includes('game') || lowerPrompt.includes('player') || lowerPrompt.includes('enemy') ||
                    lowerPrompt.includes('tetris') || lowerPrompt.includes('snake') || lowerPrompt.includes('pong') ||
                    lowerPrompt.includes('pacman') || lowerPrompt.includes('chess') || lowerPrompt.includes('sudoku') ||
@@ -2226,9 +2207,46 @@ class Enemy {
                    lowerPrompt.includes('platformer') || lowerPrompt.includes('runner')) {
           console.log('   ✅✅✅ SPECIAL DETECTION: GAME app ✅✅✅')
           appType = 'game'
-          confidence = 3
+          confidence = 10
+          bestMatches = ['game']
+        } else if (lowerPrompt.includes('chat') || lowerPrompt.includes('messaging')) {
+          console.log('   ✅ SPECIAL DETECTION: CHAT app')
+          appType = 'chat'
+          confidence = 10
+          bestMatches = ['chat']
+        } else if (lowerPrompt.includes('weather') || lowerPrompt.includes('forecast')) {
+          console.log('   ✅ SPECIAL DETECTION: WEATHER app')
+          appType = 'weather'
+          confidence = 10
+          bestMatches = ['weather']
+        } else if (lowerPrompt.includes('timer') || lowerPrompt.includes('stopwatch') || lowerPrompt.includes('countdown')) {
+          console.log('   ✅ SPECIAL DETECTION: TIMER app')
+          appType = 'time'
+          confidence = 10
+          bestMatches = ['timer']
+        } else {
+          // General pattern matching (only if special detection didn't match)
+          for (const [type, keywords] of Object.entries(this.aiPatterns.appTypes)) {
+            const exactMatches = keywords.filter(keyword => {
+              // Check for exact word matches
+              const regex = new RegExp(`\\b${keyword}\\b`, 'i')
+              return regex.test(lowerPrompt)
+            })
+            
+            const partialMatches = keywords.filter(keyword => lowerPrompt.includes(keyword))
+            
+            // Weight exact matches higher than partial matches
+            const matchScore = exactMatches.length * 2 + partialMatches.length
+            
+            if (matchScore > confidence) {
+              appType = type
+              confidence = matchScore
+              bestMatches = [...exactMatches, ...partialMatches]
+            }
+          }
         }
         
+        console.log('   After pattern matching - appType:', appType, 'confidence:', confidence)
         console.log('   🎯 FINAL appType:', appType, 'confidence:', confidence)
         console.log('🎯🎯🎯 END INTENT ANALYZER 🎯🎯🎯')
         

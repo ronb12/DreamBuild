@@ -3301,13 +3301,35 @@ class SnakeGame {
     this.gameOver = false
     this.speed = 100 // ms per frame
     
-    this.setupControls()
+    this.setupControlsWithRetry()
     console.log('✅ Snake game initialized')
   }
   
-  setupControls() {
-    document.getElementById('start-btn').addEventListener('click', () => this.start())
-    document.getElementById('restart-btn').addEventListener('click', () => this.restart())
+  setupControlsWithRetry(attempts = 0) {
+    const startBtn = document.getElementById('start-btn')
+    const restartBtn = document.getElementById('restart-btn')
+    
+    if (startBtn && restartBtn) {
+      console.log('✅ Control buttons found, binding events...')
+      
+      startBtn.addEventListener('click', () => {
+        console.log('🚀 Start button clicked!')
+        this.start()
+      })
+      
+      restartBtn.addEventListener('click', () => {
+        console.log('🔄 Restart button clicked!')
+        this.restart()
+      })
+      
+      console.log('✅ Buttons bound successfully!')
+    } else {
+      console.log(\`⚠️  Buttons not ready (attempt \${attempts + 1}/10), retrying...\`)
+      if (attempts < 10) {
+        setTimeout(() => this.setupControlsWithRetry(attempts + 1), 500)
+      }
+      return
+    }
     
     document.addEventListener('keydown', (e) => {
       if (this.gameOver) return
@@ -3474,9 +3496,54 @@ class SnakeGame {
   }
 }
 
-const game = new SnakeGame()
-window.game = game
-console.log('🐍 Snake ready to play!')
+// Initialize game when DOM is ready
+let game
+function initGame() {
+  console.log('🎮 Initializing Snake game...')
+  game = new SnakeGame()
+  window.game = game
+  console.log('✅ Snake ready!')
+}
+
+// UNIVERSAL BUTTON FIX
+function ensureButtonsWork(retries = 0) {
+  const startBtn = document.getElementById('start-btn')
+  const restartBtn = document.getElementById('restart-btn')
+  
+  if (startBtn && restartBtn && game) {
+    console.log('🔧 Ensuring buttons work...')
+    const newStartBtn = startBtn.cloneNode(true)
+    const newRestartBtn = restartBtn.cloneNode(true)
+    
+    newStartBtn.addEventListener('click', () => {
+      console.log('🚀 START CLICKED!')
+      document.getElementById('game-overlay').style.display = 'none'
+      game.start && game.start()
+    })
+    
+    newRestartBtn.addEventListener('click', () => {
+      console.log('🔄 RESTART CLICKED!')
+      document.getElementById('game-over').style.display = 'none'
+      game.restart && game.restart()
+    })
+    
+    startBtn.parentNode.replaceChild(newStartBtn, startBtn)
+    restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn)
+    console.log('✅ Buttons fixed!')
+  } else if (retries < 20) {
+    setTimeout(() => ensureButtonsWork(retries + 1), 250)
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initGame()
+    setTimeout(() => ensureButtonsWork(), 500)
+  })
+} else {
+  initGame()
+  setTimeout(() => ensureButtonsWork(), 500)
+}
 `
   }
   
@@ -3519,13 +3586,34 @@ class PongGame {
     this.gameOver = false
     this.keys = {}
     
-    this.setupControls()
+    this.setupControlsWithRetry()
     console.log('✅ Pong game initialized')
   }
   
-  setupControls() {
-    document.getElementById('start-btn').addEventListener('click', () => this.start())
-    document.getElementById('restart-btn').addEventListener('click', () => this.restart())
+  setupControlsWithRetry(attempts = 0) {
+    const startBtn = document.getElementById('start-btn')
+    const restartBtn = document.getElementById('restart-btn')
+    
+    if (startBtn && restartBtn) {
+      console.log('✅ Buttons found, binding...')
+      
+      startBtn.addEventListener('click', () => {
+        console.log('🚀 Start clicked!')
+        this.start()
+      })
+      
+      restartBtn.addEventListener('click', () => {
+        console.log('🔄 Restart clicked!')
+        this.restart()
+      })
+      
+      console.log('✅ Buttons bound!')
+    } else {
+      if (attempts < 10) {
+        setTimeout(() => this.setupControlsWithRetry(attempts + 1), 500)
+      }
+      return
+    }
     
     document.addEventListener('keydown', (e) => {
       this.keys[e.key] = true
@@ -3671,9 +3759,52 @@ class PongGame {
   }
 }
 
-const game = new PongGame()
-window.game = game
-console.log('🏓 Pong ready to play!')
+// Initialize when DOM ready
+let game
+function initGame() {
+  game = new PongGame()
+  window.game = game
+  console.log('✅ Pong ready!')
+}
+
+// UNIVERSAL BUTTON FIX
+function ensureButtonsWork(retries = 0) {
+  const startBtn = document.getElementById('start-btn')
+  const restartBtn = document.getElementById('restart-btn')
+  
+  if (startBtn && restartBtn && game) {
+    const newStartBtn = startBtn.cloneNode(true)
+    const newRestartBtn = restartBtn.cloneNode(true)
+    
+    newStartBtn.addEventListener('click', () => {
+      console.log('🚀 START!')
+      document.getElementById('game-overlay').style.display = 'none'
+      game.start && game.start()
+    })
+    
+    newRestartBtn.addEventListener('click', () => {
+      console.log('🔄 RESTART!')
+      document.getElementById('game-over').style.display = 'none'
+      game.restart && game.restart()
+    })
+    
+    startBtn.parentNode.replaceChild(newStartBtn, startBtn)
+    restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn)
+    console.log('✅ Buttons fixed!')
+  } else if (retries < 20) {
+    setTimeout(() => ensureButtonsWork(retries + 1), 250)
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initGame()
+    setTimeout(() => ensureButtonsWork(), 500)
+  })
+} else {
+  initGame()
+  setTimeout(() => ensureButtonsWork(), 500)
+}
 `
   }
 
@@ -3721,7 +3852,7 @@ class BreakoutGame {
     this.keys = {}
     
     this.createBricks()
-    this.setupControls()
+    this.setupControlsWithRetry()
     console.log('✅ Breakout initialized')
   }
   
@@ -3734,9 +3865,29 @@ class BreakoutGame {
     }
   }
   
-  setupControls() {
-    document.getElementById('start-btn').addEventListener('click', () => this.start())
-    document.getElementById('restart-btn').addEventListener('click', () => this.restart())
+  setupControlsWithRetry(attempts = 0) {
+    const startBtn = document.getElementById('start-btn')
+    const restartBtn = document.getElementById('restart-btn')
+    
+    if (startBtn && restartBtn) {
+      console.log('✅ Buttons found!')
+      
+      startBtn.addEventListener('click', () => {
+        console.log('🚀 Start clicked!')
+        this.start()
+      })
+      
+      restartBtn.addEventListener('click', () => {
+        console.log('🔄 Restart clicked!')
+        this.restart()
+      })
+    } else {
+      if (attempts < 10) {
+        setTimeout(() => this.setupControlsWithRetry(attempts + 1), 500)
+      }
+      return
+    }
+    
     document.addEventListener('keydown', (e) => { this.keys[e.key] = true })
     document.addEventListener('keyup', (e) => { this.keys[e.key] = false })
     
@@ -3882,9 +4033,53 @@ class BreakoutGame {
   }
 }
 
-const game = new BreakoutGame()
-window.game = game
-console.log('🧱 Breakout ready to play!')
+
+// Initialize when DOM ready
+let game
+function initGame() {
+  game = new BreakoutGame()
+  window.game = game
+  console.log('✅ Breakout ready!')
+}
+
+// UNIVERSAL BUTTON FIX
+function ensureButtonsWork(retries = 0) {
+  const startBtn = document.getElementById('start-btn')
+  const restartBtn = document.getElementById('restart-btn')
+  
+  if (startBtn && restartBtn && game) {
+    const newStartBtn = startBtn.cloneNode(true)
+    const newRestartBtn = restartBtn.cloneNode(true)
+    
+    newStartBtn.addEventListener('click', () => {
+      console.log('🚀 START!')
+      document.getElementById('game-overlay').style.display = 'none'
+      game.start && game.start()
+    })
+    
+    newRestartBtn.addEventListener('click', () => {
+      console.log('🔄 RESTART!')
+      document.getElementById('game-over').style.display = 'none'
+      game.restart && game.restart()
+    })
+    
+    startBtn.parentNode.replaceChild(newStartBtn, startBtn)
+    restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn)
+    console.log('✅ Buttons work!')
+  } else if (retries < 20) {
+    setTimeout(() => ensureButtonsWork(retries + 1), 250)
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initGame()
+    setTimeout(() => ensureButtonsWork(), 500)
+  })
+} else {
+  initGame()
+  setTimeout(() => ensureButtonsWork(), 500)
+}
 `
   }
 
@@ -4068,9 +4263,53 @@ class FlappyBirdGame {
   }
 }
 
-const game = new BreakoutGame()
-window.game = game
-console.log('🧱 Breakout ready to play!')
+
+// Initialize when DOM ready
+let game
+function initGame() {
+  game = new BreakoutGame()
+  window.game = game
+  console.log('✅ Breakout ready!')
+}
+
+// UNIVERSAL BUTTON FIX
+function ensureButtonsWork(retries = 0) {
+  const startBtn = document.getElementById('start-btn')
+  const restartBtn = document.getElementById('restart-btn')
+  
+  if (startBtn && restartBtn && game) {
+    const newStartBtn = startBtn.cloneNode(true)
+    const newRestartBtn = restartBtn.cloneNode(true)
+    
+    newStartBtn.addEventListener('click', () => {
+      console.log('🚀 START!')
+      document.getElementById('game-overlay').style.display = 'none'
+      game.start && game.start()
+    })
+    
+    newRestartBtn.addEventListener('click', () => {
+      console.log('🔄 RESTART!')
+      document.getElementById('game-over').style.display = 'none'
+      game.restart && game.restart()
+    })
+    
+    startBtn.parentNode.replaceChild(newStartBtn, startBtn)
+    restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn)
+    console.log('✅ Buttons work!')
+  } else if (retries < 20) {
+    setTimeout(() => ensureButtonsWork(retries + 1), 250)
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initGame()
+    setTimeout(() => ensureButtonsWork(), 500)
+  })
+} else {
+  initGame()
+  setTimeout(() => ensureButtonsWork(), 500)
+}
 `
   }
 
@@ -4307,9 +4546,53 @@ class SpaceInvadersGame {
   }
 }
 
-const game = new SpaceInvadersGame()
-window.game = game
-console.log('👾 Space Invaders ready to play!')
+
+// Initialize when DOM ready
+let game
+function initGame() {
+  game = new SpaceInvadersGame()
+  window.game = game
+  console.log('✅ Space Invaders ready!')
+}
+
+// UNIVERSAL BUTTON FIX
+function ensureButtonsWork(retries = 0) {
+  const startBtn = document.getElementById('start-btn')
+  const restartBtn = document.getElementById('restart-btn')
+  
+  if (startBtn && restartBtn && game) {
+    const newStartBtn = startBtn.cloneNode(true)
+    const newRestartBtn = restartBtn.cloneNode(true)
+    
+    newStartBtn.addEventListener('click', () => {
+      console.log('🚀 START!')
+      document.getElementById('game-overlay').style.display = 'none'
+      game.start && game.start()
+    })
+    
+    newRestartBtn.addEventListener('click', () => {
+      console.log('🔄 RESTART!')
+      document.getElementById('game-over').style.display = 'none'
+      game.restart && game.restart()
+    })
+    
+    startBtn.parentNode.replaceChild(newStartBtn, startBtn)
+    restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn)
+    console.log('✅ Buttons work!')
+  } else if (retries < 20) {
+    setTimeout(() => ensureButtonsWork(retries + 1), 250)
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initGame()
+    setTimeout(() => ensureButtonsWork(), 500)
+  })
+} else {
+  initGame()
+  setTimeout(() => ensureButtonsWork(), 500)
+}
 `
   }
 
@@ -4372,6 +4655,11 @@ const SHAPES = [
 class Tetris {
   constructor() {
     this.canvas = document.getElementById('game-canvas')
+    if (!this.canvas) {
+      console.error('❌ Canvas not found!')
+      return
+    }
+    
     this.ctx = this.canvas.getContext('2d')
     this.canvas.width = COLS * BLOCK_SIZE
     this.canvas.height = ROWS * BLOCK_SIZE
@@ -4390,19 +4678,40 @@ class Tetris {
       y: 0
     }
     
-    this.setupControls()
+    // Setup controls with retry
+    this.setupControlsWithRetry()
     console.log('✅ Tetris initialized')
   }
   
-  setupControls() {
-    document.getElementById('start-btn').addEventListener('click', () => {
-      this.start()
-    })
+  setupControlsWithRetry(attempts = 0) {
+    const startBtn = document.getElementById('start-btn')
+    const restartBtn = document.getElementById('restart-btn')
     
-    document.getElementById('restart-btn').addEventListener('click', () => {
-      this.restart()
-    })
+    if (startBtn && restartBtn) {
+      console.log('✅ Control buttons found, binding events...')
+      
+      startBtn.addEventListener('click', () => {
+        console.log('🚀 Start button clicked!')
+        this.start()
+      })
+      
+      restartBtn.addEventListener('click', () => {
+        console.log('🔄 Restart button clicked!')
+        this.restart()
+      })
+      
+      console.log('✅ Start and Restart buttons bound successfully!')
+    } else {
+      console.log(\`⚠️  Buttons not ready yet (attempt \${attempts + 1}/10), retrying...\`)
+      if (attempts < 10) {
+        setTimeout(() => this.setupControlsWithRetry(attempts + 1), 500)
+      } else {
+        console.error('❌ Failed to find control buttons after 10 attempts')
+      }
+      return
+    }
     
+    // Keyboard controls (always available)
     document.addEventListener('keydown', (e) => {
       if (this.gameOver) return
       
@@ -4422,6 +4731,8 @@ class Tetris {
           break
       }
     })
+    
+    console.log('✅ All controls bound successfully!')
   }
   
   start() {
@@ -4624,13 +4935,63 @@ class Tetris {
   }
 }
 
-// Initialize game
-const game = new Tetris()
-console.log('🎮 Tetris ready to play!')
-console.log('📋 Controls: ← → to move, ↑ or Space to rotate, ↓ to drop faster')
+// Initialize game when DOM is ready
+let game
+function initGame() {
+  console.log('🎮 Initializing Tetris game...')
+  game = new Tetris()
+  window.game = game
+  console.log('✅ Tetris ready to play!')
+  console.log('📋 Controls: ← → to move, ↑ or Space to rotate, ↓ to drop faster')
+}
 
-// Make game globally available
-window.game = game
+// UNIVERSAL BUTTON FIX - Ensures start button always works
+function ensureButtonsWork(retries = 0) {
+  const startBtn = document.getElementById('start-btn')
+  const restartBtn = document.getElementById('restart-btn')
+  
+  if (startBtn && restartBtn && game) {
+    console.log('🔧 Universal button fix: Ensuring buttons are clickable...')
+    
+    // Remove any existing listeners and add fresh ones
+    const newStartBtn = startBtn.cloneNode(true)
+    const newRestartBtn = restartBtn.cloneNode(true)
+    
+    newStartBtn.addEventListener('click', () => {
+      console.log('🚀 START BUTTON CLICKED (universal handler)')
+      if (game && game.start) {
+        document.getElementById('game-overlay').style.display = 'none'
+        game.start()
+      }
+    })
+    
+    newRestartBtn.addEventListener('click', () => {
+      console.log('🔄 RESTART BUTTON CLICKED (universal handler)')
+      if (game && game.restart) {
+        document.getElementById('game-over').style.display = 'none'
+        game.restart()
+      }
+    })
+    
+    startBtn.parentNode.replaceChild(newStartBtn, startBtn)
+    restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn)
+    
+    console.log('✅ Universal button fix applied - Start button WILL work!')
+  } else if (retries < 20) {
+    setTimeout(() => ensureButtonsWork(retries + 1), 250)
+  }
+}
+
+// Start initialization
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initGame()
+    setTimeout(() => ensureButtonsWork(), 500)
+  })
+} else {
+  initGame()
+  setTimeout(() => ensureButtonsWork(), 500)
+}
 `
   }
 

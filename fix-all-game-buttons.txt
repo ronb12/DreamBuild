@@ -1,0 +1,11 @@
+All games need:
+1. setupControlsWithRetry() instead of setupControls()
+2. Retry logic if buttons not found (10 attempts, 500ms delay)
+3. DOMContentLoaded wrapper for initialization
+4. Console logging for debugging
+
+Games to fix:
+- Pong
+- Breakout  
+- Flappy Bird
+- Space Invaders

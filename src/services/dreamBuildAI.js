@@ -52,6 +52,79 @@ class DreamBuildAI {
     console.log('✅ DreamBuild Built-in AI fully initialized')
   }
 
+  // Generate a catchy, creative name for the app
+  generateCatchyAppName(appType, prompt) {
+    const lowerPrompt = prompt.toLowerCase()
+    
+    // Name prefixes by category
+    const prefixes = {
+      game: ['Super', 'Mega', 'Epic', 'Ninja', 'Turbo', 'Pixel', 'Retro', 'Ultra', 'Cosmic', 'Neon'],
+      todo: ['Quick', 'Smart', 'Daily', 'Power', 'Swift', 'Zen', 'Focus', 'Flow', 'Pro', 'Task'],
+      calculator: ['Quick', 'Smart', 'Pro', 'Math', 'Calc', 'Genius', 'Brain', 'Speed', 'Easy', 'Super'],
+      fitness: ['Fit', 'Active', 'Power', 'Strong', 'Peak', 'Vital', 'Energy', 'Elite', 'Prime', 'Iron'],
+      social: ['Social', 'Connect', 'Link', 'Buzz', 'Chat', 'Pulse', 'Vibe', 'Wave', 'Echo', 'Hub'],
+      music: ['Sound', 'Beat', 'Rhythm', 'Tune', 'Music', 'Audio', 'Sonic', 'Wave', 'Echo', 'Melody'],
+      default: ['My', 'Your', 'The', 'Quick', 'Easy', 'Simple', 'Pro', 'Smart', 'Cool', 'New']
+    }
+    
+    // Name suffixes by category
+    const suffixes = {
+      game: ['Zone', 'Quest', 'World', 'Arena', 'Saga', 'Mania', 'Blitz', 'Rush', 'Master', 'Hero'],
+      todo: ['Flow', 'List', 'Hub', 'Dash', 'Track', 'Planner', 'Keeper', 'Manager', 'Organizer', 'Pro'],
+      calculator: ['Calc', 'Math', 'Calculator', 'Solver', 'Brain', 'Plus', 'Pro', 'Genius', 'Wizard', 'Master'],
+      fitness: ['Fit', 'Trainer', 'Coach', 'Tracker', 'Guru', 'Pro', 'Champion', 'Master', 'Hero', 'Builder'],
+      social: ['Connect', 'Network', 'Hub', 'Circle', 'Community', 'Space', 'Lounge', 'Zone', 'Spot', 'Place'],
+      music: ['Player', 'Beats', 'Studio', 'Stream', 'Mix', 'Box', 'Radio', 'Tunes', 'Groove', 'Jam'],
+      default: ['App', 'Hub', 'Pro', 'Zone', 'Studio', 'Center', 'Space', 'Place', 'Box', 'Spot']
+    }
+    
+    // Specific game names
+    if (lowerPrompt.includes('tetris')) return 'BlockMaster Pro'
+    if (lowerPrompt.includes('snake')) return 'SnakeBlitz'
+    if (lowerPrompt.includes('pong')) return 'PongClassic'
+    if (lowerPrompt.includes('breakout')) return 'BrickBreaker Zone'
+    if (lowerPrompt.includes('pacman') || lowerPrompt.includes('pac-man')) return 'MazeRunner'
+    if (lowerPrompt.includes('chess')) return 'ChessMaster Pro'
+    if (lowerPrompt.includes('sudoku')) return 'Sudoku Genius'
+    if (lowerPrompt.includes('solitaire')) return 'Klondike Solitaire'
+    if (lowerPrompt.includes('flappy')) return 'Flappy Wings'
+    
+    // Get category arrays
+    const category = prefixes[appType] ? appType : 'default'
+    const prefixArray = prefixes[category]
+    const suffixArray = suffixes[category]
+    
+    // Generate random combination
+    const prefix = prefixArray[Math.floor(Math.random() * prefixArray.length)]
+    const suffix = suffixArray[Math.floor(Math.random() * suffixArray.length)]
+    
+    // Create the name
+    let name = `${prefix} ${suffix}`
+    
+    // Add emoji for fun
+    const emojis = {
+      game: '🎮',
+      todo: '✅',
+      calculator: '🧮',
+      fitness: '💪',
+      social: '💬',
+      music: '🎵',
+      ecommerce: '🛍️',
+      finance: '💰',
+      education: '📚',
+      health: '❤️',
+      food: '🍔',
+      travel: '✈️',
+      weather: '🌤️',
+      news: '📰'
+    }
+    
+    const emoji = emojis[appType] || '✨'
+    
+    console.log(`🎯 Generated catchy name: "${name}" ${emoji}`)
+    return { name, emoji }
+  }
+
   async loadAIPatterns() {
     return {
       // App type recognition patterns - 100+ app types supported
@@ -2168,7 +2241,11 @@ class Enemy {
       
       // Code structure analyzer
       structureAnalyzer: (intent) => {
-        const { appType, technology, features } = intent
+        const { appType, technology, features, appName, appEmoji } = intent
+        
+        // Store app name for use in templates
+        this.currentAppName = appName
+        this.currentAppEmoji = appEmoji
         
         // 🎯 For modern app types with comprehensive generators, skip old component system
         // This prevents duplicate class declarations (Player, TodoManager, etc.)
@@ -2306,7 +2383,15 @@ class Enemy {
       
       // Step 1: Analyze user intent
       const intent = this.smartAnalyzers.intentAnalyzer(prompt)
+      
+      // Generate catchy app name
+      const nameData = this.generateCatchyAppName(intent.appType, prompt)
+      intent.appName = typeof nameData === 'string' ? nameData : nameData.name
+      intent.appEmoji = typeof nameData === 'object' ? nameData.emoji : '✨'
+      intent.originalPrompt = prompt
+      
       console.log('🎯 Intent analyzed:', intent)
+      console.log('✨ App name:', intent.appName, intent.appEmoji)
       
       // Step 2: Generate code structure
       const structure = this.smartAnalyzers.structureAnalyzer(intent)
@@ -3169,10 +3254,10 @@ console.log('🏓 Pong game is under development')
   }
 
   // Generate Tetris game
-  generateTetrisGame(prompt) {
-    return `// ${prompt} - Generated by DreamBuild AI
+  generateTetrisGame(prompt, appName = 'BlockMaster Pro') {
+    return `// ${appName} - Generated by DreamBuild AI
 // Product of Bradley Virtual Solutions, LLC
-console.log('🎮 Initializing Tetris...')
+console.log('🎮 Initializing ${appName}...')
 
 const COLS = 10
 const ROWS = 20
@@ -3476,7 +3561,7 @@ window.game = game
     
     // TETRIS - Full working implementation
     if (lowerPrompt.includes('tetris')) {
-      return this.generateTetrisGame(prompt)
+      return this.generateTetrisGame(prompt, intent.appName || 'BlockMaster Pro')
     }
     
     // SNAKE - Full working implementation
@@ -4621,7 +4706,7 @@ if (document.readyState === 'loading') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game</title>
+  <title>${this.currentAppName || 'Game'}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -4631,7 +4716,7 @@ if (document.readyState === 'loading') {
     <!-- Game Header -->
     <header class="game-header">
       <div class="container">
-        <h1 class="game-title">🎮 Game</h1>
+        <h1 class="game-title">${this.currentAppEmoji || '🎮'} ${this.currentAppName || 'Game'}</h1>
         <div class="game-stats">
           <div class="stat-item">
             <span class="stat-label">Score</span>

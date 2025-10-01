@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Tetris Game",
+    "previewWorks": false,
+    "reason": "No iframe"
+  },
+  {
+    "name": "Todo App",
+    "previewWorks": false,
+    "reason": "No iframe"
+  },
+  {
+    "name": "Calculator",
+    "previewWorks": false,
+    "reason": "No iframe"
+  },
+  {
+    "name": "Chat App",
+    "previewWorks": false,
+    "reason": "No iframe"
+  },
+  {
+    "name": "Weather App",
+    "previewWorks": false,
+    "reason": "No iframe"
+  }
+]

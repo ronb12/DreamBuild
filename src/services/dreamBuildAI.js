@@ -2292,6 +2292,7 @@ class Enemy {
         
         if (modernAppTypes.includes(appType) || !this.codePatterns.appPatterns[appType]) {
           console.log(`🎯 Using modern generator for ${appType} - skipping old component generation`)
+          console.log(`📱 Including advanced PWA capabilities`)
           return {
             components: [], // No old components - script.js has everything
             pages: [{
@@ -2299,7 +2300,7 @@ class Enemy {
               type: 'page',
               template: this.generatePageTemplate(appType, technology, features)
             }],
-            assets: ['styles.css', 'script.js'],
+            assets: ['styles.css', 'script.js', 'manifest.json', 'sw.js'],
             structure: 'modern'
           }
         }
@@ -2354,7 +2355,9 @@ class Enemy {
         // Generate asset files
         structure.assets.forEach(asset => {
           const extension = asset.split('.').pop()
-          const assetContent = this.generateAssetTemplate(extension, intent)
+          // Pass the asset name so we can distinguish sw.js from script.js
+          const intentWithAsset = { ...intent, assetName: asset }
+          const assetContent = this.generateAssetTemplate(extension, intentWithAsset)
           console.log(`📄 Generating ${asset} (${assetContent?.length || 0} chars)`)
           files[asset] = assetContent
         })
@@ -4704,10 +4707,37 @@ if (document.readyState === 'loading') {
     
     <footer class="app-footer">
       <div class="container">
-        <p>&copy; 2024 Todo App. Built with DreamBuild AI - ${features.length} Features Included</p>
+        <p>&copy; 2024 ${this.currentAppName || 'Todo App'}. Built with DreamBuild AI - ${features.length} Features Included - Product of Bradley Virtual Solutions, LLC</p>
       </div>
     </footer>
   </div>
+  
+  <!-- PWA Registration -->
+  <script>
+    // Register Service Worker for offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('✅ PWA Service Worker registered'))
+          .catch(err => console.log('❌ SW registration failed:', err))
+      })
+    }
+    
+    // PWA Install Prompt
+    let deferredPrompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault()
+      deferredPrompt = e
+      console.log('📱 PWA install prompt available')
+    })
+  </script>
+  
+  <!-- Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="${this.currentAppName || 'Todo App'}">
 </body>
 </html>`
     }
@@ -4814,10 +4844,37 @@ if (document.readyState === 'loading') {
     <!-- Game Footer -->
     <footer class="game-footer">
       <div class="container">
-        <p>&copy; 2024 Game. Built with DreamBuild AI - Product of Bradley Virtual Solutions, LLC</p>
+        <p>&copy; 2024 ${this.currentAppName || 'Game'}. Built with DreamBuild AI - Product of Bradley Virtual Solutions, LLC</p>
       </div>
     </footer>
   </div>
+  
+  <!-- PWA Registration -->
+  <script>
+    // Register Service Worker for offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('✅ PWA Service Worker registered'))
+          .catch(err => console.log('❌ SW registration failed:', err))
+      })
+    }
+    
+    // PWA Install Prompt
+    let deferredPrompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault()
+      deferredPrompt = e
+      console.log('📱 PWA install prompt available')
+    })
+  </script>
+  
+  <!-- Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="${this.currentAppName || 'Game'}">
 </body>
 </html>`
     }
@@ -4911,18 +4968,251 @@ if (document.readyState === 'loading') {
     
     <footer class="app-footer">
       <div class="container">
-        <p>&copy; 2024 ${appTitle}. Built with DreamBuild AI${features.length > 0 ? ` - ${features.length} Features Built-In` : ''} - Product of Bradley Virtual Solutions, LLC</p>
+        <p>&copy; 2024 ${this.currentAppName || appTitle}. Built with DreamBuild AI${features.length > 0 ? ` - ${features.length} Features Built-In` : ''} - Product of Bradley Virtual Solutions, LLC</p>
       </div>
     </footer>
   </div>
+  
+  <!-- PWA Registration -->
+  <script>
+    // Register Service Worker for offline support and PWA capabilities
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('✅ PWA Service Worker registered:', registration)
+            console.log('📱 ${this.currentAppName || appTitle} is now a Progressive Web App!')
+          })
+          .catch(err => console.log('❌ SW registration failed:', err))
+      })
+    }
+    
+    // PWA Install Prompt Handler
+    let deferredPrompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault()
+      deferredPrompt = e
+      console.log('📱 PWA install prompt available - app can be installed!')
+      
+      // You can show a custom install button here
+      // Example: document.getElementById('install-btn').style.display = 'block'
+    })
+    
+    // Track when app is installed
+    window.addEventListener('appinstalled', (e) => {
+      console.log('🎉 ${this.currentAppName || appTitle} has been installed as a PWA!')
+      deferredPrompt = null
+    })
+  </script>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="${this.currentAppName || appTitle}">
 </body>
 </html>`
+  }
+
+  // Generate PWA Manifest with advanced capabilities
+  generatePWAManifest(appName, appEmoji, appType) {
+    return `{
+  "name": "${appName}",
+  "short_name": "${appName}",
+  "description": "Built with DreamBuild AI - Product of Bradley Virtual Solutions, LLC",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "any",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>${appEmoji}</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>${appEmoji}</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["${appType}", "productivity", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Open ${appName}",
+      "short_name": "Open",
+      "description": "Open ${appName} directly",
+      "url": "/",
+      "icons": []
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "prefer_related_applications": false,
+  "related_applications": []
+}`
+  }
+
+  // Generate advanced Service Worker with offline support and caching
+  generateServiceWorker(appName) {
+    return `// ${appName} - Service Worker
+// Generated by DreamBuild AI - Product of Bradley Virtual Solutions, LLC
+// Advanced PWA capabilities with offline support
+
+const CACHE_NAME = '${appName.toLowerCase().replace(/\\s+/g, '-')}-v1.0.0'
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/styles.css',
+  '/script.js'
+]
+
+// Install event - cache essential files
+self.addEventListener('install', (event) => {
+  console.log('📦 Service Worker installing for ${appName}...')
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('✅ Caching app files')
+        return cache.addAll(urlsToCache)
+      })
+      .then(() => self.skipWaiting())
+  )
+})
+
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  console.log('🔄 Service Worker activating for ${appName}...')
+  
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('🗑️ Deleting old cache:', cacheName)
+            return caches.delete(cacheName)
+          }
+        })
+      )
+    }).then(() => self.clients.claim())
+  )
+})
+
+// Fetch event - serve from cache, fallback to network
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        // Cache hit - return cached version
+        if (response) {
+          return response
+        }
+        
+        // Clone the request
+        const fetchRequest = event.request.clone()
+        
+        return fetch(fetchRequest).then((response) => {
+          // Check if valid response
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response
+          }
+          
+          // Clone the response
+          const responseToCache = response.clone()
+          
+          // Cache the new resource
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(event.request, responseToCache)
+            })
+          
+          return response
+        })
+      })
+      .catch(() => {
+        // Offline fallback
+        return caches.match('/index.html')
+      })
+  )
+})
+
+// Background Sync - for offline actions
+self.addEventListener('sync', (event) => {
+  console.log('🔄 Background sync triggered')
+  if (event.tag === 'sync-data') {
+    event.waitUntil(syncData())
+  }
+})
+
+async function syncData() {
+  console.log('📤 Syncing offline data...')
+  // App-specific sync logic here
+}
+
+// Push Notification support
+self.addEventListener('push', (event) => {
+  console.log('📬 Push notification received')
+  
+  const data = event.data ? event.data.json() : {}
+  const title = data.title || '${appName}'
+  const options = {
+    body: data.body || 'You have a new notification',
+    icon: data.icon || '/icon.png',
+    badge: '/badge.png',
+    vibrate: [200, 100, 200],
+    data: data.data || {}
+  }
+  
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  )
+})
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+  console.log('🔔 Notification clicked')
+  event.notification.close()
+  
+  event.waitUntil(
+    clients.openWindow('/')
+  )
+})
+
+console.log('✅ ${appName} Service Worker ready with advanced PWA capabilities!')
+`
   }
 
   generateAssetTemplate(type, intent) {
     const appTitle = intent.appType.split('-').map(word => 
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ')
+    const appName = intent.appName || appTitle
+    const appEmoji = intent.appEmoji || '✨'
+    
+    // 📱 PWA MANIFEST - Advanced Progressive Web App configuration
+    if (type === 'json') {
+      return this.generatePWAManifest(appName, appEmoji, intent.appType)
+    }
+    
+    // 📱 SERVICE WORKER - Offline support and caching
+    if (type === 'js' && intent.assetName === 'sw.js') {
+      return this.generateServiceWorker(appName)
+    }
     
     // 🎯 SPECIAL HANDLING FOR TODO APPS - Full Feature Implementation
     if (intent.appType === 'todo' && type === 'js') {

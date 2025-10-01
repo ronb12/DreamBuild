@@ -5017,28 +5017,44 @@ if (document.readyState === 'loading') {
 
   // Generate PWA Manifest with advanced capabilities
   generatePWAManifest(appName, appEmoji, appType) {
+    // Generate custom icon SVG with proper design
+    const icon192 = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%236366f1'/><rect x='24' y='24' width='144' height='144' rx='24' fill='%23ffffff'/><text x='96' y='130' font-size='72' text-anchor='middle' fill='%236366f1'>${appEmoji}</text></svg>`
+    const icon512 = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%236366f1'/><stop offset='100%25' style='stop-color:%238b5cf6'/></linearGradient></defs><rect width='512' height='512' fill='url(%23bg)'/><rect x='64' y='64' width='384' height='384' rx='64' fill='%23ffffff'/><text x='256' y='350' font-size='192' text-anchor='middle' fill='%236366f1'>${appEmoji}</text></svg>`
+    
     return `{
   "name": "${appName}",
   "short_name": "${appName}",
   "description": "Built with DreamBuild AI - Product of Bradley Virtual Solutions, LLC",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#6366f1",
   "orientation": "any",
-  "scope": "/",
+  "scope": "./",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>${appEmoji}</text></svg>",
+      "src": "${icon192}",
       "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>${appEmoji}</text></svg>",
+      "src": "${icon192}",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "${icon512}",
       "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "${icon512}",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ],
   "categories": ["${appType}", "productivity", "utilities"],

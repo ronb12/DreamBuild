@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from '../utils/navigation';
+import { useProject } from '../contexts/ProjectContext'
+import toast from 'react-hot-toast'
 import FileManager from '../components/FileManager'
 import SimpleAdvancedFileManager from '../components/SimpleAdvancedFileManager'
 import advancedFileManagementService from '../services/advancedFileManagementService'
@@ -22,6 +24,7 @@ import AdvancedGameDeveloper from '../components/AdvancedGameDeveloper'
 import Terminal from '../components/Terminal'
 import DebugPanel from '../components/DebugPanel'
 import ProjectFileBrowser from '../components/ProjectFileBrowser'
+import DeploymentPanel from '../components/DeploymentPanel'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
 import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug, Plus, Github, Gamepad2 } from 'lucide-react'
@@ -29,6 +32,7 @@ import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, Fil
 const AIBuilder = () => {
   // IMPORTANT: FileManager should use ProjectContext, not local state!
   // Removed local files state - FileManager now reads from ProjectContext
+  const { currentProject } = useProject()
   
   const [activeTab, setActiveTab] = useState('editor')
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(true)
@@ -822,13 +826,34 @@ const AIBuilder = () => {
               <div className="flex items-center px-4 py-2 bg-muted/20 border-b border-border/30">
                 <div className="Editor">
                 <div className="flex items-center gap-1">
-                  <button className="px-3 py-1.5 text-xs font-medium text-foreground bg-primary/10 rounded-md border border-primary/20">
+                  <button 
+                    onClick={() => setActiveTab('editor')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                      activeTab === 'editor' 
+                        ? 'text-foreground bg-primary/10 border border-primary/20' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                  >
                     Editor
                   </button>
-                  <button className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md">
+                  <button 
+                    onClick={() => setActiveTab('preview')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                      activeTab === 'preview' 
+                        ? 'text-foreground bg-primary/10 border border-primary/20' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                  >
                     Preview
                   </button>
-                  <button className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-md">
+                  <button 
+                    onClick={() => setActiveTab('terminal')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                      activeTab === 'terminal' 
+                        ? 'text-foreground bg-primary/10 border border-primary/20' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                  >
                     Terminal
                   </button>
                 </div>
@@ -961,106 +986,16 @@ const AIBuilder = () => {
                   </div>
                 )}
                 {activeTab === 'deployment' && (
-                  <div className="h-full flex flex-col" data-testid="firebase-deployment">
+                  <div className="h-full flex flex-col overflow-auto" data-testid="firebase-deployment">
                     <div className="flex-1 p-4">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold">Firebase Deployment</h3>
-                          <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
-                            Deploy Now
-                          </button>
-                        </div>
-                        
-                        {/* Firebase Status */}
-                        <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                          <h4 className="font-medium mb-2 text-green-800">Firebase Integration Status</h4>
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm text-green-700">Firebase config loaded</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm text-green-700">Firebase Hosting - Active</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm text-green-700">Firestore Database - Connected</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm text-green-700">Authentication - Ready</span>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="p-4 border border-border rounded-lg">
-                            <h4 className="font-medium mb-2">Production</h4>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                <span className="text-sm">Firebase Hosting - Active</span>
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                https://dreambuild-2024-app.web.app
-                              </div>
-                              <div className="text-xs text-green-600">
-                                ✓ Firebase CLI Available
-                              </div>
-                            </div>
-                          </div>
-                          <div className="p-4 border border-border rounded-lg">
-                            <h4 className="font-medium mb-2">Staging</h4>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                                <span className="text-sm">Vercel - Pending</span>
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                https://dreambuild-staging.vercel.app
-                              </div>
-                              <div className="text-xs text-blue-600">
-                                ✓ Firebase Functions Ready
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-4 bg-muted/50 rounded-lg">
-                          <h4 className="font-medium mb-2">Build Status</h4>
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">Build successful</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">Bundle size: 852KB</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">Performance score: 95/100</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              <span className="text-sm">Firebase Integration: 100%</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="h-8 bg-muted/20 border-t border-border/30 flex items-center justify-between px-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-4">
-                        <span>Firebase Deployment</span>
-                        <span>•</span>
-                        <span>Firebase CLI</span>
-                        <span>•</span>
-                        <span>Hosting Active</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>Ready</span>
-                      </div>
+                      <DeploymentPanel 
+                        projectId={currentProject?.id}
+                        projectData={currentProject}
+                        onDeploy={(result) => {
+                          console.log('✅ Deployment completed:', result)
+                          toast.success(`Deployed to ${result.provider} successfully!`)
+                        }}
+                      />
                     </div>
                   </div>
                 )}

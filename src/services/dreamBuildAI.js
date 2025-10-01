@@ -6147,12 +6147,16 @@ if (document.readyState === 'loading') {
   
   <!-- PWA Registration -->
   <script>
-    // Register Service Worker for offline support
-    if ('serviceWorker' in navigator) {
+    // Register Service Worker - Only in deployed context, not in iframe preview
+    if ('serviceWorker' in navigator && window.location.protocol !== 'about:') {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('✅ PWA Service Worker registered'))
-          .catch(err => console.log('❌ SW registration failed:', err))
+        if (window.location.href.startsWith('http')) {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('✅ PWA Service Worker registered'))
+            .catch(err => console.log('⚠️  SW skipped (preview mode)'))
+        } else {
+          console.log('ℹ️  PWA available when deployed')
+        }
       })
     }
     
@@ -6284,12 +6288,16 @@ if (document.readyState === 'loading') {
   
   <!-- PWA Registration -->
   <script>
-    // Register Service Worker for offline support
-    if ('serviceWorker' in navigator) {
+    // Register Service Worker - Only in deployed context, not in iframe preview
+    if ('serviceWorker' in navigator && window.location.protocol !== 'about:') {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('✅ PWA Service Worker registered'))
-          .catch(err => console.log('❌ SW registration failed:', err))
+        if (window.location.href.startsWith('http')) {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('✅ PWA Service Worker registered'))
+            .catch(err => console.log('⚠️  SW skipped (preview mode)'))
+        } else {
+          console.log('ℹ️  PWA available when deployed')
+        }
       })
     }
     
@@ -6409,14 +6417,20 @@ if (document.readyState === 'loading') {
   <!-- PWA Registration -->
   <script>
     // Register Service Worker for offline support and PWA capabilities
-    if ('serviceWorker' in navigator) {
+    // Only register if NOT in an iframe preview (to avoid errors in DreamBuild preview)
+    if ('serviceWorker' in navigator && window.location.protocol !== 'about:') {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(registration => {
-            console.log('✅ PWA Service Worker registered:', registration)
-            console.log('📱 ${this.currentAppName || appTitle} is now a Progressive Web App!')
-          })
-          .catch(err => console.log('❌ SW registration failed:', err))
+        // Check if we're in a real context (not srcdoc iframe)
+        if (window.location.href.startsWith('http')) {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('✅ PWA Service Worker registered:', registration)
+              console.log('📱 ${this.currentAppName || appTitle} is now a Progressive Web App!')
+            })
+            .catch(err => console.log('⚠️  SW registration skipped (preview mode)'))
+        } else {
+          console.log('ℹ️  PWA features available when deployed (currently in preview mode)')
+        }
       })
     }
     

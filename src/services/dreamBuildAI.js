@@ -5483,9 +5483,12 @@ class TodoManager {
 class TodoUI {
   constructor(todoManager) {
     this.todoManager = todoManager
+    this.eventsAttached = false
     this.initializeElements()
-    this.bindEvents()
     this.render()
+    
+    // Delay event binding to ensure DOM is ready
+    setTimeout(() => this.bindEventsWithRetry(), 50)
   }
 
   initializeElements() {
@@ -5512,19 +5515,38 @@ class TodoUI {
     })
   }
 
-  bindEvents() {
-    // Form submission with retry logic
-    if (!this.form) {
-      console.warn('⚠️ Form not found, retrying in 100ms...')
-      setTimeout(() => {
-        this.form = document.getElementById('add-todo-form')
-        if (this.form) {
-          this.bindEvents()
-        }
-      }, 100)
+  bindEventsWithRetry(attempt = 0) {
+    // Prevent double-binding
+    if (this.eventsAttached) {
+      console.log('✅ Events already attached')
       return
     }
     
+    // Refresh element references
+    this.form = document.getElementById('add-todo-form')
+    this.todoInput = document.getElementById('todo-input')
+    
+    if (!this.form || !this.todoInput) {
+      if (attempt < 50) {
+        console.warn(\`⚠️  Form/Input not ready (attempt \${attempt + 1}/50), retrying...\`)
+        setTimeout(() => this.bindEventsWithRetry(attempt + 1), 100)
+        return
+      } else {
+        console.error('❌ Failed to bind events after 50 attempts!')
+        // Fall back to event delegation
+        this.bindEventsWithDelegation()
+        return
+      }
+    }
+    
+    // Elements found, attach events
+    this.bindEvents()
+    this.eventsAttached = true
+    console.log(\`✅ Events attached successfully on attempt \${attempt + 1}\`)
+  }
+
+  bindEvents() {
+    // Primary form submission handler
     this.form.addEventListener('submit', (e) => {
       e.preventDefault()
       this.handleAddTodo()
@@ -5581,6 +5603,46 @@ class TodoUI {
     ` : ''}
 
     console.log('✅ Events bound')
+  }
+
+  bindEventsWithDelegation() {
+    console.log('🔄 Using event delegation as fallback...')
+    
+    // Use event delegation on document for form submission
+    document.addEventListener('submit', (e) => {
+      if (e.target.id === 'add-todo-form') {
+        e.preventDefault()
+        console.log('📝 Form submitted via delegation!')
+        
+        const form = e.target
+        const input = form.querySelector('#todo-input')
+        if (input && input.value.trim()) {
+          const todoData = { text: input.value.trim() }
+          
+          // Add optional feature data if elements exist
+          ${hasFeatures.priorities ? `
+          const prioritySelect = form.querySelector('#priority-select');
+          if (prioritySelect) todoData.priority = prioritySelect.value || 'medium';
+          ` : ''}
+          ${hasFeatures.categories ? `
+          const categorySelect = form.querySelector('#category-select');
+          if (categorySelect) todoData.category = categorySelect.value || 'personal';
+          ` : ''}
+          ${hasFeatures.dueDates ? `
+          const dueDateInput = form.querySelector('#due-date-input');
+          if (dueDateInput) todoData.dueDate = dueDateInput.value || null;
+          ` : ''}
+          
+          this.todoManager.addTodo(todoData)
+          form.reset()
+          this.render()
+          this.showNotification('Todo added! ✅')
+        }
+      }
+    }, true) // Use capture phase
+    
+    this.eventsAttached = true
+    console.log('✅ Event delegation set up')
   }
 
   handleAddTodo() {
@@ -7095,7 +7157,11 @@ class UIManager {
   constructor(appState) {
     this.appState = appState
     this.elements = {}
+    this.eventsAttached = false
     this.initializeElements()
+    
+    // Delay event binding to ensure DOM is ready
+    setTimeout(() => this.bindEventsWithRetry(), 50)
   }
 
   initializeElements() {
@@ -7109,6 +7175,27 @@ class UIManager {
     console.log('✅ UI Elements initialized:', Object.keys(this.elements))
   }
 
+  bindEventsWithRetry(attempt = 0) {
+    if (this.eventsAttached) {
+      console.log('✅ Events already attached')
+      return
+    }
+    
+    // Refresh element references
+    this.elements.primaryAction = document.getElementById('primary-action')
+    
+    if (!this.elements.primaryAction && attempt < 30) {
+      console.warn(\`⚠️  Primary action button not ready (attempt \${attempt + 1}/30), retrying...\`)
+      setTimeout(() => this.bindEventsWithRetry(attempt + 1), 100)
+      return
+    }
+    
+    // Attach events
+    this.bindEvents()
+    this.eventsAttached = true
+    console.log(\`✅ Events attached successfully on attempt \${attempt + 1}\`)
+  }
+
   bindEvents() {
     // Bind primary action button
     if (this.elements.primaryAction) {
@@ -7116,6 +7203,14 @@ class UIManager {
         this.handlePrimaryAction()
       })
       console.log('✅ Primary action button bound')
+    } else {
+      // Use event delegation as fallback
+      document.addEventListener('click', (e) => {
+        if (e.target.id === 'primary-action') {
+          this.handlePrimaryAction()
+        }
+      })
+      console.log('✅ Using event delegation for primary action')
     }
 
     // Listen to state changes

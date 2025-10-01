@@ -64,6 +64,7 @@ const Preview = () => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; img-src 'self' data: blob: https:; connect-src 'self' https:;">
   <title>Generated App</title>
   ${cssFiles ? '<style>' + cssFiles + '</style>' : ''}
 </head>
@@ -76,6 +77,10 @@ const Preview = () => {
       // Inject CSS and JS into existing HTML
       if (cssFiles && !htmlContent.includes('<style>')) {
         htmlContent = htmlContent.replace('</head>', `<style>${cssFiles}</style></head>`)
+      }
+      // Add CSP meta tag if not present
+      if (!htmlContent.includes('Content-Security-Policy')) {
+        htmlContent = htmlContent.replace('<head>', `<head>\n  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; img-src 'self' data: blob: https:; connect-src 'self' https:;">`)
       }
       if (jsFiles && !htmlContent.match(/<script[^>]*>[\s\S]*<\/script>/)) {
         htmlContent = htmlContent.replace('</body>', `<script>${jsFiles}${initCode}</script></body>`)

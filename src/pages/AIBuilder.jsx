@@ -25,6 +25,7 @@ import Terminal from '../components/Terminal'
 import DebugPanel from '../components/DebugPanel'
 import ProjectFileBrowser from '../components/ProjectFileBrowser'
 import DeploymentPanel from '../components/DeploymentPanel'
+import DreamBuildLLMStatus from '../components/DreamBuildLLMStatus'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
 import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug, Plus, Github, Gamepad2 } from 'lucide-react'
@@ -520,6 +521,9 @@ const AIBuilder = () => {
             <FileText className="h-4 w-4" />
             Templates
           </Link>
+          
+          {/* DreamBuild LLM Status */}
+          <DreamBuildLLMStatus />
           
           {/* Plus Button Dropdown */}
           <div className="relative" data-plus-dropdown>

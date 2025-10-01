@@ -10,6 +10,7 @@
     "deploy": "firebase deploy --only hosting"
   },
   "dependencies": {
+    "@mlc-ai/web-llm": "^0.2.79",
     "@monaco-editor/react": "^4.7.0",
     "axios": "^1.3.0",
     "clsx": "^2.1.1",

@@ -187,15 +187,19 @@ export default function AIPromptSimplified() {
 
     try {
       // Check if this is an incremental development request
+      console.log('🔍 Step 1: Checking incremental request...')
       const isIncremental = isIncrementalRequest(userPrompt)
       console.log('🔍 Incremental request check:', { isIncremental, userPrompt })
       console.log('📁 Current project files:', Object.keys(currentProject.files))
       console.log('📊 File content lengths:', Object.entries(currentProject.files).map(([k, v]) => `${k}: ${v?.length || 0} chars`))
       
       // Get conversation context for better AI responses
+      console.log('🔍 Step 2: Getting conversation context...')
       const conversationContext = conversationService.getConversationContext()
+      console.log('✅ Conversation context retrieved')
       
       // Generate AI response with conversation context and web search results
+      console.log('🔍 Step 3: Calling simpleAIService.generateCode...')
       const response = await simpleAIService.generateCode(userPrompt, {
         projectName: projectName || currentProject.name,
         currentFiles: currentProject.files,
@@ -207,6 +211,7 @@ export default function AIPromptSimplified() {
         conversationHistory: conversationService.getConversationHistory(),
         webContext: webContext // Include web search results
       })
+      console.log('✅ Step 3 Complete: Response received from simpleAIService')
       
       console.log('🎨 AI Response type:', response.type)
       console.log('📦 AI Response files:', response.files ? Object.keys(response.files) : 'none')
@@ -372,18 +377,23 @@ export default function AIPromptSimplified() {
       }
 
     } catch (error) {
-      console.error('Generation error:', error)
+      console.error('❌❌❌ GENERATION ERROR CAUGHT:', error)
+      console.error('❌ Error message:', error.message)
+      console.error('❌ Error stack:', error.stack)
+      console.error('❌ Error details:', JSON.stringify(error, null, 2))
       
       const errorMessage = {
         id: Date.now() + 1,
         type: 'assistant',
         content: `Sorry, I encountered an error: ${error.message}. Please try again.`,
-        timestamp: new Date()
+        timestamp: new Date(),
+        error: true
       }
 
       setMessages(prev => [...prev, errorMessage])
-      toast.error('Failed to generate code. Please try again.')
+      toast.error(`Failed to generate code: ${error.message}`)
     } finally {
+      console.log('🏁 Generation process complete, setting isGenerating to false')
       setIsGenerating(false)
     }
   }

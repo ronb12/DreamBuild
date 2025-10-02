@@ -392,7 +392,15 @@ class ConversationService {
       await firebaseService.saveConversation(this.currentConversation)
       console.log('💾 Conversation saved to Firebase')
     } catch (error) {
+      // Handle quota exceeded errors gracefully
+      if (error.code === 'resource-exhausted' || error.message?.includes('Quota exceeded')) {
+        console.warn('⚠️ Firebase quota exceeded - conversation NOT saved (app continues normally)')
+        console.warn('💡 To save conversations: wait for quota reset or upgrade to Blaze plan')
+        // Don't throw - allow the app to continue
+        return
+      }
       console.error('Failed to save conversation:', error)
+      // Don't throw for other errors either - just log them
     } finally {
       this.isSaving = false
     }

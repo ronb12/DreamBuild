@@ -63,8 +63,10 @@ class ConversationService {
     this.currentConversation.messages.push(message)
     this.currentConversation.lastModified = new Date()
 
-    // Save to Firebase
-    await this.saveConversation()
+    // TEMPORARILY DISABLED: Firebase saving disabled due to quota exhaustion
+    // This allows code generation to work while quota is exhausted
+    // await this.saveConversation()
+    console.log('⚠️ Conversation saving temporarily disabled (quota exhausted)')
 
     return message
   }

@@ -12,7 +12,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           'monaco-editor': ['monaco-editor'],
-          'firebase': ['firebase/app', 'firebase/firestore', 'firebase/auth'],
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['framer-motion', 'lucide-react'],
           'editor-vendor': ['@monaco-editor/react'],

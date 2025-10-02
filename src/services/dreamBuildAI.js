@@ -8,6 +8,7 @@
 
 // import { TemplateBasedGenerator } from './templateBasedGenerator.js'
 import dreamBuildLLMService from './dreamBuildLLMService.js'
+import promptCacheService from './promptCacheService.js'
 
 class DreamBuildAI {
   constructor() {
@@ -20,6 +21,7 @@ class DreamBuildAI {
       smartFallbacks: true,
       contextAnalysis: true,
       incrementalGeneration: true,
+      promptCaching: true, // Instant responses from cache!
       llmEnhanced: false // Updated when LLM loads
     }
     
@@ -2431,6 +2433,36 @@ class Enemy {
       await this.initializeBuiltInAI()
     }
     
+    // 🗄️ CHECK CACHE FIRST (instant response!)
+    try {
+      const cacheResult = await promptCacheService.checkCache(prompt)
+      
+      if (cacheResult.found) {
+        console.log(`⚡ CACHE HIT! Returning instant response (${(cacheResult.similarity * 100).toFixed(0)}% match)`)
+        
+        if (cacheResult.metadata) {
+          console.log(`📊 This prompt has been used ${cacheResult.metadata.usageCount} times`)
+          if (cacheResult.metadata.originalPrompt && cacheResult.similarity < 1.0) {
+            console.log(`📝 Similar to: "${cacheResult.metadata.originalPrompt}"`)
+          }
+        }
+        
+        return {
+          ...cacheResult.response,
+          type: 'cached',
+          metadata: {
+            ...cacheResult.metadata,
+            similarity: cacheResult.similarity,
+            source: 'cache'
+          }
+        }
+      }
+      
+      console.log('❌ Cache miss - generating new code...')
+    } catch (cacheError) {
+      console.warn('⚠️ Cache check failed, continuing with generation:', cacheError.message)
+    }
+    
     // 🤖 TRY DREAMBUILD LLM FIRST (if available) for better quality!
     if (this.llmEnabled && dreamBuildLLMService.isInitialized) {
       try {
@@ -2524,7 +2556,7 @@ class Enemy {
       // Step 4: Enhance with context
       const enhancedFiles = await this.enhanceWithContext(files, context, intent)
       
-      return {
+      const result = {
         files: enhancedFiles,
         type: 'built_in_ai_generated',
         metadata: {
@@ -2535,6 +2567,19 @@ class Enemy {
           timestamp: new Date().toISOString()
         }
       }
+      
+      // 💾 SAVE TO CACHE for future instant retrieval!
+      try {
+        await promptCacheService.saveToCache(prompt, result, {
+          appType: intent.appType,
+          features: intent.features || []
+        })
+        console.log('✅ Response saved to cache for future use!')
+      } catch (cacheError) {
+        console.warn('⚠️ Failed to save to cache (non-critical):', cacheError.message)
+      }
+      
+      return result
       
     } catch (error) {
       console.error('❌ DreamBuild Built-in AI error:', error)

@@ -795,12 +795,12 @@ const AIBuilder = () => {
                   <div className="flex-1 overflow-hidden">
                     <FileManager />
                   </div>
-                </div>
-              </div>
+                          </div>
+                          </div>
               {/* Old file details panel removed - FileManager has its own UI */}
               <div className="hidden">
                 {/* Removed old file details panel that was showing hardcoded files */}
-              </div>
+                          </div>
               </div>
             </div>
           </ResizablePanel>

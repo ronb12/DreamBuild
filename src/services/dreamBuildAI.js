@@ -9,6 +9,7 @@
 // import { TemplateBasedGenerator } from './templateBasedGenerator.js'
 import dreamBuildLLMService from './dreamBuildLLMService.js'
 import promptCacheService from './promptCacheService.js'
+import performanceOptimizer from './performanceOptimizer.js'
 
 class DreamBuildAI {
   constructor() {
@@ -2433,12 +2434,19 @@ class Enemy {
       await this.initializeBuiltInAI()
     }
     
-    // 🗄️ CHECK CACHE FIRST (instant response!)
+    // ⚡ CHECK LOCAL PERFORMANCE CACHE FIRST (instant!)
+    const localCached = performanceOptimizer.getCachedGeneration(prompt)
+    if (localCached) {
+      console.log('⚡⚡⚡ LOCAL CACHE HIT - Instant response!')
+      return localCached
+    }
+    
+    // 🗄️ CHECK FIREBASE CACHE SECOND (fast response!)
     try {
       const cacheResult = await promptCacheService.checkCache(prompt)
       
       if (cacheResult.found) {
-        console.log(`⚡ CACHE HIT! Returning instant response (${(cacheResult.similarity * 100).toFixed(0)}% match)`)
+        console.log(`⚡ FIREBASE CACHE HIT! Returning instant response (${(cacheResult.similarity * 100).toFixed(0)}% match)`)
         
         if (cacheResult.metadata) {
           console.log(`📊 This prompt has been used ${cacheResult.metadata.usageCount} times`)
@@ -2447,15 +2455,20 @@ class Enemy {
           }
         }
         
-        return {
+        const cachedResponse = {
           ...cacheResult.response,
           type: 'cached',
           metadata: {
             ...cacheResult.metadata,
             similarity: cacheResult.similarity,
-            source: 'cache'
+            source: 'firebase-cache'
           }
         }
+        
+        // Cache locally for even faster future access
+        performanceOptimizer.cacheGeneration(prompt, cachedResponse)
+        
+        return cachedResponse
       }
       
       console.log('❌ Cache miss - generating new code...')
@@ -2568,13 +2581,23 @@ class Enemy {
         }
       }
       
-      // 💾 SAVE TO CACHE for future instant retrieval!
+      // 💾 SAVE TO BOTH CACHES for future instant retrieval!
       try {
+        // Save to local cache immediately (instant future access)
+        performanceOptimizer.cacheGeneration(prompt, result, {
+          appType: intent.appType,
+          features: intent.features || []
+        })
+        
+        // Save to Firebase cache (persistent, shareable)
         await promptCacheService.saveToCache(prompt, result, {
           appType: intent.appType,
           features: intent.features || []
         })
-        console.log('✅ Response saved to cache for future use!')
+        console.log('✅ Response saved to both caches for future use!')
+        
+        // Prefetch related prompts in background
+        performanceOptimizer.prefetchRelated(prompt)
       } catch (cacheError) {
         console.warn('⚠️ Failed to save to cache (non-critical):', cacheError.message)
       }

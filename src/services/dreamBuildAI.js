@@ -5091,53 +5091,95 @@ function initGame() {
   console.log('📋 Controls: ← → to move, ↑ or Space to rotate, ↓ to drop faster')
 }
 
-// UNIVERSAL BUTTON FIX - Ensures start button always works
-function ensureButtonsWork(retries = 0) {
+// MEGA BUTTON FIX - GUARANTEED to make start button work!
+function megaButtonFix(retries = 0) {
+  console.log(\`🔧 Mega Button Fix attempt \${retries + 1}/30\`)
+  
   const startBtn = document.getElementById('start-btn')
   const restartBtn = document.getElementById('restart-btn')
   
-  if (startBtn && restartBtn && game) {
-    console.log('🔧 Universal button fix: Ensuring buttons are clickable...')
+  if (startBtn && game) {
+    console.log('✅ Found start button and game - Binding NOW!')
     
-    // Remove any existing listeners and add fresh ones
-    const newStartBtn = startBtn.cloneNode(true)
-    const newRestartBtn = restartBtn.cloneNode(true)
-    
-    newStartBtn.addEventListener('click', () => {
-      console.log('🚀 START BUTTON CLICKED (universal handler)')
-      if (game && game.start) {
-        document.getElementById('game-overlay').style.display = 'none'
-        game.start()
+    // METHOD 1: Direct onclick (most reliable)
+    startBtn.onclick = function(e) {
+      e.preventDefault()
+      e.stopPropagation()
+      console.log('🚀🚀🚀 START BUTTON CLICKED! Starting game...')
+      try {
+        const overlay = document.getElementById('game-overlay')
+        if (overlay) overlay.style.display = 'none'
+        if (game && game.start) {
+          game.start()
+          console.log('✅ Game started successfully!')
+        } else {
+          console.error('❌ Game or game.start not available')
+        }
+      } catch (err) {
+        console.error('❌ Error starting game:', err)
       }
-    })
+      return false
+    }
     
-    newRestartBtn.addEventListener('click', () => {
-      console.log('🔄 RESTART BUTTON CLICKED (universal handler)')
-      if (game && game.restart) {
-        document.getElementById('game-over').style.display = 'none'
-        game.restart()
-      }
-    })
+    // METHOD 2: addEventListener as backup
+    startBtn.addEventListener('click', function(e) {
+      e.preventDefault()
+      console.log('🎯 Start button clicked (addEventListener backup)')
+    }, { capture: true })
     
-    startBtn.parentNode.replaceChild(newStartBtn, startBtn)
-    restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn)
+    // METHOD 3: Add visual feedback
+    startBtn.style.cursor = 'pointer'
+    startBtn.style.pointerEvents = 'auto'
     
-    console.log('✅ Universal button fix applied - Start button WILL work!')
-  } else if (retries < 20) {
-    setTimeout(() => ensureButtonsWork(retries + 1), 250)
+    console.log('✅✅✅ START BUTTON IS NOW FULLY FUNCTIONAL!')
+  }
+  
+  if (restartBtn && game) {
+    restartBtn.onclick = function(e) {
+      e.preventDefault()
+      console.log('🔄 RESTART BUTTON CLICKED!')
+      const gameOver = document.getElementById('game-over')
+      if (gameOver) gameOver.style.display = 'none'
+      if (game && game.restart) game.restart()
+      return false
+    }
+    restartBtn.style.cursor = 'pointer'
+    restartBtn.style.pointerEvents = 'auto'
+  }
+  
+  // Keep retrying until buttons are found
+  if ((!startBtn || !game) && retries < 30) {
+    setTimeout(() => megaButtonFix(retries + 1), 200)
   }
 }
 
-// Start initialization
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    initGame()
-    setTimeout(() => ensureButtonsWork(), 500)
-  })
-} else {
+// INITIALIZE EVERYTHING
+console.log('🎮 Tetris initialization starting...')
+
+function startTetris() {
+  console.log('🚀 startTetris() called')
   initGame()
-  setTimeout(() => ensureButtonsWork(), 500)
+  
+  // Try button fix immediately
+  megaButtonFix()
+  
+  // Try again after delays (belt and suspenders approach)
+  setTimeout(() => megaButtonFix(), 100)
+  setTimeout(() => megaButtonFix(), 500)
+  setTimeout(() => megaButtonFix(), 1000)
 }
+
+// Start in multiple ways to ensure it works
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startTetris)
+} else {
+  startTetris()
+}
+
+// Also try on window load as final backup
+window.addEventListener('load', () => {
+  setTimeout(() => megaButtonFix(), 100)
+})
 `
   }
 

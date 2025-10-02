@@ -49,6 +49,7 @@ Thumbs.db
 *private*
 *.pem
 *.key
+*firebase-adminsdk*.json
 
 # Build outputs
 dist-ssr

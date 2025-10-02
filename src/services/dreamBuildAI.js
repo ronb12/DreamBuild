@@ -29,8 +29,8 @@ class DreamBuildAI {
     // Initialize built-in AI patterns
     this.initializeBuiltInAI()
     
-    // Initialize LLM in background (don't block app startup)
-    this.initializeLLM()
+    // LLM disabled - using template-based generation only
+    // this.initializeLLM()
     
     console.log('🧠 DreamBuild Built-in AI initialized')
   }

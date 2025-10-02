@@ -32,7 +32,7 @@ import AIChatInterface from './ai/AIChatInterface'
 import StreamingResponse from './StreamingResponse'
 
 export default function AIPromptSimplified() {
-  const { currentProject, updateFile, switchFile, updateConfig } = useProject()
+  const { currentProject, updateFile, switchFile, updateConfig, addFilesToProject } = useProject()
   const [prompt, setPrompt] = useState('')
   const [projectName, setProjectName] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
@@ -262,10 +262,16 @@ export default function AIPromptSimplified() {
         responseType = 'code'
         responseLanguage = 'javascript'
         
-        // NEW: Inject code into the editor
+        // NEW: Inject code into the editor AND add to project
         console.log('💉 Injecting AI-generated code into editor...')
         console.log('📁 Files to inject:', Object.keys(response.files))
         try {
+          // 1. Add files to project context (so Preview can see them)
+          console.log('📦 Adding files to project context...')
+          addFilesToProject(response.files)
+          console.log('✅ Files added to project context')
+          
+          // 2. Inject into editor UI
           const injectionSuccess = await codeInjectionService.injectCodeIntoEditor(response.files)
           if (injectionSuccess) {
             console.log('✅ Code successfully injected into editor')

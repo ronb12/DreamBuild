@@ -840,6 +840,11 @@ class FirebaseService {
       
       console.log('💬 Conversation saved successfully')
     } catch (error) {
+      // Handle quota exceeded errors gracefully
+      if (error.code === 'resource-exhausted' || error.message?.includes('Quota exceeded')) {
+        console.warn('⚠️ Firebase quota exceeded - conversation NOT saved (app continues normally)')
+        return // Don't throw, allow app to continue
+      }
       console.error('❌ Failed to save conversation:', error)
       // Don't throw error to prevent UI disruption
       // throw error

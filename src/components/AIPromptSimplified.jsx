@@ -161,7 +161,14 @@ export default function AIPromptSimplified() {
     }
 
     setMessages(prev => [...prev, userMessage])
-    await conversationService.addMessage(userPrompt)
+    
+    // Try to save to Firebase conversation, but don't let it block generation
+    try {
+      await conversationService.addMessage(userPrompt)
+    } catch (error) {
+      console.warn('⚠️ Failed to save conversation (app continues):', error.message)
+      // Don't throw - allow generation to proceed
+    }
 
     // Auto-search web for context (like ChatGPT)
     console.log('🌐 Auto-searching web for context...')

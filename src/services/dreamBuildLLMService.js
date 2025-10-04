@@ -5,7 +5,15 @@
  * Product of Bradley Virtual Solutions, LLC
  */
 
-import { CreateWebWorkerMLCEngine } from "@mlc-ai/web-llm";
+// Dynamic import to reduce initial bundle size
+let CreateWebWorkerMLCEngine = null
+const getMLCEngine = async () => {
+  if (!CreateWebWorkerMLCEngine) {
+    const module = await import("@mlc-ai/web-llm")
+    CreateWebWorkerMLCEngine = module.CreateWebWorkerMLCEngine
+  }
+  return CreateWebWorkerMLCEngine
+}
 
 class DreamBuildLLMService {
   constructor() {
@@ -44,8 +52,11 @@ class DreamBuildLLMService {
     console.log('📥 First-time download: ~600MB (cached after this!)');
 
     try {
+      // Get the MLCEngine dynamically
+      const MLCEngine = await getMLCEngine()
+      
       // Create engine with progress tracking
-      this.engine = await CreateWebWorkerMLCEngine(
+      this.engine = await MLCEngine(
         this.modelName,
         {
           initProgressCallback: (progress) => {

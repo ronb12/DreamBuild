@@ -165,5 +165,29 @@ service cloud.firestore {
       allow delete: if true;
       allow create: if true;
     }
+    
+    // ===== CACHED PROMPTS =====
+    // Allow anonymous access for prompt caching system
+    match /cached_prompts/{promptId} {
+      allow read, write: if true;
+      allow create: if true;
+      allow delete: if true;
+    }
+    
+    // ===== CONVERSATION SESSIONS =====
+    // Allow anonymous access for conversation sessions
+    match /conversationSessions/{sessionId} {
+      allow read, write: if true;
+      allow create: if true;
+      allow delete: if true;
+    }
+    
+    // ===== AI RESPONSES =====
+    // Allow anonymous access for AI response caching
+    match /aiResponses/{responseId} {
+      allow read, write: if true;
+      allow create: if true;
+      allow delete: if true;
+    }
   }
 }

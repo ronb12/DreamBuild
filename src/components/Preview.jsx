@@ -8,6 +8,7 @@ const Preview = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [showPreview, setShowPreview] = useState(true)
+  const [viewMode, setViewMode] = useState('iframe') // 'iframe' or 'raw'
 
   // Generate preview content from current project files
   const generatePreviewContent = useMemo(() => {
@@ -97,15 +98,19 @@ const Preview = () => {
   // Update preview when content changes
   useEffect(() => {
     console.log('🖼️ Preview useEffect triggered')
+    console.log('📁 Current project files:', Object.keys(currentProject?.files || {}))
+    console.log('📄 File contents:', Object.entries(currentProject?.files || {}).map(([name, content]) => `${name}: ${content?.length || 0} chars`))
+    
     if (generatePreviewContent) {
       console.log('✅ Setting preview content')
+      console.log('📝 Preview content length:', generatePreviewContent.length)
       setPreviewContent(generatePreviewContent)
       setError(null)
     } else {
       console.log('⚠️ No preview content available')
       setPreviewContent('')
     }
-  }, [generatePreviewContent])
+  }, [generatePreviewContent, currentProject?.files])
 
   const handleRefresh = () => {
     console.log('🔄 Preview refresh clicked')
@@ -123,23 +128,22 @@ const Preview = () => {
   const handleDownload = () => {
     if (!previewContent) return
     
-    const blob = new Blob([previewContent], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
+    // Create a data URL instead of blob URL for better reliability
+    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(previewContent)
     const a = document.createElement('a')
-    a.href = url
+    a.href = dataUrl
     a.download = 'generated-app.html'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
-    URL.revokeObjectURL(url)
   }
 
   const handleOpenExternal = () => {
     if (!previewContent) return
     
-    const blob = new Blob([previewContent], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
-    window.open(url, '_blank')
+    // Create a data URL instead of blob URL for better reliability
+    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(previewContent)
+    window.open(dataUrl, '_blank')
   }
 
   if (!currentProject?.files || Object.keys(currentProject.files).length === 0) {
@@ -225,13 +229,51 @@ const Preview = () => {
               </div>
             </div>
           ) : previewContent ? (
-            <iframe
-              srcDoc={previewContent}
-              className="w-full h-full border-0"
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-pointer-lock allow-downloads allow-modals"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; gamepad; fullscreen"
-              title="Live Preview"
-            />
+            <div className="relative w-full h-full">
+              {viewMode === 'iframe' ? (
+                <iframe
+                  srcDoc={previewContent}
+                  className="w-full h-full border-0"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-pointer-lock allow-downloads allow-modals"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; gamepad; fullscreen"
+                  title="Live Preview"
+                  onError={(e) => {
+                    console.error('❌ Iframe preview error:', e)
+                    setError('Preview failed to load. Try refreshing.')
+                  }}
+                  onLoad={() => {
+                    console.log('✅ Iframe preview loaded successfully')
+                    setError(null)
+                  }}
+                />
+              ) : (
+                <div className="h-full overflow-auto bg-background">
+                  <pre className="p-4 text-sm text-foreground whitespace-pre-wrap font-mono">
+                    {previewContent}
+                  </pre>
+                </div>
+              )}
+              {/* Preview controls */}
+              <div className="absolute top-2 right-2 flex gap-2">
+                <button
+                  onClick={() => setViewMode(viewMode === 'iframe' ? 'raw' : 'iframe')}
+                  className="px-2 py-1 text-xs bg-primary/10 hover:bg-primary/20 rounded text-primary"
+                  title={`Switch to ${viewMode === 'iframe' ? 'raw HTML' : 'iframe'} view`}
+                >
+                  {viewMode === 'iframe' ? '📄 Raw' : '🖼️ Preview'}
+                </button>
+                <button
+                  onClick={() => {
+                    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(previewContent)
+                    window.open(dataUrl, '_blank')
+                  }}
+                  className="px-2 py-1 text-xs bg-primary/10 hover:bg-primary/20 rounded text-primary"
+                  title="Open in new tab"
+                >
+                  🔗 Open Tab
+                </button>
+              </div>
+            </div>
           ) : (
             <div className="h-full flex items-center justify-center">
               <div className="text-center space-y-2">

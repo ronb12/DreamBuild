@@ -1,7 +1,14 @@
 // Incremental Development Service
 // Handles adding features to existing apps without rebuilding everything
 
-import conversationService from './conversationService.js'
+// Dynamic import to avoid circular dependencies and reduce bundle size
+let conversationService = null
+const getConversationService = async () => {
+  if (!conversationService) {
+    conversationService = (await import('./conversationService.js')).default
+  }
+  return conversationService
+}
 
 class IncrementalDevelopmentService {
   constructor() {

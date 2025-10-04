@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, lazy, Suspense } from 'react'
 import { useProject } from '../contexts/ProjectContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -21,15 +21,19 @@ import {
   Minimize2
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import simpleAIService from '../services/simpleAIService'
-import aiAgentService from '../services/aiAgentService'
-import conversationService from '../services/conversationService'
-import streamingService from '../services/streamingService'
-import realTimeWebBrowsingService from '../services/realTimeWebBrowsingService'
-import codeInjectionService from '../services/codeInjectionService'
-import AIModelSelector from './ai/AIModelSelector'
-import AIChatInterface from './ai/AIChatInterface'
-import StreamingResponse from './StreamingResponse'
+
+// Lazy load heavy components
+const AIModelSelector = lazy(() => import('./ai/AIModelSelector'))
+const AIChatInterface = lazy(() => import('./ai/AIChatInterface'))
+const StreamingResponse = lazy(() => import('./StreamingResponse'))
+
+// Lazy load services
+const simpleAIService = lazy(() => import('../services/simpleAIService'))
+const aiAgentService = lazy(() => import('../services/aiAgentService'))
+const conversationService = lazy(() => import('../services/conversationService'))
+const streamingService = lazy(() => import('../services/streamingService'))
+const realTimeWebBrowsingService = lazy(() => import('../services/realTimeWebBrowsingService'))
+const codeInjectionService = lazy(() => import('../services/codeInjectionService'))
 
 export default function AIPromptSimplified() {
   const { currentProject, updateFile, switchFile, updateConfig, addFilesToProject } = useProject()

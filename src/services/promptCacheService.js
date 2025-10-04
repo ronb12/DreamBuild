@@ -23,9 +23,42 @@ class PromptCacheService {
     this.collectionName = 'cached_prompts'
     this.maxCacheSize = 20000
     this.similarityThreshold = 0.7
+    this.isDisabled = false
+    this.disabledUntil = null
+    this.quotaErrorCount = 0
     
     console.log('🗄️ Prompt Cache Service initialized')
     console.log(`📦 Max capacity: ${this.maxCacheSize.toLocaleString()} prompts`)
+  }
+
+  /**
+   * Check if service is disabled due to quota exhaustion
+   */
+  isServiceDisabled() {
+    if (!this.isDisabled) return false
+    
+    if (this.disabledUntil && Date.now() < this.disabledUntil) {
+      return true
+    }
+    
+    // Re-enable after timeout
+    this.isDisabled = false
+    this.disabledUntil = null
+    this.quotaErrorCount = 0
+    console.log('🔄 Prompt Cache Service re-enabled after quota timeout')
+    return false
+  }
+
+  /**
+   * Handle quota exhaustion by disabling service temporarily
+   */
+  handleQuotaExhaustion() {
+    this.quotaErrorCount++
+    this.isDisabled = true
+    this.disabledUntil = Date.now() + (30 * 60 * 1000) // Disable for 30 minutes
+    
+    console.warn(`⚠️ Firebase quota exhausted - disabling cache for 30 minutes (error #${this.quotaErrorCount})`)
+    console.log('🔄 Code generation will continue without caching until quota resets')
   }
 
   /**
@@ -83,6 +116,12 @@ class PromptCacheService {
    * Check cache for matching prompt
    */
   async checkCache(prompt) {
+    // Check if service is disabled due to quota exhaustion
+    if (this.isServiceDisabled()) {
+      console.log('⚠️ Cache disabled due to quota exhaustion - skipping cache check')
+      return { found: false, reason: 'quota_exhausted' }
+    }
+
     try {
       console.log('🔍 Checking cache for:', prompt)
       
@@ -169,6 +208,13 @@ class PromptCacheService {
       
     } catch (error) {
       console.error('❌ Cache check error:', error)
+      
+      // Check if it's a quota exhaustion error
+      if (error.code === 'resource-exhausted' || error.message.includes('quota') || error.message.includes('Quota exceeded')) {
+        this.handleQuotaExhaustion()
+        return { found: false, reason: 'quota_exhausted' }
+      }
+      
       return { found: false, error: error.message }
     }
   }
@@ -177,6 +223,12 @@ class PromptCacheService {
    * Save prompt-response to cache
    */
   async saveToCache(prompt, response, metadata = {}) {
+    // Check if service is disabled due to quota exhaustion
+    if (this.isServiceDisabled()) {
+      console.log('⚠️ Cache disabled due to quota exhaustion - skipping cache save')
+      return { saved: false, reason: 'quota_exhausted' }
+    }
+
     try {
       console.log('💾 Saving to cache:', prompt)
       
@@ -226,6 +278,13 @@ class PromptCacheService {
       
     } catch (error) {
       console.error('❌ Error saving to cache:', error)
+      
+      // Check if it's a quota exhaustion error
+      if (error.code === 'resource-exhausted' || error.message.includes('quota') || error.message.includes('Quota exceeded')) {
+        this.handleQuotaExhaustion()
+        return { saved: false, reason: 'quota_exhausted' }
+      }
+      
       return { saved: false, error: error.message }
     }
   }

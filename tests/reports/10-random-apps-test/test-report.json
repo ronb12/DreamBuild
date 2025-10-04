@@ -1,0 +1,128 @@
+{
+  "summary": {
+    "totalTests": 10,
+    "successful": 0,
+    "failed": 10,
+    "successRate": "0.0%",
+    "totalTime": 432724,
+    "averageGenerationTime": 41023
+  },
+  "results": [
+    {
+      "testIndex": 1,
+      "prompt": "build a simple todo list from scratch",
+      "success": false,
+      "error": "promptInput.click is not a function",
+      "generationTime": 4,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 2,
+      "prompt": "create a basic calculator app",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45781,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 3,
+      "prompt": "make a simple memory game",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45514,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 4,
+      "prompt": "build a note-taking app",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45683,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 5,
+      "prompt": "create a basic weather app",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45856,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 6,
+      "prompt": "make a simple quiz app",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45377,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 7,
+      "prompt": "build a basic chat app",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45555,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 8,
+      "prompt": "create a simple timer app",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45252,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 9,
+      "prompt": "make a basic drawing app",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45558,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    },
+    {
+      "testIndex": 10,
+      "prompt": "build a simple expense tracker",
+      "success": false,
+      "error": "Generation timeout - no content found",
+      "generationTime": 45652,
+      "filesGenerated": [],
+      "hasWorkingCode": false,
+      "previewWorking": false,
+      "features": []
+    }
+  ],
+  "analysis": {
+    "commonFeatures": [],
+    "averageFilesGenerated": 0,
+    "previewSuccessRate": "0.0%",
+    "codeQualityRate": "0.0%"
+  }
+}

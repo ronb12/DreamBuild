@@ -12,8 +12,11 @@ DreamBuild is a revolutionary web-based development platform that uses AI to gen
 ## ✨ Key Features
 
 ### 🤖 AI Code Generation
-- **33+ App Types** with specific optimizations
-- **Universal Template** for unlimited app types
+- **Unlimited App Types** - Create ANY application you can imagine!
+- **Dynamic Template Generation** - AI creates custom templates on-demand
+- **Universal Pattern System** - 17 categories with 100+ patterns for infinite combinations
+- **17 Category System** - Data, UI, Functionality, Games, Business, Social, Media, IoT, AI/ML, Utilities, Enterprise, Systems, Backend, Mobile, Game, Database
+- **Top 10 Programming Languages** - JavaScript, Python, Java, Rust, TypeScript, Go, Dart, C++, C#, SQL
 - **6 Unique Game Engines** (Tetris, Snake, Pong, Breakout, Flappy Bird, Space Invaders)
 - Generates HTML, CSS, JavaScript, and PWA files
 
@@ -43,7 +46,7 @@ DreamBuild is a revolutionary web-based development platform that uses AI to gen
 
 1. Visit [DreamBuild](https://dreambuild-2024-app.web.app/#/ai-builder)
 2. Sign in (or continue as guest)
-3. Type what you want to build (e.g., "create a todo app" or "build tetris")
+3. Type what you want to build (e.g., "create a todo app", "build tetris", or "make an unlimited app for project management")
 4. Wait 10-15 seconds
 5. Your app appears in the live preview - fully functional!
 

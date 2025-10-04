@@ -13,6 +13,12 @@ class TemplateBasedGenerator {
   }
 
   async initialize() {
+    console.log('🚀 Initializing Template-Based Generator with Unlimited Support...');
+
+    // Load unlimited template generator
+    const { default: UnlimitedTemplateGenerator } = await import('./unlimitedTemplateGenerator.js');
+    this.unlimitedGenerator = new UnlimitedTemplateGenerator();
+    await this.unlimitedGenerator.initialize();
 
     // Load all templates
     await this.loadAllTemplates();
@@ -23,10 +29,24 @@ class TemplateBasedGenerator {
     // Initialize template matcher
     this.templateMatcher = new TemplateMatcher(this.templates);
 
+    console.log('✅ Template-Based Generator initialized with unlimited support');
   }
 
   async loadAllTemplates() {
     try {
+      // Load unlimited templates first
+      const unlimitedTemplates = this.unlimitedGenerator.getAllTemplates();
+      console.log(`📊 Loaded ${unlimitedTemplates.size} unlimited templates`);
+
+      // Merge unlimited templates with existing templates
+      for (const [id, template] of unlimitedTemplates) {
+        this.templates.set(id, {
+          ...template,
+          isUnlimited: true,
+          source: 'unlimited'
+        });
+      }
+
       // Load templates from the existing localAIService
       const { default: localAIService } = await import('./localAIService.js');
       
@@ -53,11 +73,15 @@ class TemplateBasedGenerator {
               ...template,
               category: categoryKey,
               categoryName: categoryData.name,
-              icon: categoryData.icon
+              icon: categoryData.icon,
+              isUnlimited: false,
+              source: 'legacy'
             });
           });
         }
       }
+
+      console.log(`✅ Total templates loaded: ${this.templates.size} (${unlimitedTemplates.size} unlimited + ${this.templates.size - unlimitedTemplates.size} legacy)`);
 
     } catch (error) {
       console.error('Failed to load templates from localAIService, using fallback:', error.message);
@@ -192,12 +216,19 @@ class TemplateBasedGenerator {
   async selectTemplate(prompt, context) {
     const startTime = Date.now();
     
+    // Check if this is a request for unlimited app types
+    if (context.unlimited || prompt.toLowerCase().includes('unlimited') || prompt.toLowerCase().includes('any app')) {
+      console.log('🔄 Generating dynamic template for unlimited app type...');
+      const dynamicTemplate = await this.unlimitedGenerator.generateDynamicTemplate(prompt);
+      this.templates.set(dynamicTemplate.id, dynamicTemplate);
+      console.log(`🎯 Dynamic template created in ${Date.now() - startTime}ms: ${dynamicTemplate.name}`);
+      return dynamicTemplate;
+    }
+    
     // Check if template matcher is available
     if (!this.templateMatcher) {
-
       const templates = Array.from(this.templates.values());
       if (templates.length === 0) {
-
         throw new Error('No templates available');
       }
       return templates[0];
@@ -211,12 +242,12 @@ class TemplateBasedGenerator {
     });
     
     if (matches.length === 0) {
-
-      const templates = Array.from(this.templates.values());
-      if (templates.length === 0) {
-        throw new Error('No suitable template found');
-      }
-      return templates[0];
+      // If no matches found, try generating a dynamic template
+      console.log('🔄 No template matches found, generating dynamic template...');
+      const dynamicTemplate = await this.unlimitedGenerator.generateDynamicTemplate(prompt);
+      this.templates.set(dynamicTemplate.id, dynamicTemplate);
+      console.log(`🎯 Dynamic template created in ${Date.now() - startTime}ms: ${dynamicTemplate.name}`);
+      return dynamicTemplate;
     }
     
     const selectedTemplate = matches[0];
@@ -238,12 +269,17 @@ class TemplateBasedGenerator {
       metadata: {
         templateId: template.id,
         templateName: template.name,
-        instantiationTime: Date.now() - startTime
+        instantiationTime: Date.now() - startTime,
+        isUnlimited: template.isUnlimited || false,
+        patterns: template.patterns || []
       }
     };
     
-    // Generate files based on template type
-    if (template.category === 'web') {
+    // Generate files based on template type and patterns
+    if (template.isUnlimited && template.patterns) {
+      // Generate files based on unlimited patterns
+      baseApp.files = await this.generateUnlimitedAppFiles(template);
+    } else if (template.category === 'web') {
       baseApp.files = await this.generateWebAppFiles(template);
     } else if (template.category === 'mobile') {
       baseApp.files = await this.generateMobileAppFiles(template);
@@ -968,6 +1004,1447 @@ class AICustomizationService {
     // Apply content-specific customizations
     return content;
   }
+
+  // Generate unlimited app files based on patterns
+  async generateUnlimitedAppFiles(template) {
+    const files = {};
+    const patterns = template.patterns || [];
+    
+    console.log(`🔄 Generating unlimited app files for patterns: ${patterns.join(', ')}`);
+    
+    // Generate HTML based on patterns
+    files['index.html'] = this.generateUnlimitedHTML(template, patterns);
+    
+    // Generate CSS based on patterns
+    files['styles.css'] = this.generateUnlimitedCSS(template, patterns);
+    
+    // Generate JavaScript based on patterns
+    files['script.js'] = this.generateUnlimitedJS(template, patterns);
+    
+    // Add pattern-specific files
+    if (patterns.includes('chart') || patterns.includes('analytics')) {
+      files['chart.js'] = this.generateChartJS();
+    }
+    
+    if (patterns.includes('game') || patterns.includes('physics')) {
+      files['game.js'] = this.generateGameJS();
+    }
+    
+    if (patterns.includes('auth') || patterns.includes('api')) {
+      files['api.js'] = this.generateAPIJS();
+    }
+    
+    return files;
+  }
+
+  generateUnlimitedHTML(template, patterns) {
+    const hasDashboard = patterns.includes('dashboard');
+    const hasNavigation = patterns.includes('navigation');
+    const hasModal = patterns.includes('modal');
+    const hasSidebar = patterns.includes('sidebar');
+    const hasForm = patterns.includes('form');
+    const hasTable = patterns.includes('table');
+    const hasChart = patterns.includes('chart');
+    const hasGame = patterns.includes('game') || patterns.includes('physics');
+    
+    let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${template.name}</title>
+    <link rel="stylesheet" href="styles.css">`;
+    
+    if (hasChart) {
+      html += `
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>`;
+    }
+    
+    html += `
+</head>
+<body>
+    <div id="app">`;
+    
+    if (hasNavigation) {
+      html += `
+        <nav class="navbar">
+            <div class="nav-brand">${template.name}</div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+            </div>
+        </nav>`;
+    }
+    
+    if (hasSidebar) {
+      html += `
+        <div class="sidebar">
+            <h3>Menu</h3>
+            <ul>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#data">Data</a></li>
+                <li><a href="#settings">Settings</a></li>
+            </ul>
+        </div>`;
+    }
+    
+    html += `
+        <main class="main-content">`;
+    
+    if (hasDashboard) {
+      html += `
+            <div class="dashboard">
+                <h1>${template.name} Dashboard</h1>
+                <div class="dashboard-grid">`;
+      
+      if (hasChart) {
+        html += `
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>`;
+      }
+      
+      if (hasTable) {
+        html += `
+                    <div class="table-container">
+                        <table id="dataTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                            </tbody>
+                        </table>
+                    </div>`;
+      }
+      
+      html += `
+                </div>
+            </div>`;
+    } else {
+      html += `
+            <div class="content">
+                <h1>${template.name}</h1>
+                <p>${template.description || 'A dynamically generated application'}</p>`;
+      
+      if (hasForm) {
+        html += `
+                <form id="mainForm" class="app-form">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>`;
+      }
+      
+      if (hasGame) {
+        html += `
+                <div class="game-container">
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    <div class="game-controls">
+                        <button id="startGame">Start Game</button>
+                        <button id="pauseGame">Pause</button>
+                        <div id="score">Score: 0</div>
+                    </div>
+                </div>`;
+      }
+      
+      html += `
+            </div>`;
+    }
+    
+    html += `
+        </main>`;
+    
+    if (hasModal) {
+      html += `
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Modal Title</h2>
+                <p>Modal content goes here.</p>
+            </div>
+        </div>`;
+    }
+    
+    html += `
+    </div>
+    <script src="script.js"></script>`;
+    
+    if (hasChart) {
+      html += `
+    <script src="chart.js"></script>`;
+    }
+    
+    if (hasGame) {
+      html += `
+    <script src="game.js"></script>`;
+    }
+    
+    if (patterns.includes('auth') || patterns.includes('api')) {
+      html += `
+    <script src="api.js"></script>`;
+    }
+    
+    html += `
+</body>
+</html>`;
+    
+    return html;
+  }
+
+  generateUnlimitedCSS(template, patterns) {
+    const hasDashboard = patterns.includes('dashboard');
+    const hasSidebar = patterns.includes('sidebar');
+    const hasModal = patterns.includes('modal');
+    const hasGame = patterns.includes('game') || patterns.includes('physics');
+    
+    let css = `/* ${template.name} - Unlimited App Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}`;
+
+    if (hasSidebar) {
+      css += `
+.sidebar {
+    width: 250px;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+.sidebar h3 {
+    margin-bottom: 20px;
+    color: #ecf0f1;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar a {
+    color: #bdc3c7;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.sidebar a:hover {
+    background: #34495e;
+    color: white;
+}
+
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    flex: 1;
+}`;
+    } else {
+      css += `
+.main-content {
+    padding: 20px;
+    flex: 1;
+}`;
+    }
+
+    if (hasDashboard) {
+      css += `
+.dashboard {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.dashboard h1 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.chart-container, .table-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+th {
+    background: #e9ecef;
+    font-weight: 600;
+}`;
+    } else {
+      css += `
+.content {
+    background: white;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.content h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+.content p {
+    color: #7f8c8d;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}`;
+    }
+
+    css += `
+.navbar {
+    background: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav-brand {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.nav-links a:hover {
+    background: #34495e;
+}
+
+.app-form {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+button {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #5a6fd8;
+}
+
+button:active {
+    transform: translateY(1px);
+}`;
+
+    if (hasGame) {
+      css += `
+.game-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#gameCanvas {
+    border: 2px solid #2c3e50;
+    border-radius: 10px;
+    background: #ecf0f1;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+.game-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+#score {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2c3e50;
+}`;
+    }
+
+    if (hasModal) {
+      css += `
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}`;
+    }
+
+    css += `
+@media (max-width: 768px) {
+    .main-content {
+        padding: 10px;
+    }
+    
+    .content {
+        padding: 20px;
+    }
+    
+    .content h1 {
+        font-size: 2em;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    #gameCanvas {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+    }
+}`;
+
+    return css;
+  }
+
+  generateUnlimitedJS(template, patterns) {
+    const hasDashboard = patterns.includes('dashboard');
+    const hasForm = patterns.includes('form');
+    const hasTable = patterns.includes('table');
+    const hasModal = patterns.includes('modal');
+    const hasGame = patterns.includes('game') || patterns.includes('physics');
+    const hasChart = patterns.includes('chart');
+    
+    let js = `// ${template.name} - Unlimited App JavaScript
+console.log('${template.name} loaded successfully!');
+
+// Application state
+const AppState = {
+    data: [],
+    currentUser: null,
+    isInitialized: false
+};
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing ${template.name}...');
+    initializeApp();
+});
+
+async function initializeApp() {
+    try {
+        console.log('Initializing ${template.name}...');
+        
+        // Initialize based on patterns
+        ${hasDashboard ? 'await initializeDashboard();' : ''}
+        ${hasForm ? 'initializeForms();' : ''}
+        ${hasTable ? 'initializeTable();' : ''}
+        ${hasModal ? 'initializeModal();' : ''}
+        ${hasGame ? 'initializeGame();' : ''}
+        ${hasChart ? 'initializeChart();' : ''}
+        
+        AppState.isInitialized = true;
+        console.log('${template.name} initialized successfully!');
+        
+    } catch (error) {
+        console.error('Error initializing ${template.name}:', error);
+    }
+}`;
+
+    if (hasDashboard) {
+      js += `
+
+// Dashboard functionality
+async function initializeDashboard() {
+    console.log('Initializing dashboard...');
+    
+    // Load dashboard data
+    await loadDashboardData();
+    
+    // Setup dashboard interactions
+    setupDashboardInteractions();
+}
+
+async function loadDashboardData() {
+    try {
+        // Simulate API call
+        const mockData = [
+            { id: 1, name: 'Item 1', status: 'Active' },
+            { id: 2, name: 'Item 2', status: 'Inactive' },
+            { id: 3, name: 'Item 3', status: 'Active' }
+        ];
+        
+        AppState.data = mockData;
+        console.log('Dashboard data loaded:', mockData);
+        
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
+}
+
+function setupDashboardInteractions() {
+    console.log('Setting up dashboard interactions...');
+    
+    // Add any dashboard-specific interactions here
+}`;
+    }
+
+    if (hasForm) {
+      js += `
+
+// Form functionality
+function initializeForms() {
+    console.log('Initializing forms...');
+    
+    const form = document.getElementById('mainForm');
+    if (form) {
+        form.addEventListener('submit', handleFormSubmit);
+    }
+}
+
+function handleFormSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+    
+    console.log('Form submitted:', data);
+    
+    // Process form data
+    processFormData(data);
+    
+    // Show success message
+    showNotification('Form submitted successfully!', 'success');
+    
+    // Reset form
+    event.target.reset();
+}
+
+function processFormData(data) {
+    console.log('Processing form data:', data);
+    
+    // Add form data to app state
+    AppState.data.push({
+        id: Date.now(),
+        ...data,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Update table if exists
+    if (document.getElementById('dataTable')) {
+        updateTable();
+    }
+}`;
+    }
+
+    if (hasTable) {
+      js += `
+
+// Table functionality
+function initializeTable() {
+    console.log('Initializing table...');
+    updateTable();
+}
+
+function updateTable() {
+    const tableBody = document.getElementById('tableBody');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    AppState.data.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = \`
+            <td>\${item.id}</td>
+            <td>\${item.name || 'N/A'}</td>
+            <td>\${item.status || 'Unknown'}</td>
+            <td>
+                <button onclick="editItem(\${item.id})">Edit</button>
+                <button onclick="deleteItem(\${item.id})">Delete</button>
+            </td>
+        \`;
+        tableBody.appendChild(row);
+    });
+}
+
+function editItem(id) {
+    const item = AppState.data.find(item => item.id === id);
+    if (item) {
+        console.log('Editing item:', item);
+        showNotification(\`Editing \${item.name}\`, 'info');
+    }
+}
+
+function deleteItem(id) {
+    const index = AppState.data.findIndex(item => item.id === id);
+    if (index !== -1) {
+        AppState.data.splice(index, 1);
+        updateTable();
+        showNotification('Item deleted successfully!', 'success');
+    }
+}`;
+    }
+
+    if (hasModal) {
+      js += `
+
+// Modal functionality
+function initializeModal() {
+    console.log('Initializing modal...');
+    
+    const modal = document.getElementById('modal');
+    const closeBtn = document.querySelector('.close');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+    
+    if (modal) {
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+    }
+}
+
+function openModal() {
+    const modal = document.getElementById('modal');
+    if (modal) {
+        modal.style.display = 'block';
+    }
+}
+
+function closeModal() {
+    const modal = document.getElementById('modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}`;
+    }
+
+    if (hasGame) {
+      js += `
+
+// Game functionality
+function initializeGame() {
+    console.log('Initializing game...');
+    
+    const startBtn = document.getElementById('startGame');
+    const pauseBtn = document.getElementById('pauseGame');
+    
+    if (startBtn) {
+        startBtn.addEventListener('click', startGame);
+    }
+    
+    if (pauseBtn) {
+        pauseBtn.addEventListener('click', pauseGame);
+    }
+}
+
+function startGame() {
+    console.log('Starting game...');
+    showNotification('Game started!', 'success');
+    
+    // Game logic would go here
+    // This is a placeholder for game initialization
+}
+
+function pauseGame() {
+    console.log('Game paused...');
+    showNotification('Game paused!', 'info');
+    
+    // Game pause logic would go here
+}`;
+    }
+
+    if (hasChart) {
+      js += `
+
+// Chart functionality
+function initializeChart() {
+    console.log('Initializing chart...');
+    
+    // Chart initialization would go here
+    // This is a placeholder for chart setup
+}`;
+    }
+
+    js += `
+
+// Utility functions
+function showNotification(message, type = 'info') {
+    console.log(\`[\${type.toUpperCase()}] \${message}\`);
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = \`notification notification-\${type}\`;
+    notification.textContent = message;
+    
+    // Style the notification
+    notification.style.cssText = \`
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        z-index: 3000;
+        animation: slideIn 0.3s ease-out;
+    \`;
+    
+    // Set background color based on type
+    const colors = {
+        success: '#27ae60',
+        error: '#e74c3c',
+        warning: '#f39c12',
+        info: '#3498db'
+    };
+    
+    notification.style.backgroundColor = colors[type] || colors.info;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Add CSS animation for notifications
+const style = document.createElement('style');
+style.textContent = \`
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+\`;
+document.head.appendChild(style);
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { 
+        initializeApp, 
+        AppState,
+        showNotification
+    };
+}`;
+
+    return js;
+  }
+
+  generateChartJS() {
+    return `// Chart.js functionality for unlimited apps
+console.log('Chart.js loaded for unlimited app');
+
+class ChartManager {
+    constructor() {
+        this.charts = new Map();
+    }
+    
+    createChart(canvasId, data, options = {}) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) {
+            console.error('Canvas not found:', canvasId);
+            return null;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        
+        const defaultOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Data Visualization'
+                }
+            }
+        };
+        
+        const chartOptions = { ...defaultOptions, ...options };
+        
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: chartOptions
+        });
+        
+        this.charts.set(canvasId, chart);
+        return chart;
+    }
+    
+    updateChart(canvasId, newData) {
+        const chart = this.charts.get(canvasId);
+        if (chart) {
+            chart.data = newData;
+            chart.update();
+        }
+    }
+    
+    destroyChart(canvasId) {
+        const chart = this.charts.get(canvasId);
+        if (chart) {
+            chart.destroy();
+            this.charts.delete(canvasId);
+        }
+    }
+}
+
+// Global chart manager instance
+window.chartManager = new ChartManager();
+
+// Initialize main chart when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    const mainChart = document.getElementById('mainChart');
+    if (mainChart) {
+        const sampleData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'Sample Data',
+                data: [12, 19, 3, 5, 2, 3],
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            }]
+        };
+        
+        window.chartManager.createChart('mainChart', sampleData);
+    }
+});
+
+export default ChartManager;`;
+  }
+
+  generateGameJS() {
+    return `// Game.js functionality for unlimited apps
+console.log('Game.js loaded for unlimited app');
+
+class GameEngine {
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.isRunning = false;
+        this.score = 0;
+        this.gameObjects = [];
+        this.lastTime = 0;
+        
+        this.setupCanvas();
+        this.setupEventListeners();
+    }
+    
+    setupCanvas() {
+        if (!this.canvas) return;
+        
+        // Set canvas size
+        this.canvas.width = 800;
+        this.canvas.height = 600;
+        
+        // Set canvas style
+        this.canvas.style.border = '2px solid #333';
+        this.canvas.style.backgroundColor = '#f0f0f0';
+    }
+    
+    setupEventListeners() {
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            this.handleKeyDown(e);
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            this.handleKeyUp(e);
+        });
+        
+        // Mouse controls
+        this.canvas.addEventListener('click', (e) => {
+            this.handleMouseClick(e);
+        });
+    }
+    
+    handleKeyDown(e) {
+        // Handle keyboard input
+        switch(e.key) {
+            case 'ArrowUp':
+            case 'w':
+            case 'W':
+                this.moveUp();
+                break;
+            case 'ArrowDown':
+            case 's':
+            case 'S':
+                this.moveDown();
+                break;
+            case 'ArrowLeft':
+            case 'a':
+            case 'A':
+                this.moveLeft();
+                break;
+            case 'ArrowRight':
+            case 'd':
+            case 'D':
+                this.moveRight();
+                break;
+            case ' ':
+                e.preventDefault();
+                this.jump();
+                break;
+        }
+    }
+    
+    handleKeyUp(e) {
+        // Handle key release
+    }
+    
+    handleMouseClick(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        this.handleClick(x, y);
+    }
+    
+    start() {
+        if (this.isRunning) return;
+        
+        this.isRunning = true;
+        this.lastTime = performance.now();
+        this.gameLoop();
+        
+        console.log('Game started!');
+    }
+    
+    pause() {
+        this.isRunning = false;
+        console.log('Game paused!');
+    }
+    
+    stop() {
+        this.isRunning = false;
+        this.gameObjects = [];
+        this.score = 0;
+        this.updateScore();
+        console.log('Game stopped!');
+    }
+    
+    gameLoop(currentTime) {
+        if (!this.isRunning) return;
+        
+        const deltaTime = currentTime - this.lastTime;
+        this.lastTime = currentTime;
+        
+        this.update(deltaTime);
+        this.render();
+        
+        requestAnimationFrame((time) => this.gameLoop(time));
+    }
+    
+    update(deltaTime) {
+        // Update game objects
+        this.gameObjects.forEach(obj => {
+            if (obj.update) {
+                obj.update(deltaTime);
+            }
+        });
+        
+        // Check collisions
+        this.checkCollisions();
+        
+        // Update score
+        this.updateScore();
+    }
+    
+    render() {
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Render game objects
+        this.gameObjects.forEach(obj => {
+            if (obj.render) {
+                obj.render(this.ctx);
+            }
+        });
+        
+        // Render UI
+        this.renderUI();
+    }
+    
+    renderUI() {
+        // Render score
+        this.ctx.fillStyle = '#333';
+        this.ctx.font = '24px Arial';
+        this.ctx.fillText(\`Score: \${this.score}\`, 10, 30);
+        
+        // Render instructions
+        this.ctx.font = '16px Arial';
+        this.ctx.fillText('Use WASD or Arrow Keys to move, Space to jump', 10, this.canvas.height - 10);
+    }
+    
+    checkCollisions() {
+        // Basic collision detection
+        for (let i = 0; i < this.gameObjects.length; i++) {
+            for (let j = i + 1; j < this.gameObjects.length; j++) {
+                const obj1 = this.gameObjects[i];
+                const obj2 = this.gameObjects[j];
+                
+                if (this.isColliding(obj1, obj2)) {
+                    this.handleCollision(obj1, obj2);
+                }
+            }
+        }
+    }
+    
+    isColliding(obj1, obj2) {
+        return obj1.x < obj2.x + obj2.width &&
+               obj1.x + obj1.width > obj2.x &&
+               obj1.y < obj2.y + obj2.height &&
+               obj1.y + obj1.height > obj2.y;
+    }
+    
+    handleCollision(obj1, obj2) {
+        // Handle collision between objects
+        console.log('Collision detected!');
+    }
+    
+    addGameObject(obj) {
+        this.gameObjects.push(obj);
+    }
+    
+    removeGameObject(obj) {
+        const index = this.gameObjects.indexOf(obj);
+        if (index > -1) {
+            this.gameObjects.splice(index, 1);
+        }
+    }
+    
+    updateScore() {
+        const scoreElement = document.getElementById('score');
+        if (scoreElement) {
+            scoreElement.textContent = \`Score: \${this.score}\`;
+        }
+    }
+    
+    // Movement methods (to be overridden by specific games)
+    moveUp() { console.log('Moving up'); }
+    moveDown() { console.log('Moving down'); }
+    moveLeft() { console.log('Moving left'); }
+    moveRight() { console.log('Moving right'); }
+    jump() { console.log('Jumping'); }
+    handleClick(x, y) { console.log('Clicked at:', x, y); }
+}
+
+// Global game engine instance
+window.gameEngine = null;
+
+// Initialize game when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    const gameCanvas = document.getElementById('gameCanvas');
+    if (gameCanvas) {
+        window.gameEngine = new GameEngine('gameCanvas');
+        
+        // Add some sample game objects
+        window.gameEngine.addGameObject({
+            x: 100,
+            y: 100,
+            width: 50,
+            height: 50,
+            color: '#ff6b6b',
+            update: function(deltaTime) {
+                // Simple movement
+                this.x += 1;
+                if (this.x > 750) this.x = 0;
+            },
+            render: function(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        });
+        
+        window.gameEngine.addGameObject({
+            x: 200,
+            y: 200,
+            width: 30,
+            height: 30,
+            color: '#4ecdc4',
+            update: function(deltaTime) {
+                // Different movement pattern
+                this.y += Math.sin(Date.now() * 0.005) * 2;
+            },
+            render: function(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        });
+    }
+});
+
+// Game control functions
+function startGame() {
+    if (window.gameEngine) {
+        window.gameEngine.start();
+    }
+}
+
+function pauseGame() {
+    if (window.gameEngine) {
+        window.gameEngine.pause();
+    }
+}
+
+export default GameEngine;`;
+  }
+
+  generateAPIJS() {
+    return `// API.js functionality for unlimited apps
+console.log('API.js loaded for unlimited app');
+
+class APIManager {
+    constructor() {
+        this.baseURL = 'https://api.example.com';
+        this.authToken = null;
+        this.isAuthenticated = false;
+    }
+    
+    setAuthToken(token) {
+        this.authToken = token;
+        this.isAuthenticated = true;
+        localStorage.setItem('authToken', token);
+    }
+    
+    getAuthToken() {
+        if (!this.authToken) {
+            this.authToken = localStorage.getItem('authToken');
+        }
+        return this.authToken;
+    }
+    
+    clearAuth() {
+        this.authToken = null;
+        this.isAuthenticated = false;
+        localStorage.removeItem('authToken');
+    }
+    
+    async request(endpoint, options = {}) {
+        const url = \`\${this.baseURL}\${endpoint}\`;
+        
+        const defaultOptions = {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        
+        if (this.getAuthToken()) {
+            defaultOptions.headers['Authorization'] = \`Bearer \${this.getAuthToken()}\`;
+        }
+        
+        const requestOptions = {
+            ...defaultOptions,
+            ...options,
+            headers: {
+                ...defaultOptions.headers,
+                ...options.headers
+            }
+        };
+        
+        try {
+            const response = await fetch(url, requestOptions);
+            
+            if (!response.ok) {
+                throw new Error(\`HTTP error! status: \${response.status}\`);
+            }
+            
+            const data = await response.json();
+            return data;
+            
+        } catch (error) {
+            console.error('API request failed:', error);
+            throw error;
+        }
+    }
+    
+    async get(endpoint) {
+        return this.request(endpoint, { method: 'GET' });
+    }
+    
+    async post(endpoint, data) {
+        return this.request(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    }
+    
+    async put(endpoint, data) {
+        return this.request(endpoint, {
+            method: 'PUT',
+            body: JSON.stringify(data)
+        });
+    }
+    
+    async delete(endpoint) {
+        return this.request(endpoint, { method: 'DELETE' });
+    }
+    
+    async login(email, password) {
+        try {
+            const response = await this.post('/auth/login', { email, password });
+            
+            if (response.token) {
+                this.setAuthToken(response.token);
+                return { success: true, user: response.user };
+            }
+            
+            return { success: false, error: 'Invalid credentials' };
+            
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+    
+    async register(userData) {
+        try {
+            const response = await this.post('/auth/register', userData);
+            
+            if (response.token) {
+                this.setAuthToken(response.token);
+                return { success: true, user: response.user };
+            }
+            
+            return { success: false, error: response.error || 'Registration failed' };
+            
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+    
+    async logout() {
+        try {
+            await this.post('/auth/logout');
+            this.clearAuth();
+            return { success: true };
+        } catch (error) {
+            this.clearAuth();
+            return { success: true }; // Clear auth even if API call fails
+        }
+    }
+    
+    async getProfile() {
+        try {
+            const response = await this.get('/auth/profile');
+            return { success: true, user: response.user };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+    
+    async updateProfile(userData) {
+        try {
+            const response = await this.put('/auth/profile', userData);
+            return { success: true, user: response.user };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+}
+
+// Global API manager instance
+window.apiManager = new APIManager();
+
+// Authentication functions
+async function login(email, password) {
+    const result = await window.apiManager.login(email, password);
+    
+    if (result.success) {
+        console.log('Login successful:', result.user);
+        showNotification('Login successful!', 'success');
+        return true;
+    } else {
+        console.error('Login failed:', result.error);
+        showNotification(\`Login failed: \${result.error}\`, 'error');
+        return false;
+    }
+}
+
+async function register(userData) {
+    const result = await window.apiManager.register(userData);
+    
+    if (result.success) {
+        console.log('Registration successful:', result.user);
+        showNotification('Registration successful!', 'success');
+        return true;
+    } else {
+        console.error('Registration failed:', result.error);
+        showNotification(\`Registration failed: \${result.error}\`, 'error');
+        return false;
+    }
+}
+
+async function logout() {
+    const result = await window.apiManager.logout();
+    
+    if (result.success) {
+        console.log('Logout successful');
+        showNotification('Logged out successfully!', 'success');
+        return true;
+    } else {
+        console.error('Logout failed:', result.error);
+        return false;
+    }
+}
+
+// Check authentication status on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const token = window.apiManager.getAuthToken();
+    if (token) {
+        console.log('User is authenticated');
+        // Load user profile or redirect to dashboard
+    } else {
+        console.log('User is not authenticated');
+        // Show login form or redirect to login page
+    }
+});
+
+export default APIManager;`;
+  }
 }
 
 // Template Matcher Service
@@ -979,6 +2456,12 @@ class TemplateMatcher {
   async findBestMatches(prompt, context = {}) {
     const matches = [];
     const promptLower = prompt.toLowerCase();
+
+    // Check for unlimited app requests
+    if (this.isUnlimitedRequest(prompt, context)) {
+      console.log('🔄 Detected unlimited app request, will generate dynamic template');
+      return []; // Return empty to trigger dynamic generation
+    }
 
     for (const template of this.templates.values()) {
       let score = 0;
@@ -1001,6 +2484,14 @@ class TemplateMatcher {
         score += tagMatches * 5;
       }
 
+      // Pattern matching for unlimited templates
+      if (template.patterns) {
+        const patternMatches = template.patterns.filter(pattern => 
+          promptLower.includes(pattern.toLowerCase())
+        ).length;
+        score += patternMatches * 7;
+      }
+
       // Category matching
       if (context.category && template.category === context.category) {
         score += 15;
@@ -1009,6 +2500,24 @@ class TemplateMatcher {
       // Complexity matching
       if (context.complexity && template.complexity === context.complexity) {
         score += 10;
+      }
+
+      // Technology matching
+      if (context.technologies) {
+        const techMatches = context.technologies.filter(tech => 
+          template.tags?.includes(tech.toLowerCase())
+        ).length;
+        score += techMatches * 3;
+      }
+
+      // Unlimited template bonus
+      if (template.isUnlimited) {
+        score += 5;
+      }
+
+      // Dynamic template bonus
+      if (template.isDynamic) {
+        score += 3;
       }
 
       // Keyword-based matching for better results
@@ -1036,6 +2545,31 @@ class TemplateMatcher {
 
     // Sort by score and return top matches
     return matches.sort((a, b) => b.score - a.score).slice(0, 5);
+  }
+
+  isUnlimitedRequest(prompt, context) {
+    const unlimitedKeywords = [
+      'unlimited', 'any app', 'any type', 'custom app', 'unique app',
+      'new app', 'different app', 'special app', 'personalized app',
+      'bespoke app', 'tailored app', 'individual app', 'specific app'
+    ];
+
+    const promptLower = prompt.toLowerCase();
+    
+    // Check for unlimited keywords
+    const hasUnlimitedKeyword = unlimitedKeywords.some(keyword => 
+      promptLower.includes(keyword)
+    );
+
+    // Check context flag
+    const hasUnlimitedFlag = context.unlimited === true;
+
+    // Check for very specific or unique requests
+    const isSpecificRequest = prompt.length > 50 && 
+      (promptLower.includes('that') || promptLower.includes('which') || 
+       promptLower.includes('with') || promptLower.includes('for'));
+
+    return hasUnlimitedKeyword || hasUnlimitedFlag || isSpecificRequest;
   }
 }
 

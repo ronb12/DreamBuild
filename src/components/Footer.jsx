@@ -4,6 +4,7 @@ import { Github, Twitter, Mail, Heart, Send, Sparkles, Code, Database, Users, Ex
 const Footer = () => {
   const [email, setEmail] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
+  const currentYear = new Date().getFullYear()
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault()
@@ -109,7 +110,7 @@ const Footer = () => {
         <div className="border-t border-border pt-8 mt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-sm text-muted-foreground">
-              <span>&copy; 2024 Bradley Virtual Solutions, LLC</span>
+              <span>&copy; {currentYear} Bradley Virtual Solutions, LLC</span>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>

@@ -4,6 +4,8 @@
  * Product of Bradley Virtual Solutions, LLC
  */
 
+const GENERATED_BUILD_PATTERN_TARGET = 30000;
+
 class UnlimitedTemplateGenerator {
   constructor() {
     this.templates = new Map();
@@ -22,8 +24,10 @@ class UnlimitedTemplateGenerator {
     // Load base templates
     await this.loadBaseTemplates();
     
-    // Initialize AI enhancer
-    this.aiEnhancer = new AICustomizationService();
+    // Initialize AI enhancer when the optional enhancer is available in this bundle.
+    if (typeof AICustomizationService !== 'undefined') {
+      this.aiEnhancer = new AICustomizationService();
+    }
     
     // Initialize template matcher
     this.templateMatcher = new TemplateMatcher(this.templates);
@@ -284,6 +288,34 @@ class UnlimitedTemplateGenerator {
         });
       }
     });
+
+    const patternPool = patternCategories.flatMap(category =>
+      Object.entries(this.basePatterns[category]).map(([patternKey, pattern]) => ({
+        category,
+        patternKey,
+        ...pattern
+      }))
+    );
+
+    while (this.templates.size < GENERATED_BUILD_PATTERN_TARGET && patternPool.length > 0) {
+      const first = patternPool[templateId % patternPool.length];
+      const second = patternPool[(templateId * 7 + 3) % patternPool.length];
+      const third = patternPool[(templateId * 13 + 5) % patternPool.length];
+      const patterns = [first, second, third];
+      const id = `template-${templateId++}`;
+
+      this.templates.set(id, {
+        id,
+        name: `${first.name} + ${second.name} + ${third.name} Build Pattern`,
+        description: `A generated build pattern combining ${first.name.toLowerCase()}, ${second.name.toLowerCase()}, and ${third.name.toLowerCase()}.`,
+        patterns: patterns.map(pattern => pattern.patternKey),
+        category: `${first.category}-${second.category}-${third.category}`,
+        complexity: this.calculateComplexity(patterns),
+        tags: [...new Set(patterns.flatMap(pattern => pattern.tags))],
+        isDynamic: true,
+        relevanceScore: 0.55
+      });
+    }
 
     console.log(`✅ Generated ${this.templates.size} unlimited templates`);
   }

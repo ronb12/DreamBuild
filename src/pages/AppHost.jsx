@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate, useParams } from '../utils/navigation';
-import firebaseService from '../services/firebaseService'
+import dreamBuildCloudService from '../services/dreamBuildCloudService'
 
 const AppHost = () => {
   const { appId } = useParams()
@@ -21,9 +21,8 @@ const AppHost = () => {
       setIsLoading(true)
       setError(null)
       
-      // Get app data from Firebase
-      console.log('🔍 AppHost: Calling firebaseService.getApp...')
-      const app = await firebaseService.getApp(id)
+      console.log('🔍 AppHost: Calling dreamBuildCloudService.getApp...')
+      const app = await dreamBuildCloudService.getApp(id)
       console.log('🔍 AppHost: Retrieved app data:', app)
       console.log('🔍 AppHost: App data type:', typeof app)
       console.log('🔍 AppHost: App data keys:', app ? Object.keys(app) : 'null')
@@ -31,7 +30,7 @@ const AppHost = () => {
       if (app) {
         console.log('🔍 AppHost: App found, generating HTML content...')
         // Generate HTML content
-        const htmlContent = firebaseService.generateAppHTML(app)
+        const htmlContent = dreamBuildCloudService.generateAppHTML(app)
         console.log('🔍 AppHost: Generated HTML content length:', htmlContent ? htmlContent.length : 'null')
         console.log('🔍 AppHost: HTML content preview:', htmlContent ? htmlContent.substring(0, 200) : 'null')
         
@@ -41,7 +40,7 @@ const AppHost = () => {
         
         // Increment view count
         console.log('🔍 AppHost: Incrementing view count...')
-        await firebaseService.incrementViews(id)
+        await dreamBuildCloudService.incrementViews(id)
         
         // Set the app data for rendering
         console.log('🔍 AppHost: Setting app data for rendering...')
@@ -102,19 +101,16 @@ const AppHost = () => {
     )
   }
 
-  // Render the app content
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-8">
-        {appData && (
-          <div className="w-full h-full">
-            <div 
-              dangerouslySetInnerHTML={{ __html: appData.htmlContent }}
-              className="w-full h-full"
-            />
-          </div>
-        )}
-      </div>
+      {appData && (
+        <iframe
+          title={appData.name || 'DreamBuild Hosted App'}
+          srcDoc={appData.htmlContent}
+          className="h-screen w-full border-0"
+          sandbox="allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-same-origin"
+        />
+      )}
     </div>
   )
 }

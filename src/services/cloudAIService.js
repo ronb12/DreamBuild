@@ -7,6 +7,7 @@ import appNamingService from './appNamingService.js'
 import colorThemeService from './colorThemeService.js'
 import appValidationService from './appValidationService.js'
 import explanationService from './explanationService.js'
+import { detectSupportedLanguage } from '../data/supportedLanguages'
 
 class CloudAIService {
   constructor() {
@@ -654,18 +655,10 @@ class CloudAIService {
 
   // Detect target programming language
   detectTargetLanguage(prompt) {
-    const promptString = typeof prompt === 'string' ? prompt : JSON.stringify(prompt)
-    const lowerPrompt = promptString.toLowerCase()
-    
-    if (lowerPrompt.includes('python')) return 'python'
-    if (lowerPrompt.includes('javascript') || lowerPrompt.includes('js')) return 'javascript'
-    if (lowerPrompt.includes('react')) return 'react'
-    if (lowerPrompt.includes('vue')) return 'vue'
-    if (lowerPrompt.includes('angular')) return 'angular'
-    if (lowerPrompt.includes('html')) return 'html'
-    if (lowerPrompt.includes('css')) return 'css'
-    
-    return 'html' // Default to HTML
+    return detectSupportedLanguage(
+      typeof prompt === 'string' ? prompt : JSON.stringify(prompt),
+      'html'
+    )
   }
 
   // Generate specific code based on analysis using AI

@@ -8,9 +8,7 @@ import {
   Smartphone, 
   Globe, 
   Gamepad2,
-  Zap,
   Star,
-  Clock,
   FileText
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
@@ -25,11 +23,16 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
 
   const categories = [
     { id: 'all', name: 'All Templates', icon: Sparkles, color: 'text-purple-500' },
+    { id: 'starter-templates', name: 'Starters', icon: Globe, color: 'text-cyan-500' },
     { id: 'web-apps', name: 'Web Apps', icon: Globe, color: 'text-blue-500' },
     { id: 'mobile-apps', name: 'Mobile Apps', icon: Smartphone, color: 'text-green-500' },
     { id: 'games', name: 'Games', icon: Gamepad2, color: 'text-orange-500' },
+    { id: 'code-features', name: 'Features', icon: Code, color: 'text-emerald-500' },
+    { id: 'designs', name: 'Designs', icon: Sparkles, color: 'text-pink-500' },
     { id: 'tools', name: 'Tools', icon: Code, color: 'text-gray-500' }
   ]
+  const backgroundAssetCategories = ['app-icons', 'favicons', 'image-generator']
+  const isBackgroundAssetTemplate = (template) => backgroundAssetCategories.includes(template.category)
 
   const [templates, setTemplates] = useState([])
   const [popularTemplates, setPopularTemplates] = useState([])
@@ -44,8 +47,8 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
           simpleAIService.getAllTemplates(),
           simpleAIService.getPopularTemplates()
         ])
-        setTemplates(allTemplates)
-        setPopularTemplates(popular)
+        setTemplates(allTemplates.filter((template) => !isBackgroundAssetTemplate(template)))
+        setPopularTemplates(popular.filter((template) => !isBackgroundAssetTemplate(template)))
       } catch (error) {
         console.error('Failed to load templates:', error)
         toast.error('Failed to load templates')
@@ -63,8 +66,9 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
     const matchesSearch = template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          template.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory
-    return matchesSearch && matchesCategory
+    return !isBackgroundAssetTemplate(template) && matchesSearch && matchesCategory
   })
+  const visibleTemplates = filteredTemplates.slice(0, 300)
 
   const handleTemplateClick = async (template) => {
     setIsGenerating(true)
@@ -295,7 +299,7 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredTemplates.map((template) => {
+                  {visibleTemplates.map((template) => {
                     const Icon = getCategoryIcon(template.category)
                     const colorClass = getCategoryColor(template.category)
                     return (
@@ -326,6 +330,11 @@ const TemplateSelector = ({ onTemplateSelect, isVisible, onClose }) => {
                       </motion.button>
                     )
                   })}
+                  {filteredTemplates.length > visibleTemplates.length && (
+                    <div className="md:col-span-2 lg:col-span-3 rounded-lg border border-dashed border-border bg-muted/40 p-4 text-center text-sm text-muted-foreground">
+                      Showing the first {visibleTemplates.length} of {filteredTemplates.length} templates. Search or choose a category to narrow the catalog.
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -1,14 +1,7 @@
 // Incremental Development Service
 // Handles adding features to existing apps without rebuilding everything
 
-// Dynamic import to avoid circular dependencies and reduce bundle size
-let conversationService = null
-const getConversationService = async () => {
-  if (!conversationService) {
-    conversationService = (await import('./conversationService.js')).default
-  }
-  return conversationService
-}
+import cloudAIService from './cloudAIService.js'
 
 class IncrementalDevelopmentService {
   constructor() {
@@ -221,9 +214,6 @@ class IncrementalDevelopmentService {
     
     // Use AI to generate the fix
     try {
-      // Import cloudAIService to use AI generation
-      const { default: cloudAIService } = await import('./cloudAIService.js')
-      
       const aiResponse = await cloudAIService.callHuggingFaceAPI(
         'codellama/CodeLlama-7b-Python-hf',
         bugFixPrompt,

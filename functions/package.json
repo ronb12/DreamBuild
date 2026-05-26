@@ -1,0 +1,20 @@
+{
+  "name": "dreambuild-backend",
+  "version": "1.0.0",
+  "description": "DreamBuild fast backend API and cloud toolchain runner queue",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "node --check src/index.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.5.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "private": true
+}

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import deploymentService from '../services/deploymentService'
+import { supportedLanguages } from '../data/supportedLanguages'
 
 const FileManager = () => {
   const { currentProject, switchFile, updateFile, saveProject, createNewProject, updateConfig } = useProject()
@@ -29,7 +30,7 @@ const FileManager = () => {
   const [showProjectDialog, setShowProjectDialog] = useState(false)
   const [showDeployDialog, setShowDeployDialog] = useState(false)
   const [isDeploying, setIsDeploying] = useState(false)
-  const [deploymentPlatform, setDeploymentPlatform] = useState('firebase')
+  const [deploymentPlatform, setDeploymentPlatform] = useState('dreambuild')
   const [deployToBoth, setDeployToBoth] = useState(false)
   const [projectName, setProjectName] = useState('')
   const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, filename: '' })
@@ -49,8 +50,11 @@ const FileManager = () => {
   }
 
   const getFileIcon = (filename) => {
+    if (isImageFile(filename)) return '🖼️'
     return fileIcons[filename] || '📄'
   }
+
+  const isImageFile = (filename) => /\.(png|jpe?g|gif|webp|svg|bmp|ico)$/i.test(filename)
 
   const getFileStatus = (filename) => {
     const content = currentProject.files[filename]
@@ -190,16 +194,21 @@ const FileManager = () => {
   }
 
   const handleFileUpload = (event) => {
-    const file = event.target.files[0]
-    if (file) {
+    const files = Array.from(event.target.files || [])
+    files.forEach((file, index) => {
       const reader = new FileReader()
       reader.onload = (e) => {
         updateFile(file.name, e.target.result)
-        switchFile(file.name)
+        if (index === 0) switchFile(file.name)
         toast.success(`Uploaded ${file.name}`)
       }
-      reader.readAsText(file)
-    }
+      if (isImageFile(file.name)) {
+        reader.readAsDataURL(file)
+      } else {
+        reader.readAsText(file)
+      }
+    })
+    event.target.value = ''
   }
 
   const handleDeploy = async () => {
@@ -250,7 +259,9 @@ const FileManager = () => {
         // Deploy to single platform
         let result
         
-        if (deploymentPlatform === 'firebase') {
+        if (deploymentPlatform === 'dreambuild') {
+          result = await deploymentService.deployToDreamBuild(enhancedProject, projectName)
+        } else if (deploymentPlatform === 'firebase') {
           result = await deploymentService.deployToFirebase(enhancedProject, projectName)
         } else if (deploymentPlatform === 'github') {
           result = await deploymentService.deployToGitHub(enhancedProject, projectName)
@@ -390,6 +401,7 @@ ${Object.keys(currentProject.files).join('\n')}
 
 This project was deployed using DreamBuild's deployment system:
 
+- **DreamBuild Hosting**: Branded hosted app route with deployment records and view tracking
 - **Firebase Hosting**: Instant deployment with CDN and SSL
 - **GitHub Pages**: Free hosting for public repositories
 
@@ -650,7 +662,7 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
           <input
             type="file"
             className="hidden"
-            accept=".html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.py,.java,.cpp,.c"
+            accept=".html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.py,.java,.cpp,.c,.png,.jpg,.jpeg,.gif,.webp,.svg,.bmp,.ico"
             onChange={handleFileUpload}
             multiple
           />
@@ -771,35 +783,15 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                     onChange={(e) => updateConfig({ language: e.target.value })}
                     className="w-full p-2 border border-border rounded-md bg-background text-foreground"
                   >
-                    <option value="javascript">JavaScript</option>
-                    <option value="typescript">TypeScript</option>
-                    <option value="python">Python</option>
-                    <option value="java">Java</option>
-                    <option value="csharp">C#</option>
-                    <option value="cpp">C++</option>
-                    <option value="c">C</option>
-                    <option value="rust">Rust</option>
-                    <option value="go">Go</option>
-                    <option value="php">PHP</option>
-                    <option value="ruby">Ruby</option>
-                    <option value="swift">Swift</option>
-                    <option value="kotlin">Kotlin</option>
-                    <option value="dart">Dart</option>
-                    <option value="scala">Scala</option>
-                    <option value="html">HTML</option>
-                    <option value="css">CSS</option>
-                    <option value="sql">SQL</option>
-                    <option value="r">R</option>
-                    <option value="matlab">MATLAB</option>
-                    <option value="perl">Perl</option>
-                    <option value="lua">Lua</option>
-                    <option value="bash">Bash/Shell</option>
-                    <option value="powershell">PowerShell</option>
-                    <option value="yaml">YAML</option>
-                    <option value="json">JSON</option>
-                    <option value="xml">XML</option>
-                    <option value="markdown">Markdown</option>
+                    {supportedLanguages.map((language) => (
+                      <option key={language.value} value={language.value}>
+                        {language.label}
+                      </option>
+                    ))}
                   </select>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {supportedLanguages.length} programming and markup languages supported.
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Framework</label>
@@ -893,6 +885,22 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                     <label className="flex items-center gap-2 p-2 border border-border rounded-md hover:bg-muted cursor-pointer">
                       <input
                         type="radio"
+                        value="dreambuild"
+                        checked={deploymentPlatform === 'dreambuild'}
+                        onChange={(e) => setDeploymentPlatform(e.target.value)}
+                        className="text-white"
+                      />
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-blue-600 rounded flex items-center justify-center">
+                          <span className="text-white text-xs">D</span>
+                        </div>
+                        <span>DreamBuild Hosting</span>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center gap-2 p-2 border border-border rounded-md hover:bg-muted cursor-pointer">
+                      <input
+                        type="radio"
                         value="firebase"
                         checked={deploymentPlatform === 'firebase'}
                         onChange={(e) => setDeploymentPlatform(e.target.value)}
@@ -926,7 +934,14 @@ Created using DreamBuild's AI-powered development platform. Visit [dreambuild-20
                 <div className="p-3 bg-muted rounded-md">
                   <h4 className="text-sm font-medium mb-2">Platform Info</h4>
                   <div className="text-xs text-muted-foreground space-y-1">
-                    {deploymentPlatform === 'firebase' ? (
+                    {deploymentPlatform === 'dreambuild' ? (
+                      <>
+                        <p><strong>DreamBuild Hosting:</strong> Branded DreamBuild hosted app URLs</p>
+                        <p><strong>URL:</strong> {window.location.origin}/apps/your-app-id</p>
+                        <p><strong>Features:</strong> App records, view tracking, branded hosted route</p>
+                        <p><strong>Best for:</strong> Fast customer previews directly inside DreamBuild</p>
+                      </>
+                    ) : deploymentPlatform === 'firebase' ? (
                       <>
                         <p><strong>Firebase Hosting:</strong> Instant deployment with custom domain support</p>
                         <p><strong>Features:</strong> CDN, SSL, automatic HTTPS</p>

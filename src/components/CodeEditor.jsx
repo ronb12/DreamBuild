@@ -99,6 +99,18 @@ const CodeEditor = () => {
     }
   }
 
+  const isImageFile = (filename) => /\.(png|jpe?g|gif|webp|svg|bmp|ico)$/i.test(filename || '')
+
+  const getImageSource = () => {
+    const content = currentProject.files[currentProject.activeFile] || ''
+    if (!content) return ''
+    if (content.startsWith('data:image/')) return content
+    if (currentProject.activeFile?.toLowerCase().endsWith('.svg')) {
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(content)}`
+    }
+    return content
+  }
+
   const getLanguage = () => {
     const filename = currentProject.activeFile.toLowerCase()
     if (filename.endsWith('.js') || filename.endsWith('.jsx')) return 'javascript'
@@ -123,27 +135,31 @@ const CodeEditor = () => {
   }
 
   const getFileIcon = (filename) => {
+    if (isImageFile(filename)) return '🖼️'
     return fileIcons[filename] || '📄'
   }
+
+  const activeContent = currentProject.files[currentProject.activeFile] || ''
+  const activeFileIsImage = isImageFile(currentProject.activeFile)
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden"
+      className="dreambuild-code-editor h-full flex flex-col bg-card border border-border rounded-lg overflow-hidden"
       data-testid="code-editor"
     >
       {/* Editor Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border bg-muted/50">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 p-3 border-b border-border bg-muted/50">
+        <div className="flex min-w-0 items-center gap-2">
           <span className="text-lg">{getFileIcon(currentProject.activeFile)}</span>
-          <span className="font-medium text-sm">{currentProject.activeFile}</span>
-          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+          <span className="truncate text-sm font-medium">{currentProject.activeFile}</span>
+          <span className="shrink-0 rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
             {getLanguage()}
           </span>
         </div>
         
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <button
             onClick={handleSave}
             className="p-2 hover:bg-muted rounded-md transition-colors"
@@ -169,7 +185,7 @@ const CodeEditor = () => {
       </div>
 
       {/* Editor Content */}
-      <div className="flex-1 relative h-full min-h-[500px] editor-wrapper editor-panel">
+      <div className="dreambuild-code-editor-body flex-1 relative h-full min-h-0 editor-wrapper editor-panel">
         {editorError ? (
           <div className="flex flex-col items-center justify-center h-full text-center p-8">
             <div className="text-red-500 text-lg mb-4">⚠️ Editor Error</div>
@@ -185,8 +201,28 @@ const CodeEditor = () => {
               Reload Editor
             </button>
           </div>
+        ) : activeFileIsImage ? (
+          <div className="dreambuild-image-preview">
+            {getImageSource() ? (
+              <>
+                <div className="dreambuild-image-preview-frame">
+                  <img src={getImageSource()} alt={currentProject.activeFile} />
+                </div>
+                <div className="dreambuild-image-preview-meta">
+                  <span>{currentProject.activeFile}</span>
+                  <span>{activeContent.length} characters</span>
+                </div>
+              </>
+            ) : (
+              <div className="dreambuild-image-preview-empty">
+                <span>🖼️</span>
+                <strong>No Image Preview Yet</strong>
+                <p>Upload an image file or paste a data URL/SVG source to preview it here.</p>
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="monaco-editor-container editor-container code-editor" data-monaco="true" style={{ height: '500px', minHeight: '500px', width: '100%' }}>
+          <div className="monaco-editor-container editor-container code-editor" data-monaco="true" style={{ height: '100%', minHeight: '18rem', width: '100%' }}>
             {/* Textarea editor - no Monaco Editor to prevent console errors */}
             <div className="w-full h-full">
               <textarea
@@ -196,7 +232,7 @@ const CodeEditor = () => {
                 className="w-full h-full p-4 font-mono text-sm bg-background text-foreground border border-border rounded resize-none focus:outline-none focus:ring-2 focus:ring-primary/20"
                 placeholder={`Enter your ${getLanguage()} code here...`}
                 style={{ 
-                  minHeight: '500px',
+                  minHeight: '18rem',
                   fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
                   lineHeight: '1.5'
                 }}
@@ -207,19 +243,19 @@ const CodeEditor = () => {
       </div>
 
       {/* Editor Footer */}
-      <div className="flex items-center justify-between p-2 border-t border-border bg-muted/30 text-xs text-muted-foreground">
-        <div className="flex items-center gap-4">
+      <div className="dreambuild-code-editor-footer flex flex-wrap items-center justify-between gap-2 p-2 border-t border-border bg-muted/30 text-xs text-muted-foreground">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <span>Line 1</span>
           <span>Column 1</span>
-          <span>{currentProject.files[currentProject.activeFile]?.length || 0} characters</span>
+          <span>{activeContent.length} characters</span>
           {isEditorReady && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 whitespace-nowrap">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span className="text-green-600">Editor Ready</span>
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
           <span>Ctrl+S to save</span>
           <span>•</span>
           <span>Ctrl+C to copy</span>

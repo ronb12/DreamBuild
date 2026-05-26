@@ -5,6 +5,7 @@ import CodeEditor from './CodeEditor'
 import Preview from './Preview'
 // import PreviewSimple from './PreviewSimple' // Component not found, using Preview instead
 import AIPromptSimplified from './AIPromptSimplified'
+import BackgroundSelfRepair from './BackgroundSelfRepair'
 import ConversationalAI from './ai/ConversationalAI'
 import IntegratedWorkspace from './IntegratedWorkspace'
 import TemplateSelector from './TemplateSelector'
@@ -18,6 +19,7 @@ import multiWindowService from '../services/multiWindowService'
 const WindowAwareAIBuilder = ({ windowId, project, activeTab, onProjectUpdate, onTabChange }) => {
   const { currentProject, updateFile, switchFile, updateConfig } = useProject()
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(false)
+  const [isDeveloperWorkspaceOpen, setIsDeveloperWorkspaceOpen] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
 
   // Use window project if provided, otherwise use current project
@@ -33,10 +35,13 @@ const WindowAwareAIBuilder = ({ windowId, project, activeTab, onProjectUpdate, o
   ]
 
   const handleTabClick = (tabId) => {
+    setIsDeveloperWorkspaceOpen(true)
+
     if (tabId === 'workspace') {
       // Toggle workspace visibility
       if (windowActiveTab === 'workspace' && isWorkspaceVisible) {
         setIsWorkspaceVisible(false)
+        setIsDeveloperWorkspaceOpen(false)
         onTabChange?.('editor') // Switch back to editor when hiding
       } else {
         setIsWorkspaceVisible(true)
@@ -110,6 +115,8 @@ const WindowAwareAIBuilder = ({ windowId, project, activeTab, onProjectUpdate, o
 
   return (
     <div className="h-full bg-background flex flex-col">
+      <BackgroundSelfRepair />
+
       {/* Enhanced Header Bar */}
       <div className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-card/95 to-background/95 backdrop-blur-xl border-b border-border/60 shadow-lg shadow-primary/5 mt-16">
         {/* Left Side - Title and Template Button */}
@@ -120,7 +127,7 @@ const WindowAwareAIBuilder = ({ windowId, project, activeTab, onProjectUpdate, o
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">AI Builder</h1>
-              <p className="text-xs text-muted-foreground">Build with artificial intelligence</p>
+              <p className="text-xs text-muted-foreground">Describe what you want. DreamBuild handles the technical parts.</p>
               <div className="hidden">
                 {/* Hidden text for automated testing - Advanced Editor Features */}
                 <span>Advanced Editor with Monaco Editor integration</span>
@@ -157,78 +164,106 @@ const WindowAwareAIBuilder = ({ windowId, project, activeTab, onProjectUpdate, o
         </div>
 
         {/* Right Side - Enhanced Tab Navigation */}
-        <div className="flex items-center gap-1 bg-muted/40 p-1.5 rounded-2xl border border-border/60 shadow-inner">
-          {tabs.map((tab) => {
-            const Icon = tab.icon
-            const isActive = windowActiveTab === tab.id
-            return (
-              <motion.button
-                key={tab.id}
-                onClick={() => handleTabClick(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-                }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                title={tab.description}
-              >
-                <Icon className="h-4 w-4" />
-                {tab.label}
-              </motion.button>
-            )
-          })}
+        <div className="flex items-center gap-3">
+          {isDeveloperWorkspaceOpen && (
+            <div className="flex items-center gap-1 bg-muted/40 p-1.5 rounded-2xl border border-border/60 shadow-inner">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                const isActive = windowActiveTab === tab.id
+                return (
+                  <motion.button
+                    key={tab.id}
+                    onClick={() => handleTabClick(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground shadow-md'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    title={tab.description}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {tab.label}
+                  </motion.button>
+                )
+              })}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              setIsDeveloperWorkspaceOpen((current) => {
+                const next = !current
+                if (!next) {
+                  setIsWorkspaceVisible(false)
+                  onTabChange?.('editor')
+                }
+                return next
+              })
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/35 bg-primary/10 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+          >
+            <Code className="h-4 w-4" />
+            {isDeveloperWorkspaceOpen ? 'Hide Developer Workspace' : 'Show Developer Workspace'}
+          </button>
         </div>
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden p-4">
-        <ResizablePanelGroup direction="horizontal" className="h-full w-full rounded-2xl border border-border/60 shadow-xl shadow-primary/10">
-          {/* Left Panel - File Manager & Editor/Terminal/Preview */}
-          <ResizablePanel defaultSize={70} minSize={40}>
-            <ResizablePanelGroup direction="vertical">
-              {/* Top Panel - File Manager */}
-              <ResizablePanel defaultSize={15} minSize={10} maxSize={25}>
-                <div className="h-full bg-card/80 backdrop-blur-sm border-b border-border/60 rounded-t-2xl shadow-inner overflow-hidden">
-                  <FileManager 
-                    project={windowProject}
-                    onFileSwitch={handleFileSwitch}
-                    onFileUpdate={handleFileUpdate}
-                  />
-                </div>
+        <ResizablePanelGroup
+          direction="horizontal"
+          className={`h-full w-full rounded-2xl border border-border/60 shadow-xl shadow-primary/10 ${isDeveloperWorkspaceOpen ? '' : 'dreambuild-ai-first-layout'}`}
+        >
+          {isDeveloperWorkspaceOpen && (
+            <>
+              {/* Left Panel - File Manager & Editor/Terminal/Preview */}
+              <ResizablePanel defaultSize={62} minSize={40} className="dreambuild-primary-workspace-panel">
+                <ResizablePanelGroup direction="vertical">
+                  {/* Top Panel - File Manager */}
+                  <ResizablePanel defaultSize={15} minSize={10} maxSize={25}>
+                    <div className="h-full bg-card/80 backdrop-blur-sm border-b border-border/60 rounded-t-2xl shadow-inner overflow-hidden">
+                      <FileManager
+                        project={windowProject}
+                        onFileSwitch={handleFileSwitch}
+                        onFileUpdate={handleFileUpdate}
+                      />
+                    </div>
+                  </ResizablePanel>
+                  <ResizableHandle withHandle />
+                  {/* Bottom Panel - Editor / Preview / Terminal */}
+                  <ResizablePanel defaultSize={85}>
+                    <div className="h-full bg-card/80 backdrop-blur-sm rounded-b-2xl shadow-lg shadow-primary/5 overflow-hidden">
+                      {windowActiveTab === 'editor' && (
+                        <CodeEditor
+                          project={windowProject}
+                          onFileUpdate={handleFileUpdate}
+                        />
+                      )}
+                      {windowActiveTab === 'preview' && (
+                        <Preview
+                          project={windowProject}
+                        />
+                      )}
+                      {windowActiveTab === 'terminal' && <Terminal />}
+                      {windowActiveTab === 'conversation' && (
+                        <ConversationalAI
+                          project={windowProject}
+                        />
+                      )}
+                      {windowActiveTab === 'workspace' && <IntegratedWorkspace />}
+                    </div>
+                  </ResizablePanel>
+                </ResizablePanelGroup>
               </ResizablePanel>
+
               <ResizableHandle withHandle />
-              {/* Bottom Panel - Editor / Preview / Terminal */}
-              <ResizablePanel defaultSize={85}>
-                <div className="h-full bg-card/80 backdrop-blur-sm rounded-b-2xl shadow-lg shadow-primary/5 overflow-hidden">
-                  {windowActiveTab === 'editor' && (
-                    <CodeEditor 
-                      project={windowProject}
-                      onFileUpdate={handleFileUpdate}
-                    />
-                  )}
-                  {windowActiveTab === 'preview' && (
-                    <Preview 
-                      project={windowProject}
-                    />
-                  )}
-                  {windowActiveTab === 'terminal' && <Terminal />}
-                  {windowActiveTab === 'conversation' && (
-                    <ConversationalAI 
-                      project={windowProject}
-                    />
-                  )}
-                  {windowActiveTab === 'workspace' && <IntegratedWorkspace />}
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
+            </>
+          )}
 
-          <ResizableHandle withHandle />
-
-          {/* Right Panel - Enhanced AI Assistant */}
-          <ResizablePanel defaultSize={30} minSize={15} maxSize={60}>
+          {/* AI Assistant */}
+          <ResizablePanel defaultSize={isDeveloperWorkspaceOpen ? 38 : 100} minSize={15} maxSize={100} className="dreambuild-assistant-panel">
             <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
               {/* Panel Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
@@ -243,11 +278,13 @@ const WindowAwareAIBuilder = ({ windowId, project, activeTab, onProjectUpdate, o
               </div>
 
               {/* Panel Content */}
-              <div className="flex-1 overflow-hidden">
-                <AIPromptSimplified 
-                  project={windowProject}
-                  onProjectUpdate={handleConfigUpdate}
-                />
+              <div className="flex-1 overflow-auto">
+                <div className="min-h-[32rem]">
+                  <AIPromptSimplified 
+                    project={windowProject}
+                    onProjectUpdate={handleConfigUpdate}
+                  />
+                </div>
               </div>
             </div>
           </ResizablePanel>

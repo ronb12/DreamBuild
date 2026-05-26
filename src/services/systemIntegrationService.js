@@ -1,3 +1,5 @@
+import executionConnectorService from './executionConnectorService'
+
 // src/services/systemIntegrationService.js
 
 class SystemIntegrationService {
@@ -51,6 +53,15 @@ class SystemIntegrationService {
   // Real Terminal Execution (Limited by Browser Security)
   async executeCommand(command) {
     try {
+      const connectorResult = await executionConnectorService.runTerminalCommand(command, {
+        source: 'system-integration-service',
+        requestedAt: new Date().toISOString()
+      });
+
+      if (connectorResult.success || connectorResult.status !== 'connector-required') {
+        return connectorResult;
+      }
+
       // Note: Due to browser security restrictions, we cannot execute real system commands
       // This is a limitation of web applications vs desktop applications
       
@@ -134,11 +145,11 @@ no changes added to commit (use "git add" and/or "git commit -a")`,
         };
         
       default:
-        return {
-          success: true,
-          output: `Command '${command}' executed successfully (simulated)`,
-          type: 'system'
-        };
+      return {
+        success: true,
+        output: `Command '${command}' requires DreamBuild Desktop or Cloud Runner for real execution. Showing browser-safe simulated output only.`,
+        type: 'system'
+      };
     }
   }
 
@@ -322,22 +333,28 @@ no changes added to commit (use "git add" and/or "git commit -a")`,
 
   // Browser Capabilities
   async getBrowserCapabilities() {
+    const connectorStatus = executionConnectorService.getStatus();
+
     return {
-      canExecuteSystemCommands: false,
-      canAccessFileSystem: false,
+      canExecuteSystemCommands: connectorStatus.realTerminalAvailable,
+      canAccessFileSystem: connectorStatus.desktopConnected,
       canAccessGitHub: true,
       canAccessFirebase: true,
-      canAccessTerminal: false,
-      canAccessProcesses: false,
+      canAccessTerminal: connectorStatus.realTerminalAvailable,
+      canAccessProcesses: connectorStatus.realTerminalAvailable,
+      canControlExternalBrowser: connectorStatus.fullBrowserControlAvailable,
+      canRunCompiledTargets: connectorStatus.compiledExecutionAvailable,
+      connectorMode: connectorStatus.mode,
       limitations: [
-        'Cannot execute real system commands (browser security)',
-        'Cannot access local file system directly',
-        'Cannot start/stop system processes',
-        'Cannot access system terminal directly',
+        connectorStatus.realTerminalAvailable ? null : 'Cannot execute real system commands until DreamBuild Desktop or Cloud Runner is connected',
+        connectorStatus.desktopConnected ? null : 'Cannot access local file system directly without DreamBuild Desktop',
+        connectorStatus.realTerminalAvailable ? null : 'Cannot start/stop system processes until a connector is available',
+        connectorStatus.fullBrowserControlAvailable ? null : 'Cannot control arbitrary external browser tabs until a connector is available',
         'Limited to web-based operations'
-      ],
+      ].filter(Boolean),
       alternatives: [
-        'Use integrated terminal for simulated commands',
+        'Connect DreamBuild Desktop for local terminal, file system, and browser control',
+        'Connect DreamBuild Cloud Runner for hosted terminal, browser automation, and compiled builds',
         'Use file manager for project file operations',
         'Use GitHub integration for repository management',
         'Use Firebase integration for cloud services'

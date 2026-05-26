@@ -50,6 +50,11 @@ export default defineConfig({
           if (id.includes('axios')) {
             return 'http-vendor'
           }
+
+          // Shared app data must stay out of component/service chunks to avoid circular startup imports.
+          if (id.includes('/src/data/')) {
+            return 'app-data'
+          }
           
           // App components (split by feature)
           if (id.includes('/src/components/')) {
@@ -100,7 +105,9 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 1000, // Increased limit for better chunking
+    // DreamBuild intentionally ships a heavy optional local-AI vendor chunk.
+    // The route/component chunks are already split; this keeps production builds warning-clean.
+    chunkSizeWarningLimit: 6500,
     target: 'esnext',
     cssCodeSplit: true
   },

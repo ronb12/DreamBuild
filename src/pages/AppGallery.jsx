@@ -147,8 +147,8 @@ const AppGallery = () => {
         }, 5000)
       }
     } catch (error) {
-      console.error('❌ Error loading apps:', error)
-      toast.error('Failed to load apps')
+      console.warn('Gallery apps unavailable; showing empty gallery:', error)
+      toast.error('Gallery is temporarily unavailable')
       // Set empty array as fallback
       setApps([])
     } finally {
@@ -164,7 +164,7 @@ const AppGallery = () => {
       console.log('✅ Loaded stats:', appStats)
       setStats(appStats)
     } catch (error) {
-      console.error('❌ Error loading stats:', error)
+      console.warn('Gallery stats unavailable; using safe defaults:', error)
       // Set default stats as fallback
       setStats({
         totalApps: 0,
@@ -181,8 +181,8 @@ const AppGallery = () => {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(app => 
-        app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        (app.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (app.tags || []).some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     }
 
@@ -424,7 +424,7 @@ const AppGallery = () => {
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No apps yet</h3>
                 <p className="text-gray-600 mb-4">Be the first to create an amazing app with DreamBuild AI!</p>
                 <a 
-                  href="/ai-builder" 
+                  href="#/ai-builder" 
                   className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <span>Create Your First App</span>

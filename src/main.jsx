@@ -1,5 +1,6 @@
 import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import App from './App.jsx'
 import './index.css'
 
 // CRITICAL: Ensure polyfills are loaded before any modules
@@ -85,20 +86,6 @@ function renderApp() {
   console.log('🎯 Root element:', rootElement)
 
   try {
-    // Try to load the full app first
-    loadFullApp(rootElement)
-  } catch (error) {
-    console.error('❌ Full app loading failed:', error)
-    // Fallback to simple app
-    loadSimpleApp(rootElement)
-  }
-}
-
-async function loadFullApp(rootElement) {
-  try {
-    // Dynamically import the full App component
-    const { default: App } = await import('./App.jsx')
-    
     createRoot(rootElement).render(
       <StrictMode>
         <App />
@@ -106,8 +93,8 @@ async function loadFullApp(rootElement) {
     )
     console.log('✅ Full React app rendered successfully!')
   } catch (error) {
-    console.error('❌ Full app import failed:', error)
-    throw error // Re-throw to trigger fallback
+    console.error('❌ Full app loading failed:', error)
+    loadSimpleApp(rootElement)
   }
 }
 

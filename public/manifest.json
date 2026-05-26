@@ -1,7 +1,7 @@
 {
   "name": "DreamBuild - Universal AI Development Platform",
   "short_name": "DreamBuild",
-  "description": "The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks.",
+  "description": "A universal AI-powered development platform for websites, apps, APIs, games, dashboards, and tools across 61+ languages and 100+ technologies.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

@@ -25,7 +25,8 @@ const AIChatInterface = ({
   textareaRef, 
   messagesEndRef,
   appExplanation,
-  setShowExplanation
+  setShowExplanation,
+  onFeedback
 }) => {
   const [expandedMessages, setExpandedMessages] = useState(new Set())
   const [isMinimized, setIsMinimized] = useState(false)
@@ -36,9 +37,14 @@ const AIChatInterface = ({
     }
   };
 
-  const handleFeedback = (messageId, type) => {
-    // Implement feedback logic here
-    toast.success(`Feedback ${type === 'up' ? 'sent' : 'sent'}`);
+  const handleFeedback = async (messageId, type) => {
+    const message = messages.find((item) => item.id === messageId)
+
+    if (onFeedback) {
+      await onFeedback(message, type)
+    }
+
+    toast.success(type === 'up' ? 'DreamBuild learned this was helpful' : 'DreamBuild will avoid that response pattern');
   };
 
   const toggleMessageExpansion = (messageId) => {
@@ -177,7 +183,7 @@ const AIChatInterface = ({
             <div className="bg-muted text-foreground rounded-2xl px-4 py-3">
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm">AI is thinking...</span>
+                <span className="text-sm">DreamBuild is thinking...</span>
               </div>
             </div>
           </motion.div>
@@ -194,7 +200,7 @@ const AIChatInterface = ({
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Describe what you want to build..."
+            placeholder="Describe any website, app, API, game, dashboard, mobile scaffold, or tool you want to build..."
             className="flex-1 min-h-[44px] max-h-32 px-4 py-3 bg-background border border-border rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
             disabled={isGenerating}
           />

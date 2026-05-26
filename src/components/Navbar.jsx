@@ -39,7 +39,7 @@ const Navbar = () => {
 
   const navigation = [
     { name: 'Home', href: '/', icon: Rocket },
-    { name: 'AI Builder', href: '/ai-builder', icon: Code },
+    { name: 'Builder', href: '/ai-builder', icon: Code },
     { name: 'Templates', href: '/templates', icon: Sparkles },
     { name: 'Gallery', href: '/gallery', icon: Grid },
     { name: 'Education', href: '/education', icon: BookOpen },
@@ -61,7 +61,7 @@ const Navbar = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold text-high-contrast">DreamBuild</span>
-              <span className="text-xs text-muted-foreground -mt-1">AI Development Platform</span>
+              <span className="text-xs text-muted-foreground -mt-1">Development Platform</span>
             </div>
           </Link>
 

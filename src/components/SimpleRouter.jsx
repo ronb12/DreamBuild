@@ -444,20 +444,30 @@ export function useLocation() {
   return location
 }
 
+const normalizeRoutePath = (path) => {
+  if (!path) return '/'
+  if (path.startsWith('#/')) return path.slice(1)
+  if (path.startsWith('#')) return path.slice(1) || '/'
+  if (path.startsWith('/')) return path
+  return `/${path}`
+}
+
 // Navigation function
 export const navigate = (path) => {
-  window.location.hash = path
+  window.location.hash = normalizeRoutePath(path)
 }
 
 // Simple Link component
-export const Link = ({ to, children, className, ...props }) => {
+export const Link = ({ to, href, children, className, ...props }) => {
+  const routePath = normalizeRoutePath(to || href)
+
   const handleClick = (e) => {
     e.preventDefault()
-    navigate(to)
+    navigate(routePath)
   }
 
   return React.createElement('a', {
-    href: `#${to}`,
+    href: `#${routePath}`,
     onClick: handleClick,
     className: className,
     ...props

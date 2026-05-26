@@ -9,6 +9,9 @@ class RealTimeWebBrowsingService {
     this.maxHistorySize = 50
     this.requestTimeout = 30000 // 30 seconds
     this.userAgent = 'DreamBuild-WebBrowser/1.0 (AI Development Platform)'
+    this.searchApiUrl = import.meta.env.VITE_DREAMBUILD_SEARCH_API_URL || ''
+    this.runnerUrl = import.meta.env.VITE_DREAMBUILD_RUNNER_URL || ''
+    this.cloudUrl = import.meta.env.VITE_DREAMBUILD_CLOUD_URL || ''
     
     // Real-Time Web Browsing Service initialized
   }
@@ -142,6 +145,15 @@ class RealTimeWebBrowsingService {
         }
       }
 
+      if (searchResults.length === 0) {
+        return {
+          success: false,
+          reason: this.getConnectorStatus().message,
+          searchQueries,
+          timestamp: new Date()
+        }
+      }
+
       // Combine and process results
       const contextualKnowledge = this.processContextualResults(searchResults, query, context)
 
@@ -259,46 +271,116 @@ class RealTimeWebBrowsingService {
     }
   }
 
-  // Perform actual web browsing (simulated for demo)
-  async performWebBrowsing(url, options) {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000))
+  getConnectorStatus() {
+    const endpoint = this.getSearchEndpoint()
 
-    // Simulate content extraction based on URL
-    const content = this.simulateWebContent(url)
-    
     return {
-      success: true,
-      content: content.text,
-      metadata: {
-        title: content.title,
-        description: content.description,
-        url: url,
-        domain: new URL(url).hostname,
-        contentType: content.type,
-        wordCount: content.wordCount,
-        language: content.language,
-        lastModified: new Date().toISOString()
-      },
-      summary: content.summary,
-      keyPoints: content.keyPoints
+      isConnected: Boolean(endpoint),
+      endpoint,
+      canCrawlArbitrarySites: Boolean(endpoint),
+      canUseSafePublicApis: true,
+      mode: endpoint ? 'dreambuild-search-api' : 'browser-safe-fallback',
+      message: endpoint
+        ? 'DreamBuild Search API connected for live search and server-side crawling.'
+        : 'Full live web search/crawling needs DreamBuild Cloud Runner or Search API. Browser-only mode can only use limited public APIs and curated sources.'
+    }
+  }
+
+  getSearchEndpoint() {
+    const base = this.searchApiUrl || this.runnerUrl || this.cloudUrl
+    return base ? base.replace(/\/$/, '') : ''
+  }
+
+  async requestSearchConnector(path, payload) {
+    const endpoint = this.getSearchEndpoint()
+    if (!endpoint) {
+      throw new Error(this.getConnectorStatus().message)
+    }
+
+    const response = await fetch(`${endpoint}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      throw new Error(`DreamBuild Search API returned ${response.status}`)
+    }
+
+    return response.json()
+  }
+
+  // Perform live web browsing through a connected runner/search API.
+  async performWebBrowsing(url, options) {
+    try {
+      const result = await this.requestSearchConnector('/crawl', {
+        url,
+        maxChars: options?.maxChars || 8000,
+        analysisType: options?.analysisType || 'general'
+      })
+
+      return {
+        success: Boolean(result.success || result.ok),
+        content: result.content || result.text || '',
+        metadata: result.metadata || {
+          title: result.title,
+          description: result.description,
+          url,
+          domain: new URL(url).hostname,
+          contentType: result.contentType || 'html',
+          wordCount: result.wordCount || 0,
+          language: result.language || 'unknown',
+          lastModified: result.lastModified || new Date().toISOString()
+        },
+        summary: result.summary || result.description || '',
+        keyPoints: result.keyPoints || []
+      }
+    } catch (error) {
+      return {
+        success: false,
+        reason: error.message,
+        requiresConnector: true,
+        url
+      }
     }
   }
 
   // Perform web search with live results
   async performWebSearch(query, options) {
-    // Simulate search delay
-    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200))
+    try {
+      const result = await this.requestSearchConnector('/search', {
+        query,
+        maxResults: options?.maxResults || 5,
+        categories: options?.categories || []
+      })
 
-    // Generate search results based on query
-    const results = this.generateSearchResults(query)
-    
-    return {
-      success: true,
-      results: results.items,
-      summary: results.summary,
-      keyPoints: results.keyPoints,
-      relatedQueries: results.relatedQueries
+      return {
+        success: Boolean(result.success || result.ok),
+        results: result.results || [],
+        summary: result.summary || '',
+        keyPoints: result.keyPoints || [],
+        relatedQueries: result.relatedQueries || [],
+        source: result.source || 'dreambuild-search-api'
+      }
+    } catch (error) {
+      const safeResult = await this.performBrowserSafeSearch(query, options)
+      if (safeResult.success) {
+        return safeResult
+      }
+
+      return {
+        success: false,
+        reason: error.message || this.getConnectorStatus().message,
+        requiresConnector: true,
+        results: [],
+        summary: this.getConnectorStatus().message,
+        keyPoints: [
+          'Connect VITE_DREAMBUILD_SEARCH_API_URL for live search.',
+          'Connect VITE_DREAMBUILD_RUNNER_URL or VITE_DREAMBUILD_CLOUD_URL for server-side crawling.',
+          'Browser-only apps cannot scrape arbitrary websites safely because of CORS, privacy, and site policy limits.'
+        ],
+        relatedQueries: []
+      }
     }
   }
 
@@ -320,25 +402,86 @@ class RealTimeWebBrowsingService {
 
   // Extract content from web page
   async performContentExtraction(url, analysisType) {
-    // Simulate content extraction
-    await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000))
+    const result = await this.performWebBrowsing(url, { analysisType })
 
-    const content = this.simulateWebContent(url)
-    
     return {
-      success: true,
-      content: content.text,
-      title: content.title,
-      description: content.description,
-      keyPoints: content.keyPoints,
-      metadata: {
-        url: url,
-        domain: new URL(url).hostname,
-        wordCount: content.wordCount,
-        language: content.language,
-        analysisType: analysisType
-      },
-      analysis: this.analyzeContent(content, analysisType)
+      ...result,
+      title: result.metadata?.title || '',
+      description: result.metadata?.description || result.summary || '',
+      analysis: result.success
+        ? this.analyzeContent({
+          text: result.content || '',
+          wordCount: result.metadata?.wordCount || 0,
+          language: result.metadata?.language || 'unknown'
+        }, analysisType)
+        : null
+    }
+  }
+
+  async performBrowserSafeSearch(query, options = {}) {
+    const lowerQuery = String(query || '').toLowerCase()
+
+    if (/(github|template|starter|repository|repo|code|react|javascript|node|python|api)/.test(lowerQuery)) {
+      try {
+        const response = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=${options.maxResults || 5}`)
+        if (!response.ok) throw new Error(`GitHub API returned ${response.status}`)
+        const data = await response.json()
+        const results = (data.items || []).slice(0, options.maxResults || 5).map((item) => ({
+          title: item.full_name,
+          url: item.html_url,
+          snippet: item.description || 'GitHub repository result',
+          source: 'GitHub public API',
+          relevance: 0.82,
+          stars: item.stargazers_count
+        }))
+
+        return {
+          success: results.length > 0,
+          source: 'github-public-api',
+          results,
+          summary: results.length > 0
+            ? 'Browser-safe GitHub public API results were found. Connect DreamBuild Search API for broader live web search and crawling.'
+            : 'No GitHub public API results found.',
+          keyPoints: ['Limited browser-safe public API result, not arbitrary website crawling.'],
+          relatedQueries: []
+        }
+      } catch (error) {
+        return { success: false, reason: error.message }
+      }
+    }
+
+    if (/(image|photo|graphic|illustration|icon|media)/.test(lowerQuery)) {
+      try {
+        const response = await fetch(`https://api.openverse.engineering/v1/images/?q=${encodeURIComponent(query)}&page_size=${options.maxResults || 5}`)
+        if (!response.ok) throw new Error(`Openverse API returned ${response.status}`)
+        const data = await response.json()
+        const results = (data.results || []).slice(0, options.maxResults || 5).map((item) => ({
+          title: item.title || 'Openverse image result',
+          url: item.foreign_landing_url || item.url,
+          snippet: `${item.license || 'License'} image from ${item.creator || item.source || 'Openverse'}`,
+          source: 'Openverse public API',
+          relevance: 0.78,
+          license: item.license
+        }))
+
+        return {
+          success: results.length > 0,
+          source: 'openverse-public-api',
+          results,
+          summary: results.length > 0
+            ? 'Browser-safe Openverse image results were found with license metadata. Connect DreamBuild Search API for broader live search and crawling.'
+            : 'No Openverse public API results found.',
+          keyPoints: ['Verify image licenses before embedding assets.'],
+          relatedQueries: []
+        }
+      } catch (error) {
+        return { success: false, reason: error.message }
+      }
+    }
+
+    return {
+      success: false,
+      reason: this.getConnectorStatus().message
     }
   }
 
@@ -895,8 +1038,8 @@ This demonstrates how DreamBuild can browse the web like ChatGPT, accessing real
     // Context-based searches
     if (context.techStack && context.techStack.length > 0) {
       context.techStack.forEach(tech => {
-        if (techKeywords[tech.toLowerCase()]) {
-          queries.push(...techKeywords[tech.toLowerCase()].slice(0, 1))
+        if (generalKeywords[tech.toLowerCase()]) {
+          queries.push(...generalKeywords[tech.toLowerCase()].slice(0, 1))
         }
       })
     }
@@ -1065,11 +1208,14 @@ This demonstrates how DreamBuild can browse the web like ChatGPT, accessing real
 
   // Get browsing statistics
   getBrowsingStats() {
+    const connectorStatus = this.getConnectorStatus()
+
     return {
       totalSessions: this.browsingHistory.length,
       isEnabled: this.isEnabled,
       currentSession: this.currentSession ? this.currentSession.id : null,
-      lastActivity: this.browsingHistory.length > 0 ? this.browsingHistory[0].timestamp : null
+      lastActivity: this.browsingHistory.length > 0 ? this.browsingHistory[0].timestamp : null,
+      connectorStatus
     }
   }
 }

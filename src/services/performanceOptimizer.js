@@ -46,6 +46,24 @@ class PerformanceOptimizer {
     const cached = this.codeCache.get(cacheKey);
     
     if (cached) {
+      if (!cached.metadata?.engineVersion) {
+        this.codeCache.delete(cacheKey);
+        console.log(`🧹 Removed legacy cache for: "${prompt}"`);
+        return null;
+      }
+
+      if (cached.metadata?.engineVersion && cached.code?.metadata?.engineVersion && cached.metadata.engineVersion !== cached.code.metadata.engineVersion) {
+        this.codeCache.delete(cacheKey);
+        console.log(`🧹 Removed stale cache for: "${prompt}"`);
+        return null;
+      }
+
+      if (cached.metadata?.engineVersion && cached.metadata.engineVersion !== 'prompt-aware-v6-autonomous') {
+        this.codeCache.delete(cacheKey);
+        console.log(`🧹 Removed old generator cache for: "${prompt}"`);
+        return null;
+      }
+
       cached.hits++;
       console.log(`⚡ Cache HIT for: "${prompt}" (${cached.hits} hits)`);
       return cached.code;
@@ -311,4 +329,3 @@ const performanceOptimizer = new PerformanceOptimizer();
 performanceOptimizer.preloadTemplates();
 
 export default performanceOptimizer;
-

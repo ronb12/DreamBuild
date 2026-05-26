@@ -1,8 +1,16 @@
 // Simple navigation utilities to replace React Router
 import React from 'react'
 
+const normalizeRoutePath = (path) => {
+  if (!path) return '/'
+  if (path.startsWith('#/')) return path.slice(1)
+  if (path.startsWith('#')) return path.slice(1) || '/'
+  if (path.startsWith('/')) return path
+  return `/${path}`
+}
+
 export const navigate = (path) => {
-  window.location.hash = path
+  window.location.hash = normalizeRoutePath(path)
 }
 
 // useNavigate hook
@@ -54,14 +62,16 @@ export const useLocation = () => {
 }
 
 // Simple Link component
-export const Link = ({ to, children, className, ...props }) => {
+export const Link = ({ to, href, children, className, ...props }) => {
+  const routePath = normalizeRoutePath(to || href)
+
   const handleClick = (e) => {
     e.preventDefault()
-    navigate(to)
+    navigate(routePath)
   }
 
   return React.createElement('a', {
-    href: `#${to}`,
+    href: `#${routePath}`,
     onClick: handleClick,
     className: className,
     ...props

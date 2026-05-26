@@ -19,7 +19,7 @@ const Terms = () => {
       icon: Code,
       title: 'Service Description',
       content: [
-        'DreamBuild is an AI-powered development platform supporting 100+ programming languages',
+        'DreamBuild is an AI-powered development platform supporting 61+ programming and markup languages plus 100+ technologies and project patterns',
         'We provide code generation, project management, and development tools',
         'Our service includes both free and premium features',
         'We may modify, suspend, or discontinue any part of our service at any time',
@@ -247,4 +247,3 @@ const Terms = () => {
 }
 
 export default Terms
-

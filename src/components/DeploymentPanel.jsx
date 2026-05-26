@@ -2,13 +2,15 @@
 // Provides one-click deployment to multiple hosting providers
 
 import React, { useState } from 'react'
+import deploymentService from '../services/deploymentService'
 
 const DeploymentPanel = ({ projectId, projectData, onDeploy }) => {
-  const [selectedProvider, setSelectedProvider] = useState('vercel')
+  const [selectedProvider, setSelectedProvider] = useState('dreambuild')
   const [isDeploying, setIsDeploying] = useState(false)
   const [deploymentStatus, setDeploymentStatus] = useState(null)
 
   const providers = [
+    { id: 'dreambuild', name: 'DreamBuild Hosting', icon: '✨', description: 'Native DreamBuild cloud hosting' },
     { id: 'vercel', name: 'Vercel', icon: '▲', description: 'Fast, global deployment' },
     { id: 'netlify', name: 'Netlify', icon: '🌐', description: 'JAMstack deployment' },
     { id: 'aws', name: 'AWS Amplify', icon: '☁️', description: 'Full-stack deployment' },
@@ -21,14 +23,18 @@ const DeploymentPanel = ({ projectId, projectData, onDeploy }) => {
     setDeploymentStatus('Deploying...')
     
     try {
-      // Simulate deployment
-      await new Promise(resolve => setTimeout(resolve, 3000))
-      
-      const result = {
-        success: true,
-        provider: selectedProvider,
-        url: `https://${projectId}.${selectedProvider}.com`,
-        deployedAt: new Date().toISOString()
+      let result
+
+      if (selectedProvider === 'dreambuild') {
+        result = await deploymentService.deployToDreamBuild(projectData, projectData?.name || projectId || 'dreambuild-app')
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        result = {
+          success: true,
+          provider: selectedProvider,
+          url: `https://${projectId}.${selectedProvider}.com`,
+          deployedAt: new Date().toISOString()
+        }
       }
       
       setDeploymentStatus('Deployed successfully!')

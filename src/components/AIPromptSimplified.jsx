@@ -21,19 +21,22 @@ import {
   Minimize2
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import simpleAIService from '../services/simpleAIService'
+import aiAgentService from '../services/aiAgentService'
+import conversationService from '../services/conversationService'
+import streamingService from '../services/streamingService'
+import realTimeWebBrowsingService from '../services/realTimeWebBrowsingService'
+import codeInjectionService from '../services/codeInjectionService'
+import adaptiveResponseService from '../services/adaptiveResponseService'
+import internetResearchService from '../services/internetResearchService'
+import dreamBuildDatabaseService from '../services/dreamBuildDatabaseService'
+import { exampleBuildPrompts } from '../data/builderCapabilities'
+import { supportedLanguages } from '../data/supportedLanguages'
 
 // Lazy load heavy components
 const AIModelSelector = lazy(() => import('./ai/AIModelSelector'))
 const AIChatInterface = lazy(() => import('./ai/AIChatInterface'))
 const StreamingResponse = lazy(() => import('./StreamingResponse'))
-
-// Lazy load services
-const simpleAIService = lazy(() => import('../services/simpleAIService'))
-const aiAgentService = lazy(() => import('../services/aiAgentService'))
-const conversationService = lazy(() => import('../services/conversationService'))
-const streamingService = lazy(() => import('../services/streamingService'))
-const realTimeWebBrowsingService = lazy(() => import('../services/realTimeWebBrowsingService'))
-const codeInjectionService = lazy(() => import('../services/codeInjectionService'))
 
 export default function AIPromptSimplified() {
   const { currentProject, updateFile, switchFile, updateConfig, addFilesToProject } = useProject()
@@ -48,7 +51,7 @@ export default function AIPromptSimplified() {
     {
       id: 'welcome',
       type: 'assistant',
-      content: 'Hello! I\'m your AI coding assistant. I can help you build applications, write code, debug issues, and answer questions. What would you like to create today?',
+      content: `Hello! I\'m DreamBuild. I can help you build websites, apps, APIs, games, dashboards, mobile scaffolds, and developer tools across ${supportedLanguages.length}+ programming and markup languages. What would you like to create today?`,
       timestamp: new Date()
     }
   ])
@@ -57,6 +60,7 @@ export default function AIPromptSimplified() {
   const [showAIAgent, setShowAIAgent] = useState(false)
   const [appExplanation, setAppExplanation] = useState(null)
   const [showExplanation, setShowExplanation] = useState(false)
+  const [learningSummary, setLearningSummary] = useState(adaptiveResponseService.getLearningSummary())
   
   // Streaming state
   const [isStreaming, setIsStreaming] = useState(false)
@@ -207,6 +211,17 @@ export default function AIPromptSimplified() {
       // Get conversation context for better AI responses
       console.log('🔍 Step 2: Getting conversation context...')
       const conversationContext = conversationService.getConversationContext()
+      const adaptiveContext = adaptiveResponseService.getAdaptiveContext(userPrompt)
+      const internetResearchPlan = internetResearchService.buildResearchPlan(userPrompt, {
+        appType: currentProject.appType || 'web',
+        techStack: currentProject.techStack || [],
+        features: currentProject.features || []
+      })
+      const dreamBuildDatabasePlan = dreamBuildDatabaseService.createDatabasePlan(userPrompt, {
+        appType: currentProject.appType || 'web',
+        techStack: currentProject.techStack || [],
+        features: currentProject.features || []
+      })
       console.log('✅ Conversation context retrieved')
       
       // Generate AI response with conversation context and web search results
@@ -220,6 +235,9 @@ export default function AIPromptSimplified() {
         existingProject: isIncremental ? currentProject : null,
         conversationContext: conversationContext,
         conversationHistory: conversationService.getConversationHistory(),
+        adaptiveLearning: adaptiveContext,
+        internetResearch: internetResearchPlan,
+        dreamBuildDatabase: dreamBuildDatabasePlan,
         webContext: webContext // Include web search results
       })
       console.log('✅ Step 3 Complete: Response received from simpleAIService')
@@ -314,6 +332,18 @@ export default function AIPromptSimplified() {
       // Save AI response to conversation
       console.log('💾 Saving AI response to conversation:', responseMessage)
       await conversationService.addMessage(responseMessage, response, 'assistant')
+      await adaptiveResponseService.recordInteraction({
+        projectId: currentProject.id,
+        prompt: userPrompt,
+        response,
+        context: {
+          appType: currentProject.appType || 'web',
+          isIncremental,
+          techStack: currentProject.techStack || [],
+          features: currentProject.features || []
+        }
+      })
+      setLearningSummary(adaptiveResponseService.getLearningSummary())
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -414,12 +444,29 @@ export default function AIPromptSimplified() {
       {
         id: 'welcome',
         type: 'assistant',
-        content: 'Hello! I\'m your AI coding assistant. I can help you build applications, write code, debug issues, and answer questions. What would you like to create today?',
+        content: `Hello! I\'m DreamBuild. I can help you build websites, apps, APIs, games, dashboards, mobile scaffolds, and developer tools across ${supportedLanguages.length}+ programming and markup languages. What would you like to create today?`,
         timestamp: new Date()
       }
     ])
     conversationService.clearConversation()
     toast.success('Chat cleared!')
+  }
+
+  const handleFeedback = async (message, rating) => {
+    await adaptiveResponseService.recordFeedback({
+      projectId: currentProject.id,
+      message,
+      rating,
+      activePrompt: prompt,
+      projectContext: {
+        name: currentProject.name,
+        appType: currentProject.appType || 'web',
+        techStack: currentProject.techStack || [],
+        features: currentProject.features || []
+      }
+    })
+
+    setLearningSummary(adaptiveResponseService.getLearningSummary())
   }
 
   // Handle corrections and improvements
@@ -455,20 +502,24 @@ export default function AIPromptSimplified() {
 
   
   return (
-    <div className="h-full w-full max-w-full flex flex-col bg-card/50 backdrop-blur-sm relative overflow-hidden">
+    <div className="dreambuild-ai-assistant h-full w-full max-w-full flex flex-col bg-card/50 backdrop-blur-sm relative overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border/50">
+      <div className="dreambuild-ai-assistant-header flex items-center justify-between p-4 border-b border-border/50">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-light rounded-lg flex items-center justify-center">
             <Bot className="h-4 w-4 text-primary-foreground" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">AI Assistant</h3>
-            <p className="text-xs text-muted-foreground">Powered by advanced AI models</p>
+            <h3 className="font-semibold text-foreground">DreamBuild Assistant</h3>
+            <p className="text-xs text-muted-foreground">Adaptive learning improves prompts over time</p>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
+          <div className="dreambuild-learning-badge flex items-center gap-1 px-2 py-1 rounded-lg text-xs">
+            <Sparkles className="h-3 w-3" />
+            <span>{learningSummary.feedbackCount || learningSummary.interactionCount ? 'Learning On' : 'Ready to Learn'}</span>
+          </div>
           <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs">
             <Zap className="h-3 w-3" />
             <span>Auto Stream</span>
@@ -489,7 +540,7 @@ export default function AIPromptSimplified() {
               }
             }}
             className="p-2 hover:bg-muted rounded-lg transition-colors"
-            title="Minimize AI Assistant"
+            title="Minimize Assistant"
           >
             <Minimize2 className="h-4 w-4 text-muted-foreground" />
           </button>
@@ -497,7 +548,7 @@ export default function AIPromptSimplified() {
       </div>
 
       {/* AI Model Selector */}
-      <div className="p-4 border-b border-border/50">
+      <div className="dreambuild-ai-model-row p-4 border-b border-border/50">
         <AIModelSelector 
           aiModel={aiModel}
           setAIModel={setAIModel}
@@ -518,32 +569,24 @@ export default function AIPromptSimplified() {
           messagesEndRef={messagesEndRef}
           appExplanation={appExplanation}
           setShowExplanation={setShowExplanation}
+          onFeedback={handleFeedback}
         />
         
         {/* Example Prompts - Show when only welcome message */}
         {messages.length === 1 && (
-          <div className="absolute bottom-4 left-4 right-4 z-10">
+          <div className="ai-prompt-examples px-4 pb-4">
             <div className="bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg">
-              <div className="text-xs text-muted-foreground mb-2">Try these examples:</div>
+              <div className="text-xs text-muted-foreground mb-2">Try a complete build request:</div>
               <div className="grid grid-cols-1 gap-2">
-                <button
-                  onClick={() => setPrompt('Create a React todo app with TypeScript')}
-                  className="text-left p-2 text-xs bg-muted/50 hover:bg-muted rounded-lg transition-colors"
-                >
-                  Create a React todo app with TypeScript
-                </button>
-                <button
-                  onClick={() => setPrompt('Build a REST API with Express and MongoDB')}
-                  className="text-left p-2 text-xs bg-muted/50 hover:bg-muted rounded-lg transition-colors"
-                >
-                  Build a REST API with Express and MongoDB
-                </button>
-                <button
-                  onClick={() => setPrompt('Create a landing page with Tailwind CSS')}
-                  className="text-left p-2 text-xs bg-muted/50 hover:bg-muted rounded-lg transition-colors"
-                >
-                  Create a landing page with Tailwind CSS
-                </button>
+                {adaptiveResponseService.getPromptSuggestions(exampleBuildPrompts).map((example) => (
+                  <button
+                    key={example}
+                    onClick={() => setPrompt(example)}
+                    className="text-left p-2 text-xs bg-muted/50 hover:bg-muted rounded-lg transition-colors"
+                  >
+                    {example}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -551,7 +594,7 @@ export default function AIPromptSimplified() {
         
         {/* Feature Recommendations - Overlay */}
         {aiRecommendations.length > 0 && (
-          <div className="absolute bottom-20 left-4 right-4 z-10">
+          <div className="ai-prompt-recommendations px-4 pb-4">
             <div className="bg-card/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg">
               <h3 className="text-sm font-medium text-muted-foreground mb-2">💡 Suggested Features</h3>
               <div className="space-y-2">

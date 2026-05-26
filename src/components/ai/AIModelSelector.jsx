@@ -260,7 +260,7 @@ const AIModelSelector = ({ aiModel, setAIModel, modelUpdateKey, setModelUpdateKe
       {/* Model Selector Button */}
       <button
         onClick={() => setShowModal(true)}
-        className="w-full p-3 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 transition-all duration-300 text-left flex items-center justify-between border border-primary/20 hover:border-primary/30"
+        className="ai-model-selector-trigger w-full p-3 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 transition-all duration-300 text-left flex items-center justify-between border border-primary/20 hover:border-primary/30"
       >
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-lg ${selectedModel.bgColor} flex items-center justify-center`}>

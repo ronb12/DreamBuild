@@ -6,7 +6,7 @@
     <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DreamBuild - Universal AI Development Platform</title>
-    <meta name="description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    <meta name="description" content="DreamBuild is a universal AI-powered development platform for websites, apps, APIs, games, dashboards, and tools across 61+ languages and 100+ technologies." />
     
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json?v=2.0.0" />
@@ -19,7 +19,7 @@
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="DreamBuild - Universal AI Development Platform" />
-    <meta property="og:description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    <meta property="og:description" content="A universal AI-powered development platform for websites, apps, APIs, games, dashboards, and tools across 61+ languages and 100+ technologies." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://dreambuild-2024-app.web.app" />
     <meta property="og:image" content="/icons/icon-512x512.png" />
@@ -27,7 +27,7 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="DreamBuild - Universal AI Development Platform" />
-    <meta name="twitter:description" content="The world's most advanced AI-powered development platform supporting 100+ programming languages across all platforms and frameworks." />
+    <meta name="twitter:description" content="A universal AI-powered development platform for websites, apps, APIs, games, dashboards, and tools across 61+ languages and 100+ technologies." />
     <meta name="twitter:image" content="/icons/icon-512x512.png" />
     
     <!-- Preload critical resources -->
@@ -80,6 +80,30 @@
         100% { transform: rotate(360deg); }
       }
     </style>
+    <script>
+      // Must run before Vite's production module entry, which is injected into <head>.
+      window.globalThis = window.globalThis || window;
+      window.global = window.global || window;
+      window.self = window.self || window;
+      if (!window.Request && typeof Request !== 'undefined') window.Request = Request;
+      if (!window.Headers && typeof Headers !== 'undefined') window.Headers = Headers;
+      if (!window.Response && typeof Response !== 'undefined') window.Response = Response;
+      if (!window.fetch && typeof fetch !== 'undefined') window.fetch = fetch.bind(window);
+      window.__dreambuildBootError = null;
+      window.__showDreamBuildBootError = function(error) {
+        window.__dreambuildBootError = error;
+        var root = document.getElementById('root');
+        if (!root) return;
+        var message = error && (error.stack || error.message || String(error));
+        root.innerHTML = '<div style="min-height:100vh;background:#0f172a;color:#e2e8f0;padding:32px;font-family:monospace;white-space:pre-wrap;"><h1 style="font-size:22px;margin-bottom:12px;">DreamBuild could not finish loading</h1><p style="margin-bottom:16px;color:#bfdbfe;">The app shell loaded, but the React bundle reported a startup error.</p><pre style="background:#020617;border:1px solid #334155;border-radius:12px;padding:16px;overflow:auto;">' + String(message || 'Unknown startup error').replace(/[&<>]/g, function(char) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[char]; }) + '</pre></div>';
+      };
+      window.addEventListener('error', function(event) {
+        window.__showDreamBuildBootError(event.error || event.message);
+      });
+      window.addEventListener('unhandledrejection', function(event) {
+        window.__showDreamBuildBootError(event.reason || 'Unhandled promise rejection');
+      });
+    </script>
   </head>
   <body>
     <div id="root">
@@ -89,18 +113,19 @@
       </div>
     </div>
     
-    <!-- Service Worker Registration -->
+    <!-- Clear old service workers/caches so the live app does not get trapped in a stale loading shell. -->
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-              console.log('DreamBuild SW registered:', registration);
-            })
-            .catch(error => {
-              console.log('DreamBuild SW registration failed:', error);
-            });
+          navigator.serviceWorker.getRegistrations()
+            .then(registrations => Promise.all(registrations.map(registration => registration.unregister())))
+            .catch(error => console.warn('DreamBuild SW cleanup skipped:', error));
         });
+      }
+      if ('caches' in window) {
+        caches.keys()
+          .then(keys => Promise.all(keys.map(key => caches.delete(key))))
+          .catch(error => console.warn('DreamBuild cache cleanup skipped:', error));
       }
     </script>
     
@@ -195,18 +220,6 @@
           if (typeof window !== 'undefined') window[name] = api;
         }
       });
-      
-      // CRITICAL: Override any destructuring attempts to prevent errors
-      const originalDefineProperty = Object.defineProperty;
-      Object.defineProperty = function(obj, prop, descriptor) {
-        if (prop === 'Request' || prop === 'Headers' || prop === 'Response' || prop === 'fetch') {
-          // Ensure the property exists before defining
-          if (!obj[prop]) {
-            obj[prop] = window[prop];
-          }
-        }
-        return originalDefineProperty.call(this, obj, prop, descriptor);
-      };
       
       console.log('✅ Essential APIs loaded immediately:', {
         Request: !!window.Request,

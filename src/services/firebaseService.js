@@ -287,6 +287,253 @@ class FirebaseService {
     }
   }
 
+  generateAppId(name = 'dreambuild-app') {
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 36) || 'dreambuild-app'
+    return `${slug}-${Date.now().toString(36)}`
+  }
+
+  async deployHostedApp(appData) {
+    await this.initialize()
+
+    const appId = appData.id || this.generateAppId(appData.name)
+    const appUrl = `${window.location.origin}/apps/${appId}`
+    const hostedApp = {
+      id: appId,
+      name: appData.name || 'DreamBuild App',
+      files: appData.files || {},
+      config: appData.config || {},
+      url: appUrl,
+      platform: 'dreambuild-hosting',
+      status: 'deployed',
+      views: 0,
+      userId: this.user?.uid || 'anonymous',
+      deployedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+
+    await setDoc(doc(this.db, 'hostedApps', appId), hostedApp)
+    await setDoc(doc(this.db, 'deployments', appId), {
+      ...hostedApp,
+      hostedURL: appUrl
+    })
+
+    return {
+      success: true,
+      appId,
+      url: appUrl,
+      platform: 'dreambuild-hosting',
+      appInfo: hostedApp
+    }
+  }
+
+  async getApp(appId) {
+    await this.initialize()
+
+    const appRef = doc(this.db, 'hostedApps', appId)
+    const appDoc = await getDoc(appRef)
+
+    if (!appDoc.exists()) {
+      return null
+    }
+
+    return {
+      id: appDoc.id,
+      ...appDoc.data()
+    }
+  }
+
+  normalizePublicApp(docSnapshot, source = 'apps') {
+    const data = docSnapshot.data()
+    const createdAt = data.createdAt || data.deployedAt || data.updatedAt || new Date().toISOString()
+
+    return {
+      id: docSnapshot.id,
+      name: data.name || data.appName || 'DreamBuild App',
+      description: data.description || data.summary || 'Created with DreamBuild',
+      url: data.url || data.hostedURL || data.deploymentUrl || `/apps/${docSnapshot.id}`,
+      tags: Array.isArray(data.tags) ? data.tags : [data.category || source].filter(Boolean),
+      views: Number(data.views || 0),
+      likes: Number(data.likes || 0),
+      isPublic: data.isPublic !== false,
+      createdAt,
+      updatedAt: data.updatedAt || createdAt,
+      source,
+      ...data
+    }
+  }
+
+  async queryPublicAppsFromCollection(collectionName, maxResults) {
+    const appsRef = collection(this.db, collectionName)
+    const queryAttempts = [
+      query(appsRef, where('isPublic', '==', true), orderBy('createdAt', 'desc'), limit(maxResults)),
+      query(appsRef, where('isPublic', '==', true), limit(maxResults)),
+      query(appsRef, orderBy('createdAt', 'desc'), limit(maxResults)),
+      query(appsRef, limit(maxResults))
+    ]
+
+    for (const queryAttempt of queryAttempts) {
+      try {
+        const snapshot = await getDocs(queryAttempt)
+        return snapshot.docs
+          .map((item) => this.normalizePublicApp(item, collectionName))
+          .filter((app) => app.isPublic !== false)
+      } catch (error) {
+        if (error.code === 'permission-denied') {
+          console.warn(`Public ${collectionName} query blocked by Firestore rules; trying fallback query.`)
+        } else {
+          console.warn(`Public ${collectionName} query failed; trying fallback query:`, error.message)
+        }
+      }
+    }
+
+    return []
+  }
+
+  async getPublicApps(maxResults = 50) {
+    try {
+      await this.initialize()
+
+      const apps = await this.queryPublicAppsFromCollection('apps', maxResults)
+      if (apps.length > 0) {
+        return apps.slice(0, maxResults)
+      }
+
+      const hostedApps = await this.queryPublicAppsFromCollection('hostedApps', maxResults)
+      return hostedApps.slice(0, maxResults)
+    } catch (error) {
+      console.warn('Public app gallery unavailable; returning empty app list:', error.message)
+      return []
+    }
+  }
+
+  async incrementViews(appId) {
+    try {
+      await this.initialize()
+      const app = await this.getApp(appId)
+      if (!app) return
+
+      await updateDoc(doc(this.db, 'hostedApps', appId), {
+        views: (app.views || 0) + 1,
+        lastViewedAt: new Date().toISOString()
+      })
+    } catch (error) {
+      console.warn('Failed to increment app views:', error)
+    }
+  }
+
+  generateAppHTML(appData) {
+    const files = appData.files || {}
+    const appName = appData.name || 'DreamBuild App'
+    const htmlFile = files['index.html'] || files['app.html'] || files['main.html']
+    const cssFile = files['style.css'] || files['styles.css'] || files['app.css'] || ''
+    const jsFile = files['script.js'] || files['app.js'] || files['main.js'] || ''
+
+    let html = htmlFile || this.generateFallbackAppHTML(appName)
+
+    if (cssFile && !html.includes(cssFile)) {
+      html = html.includes('</head>')
+        ? html.replace('</head>', `<style>${cssFile}</style></head>`)
+        : `<style>${cssFile}</style>${html}`
+    }
+
+    if (jsFile && !html.includes(jsFile)) {
+      html = html.includes('</body>')
+        ? html.replace('</body>', `<script>${jsFile}</script></body>`)
+        : `${html}<script>${jsFile}</script>`
+    }
+
+    if (!html.includes('<!DOCTYPE html>')) {
+      html = `<!DOCTYPE html>\n${html}`
+    }
+
+    if (!html.includes('name="viewport"')) {
+      html = html.replace('<head>', '<head><meta name="viewport" content="width=device-width, initial-scale=1.0">')
+    }
+
+    return html.replace('</body>', `
+      <div style="position:fixed;right:14px;bottom:14px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:8px 12px;font:600 12px system-ui;box-shadow:0 10px 30px rgba(15,23,42,.25)">
+        Hosted by <a href="https://dreambuild-2024-app.web.app" style="color:#7dd3fc;text-decoration:none">DreamBuild</a>
+      </div>
+    </body>`)
+  }
+
+  generateFallbackAppHTML(appName) {
+    return `<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${appName}</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: system-ui, sans-serif; color: white; background: linear-gradient(135deg, #0f172a, #2563eb); }
+    main { max-width: 680px; padding: 48px; text-align: center; border: 1px solid rgba(255,255,255,.18); border-radius: 28px; background: rgba(255,255,255,.1); box-shadow: 0 24px 80px rgba(15,23,42,.35); }
+    h1 { font-size: clamp(2rem, 7vw, 4rem); margin: 0 0 16px; }
+    p { color: rgba(255,255,255,.82); font-size: 1.1rem; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>${appName}</h1>
+    <p>This DreamBuild-hosted app is live. Add project files to customize this page.</p>
+  </main>
+</body>
+</html>`
+  }
+
+  async getAppStats() {
+    try {
+      await this.initialize()
+
+      const apps = await this.getPublicApps(200)
+
+      return {
+        totalApps: apps.length,
+        publicApps: apps.length,
+        totalViews: apps.reduce((sum, app) => sum + (app.views || 0), 0),
+        totalLikes: apps.reduce((sum, app) => sum + (app.likes || 0), 0),
+        apps
+      }
+    } catch (error) {
+      console.warn('App stats unavailable; using safe defaults:', error.message)
+      return {
+        totalApps: 0,
+        publicApps: 0,
+        totalViews: 0,
+        totalLikes: 0,
+        apps: []
+      }
+    }
+  }
+
+  async toggleLike(appId, userId = 'anonymous') {
+    try {
+      await this.initialize()
+
+      const collectionNames = ['apps', 'hostedApps']
+      for (const collectionName of collectionNames) {
+        const appRef = doc(this.db, collectionName, appId)
+        const appDoc = await getDoc(appRef)
+
+        if (appDoc.exists()) {
+          const currentLikes = Number(appDoc.data().likes || 0)
+          await updateDoc(appRef, {
+            likes: currentLikes + 1,
+            lastLikedAt: new Date().toISOString(),
+            lastLikedBy: userId
+          })
+          return true
+        }
+      }
+
+      return false
+    } catch (error) {
+      console.warn('Like update unavailable:', error.message)
+      return false
+    }
+  }
+
   // Get user's projects
   async getUserProjects() {
     try {

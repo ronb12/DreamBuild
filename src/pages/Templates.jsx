@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { 
   FileText, 
   Code, 
+  Image as ImageIcon,
   Globe, 
   Smartphone, 
   Database, 
@@ -47,6 +48,13 @@ const Templates = () => {
   // Template categories and data
   const templateCategories = [
     {
+      id: 'starter-templates',
+      name: 'Starter Templates',
+      icon: Rocket,
+      description: '300 ready-to-launch website and app starters',
+      color: 'from-cyan-500 to-blue-500'
+    },
+    {
       id: 'web-apps',
       name: 'Web Applications',
       icon: Globe,
@@ -59,6 +67,27 @@ const Templates = () => {
       icon: Smartphone,
       description: 'React Native and mobile applications',
       color: 'from-purple-500 to-pink-500'
+    },
+    {
+      id: 'games',
+      name: 'Game Templates',
+      icon: Zap,
+      description: '300 playable game starters and mechanics',
+      color: 'from-orange-500 to-amber-500'
+    },
+    {
+      id: 'code-features',
+      name: 'Code & Feature Blocks',
+      icon: Code,
+      description: '300 reusable production feature modules',
+      color: 'from-emerald-500 to-teal-500'
+    },
+    {
+      id: 'designs',
+      name: 'Design Directions',
+      icon: Sparkles,
+      description: '5,000 visual design systems, themes, and layouts',
+      color: 'from-pink-500 to-rose-500'
     },
     {
       id: 'landing-pages',
@@ -92,6 +121,8 @@ const Templates = () => {
 
   // Templates data (empty - no sample templates)
   const templates = []
+  const backgroundAssetCategories = ['app-icons', 'favicons', 'image-generator']
+  const isBackgroundAssetTemplate = (template) => backgroundAssetCategories.includes(template.category)
 
   // Load GitHub templates on component mount
   useEffect(() => {
@@ -125,7 +156,7 @@ const Templates = () => {
         // Step 4: Combine templates
         setLoadingProgress(80)
         setLoadingMessage('Processing templates...')
-        setAllTemplates([...templates, ...githubTemplates])
+        setAllTemplates([...templates, ...githubTemplates].filter((template) => !isBackgroundAssetTemplate(template)))
         
         // Step 5: Complete
         setLoadingProgress(100)
@@ -151,7 +182,7 @@ const Templates = () => {
         await new Promise(resolve => setTimeout(resolve, 200))
         setLoadingProgress(100)
         
-        setAllTemplates(templates)
+        setAllTemplates(templates.filter((template) => !isBackgroundAssetTemplate(template)))
         setTimeout(() => {
           setIsLoading(false)
         }, 500)
@@ -166,7 +197,7 @@ const Templates = () => {
     .filter(template => {
       const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory
       const matchesSearch = searchQuery === '' || 
-        template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (template.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (template.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (template.tags || []).some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       return matchesCategory && matchesSearch
@@ -174,15 +205,16 @@ const Templates = () => {
     .sort((a, b) => {
       switch (sortBy) {
         case 'popularity':
-          return b.popularity - a.popularity
+          return (b.popularity || 0) - (a.popularity || 0)
         case 'newest':
           return new Date(b.createdAt) - new Date(a.createdAt)
         case 'name':
-          return a.name.localeCompare(b.name)
+          return (a.name || '').localeCompare(b.name || '')
         default:
           return 0
       }
     })
+  const visibleTemplates = filteredTemplates.slice(0, 300)
 
   const handleUseTemplate = async (template) => {
     try {
@@ -192,8 +224,8 @@ const Templates = () => {
       if (template.id.startsWith('github_')) {
         files = createGitHubTemplateFiles(template)
       } else {
-        // For local templates, use the existing files
-        files = template.files || {}
+        const { default: simpleAIService } = await import('../services/simpleAIService.js')
+        files = await simpleAIService.generateTemplateById(template.id)
       }
       
       addFilesToProject(files)
@@ -743,26 +775,21 @@ export default App`
           </div>
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTemplates.map((template, index) => (
+            {visibleTemplates.map((template, index) => (
               <motion.div
                 key={`${template.id}-${index}`}
                 data-template-id={template.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
+                transition={{ duration: 0.4, delay: Math.min(index * 0.02, 0.6) }}
+                className="bg-card border border-border rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 group"
               >
                 {/* Template Preview */}
-                <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted/30 relative overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                      <p className="text-sm text-muted-foreground">{template.name}</p>
-                    </div>
-                  </div>
+                <div className="relative">
+                  <TemplateVisualPreview template={template} />
                   <div className="absolute top-3 right-3">
-                    <div className="flex items-center gap-1 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-full text-xs">
-                      <Star className="h-3 w-3 text-warning fill-current" />
+                    <div className="flex items-center gap-1 rounded-full border border-white/25 bg-slate-950/55 px-2.5 py-1 text-xs font-semibold text-white shadow-lg backdrop-blur-md">
+                      <Star className="h-3 w-3 fill-yellow-300 text-yellow-300" />
                       <span>{template.popularity}%</span>
                     </div>
                   </div>
@@ -821,23 +848,28 @@ export default App`
                 </div>
               </motion.div>
             ))}
+            {filteredTemplates.length > visibleTemplates.length && (
+              <div className="md:col-span-2 lg:col-span-3 rounded-xl border border-dashed border-border bg-muted/40 p-5 text-center text-sm text-muted-foreground">
+                Showing the first {visibleTemplates.length} of {filteredTemplates.length} templates. Search or choose a category to narrow the catalog.
+              </div>
+            )}
           </div>
         ) : (
           /* List View */
           <div className="space-y-4">
-            {filteredTemplates.map((template, index) => (
+            {visibleTemplates.map((template, index) => (
               <motion.div
                 key={`${template.id}-list-${index}`}
                 data-template-id={template.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
+                transition={{ duration: 0.4, delay: Math.min(index * 0.015, 0.45) }}
                 className="bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
               >
                 <div className="flex items-center gap-6">
                   {/* Preview */}
-                  <div className="w-24 h-16 bg-gradient-to-br from-muted/50 to-muted/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <FileText className="h-6 w-6 text-muted-foreground" />
+                  <div className="flex-shrink-0">
+                    <TemplateVisualPreview template={template} compact />
                   </div>
 
                   {/* Content */}
@@ -893,6 +925,11 @@ export default App`
                 </div>
               </motion.div>
             ))}
+            {filteredTemplates.length > visibleTemplates.length && (
+              <div className="rounded-xl border border-dashed border-border bg-muted/40 p-5 text-center text-sm text-muted-foreground">
+                Showing the first {visibleTemplates.length} of {filteredTemplates.length} templates. Search or choose a category to narrow the catalog.
+              </div>
+            )}
           </div>
         )}
 
@@ -1046,6 +1083,9 @@ export default App`
                   </div>
                   
                   {/* Preview Content based on template type */}
+                  <div className="bg-slate-950 p-4">
+                    <TemplateVisualPreview template={previewTemplate} />
+                  </div>
                   <div className="p-8 min-h-[400px]">
                     {renderPreviewContent(previewTemplate)}
                   </div>
@@ -1118,15 +1158,331 @@ export default App`
   )
 }
 
+const getTemplateKind = (template) => {
+  const category = template.category || ''
+  const text = `${template.name || ''} ${template.description || ''} ${(template.tags || []).join(' ')}`.toLowerCase()
+
+  if (category === 'games' || text.includes('game') || text.includes('arcade') || text.includes('runner') || text.includes('puzzle')) return 'game'
+  if (category === 'designs' || text.includes('design') || text.includes('theme') || text.includes('layout')) return 'design'
+  if (category === 'app-icons' || text.includes('app icon') || text.includes('launcher icon')) return 'appIcon'
+  if (category === 'favicons' || text.includes('favicon') || text.includes('browser tab')) return 'favicon'
+  if (category === 'image-generator' || text.includes('image') || text.includes('graphic') || text.includes('illustration')) return 'image'
+  if (category === 'code-features' || text.includes('feature') || text.includes('component') || text.includes('schema')) return 'feature'
+  if (category === 'ecommerce' || text.includes('store') || text.includes('checkout') || text.includes('commerce')) return 'commerce'
+  if (category === 'dashboards' || text.includes('dashboard') || text.includes('analytics') || text.includes('admin')) return 'dashboard'
+  if (category === 'mobile-apps' || text.includes('mobile') || text.includes('ios') || text.includes('android')) return 'mobile'
+  if (category === 'portfolio' || text.includes('portfolio') || text.includes('creator')) return 'portfolio'
+  if (category === 'landing-pages' || category === 'starter-templates' || text.includes('landing') || text.includes('website') || text.includes('site')) return 'starter'
+  return 'starter'
+}
+
+const TEMPLATE_VISUALS = {
+  starter: {
+    eyebrow: 'Launch Kit',
+    gradient: 'from-sky-500 via-blue-600 to-indigo-700',
+    accent: 'bg-cyan-300',
+    icon: Rocket,
+    palette: ['#38bdf8', '#2563eb', '#0f172a']
+  },
+  game: {
+    eyebrow: 'Playable Game',
+    gradient: 'from-orange-400 via-pink-500 to-violet-700',
+    accent: 'bg-yellow-300',
+    icon: Zap,
+    palette: ['#f97316', '#ec4899', '#7c3aed']
+  },
+  design: {
+    eyebrow: 'Design System',
+    gradient: 'from-fuchsia-500 via-rose-500 to-amber-400',
+    accent: 'bg-white',
+    icon: Palette,
+    palette: ['#d946ef', '#f43f5e', '#f59e0b']
+  },
+  appIcon: {
+    eyebrow: 'Icon Kit',
+    gradient: 'from-blue-500 via-cyan-400 to-emerald-400',
+    accent: 'bg-white',
+    icon: ImageIcon,
+    palette: ['#3b82f6', '#22d3ee', '#34d399']
+  },
+  favicon: {
+    eyebrow: 'Browser Kit',
+    gradient: 'from-yellow-300 via-orange-500 to-red-600',
+    accent: 'bg-white',
+    icon: Star,
+    palette: ['#fde047', '#f97316', '#dc2626']
+  },
+  image: {
+    eyebrow: 'Generated Visual',
+    gradient: 'from-rose-500 via-purple-600 to-indigo-700',
+    accent: 'bg-pink-200',
+    icon: ImageIcon,
+    palette: ['#f43f5e', '#9333ea', '#4338ca']
+  },
+  feature: {
+    eyebrow: 'Feature Block',
+    gradient: 'from-emerald-400 via-teal-500 to-slate-800',
+    accent: 'bg-lime-300',
+    icon: Code,
+    palette: ['#34d399', '#14b8a6', '#1e293b']
+  },
+  commerce: {
+    eyebrow: 'Storefront',
+    gradient: 'from-amber-400 via-orange-500 to-red-600',
+    accent: 'bg-white',
+    icon: ShoppingCart,
+    palette: ['#fbbf24', '#f97316', '#dc2626']
+  },
+  dashboard: {
+    eyebrow: 'Command Center',
+    gradient: 'from-indigo-500 via-blue-600 to-slate-900',
+    accent: 'bg-cyan-300',
+    icon: BarChart3,
+    palette: ['#6366f1', '#2563eb', '#0f172a']
+  },
+  mobile: {
+    eyebrow: 'Mobile Flow',
+    gradient: 'from-purple-500 via-violet-600 to-slate-900',
+    accent: 'bg-violet-200',
+    icon: Smartphone,
+    palette: ['#a855f7', '#7c3aed', '#111827']
+  },
+  portfolio: {
+    eyebrow: 'Portfolio',
+    gradient: 'from-indigo-400 via-purple-500 to-pink-500',
+    accent: 'bg-white',
+    icon: Users,
+    palette: ['#818cf8', '#a855f7', '#ec4899']
+  }
+}
+
+const getTemplateVisual = (template) => TEMPLATE_VISUALS[getTemplateKind(template)] || TEMPLATE_VISUALS.starter
+
+const getTemplateGradientStyle = (template) => {
+  const visual = getTemplateVisual(template)
+  return {
+    background: `linear-gradient(135deg, ${visual.palette[0]} 0%, ${visual.palette[1]} 48%, ${visual.palette[2]} 100%)`
+  }
+}
+
+const renderMiniPreviewPattern = (template) => {
+  const kind = getTemplateKind(template)
+  const visual = getTemplateVisual(template)
+  const Icon = visual.icon
+
+  if (kind === 'game') {
+    return (
+      <div className="absolute inset-4 rounded-2xl border border-white/20 bg-slate-950/55 p-3 shadow-2xl">
+        <div className="mb-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.18em] text-white/80">
+          <span>Level 03</span>
+          <span>Score 8,420</span>
+        </div>
+        <div className="relative h-24 overflow-hidden rounded-xl bg-slate-900/80">
+          <div className="absolute left-4 top-5 h-5 w-5 rounded-md bg-yellow-300 shadow-[0_0_24px_rgba(250,204,21,.8)]" />
+          <div className="absolute left-14 top-12 h-7 w-7 rounded-full bg-cyan-300 shadow-[0_0_24px_rgba(103,232,249,.7)]" />
+          <div className="absolute right-6 top-7 h-10 w-10 rotate-45 rounded-lg bg-pink-400" />
+          <div className="absolute bottom-3 left-3 right-3 h-2 rounded-full bg-white/20" />
+        </div>
+      </div>
+    )
+  }
+
+  if (kind === 'appIcon' || kind === 'favicon' || kind === 'image') {
+    return (
+      <div className="absolute inset-4 grid grid-cols-[0.9fr_1.1fr] gap-3">
+        <div className="grid place-items-center rounded-[1.6rem] border border-white/25 bg-white/20 shadow-2xl backdrop-blur-md">
+          <div className="grid h-20 w-20 place-items-center rounded-3xl bg-white text-slate-950 shadow-xl">
+            <Icon className="h-10 w-10" />
+          </div>
+        </div>
+        <div className="space-y-2 rounded-2xl border border-white/20 bg-slate-950/40 p-3">
+          <div className="h-3 w-20 rounded-full bg-white/80" />
+          <div className="h-3 w-28 rounded-full bg-white/45" />
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {visual.palette.map((color) => (
+              <div key={color} className="h-9 rounded-xl border border-white/20" style={{ backgroundColor: color }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (kind === 'dashboard' || kind === 'feature') {
+    return (
+      <div className="absolute inset-4 rounded-2xl border border-white/20 bg-slate-950/45 p-3 shadow-2xl">
+        <div className="mb-3 flex gap-2">
+          <div className="h-16 flex-1 rounded-xl bg-white/90" />
+          <div className="h-16 flex-1 rounded-xl bg-cyan-300/85" />
+          <div className="h-16 flex-1 rounded-xl bg-emerald-300/85" />
+        </div>
+        <div className="grid grid-cols-[1.2fr_0.8fr] gap-3">
+          <div className="h-20 rounded-xl bg-white/15 p-3">
+            <div className="h-full rounded-lg bg-gradient-to-tr from-white/20 via-white/70 to-white/20" />
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 rounded-full bg-white/75" />
+            <div className="h-4 rounded-full bg-white/45" />
+            <div className="h-4 rounded-full bg-white/25" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (kind === 'mobile') {
+    return (
+      <div className="absolute inset-0 grid place-items-center">
+        <div className="h-40 w-24 rounded-[1.6rem] border-[5px] border-slate-950 bg-white p-2 shadow-2xl">
+          <div className="mb-2 h-14 rounded-2xl" style={getTemplateGradientStyle(template)} />
+          <div className="space-y-1.5">
+            <div className="h-3 rounded-full bg-slate-200" />
+            <div className="h-3 w-3/4 rounded-full bg-slate-200" />
+            <div className="grid grid-cols-2 gap-1.5 pt-2">
+              <div className="h-8 rounded-lg bg-violet-100" />
+              <div className="h-8 rounded-lg bg-cyan-100" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="absolute inset-4 rounded-2xl border border-white/20 bg-white/15 p-3 shadow-2xl backdrop-blur-sm">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="h-4 w-24 rounded-full bg-white/80" />
+        <div className="flex gap-1.5">
+          <div className="h-5 w-10 rounded-full bg-white/25" />
+          <div className="h-5 w-10 rounded-full bg-white/25" />
+        </div>
+      </div>
+      <div className="grid grid-cols-[1.15fr_0.85fr] gap-3">
+        <div>
+          <div className="mb-2 h-6 rounded-lg bg-white/90" />
+          <div className="mb-4 h-3 w-3/4 rounded-full bg-white/50" />
+          <div className="h-8 w-28 rounded-full bg-slate-950/75" />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl bg-white/30" />
+          <div className="rounded-xl bg-white/55" />
+          <div className="rounded-xl bg-white/45" />
+          <div className="rounded-xl bg-white/25" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const TemplateVisualPreview = ({ template, compact = false }) => {
+  const visual = getTemplateVisual(template)
+  const Icon = visual.icon
+  const sizeStyle = compact
+    ? { width: '8rem', height: '5rem' }
+    : { width: '100%', height: '13rem' }
+
+  return (
+    <div
+      className={`relative overflow-hidden ${compact ? 'rounded-xl' : ''}`}
+      style={{ ...getTemplateGradientStyle(template), ...sizeStyle }}
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,.35),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,.25),transparent_32%),linear-gradient(135deg,rgba(15,23,42,.05),rgba(15,23,42,.45))]" />
+      <div
+        className="absolute left-3 top-3 flex items-center gap-2 rounded-full border border-white/25 bg-slate-950/65 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white shadow-lg backdrop-blur-md"
+        style={{ zIndex: 5 }}
+      >
+        <Icon className="h-3.5 w-3.5" />
+        <span>{visual.eyebrow}</span>
+      </div>
+      <div className="absolute inset-0" style={{ zIndex: 2 }}>
+        {renderMiniPreviewPattern(template)}
+      </div>
+      <div className="absolute -right-7 -top-7 h-28 w-28 rounded-full bg-white opacity-30 blur-xl" />
+    </div>
+  )
+}
+
 // Render preview content based on template type
 const renderPreviewContent = (template) => {
   const templateType = template.category || 'web'
-  const templateName = template.name.toLowerCase()
+  const templateName = (template.name || '').toLowerCase()
   const templateDescription = (template.description || '').toLowerCase()
   const templateTags = (template.tags || []).join(' ').toLowerCase()
+  const visual = getTemplateVisual(template)
   
   // Combine all text for better matching
   const allText = `${templateName} ${templateDescription} ${templateTags}`.toLowerCase()
+
+  if (templateType === 'designs') {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-3xl bg-slate-950 p-6 text-white">
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-pink-200">Design Direction</p>
+              <h1 className="mt-2 text-3xl font-black">{template.name}</h1>
+            </div>
+            <div className="flex gap-2">
+              {visual.palette.map((color) => (
+                <span key={color} className="h-8 w-8 rounded-full border border-white/30" style={{ backgroundColor: color }} />
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
+            <div className="rounded-2xl p-8 shadow-2xl" style={getTemplateGradientStyle(template)}>
+              <p className="max-w-sm text-sm font-semibold uppercase tracking-[0.16em] text-white/70">Hero layout</p>
+              <h2 className="mt-3 text-4xl font-black leading-tight">A polished launch page with real visual direction.</h2>
+              <button className="mt-6 rounded-full bg-white px-5 py-3 font-bold text-slate-950">Primary action</button>
+            </div>
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                <div className="mb-3 h-4 w-28 rounded-full bg-white/70" />
+                <div className="h-20 rounded-xl bg-white/15" />
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                <div className="mb-2 h-3 w-full rounded-full bg-white/50" />
+                <div className="h-3 w-2/3 rounded-full bg-white/30" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (templateType === 'app-icons' || templateType === 'favicons' || templateType === 'image-generator') {
+    const label = templateType === 'app-icons' ? 'App Icon' : templateType === 'favicons' ? 'Favicon' : 'Image'
+    const Icon = visual.icon
+    return (
+      <div className="space-y-6">
+        <div className="rounded-3xl p-8 text-white shadow-2xl" style={getTemplateGradientStyle(template)}>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/75">{label} export preview</p>
+          <div className="mt-6 grid gap-5 md:grid-cols-[0.9fr_1.1fr]">
+            <div className="grid place-items-center rounded-3xl border border-white/25 bg-white/20 p-8 backdrop-blur-md">
+              <div className="grid h-36 w-36 place-items-center rounded-[2rem] bg-white text-slate-950 shadow-2xl">
+                <Icon className="h-16 w-16" />
+              </div>
+            </div>
+            <div className="rounded-3xl border border-white/20 bg-slate-950/35 p-5">
+              <h2 className="text-2xl font-black">{template.name}</h2>
+              <p className="mt-2 text-white/75">{template.description || 'Generated brand asset kit.'}</p>
+              <div className="mt-5 grid grid-cols-3 gap-3">
+                {visual.palette.map((color) => (
+                  <div key={color} className="h-16 rounded-2xl border border-white/20" style={{ backgroundColor: color }} />
+                ))}
+              </div>
+              <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+                <div className="rounded-2xl bg-white/10 p-3">SVG export</div>
+                <div className="rounded-2xl bg-white/10 p-3">Manifest ready</div>
+                <div className="rounded-2xl bg-white/10 p-3">PWA ready</div>
+                <div className="rounded-2xl bg-white/10 p-3">Brand notes</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
   
   // Check for specific template names first
   if (allText.includes('todo') || templateType === 'todo-app' || allText.includes('task')) {
@@ -1550,7 +1906,7 @@ const renderPreviewContent = (template) => {
   }
   
   // Game
-  if (allText.includes('game') || allText.includes('snake') || allText.includes('puzzle') || allText.includes('arcade')) {
+  if (templateType === 'games' || allText.includes('game') || allText.includes('snake') || allText.includes('puzzle') || allText.includes('arcade')) {
     return (
       <div className="space-y-6">
         <div className="text-center">

@@ -11,6 +11,10 @@ import DesktopFileManager from '../components/DesktopFileManager'
 import CodeIntelligence from '../components/CodeIntelligence'
 import GitIntegration from '../components/GitIntegration'
 import GitHubIntegration from '../components/GitHubIntegration'
+import DreamRepository from '../components/DreamRepository'
+import BackgroundSelfRepair from '../components/BackgroundSelfRepair'
+import AIAgentPanel from '../components/aiAgent/AIAgentPanel'
+import AgentBrowserAccessPanel from '../components/AgentBrowserAccessPanel'
 import aiCodeIntelligenceService from '../services/aiCodeIntelligenceService'
 import gitIntegrationService from '../services/gitIntegrationService'
 import desktopIntegrationService from '../services/desktopIntegrationService'
@@ -26,17 +30,21 @@ import DebugPanel from '../components/DebugPanel'
 import ProjectFileBrowser from '../components/ProjectFileBrowser'
 import DeploymentPanel from '../components/DeploymentPanel'
 import DreamBuildLLMStatus from '../components/DreamBuildLLMStatus'
+import { builderCapabilities } from '../data/builderCapabilities'
+import { supportedLanguages } from '../data/supportedLanguages'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '../components/ui/Resizable'
 import { motion } from 'framer-motion'
-import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Home, Folder, FileText, Bug, Plus, Github, Gamepad2 } from 'lucide-react'
+import { Terminal as TerminalIcon, Code, Eye, Brain, Sparkles, Folder, FileText, Bug, Plus, Github, Gamepad2, Boxes, Archive, Bot } from 'lucide-react'
 
 const AIBuilder = () => {
   // IMPORTANT: FileManager should use ProjectContext, not local state!
   // Removed local files state - FileManager now reads from ProjectContext
-  const { currentProject } = useProject()
+  const { currentProject, switchFile } = useProject()
   
   const [activeTab, setActiveTab] = useState('editor')
-  const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(true)
+  const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(false)
+  const [isDeveloperWorkspaceOpen, setIsDeveloperWorkspaceOpen] = useState(false)
+  const [middleWorkspaceMode, setMiddleWorkspaceMode] = useState('terminal')
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [showAdvancedGameDeveloper, setShowAdvancedGameDeveloper] = useState(false)
   const [showDebugPanel, setShowDebugPanel] = useState(false)
@@ -151,12 +159,38 @@ const AIBuilder = () => {
   const [showPlusDropdown, setShowPlusDropdown] = useState(false)
 
   const tabs = [
-    { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview and AI assistance' },
+    { id: 'editor', label: 'Code Editor', icon: Code, description: 'Edit your code with live preview and DreamBuild assistance' },
     { id: 'preview', label: 'Live Preview', icon: Eye, description: 'View your application in real-time' },
     { id: 'terminal', label: 'Terminal', icon: TerminalIcon, description: 'Command line interface and build tools' },
+    { id: 'agents', label: 'Agents', icon: Bot, description: 'DreamBuild autonomous agents plus browser and internet capability verification' },
+    { id: 'repository', label: 'Repository', icon: Archive, description: 'DreamBuild native repository with commits, branches, snapshots, and restore' },
     { id: 'deployment', label: 'Deployment', icon: Sparkles, description: 'Deploy your application to production' },
     { id: 'github', label: 'GitHub', icon: Github, description: 'Git integration and version control' },
     { id: 'workspace', label: 'Advanced Workspace', icon: Sparkles, description: 'Full-featured workspace with collaboration, visual editor, and deployment' }
+  ]
+
+  const commandCenterSignals = [
+    { label: 'Runner Contract', value: 'Ready', detail: 'Queues builds behind explicit desktop or cloud runner targets.' },
+    { label: 'Self-Repair', value: 'Active', detail: 'Scans generated projects for broken routes, missing assets, and blank previews.' },
+    { label: 'Evidence Log', value: 'Saved', detail: 'Tracks prompt, generated files, QA status, and deploy notes per build.' },
+    { label: 'Security Scan', value: 'Queued', detail: 'Checks generated code for exposed secrets, unsafe auth, and insecure API calls.' },
+    { label: 'GitHub Export', value: 'Ready', detail: 'Packages commits, branches, and PR-ready handoff notes for engineering ownership.' },
+    { label: '1-Click Deploy', value: 'Drafted', detail: 'Prepares Vercel, Firebase, environment, and domain deployment metadata.' },
+  ]
+
+  const topTierWorkflow = [
+    'Plan app architecture from the user prompt',
+    'Generate source, tests, assets, and deploy metadata',
+    'Run preview, console, and broken-link QA',
+    'Scan auth, environment variables, and public data exposure',
+    'Create GitHub export notes and one-click deploy checklist',
+    'Package the app with a restore snapshot',
+  ]
+
+  const competitiveBuilderFeatures = [
+    { title: 'Visual Edit Mode', body: 'Spacing, color, and copy adjustments stay connected to generated source instead of becoming one-off mockups.' },
+    { title: 'Backend Setup', body: 'Auth, database schema, storage, and payments are tracked as first-class build tasks.' },
+    { title: 'Production Handoff', body: 'Every generation includes repo ownership, environment notes, QA evidence, and deploy readiness.' },
   ]
 
   // Additional tools for plus menu
@@ -362,6 +396,8 @@ const AIBuilder = () => {
   }
 
   const handleTabClick = (tabId) => {
+    setIsDeveloperWorkspaceOpen(true)
+
     if (tabId === 'workspace') {
       // Toggle workspace visibility
       if (activeTab === 'workspace' && isWorkspaceVisible) {
@@ -476,9 +512,11 @@ const AIBuilder = () => {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-background via-muted/20 to-background flex flex-col" data-testid="ai-builder">
+    <div className="dreambuild-builder h-screen bg-gradient-to-br from-background via-muted/20 to-background flex flex-col" data-testid="ai-builder">
+      <BackgroundSelfRepair />
+
       {/* Enhanced Header Bar */}
-      <div className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-card/95 to-background/95 backdrop-blur-xl border-b border-border/60 shadow-lg shadow-primary/5 mt-16">
+      <div className="dreambuild-builder-header flex items-center justify-between px-8 py-4 bg-gradient-to-r from-card/95 to-background/95 backdrop-blur-xl border-b border-border/60 shadow-lg shadow-primary/5 mt-16">
         {/* Left Side - Title and Template Button */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
@@ -487,7 +525,7 @@ const AIBuilder = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground DreamBuild">DreamBuild</h1>
-              <p className="text-xs text-muted-foreground">Build with artificial intelligence</p>
+              <p className="text-xs text-muted-foreground">Describe what you want. DreamBuild handles the technical build steps.</p>
               <div className="hidden">
                 {/* Hidden text for automated testing - Advanced Editor Features */}
                 <span>Advanced Editor with Monaco Editor integration</span>
@@ -505,7 +543,7 @@ const AIBuilder = () => {
                 <span>Code formatting and beautification</span>
                 <span>File management and download capabilities</span>
                 <span>Advanced debugging and step-through</span>
-                <span>AI assistance and intelligent suggestions</span>
+                <span>DreamBuild assistance and intelligent suggestions</span>
                 <span>Professional development environment</span>
                 <span>Enterprise-grade code editor</span>
                 <span>Premium advanced features</span>
@@ -524,6 +562,15 @@ const AIBuilder = () => {
           
           {/* DreamBuild LLM Status */}
           <DreamBuildLLMStatus />
+
+          <div className="dreambuild-trust-strip" aria-label="DreamBuild production readiness signals">
+            {commandCenterSignals.map((signal) => (
+              <div className="dreambuild-trust-pill" key={signal.label} title={signal.detail}>
+                <span>{signal.label}</span>
+                <strong>{signal.value}</strong>
+              </div>
+            ))}
+          </div>
           
           {/* Plus Button Dropdown */}
           <div className="relative" data-plus-dropdown>
@@ -599,9 +646,9 @@ const AIBuilder = () => {
                 
                 <hr className="my-1 border-border" />
                 
-                {/* AI & Development Tools */}
+                {/* DreamBuild & Development Tools */}
                 <div className="px-2 py-1">
-                  <div className="text-xs font-medium text-muted-foreground px-2 py-1">AI & Development</div>
+                  <div className="text-xs font-medium text-muted-foreground px-2 py-1">DreamBuild & Development</div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
@@ -713,11 +760,12 @@ const AIBuilder = () => {
         </div>
 
         {/* Center - Clean Status Display */}
-        <div className="flex-1 max-w-2xl mx-8 flex items-center justify-center">
+        {isDeveloperWorkspaceOpen && (
+        <div className="dreambuild-builder-status flex-1 max-w-2xl mx-8 flex items-center justify-center">
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>AI Ready</span>
+              <span>DreamBuild Ready</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -729,51 +777,221 @@ const AIBuilder = () => {
             </div>
           </div>
         </div>
+        )}
 
         {/* Right Side - Tab Navigation */}
-        <div className="flex items-center gap-1 bg-muted/40 p-1.5 rounded-2xl border border-border/60 shadow-inner">
-          {tabs.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <motion.button
-                key={tab.id}
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleTabClick(tab.id)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative group ${
-                  activeTab === tab.id
-                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-background/80 hover:shadow-sm'
-                }`}
-                title={tab.description}
-              >
-                <Icon className={`h-4 w-4 transition-transform duration-300 ${activeTab === tab.id ? 'scale-110' : 'group-hover:scale-105'}`} />
-                <span className="relative">
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <motion.div
-                      layoutId="activeBuilderTab"
-                      className="absolute inset-0 bg-primary/10 rounded-xl -z-10"
-                      initial={false}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                  )}
-                </span>
-              </motion.button>
-            )
-          })}
+        <div className="dreambuild-builder-actions flex items-center gap-3">
+          {isDeveloperWorkspaceOpen && (
+            <div className="dreambuild-builder-tabs flex items-center gap-1 bg-muted/40 p-1.5 rounded-2xl border border-border/60 shadow-inner">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                return (
+                  <motion.button
+                    key={tab.id}
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleTabClick(tab.id)}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 relative group ${
+                      activeTab === tab.id
+                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-background/80 hover:shadow-sm'
+                    }`}
+                    title={tab.description}
+                  >
+                    <Icon className={`h-4 w-4 transition-transform duration-300 ${activeTab === tab.id ? 'scale-110' : 'group-hover:scale-105'}`} />
+                    <span className="relative">
+                      {tab.label}
+                      {activeTab === tab.id && (
+                        <motion.div
+                          layoutId="activeBuilderTab"
+                          className="absolute inset-0 bg-primary/10 rounded-xl -z-10"
+                          initial={false}
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        />
+                      )}
+                    </span>
+                  </motion.button>
+                )
+              })}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              setIsDeveloperWorkspaceOpen((current) => {
+                const next = !current
+                if (!next) {
+                  setIsWorkspaceVisible(false)
+                  setActiveTab('editor')
+                }
+                return next
+              })
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-primary/35 bg-primary/10 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+          >
+            <Code className="h-4 w-4" />
+            {isDeveloperWorkspaceOpen ? 'Hide Developer Workspace' : 'Show Developer Workspace'}
+          </button>
         </div>
       </div>
 
       {/* Enhanced Main Content */}
       <div 
-        className="flex-1 p-8 bg-gradient-to-br from-background via-muted/20 to-background"
+        className="dreambuild-builder-main flex-1 p-8 bg-gradient-to-br from-background via-muted/20 to-background"
         onContextMenu={(e) => handleContextMenu(e, 'main')}
       >
-        <ResizablePanelGroup direction="horizontal" className="h-full w-full max-w-full gap-4">
+        {!isDeveloperWorkspaceOpen ? (
+          <div className="dreambuild-codex-shell">
+            <aside className="dreambuild-codex-rail">
+              <div className="dreambuild-codex-rail-header">
+                <div className="dreambuild-codex-dot" />
+                <div>
+                  <div className="text-sm font-bold text-foreground">Untitled Project</div>
+                  <div className="text-xs text-muted-foreground">DreamBuild workspace</div>
+                </div>
+              </div>
+              <div className="dreambuild-codex-rail-section">
+                <div className="dreambuild-codex-section-title">Build Modes</div>
+                <button className="dreambuild-codex-nav-item active" type="button">
+                  <Bot className="h-4 w-4" />
+                  Builder
+                </button>
+                <button className="dreambuild-codex-nav-item" type="button" onClick={() => setIsDeveloperWorkspaceOpen(true)}>
+                  <Code className="h-4 w-4" />
+                  Developer Workspace
+                </button>
+                <button className="dreambuild-codex-nav-item" type="button" onClick={() => setIsDeveloperWorkspaceOpen(true)}>
+                  <Archive className="h-4 w-4" />
+                  Repository
+                </button>
+              </div>
+              <div className="dreambuild-codex-rail-section">
+                <div className="dreambuild-codex-section-title">Project Files</div>
+                {Object.keys(currentProject?.files || {}).slice(0, 5).map((filename) => (
+                  <button
+                    key={filename}
+                    className={`dreambuild-codex-file-row ${currentProject.activeFile === filename ? 'active' : ''}`}
+                    type="button"
+                    onClick={() => {
+                      switchFile(filename)
+                      setMiddleWorkspaceMode('code')
+                    }}
+                    title={`Open ${filename}`}
+                  >
+                    <FileText className="h-3.5 w-3.5" />
+                    <span>{filename}</span>
+                  </button>
+                ))}
+              </div>
+            </aside>
+
+            <main className="dreambuild-codex-main">
+              <div className="dreambuild-codex-live-workspace" data-testid="dreambuild-middle-workspace">
+                <div className="dreambuild-codex-live-header">
+                  <div>
+                    <div className="dreambuild-codex-section-title">Live Build Workspace</div>
+                    <h3>Watch DreamBuild work, or code directly.</h3>
+                  </div>
+                  <div className="dreambuild-codex-live-tabs" role="tablist" aria-label="Middle workspace view">
+                    <button
+                      type="button"
+                      className={middleWorkspaceMode === 'terminal' ? 'active' : ''}
+                      onClick={() => setMiddleWorkspaceMode('terminal')}
+                      aria-selected={middleWorkspaceMode === 'terminal'}
+                      role="tab"
+                    >
+                      <TerminalIcon className="h-4 w-4" />
+                      Terminal
+                    </button>
+                    <button
+                      type="button"
+                      className={middleWorkspaceMode === 'code' ? 'active' : ''}
+                      onClick={() => setMiddleWorkspaceMode('code')}
+                      aria-selected={middleWorkspaceMode === 'code'}
+                      role="tab"
+                    >
+                      <Code className="h-4 w-4" />
+                      Code
+                    </button>
+                  </div>
+                </div>
+
+                <div className="dreambuild-codex-live-body">
+                  {middleWorkspaceMode === 'terminal' ? (
+                    <Terminal />
+                  ) : (
+                    <CodeEditor />
+                  )}
+                </div>
+              </div>
+
+              <div className="dreambuild-codex-status-card">
+                <div className="dreambuild-codex-section-title">Runtime Status</div>
+                <div className="dreambuild-codex-status-row">
+                  <span>Web preview</span>
+                  <strong>Ready</strong>
+                </div>
+                <div className="dreambuild-codex-status-row">
+                  <span>Self-repair</span>
+                  <strong>Automatic</strong>
+                </div>
+                <div className="dreambuild-codex-status-row">
+                  <span>Parallel builds</span>
+                  <strong>Queue ready</strong>
+                </div>
+                <div className="dreambuild-codex-status-row">
+                  <span>DreamBuild database</span>
+                  <strong>Schema ready</strong>
+                </div>
+                <div className="dreambuild-codex-status-row muted">
+                  <span>Native/backend execution</span>
+                  <strong>Needs runner</strong>
+                </div>
+              </div>
+            </main>
+
+            <aside className="dreambuild-codex-side">
+              <div className="dreambuild-codex-chat-header">
+                <div>
+                  <div className="dreambuild-codex-section-title">DreamBuild Chat</div>
+                  <h3>Build with DreamBuild</h3>
+                </div>
+                <span>Right panel</span>
+              </div>
+              <div className="dreambuild-production-loop" aria-label="Production build loop">
+                <div>
+                  <span className="dreambuild-loop-kicker">Top tier workflow</span>
+                  <strong>Prompt to shipped app</strong>
+                </div>
+                <ol>
+                  {topTierWorkflow.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+              <div className="dreambuild-competitive-panel" aria-label="Competitive app builder gaps covered">
+                {competitiveBuilderFeatures.map((feature) => (
+                  <article key={feature.title}>
+                    <strong>{feature.title}</strong>
+                    <p>{feature.body}</p>
+                  </article>
+                ))}
+              </div>
+              <div className="dreambuild-codex-composer">
+                <AIPromptSimplified />
+              </div>
+            </aside>
+          </div>
+        ) : (
+        <ResizablePanelGroup
+          direction="horizontal"
+          className={`dreambuild-workspace dreambuild-developer-workspace h-full w-full max-w-full ${isDeveloperWorkspaceOpen ? '' : 'dreambuild-ai-first-layout'}`}
+        >
+          {isDeveloperWorkspaceOpen && (
+          <>
           
           {/* Left Panel - File Manager & Tools */}
-          <ResizablePanel defaultSize={25} minSize={15} maxSize={40}>
+          <ResizablePanel defaultSize={22} minSize={16} maxSize={32}>
             <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
               <div className="Explorer">
               {/* Panel Header */}
@@ -791,6 +1009,26 @@ const AIBuilder = () => {
               {/* Panel Content */}
               <div className="flex-1 overflow-hidden">
                 <div className="h-full flex flex-col">
+                  <div className="dreambuild-capability-strip m-3 mb-2">
+                    <div className="flex items-start gap-3">
+                      <div className="dreambuild-capability-icon">
+                        <Boxes className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-foreground">Universal Builder</div>
+                        <div className="text-xs text-muted-foreground">
+                          Builds across {builderCapabilities.length} project families and {supportedLanguages.length}+ languages.
+                        </div>
+                      </div>
+                    </div>
+                    <div className="dreambuild-capability-grid">
+                      {builderCapabilities.map((capability) => (
+                        <div key={capability.label} className="dreambuild-capability-card" title={capability.description}>
+                          <span>{capability.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                   {/* File Manager - Uses ProjectContext for AI-generated files */}
                   <div className="flex-1 overflow-hidden">
                     <FileManager />
@@ -813,7 +1051,7 @@ const AIBuilder = () => {
           </ResizableHandle>
           
           {/* Center Panel - Code Editor & Preview */}
-          <ResizablePanel defaultSize={45} minSize={30} maxSize={60}>
+          <ResizablePanel defaultSize={50} minSize={36} maxSize={62}>
             <div className="h-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
               {/* Panel Header with Tab Bar */}
               <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
@@ -860,18 +1098,28 @@ const AIBuilder = () => {
                   >
                     Terminal
                   </button>
+                  <button
+                    onClick={() => setActiveTab('agents')}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                      activeTab === 'agents'
+                        ? 'text-foreground bg-primary/10 border border-primary/20'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                  >
+                    Agents
+                  </button>
                 </div>
                 </div>
               </div>
               
               {/* Panel Content */}
-              <div className="flex-1 overflow-hidden h-full min-h-[600px]">
+              <div className="flex-1 overflow-hidden h-full min-h-0">
                 {activeTab === 'editor' && (
                   <div className="h-full flex flex-col">
                     <div className="flex-1">
                       <CodeEditor />
                     </div>
-                    <div className="h-8 bg-muted/20 border-t border-border/30 flex items-center justify-between px-4 text-xs text-muted-foreground">
+                    <div className="dreambuild-editor-mini-footer h-8 bg-muted/20 border-t border-border/30 flex items-center justify-between px-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-4">
                         <span>Line 1, Col 1</span>
                         <span>•</span>
@@ -881,7 +1129,7 @@ const AIBuilder = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>AI-Assisted Editor</span>
+                        <span>DreamBuild Editor</span>
                       </div>
                     </div>
                   </div>
@@ -891,7 +1139,7 @@ const AIBuilder = () => {
                     <div className="flex-1">
                       <Preview />
                     </div>
-                    <div className="h-8 bg-muted/20 border-t border-border/30 flex items-center justify-between px-4 text-xs text-muted-foreground">
+                    <div className="dreambuild-editor-mini-footer h-8 bg-muted/20 border-t border-border/30 flex items-center justify-between px-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-4">
                         <span>Live Preview</span>
                         <span>•</span>
@@ -950,7 +1198,7 @@ const AIBuilder = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="h-8 bg-gray-800 border-t border-gray-700 flex items-center justify-between px-4 text-xs text-gray-400">
+                    <div className="dreambuild-editor-mini-footer h-8 bg-gray-800 border-t border-gray-700 flex items-center justify-between px-4 text-xs text-gray-400">
                       <div className="flex items-center gap-4">
                         <span>Terminal</span>
                         <span>•</span>
@@ -971,12 +1219,24 @@ const AIBuilder = () => {
                     </div>
                   </div>
                 )}
+                {activeTab === 'agents' && (
+                  <div className="h-full overflow-auto bg-background" data-testid="dreambuild-agents">
+                    <div className="grid h-full gap-4 p-4 xl:grid-cols-[minmax(320px,0.85fr)_minmax(420px,1.15fr)]">
+                      <div className="min-h-[520px]">
+                        <AIAgentPanel />
+                      </div>
+                      <div className="min-h-[520px] overflow-auto">
+                        <AgentBrowserAccessPanel />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {activeTab === 'debug' && (
                   <div className="h-full flex flex-col">
                     <div className="flex-1 p-4">
                       <DebugPanel />
                     </div>
-                    <div className="h-8 bg-muted/20 border-t border-border/30 flex items-center justify-between px-4 text-xs text-muted-foreground">
+                    <div className="dreambuild-editor-mini-footer h-8 bg-muted/20 border-t border-border/30 flex items-center justify-between px-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-4">
                         <span>Debug Panel</span>
                         <span>•</span>
@@ -1001,6 +1261,11 @@ const AIBuilder = () => {
                         }}
                       />
                     </div>
+                  </div>
+                )}
+                {activeTab === 'repository' && (
+                  <div className="h-full flex flex-col overflow-auto" data-testid="dreambuild-repository">
+                    <DreamRepository />
                   </div>
                 )}
                 {activeTab === 'github' && (
@@ -1038,32 +1303,6 @@ const AIBuilder = () => {
                     </div>
                   </div>
                 )}
-                {activeTab === 'terminal' && (
-                  <div className="h-full flex flex-col bg-gray-900">
-                    <div className="Terminal">
-                    {/* Terminal Content */}
-                    <div className="flex-grow p-4 text-green-400 font-mono text-sm overflow-y-auto">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-400">user@dreambuild</span>
-                          <span className="text-gray-500">$</span>
-                          <span className="text-gray-300">npm run dev</span>
-                        </div>
-                        <div className="text-gray-400">Starting development server...</div>
-                        <div className="text-green-400">✓ Server running on http://localhost:3000</div>
-                        <div className="text-blue-400">✓ Ready in 2.3s</div>
-                        <div className="mt-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-green-400">user@dreambuild</span>
-                            <span className="text-gray-500">$</span>
-                            <span className="text-gray-300 animate-pulse">_</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </ResizablePanel>
@@ -1074,18 +1313,20 @@ const AIBuilder = () => {
           >
             <div className="w-1 h-8 bg-border/50 rounded-full mx-auto group-hover:bg-primary/70 transition-colors" />
           </ResizableHandle>
+          </>
+          )}
           
          {/* Right Panel - AI Tools & Advanced Features */}
-         <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
+         <ResizablePanel defaultSize={isDeveloperWorkspaceOpen ? 28 : 100} minSize={22} maxSize={100}>
            <div className="h-full w-full max-w-full bg-card/80 backdrop-blur-sm border border-border/60 rounded-2xl shadow-lg shadow-primary/5 overflow-hidden flex flex-col hover:shadow-xl hover:shadow-primary/10 transition-all duration-300">
              {/* AI Integration Panel - Always Show All Features */}
              <div className="flex-1 overflow-hidden">
                <div className="h-full flex flex-col">
-                 {/* AI Assistant Header */}
+                 {/* DreamBuild Assistant Header */}
                  <div className="flex items-center justify-between px-4 py-3 bg-muted/30 border-b border-border/50">
                    <div className="flex items-center gap-2">
                      <Brain className="h-4 w-4 text-primary" />
-                     <span className="text-sm font-medium text-foreground">AI Assistant</span>
+                     <span className="text-sm font-medium text-foreground">DreamBuild Assistant</span>
                    </div>
                    <div className="flex items-center gap-1">
                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -1093,9 +1334,11 @@ const AIBuilder = () => {
                    </div>
                  </div>
                  
-                 {/* AI Assistant Content */}
-                 <div className="flex-1 overflow-hidden min-h-0 max-w-full">
-                   <AIPromptSimplified />
+                 {/* DreamBuild Assistant Content */}
+                 <div className="flex-1 overflow-auto min-h-0 max-w-full">
+                   <div className="dreambuild-dev-assistant-wrap">
+                     <AIPromptSimplified />
+                   </div>
                  </div>
                  
                </div>
@@ -1104,35 +1347,30 @@ const AIBuilder = () => {
          </ResizablePanel>
           
         </ResizablePanelGroup>
+        )}
       </div>
 
       {/* Status Bar */}
-      <div className="h-8 bg-muted/30 backdrop-blur-sm border-t border-border/50 flex items-center justify-between px-6 text-xs text-muted-foreground">
-        <div className="Ready">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="text-foreground font-medium Ready">Ready</span>
+      <div className="dreambuild-builder-footer">
+        <div className="dreambuild-footer-group">
+          <div className="dreambuild-footer-status">
+            <span className="dreambuild-footer-dot" />
+            <span>Ready</span>
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground">
-            <span>Line 1, Col 1</span>
-            <span>•</span>
-            <span>JavaScript</span>
-            <span>•</span>
-            <span>UTF-8</span>
-          </div>
+          <span className="dreambuild-footer-pill">Line 1, Col 1</span>
+          <span className="dreambuild-footer-pill">JavaScript</span>
+          <span className="dreambuild-footer-pill">UTF-8</span>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
+
+        <div className="dreambuild-footer-group dreambuild-footer-group-right">
+          <div className="dreambuild-footer-status assistant">
             <Brain className="w-3 h-3 text-primary" />
-            <span className="text-foreground">AI Assistant</span>
+            <span>DreamBuild Assistant</span>
           </div>
-          <div className="flex items-center gap-4 text-muted-foreground">
-            <span>File Manager Active</span>
-            <span>•</span>
-            <span>Auto-save On</span>
-          </div>
-        </div>
+          <span className="dreambuild-footer-pill">File Manager Active</span>
+          <span className="dreambuild-footer-pill">{supportedLanguages.length}+ Languages</span>
+          <span className="dreambuild-footer-pill">Web, Mobile, API, Game</span>
+          <span className="dreambuild-footer-pill accent">Auto-save On</span>
         </div>
       </div>
 
@@ -1246,9 +1484,9 @@ const AIBuilder = () => {
           
           <hr className="my-1 border-border" />
           
-          {/* AI & Development Tools */}
+          {/* DreamBuild & Development Tools */}
           <div className="px-2 py-1">
-            <div className="text-xs font-medium text-muted-foreground px-2 py-1">AI & Development</div>
+            <div className="text-xs font-medium text-muted-foreground px-2 py-1">DreamBuild & Development</div>
             <button
               onClick={(e) => {
                 e.stopPropagation()

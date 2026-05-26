@@ -1,11 +1,48 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { collection, addDoc, doc, setDoc } from 'firebase/firestore'
 import { storage, db } from '../config/firebase'
+import dreamBuildCloudService from './dreamBuildCloudService'
 
 class DeploymentService {
   constructor() {
     this.deployments = new Map()
     this.isDeploying = false
+  }
+
+  async deployToDreamBuild(projectData, projectName) {
+    if (this.isDeploying) {
+      throw new Error('Deployment already in progress')
+    }
+
+    this.isDeploying = true
+
+    try {
+      const hostedHTML = this.createHostedHTML(projectData.files)
+      const result = await dreamBuildCloudService.deployHostedApp({
+        name: projectName || projectData.name || 'DreamBuild App',
+        files: {
+          ...projectData.files,
+          'index.html': hostedHTML
+        },
+        config: projectData.config || {}
+      })
+
+      this.deployments.set(result.appId, {
+        id: result.appId,
+        projectName: projectName || projectData.name || 'DreamBuild App',
+        platform: 'dreambuild-hosting',
+        hostedURL: result.url,
+        status: 'completed',
+        deployedAt: new Date()
+      })
+
+      return result
+    } catch (error) {
+      console.error('❌ DreamBuild Hosting deployment failed:', error)
+      throw new Error(`DreamBuild Hosting deployment failed: ${error.message}`)
+    } finally {
+      this.isDeploying = false
+    }
   }
 
   // Deploy to Firebase Hosting

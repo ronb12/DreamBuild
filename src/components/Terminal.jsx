@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 
 const Terminal = () => {
   const [history, setHistory] = useState([
-    { type: 'output', content: 'DreamBuild AI Terminal v1.0.0', timestamp: new Date() },
+    { type: 'output', content: 'DreamBuild Terminal v1.0.0', timestamp: new Date() },
     { type: 'output', content: 'Type "help" for available commands', timestamp: new Date() },
     { type: 'output', content: 'Terminal is fully functional and ready to use', timestamp: new Date() },
     { type: 'output', content: '', timestamp: new Date() }
@@ -186,7 +186,7 @@ Type "help" for available commands`
 
   const clearTerminal = () => {
     setHistory([
-      { type: 'output', content: 'DreamBuild AI Terminal v1.0.0', timestamp: new Date() },
+      { type: 'output', content: 'DreamBuild Terminal v1.0.0', timestamp: new Date() },
       { type: 'output', content: 'Type "help" for available commands', timestamp: new Date() },
       { type: 'output', content: '', timestamp: new Date() }
     ])

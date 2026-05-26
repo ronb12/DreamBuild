@@ -60,6 +60,10 @@ class SimpleAIService {
     return await localAIService.getPopularTemplates()
   }
 
+  getCatalogStats() {
+    return localAIService.getCatalogStats()
+  }
+
   // Generate code using DreamBuild Built-in AI (primary), local AI, or cloud AI (fallback)
   async generateCode(prompt, context = {}) {
     const startTime = Date.now()

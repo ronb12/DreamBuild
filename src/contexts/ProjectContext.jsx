@@ -259,6 +259,18 @@ export function ProjectProvider({ children }) {
     toast.success(`${Object.keys(newFiles).length} files added to project!`)
   }, [])
 
+  const replaceProjectFiles = useCallback((files, activeFile = null, options = {}) => {
+    setCurrentProject(prev => ({
+      ...prev,
+      files: { ...files },
+      activeFile: activeFile || Object.keys(files || {})[0] || prev.activeFile,
+      lastModified: new Date()
+    }))
+    if (!options.silent) {
+      toast.success(options.message || 'Project files restored from repository commit')
+    }
+  }, [])
+
   const value = useMemo(() => ({
     currentProject,
     projects,
@@ -272,7 +284,8 @@ export function ProjectProvider({ children }) {
     loadProject,
     deleteProject,
     createNewProject,
-    addFilesToProject
+    addFilesToProject,
+    replaceProjectFiles
   }), [
     currentProject,
     projects,
@@ -286,7 +299,8 @@ export function ProjectProvider({ children }) {
     loadProject,
     deleteProject,
     createNewProject,
-    addFilesToProject
+    addFilesToProject,
+    replaceProjectFiles
   ])
 
   return (

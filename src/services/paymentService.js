@@ -330,34 +330,8 @@ app.post('/api/payment-success', async (req, res) => {
   }
 });
 
-// Legacy webhook handler removed; raw-body route is registered above.
-/*
-app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
-    return res.status(400).send(\`Webhook signature verification failed.\`);
-  }
-
-  // Handle the event
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object;
-
-      break;
-    default:
-
-  }
-
-  res.json({ received: true });
-});
-*/
-
 const PORT = process.env.PORT || 3000;
-// PORT removed - not needed in browser code
+// Generated backend listens on its configured port
 app.listen(PORT, () => {
 
 });`,
@@ -608,7 +582,7 @@ app.post('/api/capture-paypal-order', async (req, res) => {
   }
 });
 
-// PORT removed - not needed in browser code
+// Generated backend listens on its configured port
 app.listen(PORT, () => {
 
 });`,

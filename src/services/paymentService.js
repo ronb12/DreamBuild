@@ -56,8 +56,9 @@ class PaymentService {
   generateStripeIntegration(type = 'one-time-payment', options = {}) {
       const config = {
         publishableKey: 'pk_test_your_stripe_publishable_key_here',
-        secretKey: 'sk_test_your_stripe_secret_key_here',
-        webhookSecret: 'whsec_your_webhook_secret_here',
+        // Secret keys belong exclusively in the generated backend runtime.
+        secretKey: null,
+        webhookSecret: null,
         currency: 'usd', // US Dollar only
         country: 'US', // United States only
         region: 'us-east-1', // US region for compliance
@@ -90,7 +91,7 @@ class PaymentService {
   generatePayPalIntegration(type = 'one-time-payment', options = {}) {
       const config = {
         clientId: 'your_paypal_client_id_here',
-        clientSecret: 'your_paypal_client_secret_here',
+        clientSecret: null,
         environment: options.environment || 'sandbox', // sandbox or live
         currency: 'USD', // US Dollar only
         locale: 'en_US', // US English only
@@ -274,11 +275,22 @@ export default App;`
 
       backend: {
         'server.js': `const express = require('express');
-const stripe = require('stripe')('${config.secretKey}');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
+// Stripe webhooks require the original raw request body before JSON parsing.
+app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  try {
+    const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    // Fulfillment should be implemented server-side with idempotency.
+    return res.json({ received: true, type: event.type });
+  } catch (_) {
+    return res.status(400).send('Invalid webhook signature');
+  }
+});
 app.use(express.json());
 
 // Create Payment Intent
@@ -318,13 +330,14 @@ app.post('/api/payment-success', async (req, res) => {
   }
 });
 
-// Webhook endpoint for Stripe events
+// Legacy webhook handler removed; raw-body route is registered above.
+/*
 app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, '${config.webhookSecret}');
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     return res.status(400).send(\`Webhook signature verification failed.\`);
   }
@@ -341,7 +354,9 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) =
 
   res.json({ received: true });
 });
+*/
 
+const PORT = process.env.PORT || 3000;
 // PORT removed - not needed in browser code
 app.listen(PORT, () => {
 
@@ -547,7 +562,7 @@ app.use(express.json());
 // PayPal SDK Configuration
 const environment = new paypal.core.SandboxEnvironment(
   '${config.clientId}',
-  '${config.clientSecret}'
+  process.env.PAYPAL_CLIENT_SECRET
 );
 const client = new paypal.core.PayPalHttpClient(environment);
 

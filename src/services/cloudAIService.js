@@ -2,6 +2,8 @@
 // Uses Hugging Face Inference API for open source models
 
 import axios from 'axios'
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import firebaseApp from '../config/firebase.js'
 import incrementalDevelopmentService from './incrementalDevelopmentService.js'
 import appNamingService from './appNamingService.js'
 import colorThemeService from './colorThemeService.js'
@@ -12,8 +14,12 @@ import { detectSupportedLanguage } from '../data/supportedLanguages'
 class CloudAIService {
   constructor() {
     this.isHealthy = true
-    this.baseURL = 'https://api-inference.huggingface.co/models'
-    this.apiKey = import.meta.env.VITE_HUGGINGFACE_API_KEY || 'hf_your_api_key_here'
+    // Cloud provider credentials never enter a browser bundle.
+    this.huggingFaceInference = httpsCallable(
+      getFunctions(firebaseApp, 'us-central1'),
+      'huggingFaceInference',
+      { timeout: 45000 }
+    )
     
     // Open source models available via Hugging Face
     this.availableModels = {
@@ -753,28 +759,9 @@ class CloudAIService {
     return 'codellama-7b'
   }
 
-  // Call Hugging Face Inference API
+  // The server authenticates requests, chooses the model, and owns the API token.
   async callHuggingFaceAPI(model, prompt, maxTokens, temperature) {
-    const response = await axios.post(
-      `${this.baseURL}/${model}`,
-      {
-        inputs: prompt,
-        parameters: {
-          max_new_tokens: maxTokens,
-          temperature: temperature,
-          return_full_text: false,
-          do_sample: true
-        }
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000
-      }
-    )
-    
+    const response = await this.huggingFaceInference({ prompt, maxTokens, temperature })
     return response.data
   }
 

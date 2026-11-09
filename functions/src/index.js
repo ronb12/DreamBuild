@@ -1,6 +1,7 @@
 import admin from 'firebase-admin'
-import { onRequest } from 'firebase-functions/v2/https'
+import { onRequest, onCall, HttpsError } from 'firebase-functions/v2/https'
 import { setGlobalOptions } from 'firebase-functions/v2/options'
+import { defineSecret } from 'firebase-functions/params'
 
 setGlobalOptions({
   region: 'us-central1',
@@ -386,3 +387,78 @@ export const api = onRequest(async (req, res) => {
     })
   }
 })
+
+
+// Optional cloud inference. Token access is restricted to this server function.
+const huggingFaceApiKey = defineSecret('HUGGINGFACE_API_KEY')
+export const huggingFaceInference = onCall(
+  { secrets: [huggingFaceApiKey], maxInstances: 2, timeoutSeconds: 45, memory: '256MiB' },
+  async (request) => {
+    if (!request.auth?.uid) {
+      throw new HttpsError('unauthenticated', 'Sign in to use cloud inference.')
+    }
+    const prompt = request.data?.prompt
+    if (typeof prompt !== 'string' || !prompt.trim() || prompt.length > 16000) {
+      throw new HttpsError('invalid-argument', 'Invalid prompt length.')
+    }
+    const token = huggingFaceApiKey.value()
+    if (!token) {
+      throw new HttpsError('failed-precondition', 'Cloud inference is not configured.')
+    }
+    const maxTokens = Math.max(64, Math.min(2048, Math.floor(Number(request.data?.maxTokens) || 1024)))
+    const rawTemperature = Number(request.data?.temperature)
+    const temperature = Number.isFinite(rawTemperature)
+      ? Math.min(1, Math.max(0.1, rawTemperature)) : 0.7
+    // Transactional per-user daily quota limits unexpected provider spending.
+    const date = new Date().toISOString().slice(0, 10)
+    const counterRef = db.collection('_huggingface_daily_usage').doc(request.auth.uid + '_' + date)
+    const allowed = await db.runTransaction(async (transaction) => {
+      const snapshot = await transaction.get(counterRef)
+      const used = Number(snapshot.data()?.count || 0)
+      if (used >= 20) return false
+      transaction.set(counterRef, {
+        count: used + 1,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      }, { merge: true })
+      return true
+    })
+    if (!allowed) {
+      throw new HttpsError('resource-exhausted', 'Daily inference quota reached.')
+    }
+    // The model is server-managed, not provided by the caller.
+    const model = process.env.HUGGINGFACE_MODEL || 'openai/gpt-oss-120b:fastest'
+    let response
+    try {
+      response = await fetch('https://router.huggingface.co/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: maxTokens,
+          temperature
+        }),
+        signal: AbortSignal.timeout(30000)
+      })
+    } catch {
+      throw new HttpsError('unavailable', 'Cloud inference is unreachable.')
+    }
+    if (!response.ok) {
+      throw new HttpsError('unavailable', 'Cloud inference did not accept the request.')
+    }
+    let result
+    try {
+      result = await response.json()
+    } catch {
+      throw new HttpsError('unavailable', 'Cloud inference returned invalid data.')
+    }
+    const content = result?.choices?.[0]?.message?.content
+    if (typeof content !== 'string' || !content.trim()) {
+      throw new HttpsError('unavailable', 'Cloud inference returned no text.')
+    }
+    return [{ generated_text: content }]
+  }
+)
